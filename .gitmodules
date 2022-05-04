@@ -1,0 +1,9 @@
+[submodule "lib/tal"]
+	path = lib/tal
+	url = https://github.com/IntelLabs/Trans-Omics-Acceleration-Library.git
+[submodule "applications/bwa-mem2"]
+	path = applications/bwa-mem2
+	url = https://github.com/bwa-mem2/bwa-mem2.git
+[submodule "applications/mm2-fast"]
+	path = applications/mm2-fast
+	url = https://github.com/bwa-mem2/mm2-fast.git
