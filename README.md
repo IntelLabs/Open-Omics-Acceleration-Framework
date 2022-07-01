@@ -5,6 +5,11 @@ Intel lab's open sourced data science framework for accelerating digital biology
 <img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/open-omics-acceleration-framework.JPG" height="400"/a></br>
 </p> 
 
+# Blogs & Related News
+
+* [Intel Labs Accelerates Single-cell RNA-Seq Analysis](https://community.intel.com/t5/Blogs/Tech-Innovation/Artificial-Intelligence-AI/Intel-Labs-Accelerates-Single-cell-RNA-Seq-Analysis/post/1390715).  Blog under Intel Communities/Blogs/Tech Innovation/Artificial Intelligence (AI); June, 2022.
+* [Intel and MILA Join Forces to Put AI to Work in Medical Research](https://www.hpcwire.com/off-the-wire/intel-and-mila-join-forces-to-put-ai-to-work-in-medical-research/). HPCwire, April, 2021.
+
 # Publications
 
 * **Accelerating minimap2 for long-read sequencing applications on modern CPUs**. Saurabh Kalikar, Chirag Jain, Md Vasimuddin, Sanchit Misra. Nature Computational Science 2 (2), 78-83, Feb, 2022. https://rdcu.be/cHVAK 
