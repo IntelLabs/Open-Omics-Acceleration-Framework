@@ -330,3 +330,7 @@ export OMP_NUM_THREADS=30                           # (Available cores (N) - 2)
 sbatch Batchfile_CPU.slurm
 
 ```
+
+# Cleanup 
+
+Terminate all EC2 instances used to run benchmarks to avoid incurring charges.
