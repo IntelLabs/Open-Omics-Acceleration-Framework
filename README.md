@@ -10,6 +10,7 @@ Intel lab's open sourced data science framework for accelerating digital biology
 * [Accelerating Genomics Pipelines Using Intel’s Open Omics Acceleration Framework on AWS](https://aws.amazon.com/blogs/hpc/accelerating-genomics-pipelines-using-intel-open-omics-on-aws/). AWS HPC blog, Aug, 2022.
 * [Intel Labs Accelerates Single-cell RNA-Seq Analysis](https://community.intel.com/t5/Blogs/Tech-Innovation/Artificial-Intelligence-AI/Intel-Labs-Accelerates-Single-cell-RNA-Seq-Analysis/post/1390715).  Blog under Intel Communities/Blogs/Tech Innovation/Artificial Intelligence (AI); June, 2022.
 * [Intel and MILA Join Forces to Put AI to Work in Medical Research](https://www.hpcwire.com/off-the-wire/intel-and-mila-join-forces-to-put-ai-to-work-in-medical-research/). HPCwire, April, 2021.
+* [Intel and Mila Join Forces for Responsible AI](https://www.intel.com/content/www/us/en/newsroom/news/intel-mila-join-forces-for-responsible-ai.html#gs.ht5v6q). Intel newsroom, September, 2022.
 
 # Publications
 
