@@ -25,5 +25,5 @@ dependencies:
       - anndata==0.8.0
       - scikit-learn-intelex==2023.0.1 
       - pybind11
-      - jupyterlab
+      - jupyter
       - wget
