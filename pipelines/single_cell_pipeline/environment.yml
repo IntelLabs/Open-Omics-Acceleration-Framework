@@ -1,0 +1,29 @@
+name: single_cell
+channels:
+  - conda-forge
+  - defaults
+  - katanagraph/label/dev
+dependencies:
+  - defaults::python=3.8.0
+  - defaults::seaborn=0.12.2
+  - defaults::scikit-learn=1.0.2
+  - defaults::statsmodels=0.13.2
+  - defaults::numba=0.53.1
+  - defaults::pytables=3.7.0
+  - defaults::pip=22.3.1
+  - defaults::pandas=1.5.2
+  - defaults::matplotlib-base=3.6.2
+  - conda-forge::mkl-service=2.4.0
+  - conda-forge::python-igraph=0.10.3
+  - conda-forge::leidenalg=0.9.1
+  - conda-forge::cython=0.29.33
+  - conda-forge::jinja2=3.1.2
+  - conda-forge::clang-tools=15.0.7
+  - katanagraph/label/dev::katana-python
+  - pip:
+      - scanpy==1.8.1
+      - anndata==0.8.0
+      - scikit-learn-intelex==2023.0.1 
+      - pybind11
+      - jupyterlab
+      - wget
