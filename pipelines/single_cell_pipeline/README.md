@@ -5,18 +5,35 @@ git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Frame
 cd ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline
 ```
 
-## Step 1: Create an Anaconda environment from file (Option - 1) 
+# Instructions to Run
+We can run this pipeline in three ways: 1. Docker container, 2. Using anaconda environment file, 3. Creating anaconda environment manually.   
+
+## (Option 1): Docker instructions (Recommended on Cloud Instance)
+```bash
+# Default values of environment variables is set to NUMEXPR_MAX_THREADS=64, NUMBA_NUM_THREADS=64  (Number of CPUs)
+# inside the docker image. Update Dockerfile to change these variables according to number of CPUs for best performance
+
+cd ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/
+docker build -t scanpy .           # Create a docker image named scanpy
+
+# Download dataset
+wget -P ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/data https://rapids-single-cell-examples.s3.us-east-2.amazonaws.com/1M_brain_cells_10X.sparse.h5ad
+
+docker run -it -p 8888:8888 -v ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/data:/data scanpy   # run docker container with the data folder as volume
+```
+
+## (Option 2): Create an Anaconda environment from file
 ```bash
 conda env create --name=single_cell -f environment.yml
 conda activate single_cell
 ```
 
-## Replace the _t_sne.py file to anaconda environment's daal4py package
+### Replace the _t_sne.py file to anaconda environment's daal4py package
 ```bash
 cp _t_sne.py ~/anaconda3/envs/single_cell/lib/python3.8/site-packages/daal4py/sklearn/manifold/
 ```
 
-## Install umap_extend and umap 
+### Install umap_extend and umap 
 ```bash
 
 pip uninstall umap-learn
@@ -29,13 +46,13 @@ python setup.py install                     # do python setup.py install if movi
 ```
 
 
-## Example Dataset
+### Example Dataset
 The dataset was made publicly available by 10X Genomics. Use the following command to download the count matrix for this dataset and store it in the data folder:
 ```bash
 wget -P ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/data https://rapids-single-cell-examples.s3.us-east-2.amazonaws.com/1M_brain_cells_10X.sparse.h5ad
 ```
 
-## Setup and run
+### Setup and run
 ```bash
 export NUMEXPR_MAX_THREADS=56          # equal to number of threads on a single socket
 export NUMBA_NUM_THREADS=56            # Remember to delete __pycache__ folder from local directory and umap/umap/ directory if increasing number of threads
@@ -52,29 +69,13 @@ jupyter notebook
 ```
 
 
-# Docker instructions (Recommended on Cloud Instance)
-```bash
-# Default values of environment variables is set to NUMEXPR_MAX_THREADS=64, NUMBA_NUM_THREADS=64  (Number of CPUs)
-# inside the docker image. Update Dockerfile to change these variables according to number of CPUs for best performance
-
-cd ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/
-docker build -t scanpy .           # Create a docker image named scanpy
-
-# Download dataset
-wget -P ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/data https://rapids-single-cell-examples.s3.us-east-2.amazonaws.com/1M_brain_cells_10X.sparse.h5ad
-
-docker run -it -p 8888:8888 -v ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/data:/data scanpy   # run docker container with the data folder as volume
-```
-
-
-
-## (Alternatively) create an Anaconda environment Manually (Option - 2)
+## (Alternatively, Option - 3) You can also create Anaconda environment Manually
 ```bash
 conda create --name single_cell python=3.8.0
 conda activate single_cell
 ```
 
-# Necessary scanpy tools
+### Necessary scanpy tools
 ```bash
 conda install -y seaborn=0.12.2 scikit-learn=1.0.2 statsmodels numba=0.53 pytables matplotlib-base=3.6.2 pandas=1.5.2
 conda install -y -c conda-forge mkl-service
@@ -83,28 +84,28 @@ conda install -y -c conda-forge cython jinja2 clang-tools
 conda install -y -c katanagraph/label/dev -c conda-forge katana-python
 ```
 
-# Install scanpy
+### Install scanpy
 ```bash
 pip install scanpy==1.8.1
 ```
 
-# Install scikit-learn intel extension (PIP version)
+### Install scikit-learn intel extension (PIP version)
 ```bash
 pip install scikit-learn-intelex
 ```
-# Install other packages
+### Install other packages
 ```bash
 pip install pybind11
 pip install jupyterlab
 pip install wget
 ```
 
-## Replace the _t_sne.py file to anaconda environment's daal4py package
+### Replace the _t_sne.py file to anaconda environment's daal4py package
 ```bash
 cp _t_sne.py ~/anaconda3/envs/single_cell/lib/python3.8/site-packages/daal4py/sklearn/manifold/
 ```
 
-## Install umap_extend and umap 
+### Install umap_extend and umap 
 ```bash
 
 pip uninstall umap-learn
