@@ -77,10 +77,10 @@ conda activate single_cell
 
 ### Necessary scanpy tools
 ```bash
-conda install -y seaborn=0.12.2 scikit-learn=1.0.2 statsmodels numba=0.53 pytables matplotlib-base=3.6.2 pandas=1.5.2
-conda install -y -c conda-forge mkl-service
-conda install -y -c conda-forge python-igraph leidenalg
-conda install -y -c conda-forge cython jinja2 clang-tools
+conda install -y seaborn=0.12.2 scikit-learn=1.0.2 statsmodels=0.13.2 numba=0.53.1 pytables=3.7.0 matplotlib-base=3.6.2 pandas=1.5.2
+conda install -y -c conda-forge mkl-service=2.4.0
+conda install -y -c conda-forge python-igraph=0.10.3 leidenalg=0.9.1
+conda install -y -c conda-forge cython=0.29.33 jinja2=3.1.2 clang-tools=15.0.7
 conda install -y -c katanagraph/label/dev -c conda-forge katana-python
 ```
 
@@ -91,7 +91,7 @@ pip install scanpy==1.8.1
 
 ### Install scikit-learn intel extension (PIP version)
 ```bash
-pip install scikit-learn-intelex
+pip install scikit-learn-intelex==2023.0.1
 ```
 ### Install other packages
 ```bash
