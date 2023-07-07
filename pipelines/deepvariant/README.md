@@ -1,53 +1,51 @@
 # Deepvariant Pipeline
 ### This repo presents OpenOmics DeepVariant Pipeline: A highly optimized scalable Deep Learning based short-read vaariant calling on x86 CPU clusters. The pipeline comprises of highly optimized: 1. bwa-mem2 for sequence mapping, 2. samtools for sorting output of bwa-mem2, and 3. DeepVariant for variant calling using sorted BAM records out of sorting.
 
-0. Pipeline tools' location:   
+### 0. Pipeline tools' location:   
 bwa-mem2,samtools, deepvariant C/C++ based tools residing in:
 ```Open-Omics-Acceleration-Framework/applications/ ```.
 While DeepVariant tools is a docker image; it is not present in the repo as of now; the user needs to create image, convert to tar file and distribute across the cluste nodes. 
    Prerequisite : Docker /Podman  
    All the script by default supports podman. If you are using docker use:  **alias podman=docker**
-```
-cd Open-Omics-Acceleration-Framework/applications/deepvariant
-podman build .
-cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/
-podman save -o deepvariant.tar "IMAGE ID"
-```
-1. Download data and DeepVariant image:
-```
+
+### 1. Download data and Downalod Code:
+```bash
 export INPUT_DIR=./    ## temp
 export OUTPUT_DIR=./   ## temp
+git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git  
+
+```
+
+### 2. Setting Envionment and Deepvariant Podman Image
+```bash
+
+cd Open-Omics-Acceleration-Framework/applications/deepvariant
+podman build .
 #save image to tar file if you are using multiple nodes.
 cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/
 podman save -o deepvariant.tar "IMAGE ID"
-```
-
-2. Download code
-```
-git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git  
-cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/  
-
-source setup_env.sh  ## creates new_env conda environment
+source setup_env.sh  # setting environment for installations
 conda activate new_env   ## activate conda env
 ```
-3. Compute nodes setup:  
-3.1.  Compute cluster using slurm job scheduler, e.g.: Allocate 2 spr dnp8480 node having 112 cores per compute node for 12 hrs.
-```
+### 3. Compute nodes setup:  
+#### 3.1.  Compute cluster using slurm job scheduler, e.g.: Allocate 2 spr dnp8480 node having 112 cores per compute node for 12 hrs.
+```bash
 salloc --ntasks=2 --partition=nextgenq --constraint=dnp8480 --cpus-per-task=112 --time=12:0:0
 srun hostname > hostfile  
 ```  
 
-3.2 Standalone machine
-```
+#### 3.2 Standalone machine
+```bash
 hostname > hostfile
 ```
-3.3 Aws cluster setup
+#### 3.3 Aws cluster setup
 
 [Follow Instructions](AWS_CLUSTER_SETUP.md) for detailed instructions.
 
 
-4. Loads docker/podman images in the allocated nodes.
-```
+### 4. Compilation of tools and distribute docker/podman images in the allocated nodes.
+```bash
+# if you are using single node comment "bash load_deepvariant.sh" in the below script
 source setup.sh      ## tested with gcc 8.5.0
 ```
 Note: It takes ~10 mins to load the image in all the hostfile nodes. 
