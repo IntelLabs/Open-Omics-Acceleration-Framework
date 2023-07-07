@@ -7,3 +7,9 @@
 [submodule "applications/mm2-fast"]
 	path = applications/mm2-fast
 	url = https://github.com/bwa-mem2/mm2-fast.git
+[submodule "applications/samtools"]
+	path = applications/samtools
+	url = https://github.com/samtools/samtools.git
+[submodule "applications/htslib"]
+	path = applications/htslib
+	url = https://github.com/samtools/htslib.git
