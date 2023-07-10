@@ -20,18 +20,18 @@ export LD_PRELOAD=$LD_PRELOAD:"${ABS_DIRECTORY}/libmimalloc.so.2.0"
 #ln -s /tmp/${USER} ~/.local/share/containers
 ################################################
 
-cd ${ABS_DIRECTORY}/../../../applications/bwa-mem2
+cd ${ABS_DIRECTORY}/../../applications/bwa-mem2
 make CXX=icpc multi
 #make
 #make install   #uncomment this for installation
 
-cd ${ABS_DIRECTORY}/../../../applications/htslib
+cd ${ABS_DIRECTORY}/../../applications/htslib
 autoreconf -i  # Build the configure script and install files it uses
 ./configure    # Optional but recommended, for choosing extra functionality
 make
 #make install   #uncomment this for installation
 
-cd ${ABS_DIRECTORY}/../../../applications/samtools
+cd ${ABS_DIRECTORY}/../../applications/samtools
 autoheader
 autoconf -Wno-syntax
 chmod 775 configure
