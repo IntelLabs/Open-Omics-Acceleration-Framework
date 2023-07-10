@@ -21,7 +21,7 @@ git submodule update --init --recursive
 ```bash
 
 cd Open-Omics-Acceleration-Framework/applications/deepvariant
-podman build .
+podman build -t deepvariant .
 #save image to tar file if you are using multiple nodes.
 cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/
 podman save -o deepvariant.tar "IMAGE ID"
