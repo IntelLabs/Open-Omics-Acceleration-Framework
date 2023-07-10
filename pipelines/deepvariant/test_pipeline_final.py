@@ -17,7 +17,7 @@ from multiprocessing import Pool
 from operator import itemgetter
 mydict = {"chr1": 1,"chr2": 2,"chr3": 3,"chr4": 4,"chr5": 5,"chr6": 6,"chr7": 7,"chr8": 8, "chr9": 9, "chr10": 10, "chr11": 11, "chr12": 12, "chr13": 13, "chr14":14,"chr15":15,"chr16": 16, "chr17": 17, "chr18": 18, "chr19": 19,"chr20":20,"chr21":21,"chr22":22,"chrX": 23,"chrY": 24,"chrM": 25}
 
-BINDIR="../../.."
+BINDIR="../.."
 
 
 def pr_t1( f, start, end, bufs, sems ):  # thread to read from fastq.gz file
