@@ -41,7 +41,7 @@ hostname > hostfile
 ```
 #### 3.3 Aws cluster setup
 
-[Follow Instructions](AWS_CLUSTER_SETUP.md) for detailed instructions.
+[Follow](AWS_CLUSTER_SETUP.md) for detailed instructions.
 
 
 ### 4. Compilation of tools and distribute docker/podman images in the allocated nodes.
