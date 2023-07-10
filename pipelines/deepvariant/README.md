@@ -8,7 +8,7 @@ While DeepVariant tools is a docker image; it is not present in the repo as of n
    Prerequisite : Docker /Podman  
    All the script by default supports podman. If you are using docker use:  **alias podman=docker**
 
-### 1. Download data and Downalod Code:
+### 1. Download data and Download Code:
 ```bash
 export INPUT_DIR=./    ## temp
 export OUTPUT_DIR=./   ## temp
@@ -22,10 +22,10 @@ git submodule update --init --recursive
 
 cd Open-Omics-Acceleration-Framework/applications/deepvariant
 podman build -t deepvariant .
-#save image to tar file if you are using multiple nodes.
+#save image(~7 GB) to tar file if you are using multiple nodes.
 cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/
-podman save -o deepvariant.tar "IMAGE ID"
-source setup_env.sh  # setting environment for installations
+podman save -o deepvariant.tar "IMAGE ID"   #get image id using 'podman images'
+source setup_env.sh  # setting environment for installation
 conda activate new_env   ## activate conda env
 ```
 ### 3. Compute nodes setup:  
@@ -56,22 +56,22 @@ podman images
 ```
 The output should look like this if the image is loaded.  
 REPOSITORY             TAG         IMAGE ID      CREATED      SIZE   
-localhost/deepvariant  latest      9eaf947f7e2e  6 weeks ago  19.8 GB   
+localhost/deepvariant  latest      1568d0b32e49  6 weeks ago  7.07 GB   
 
 ### 5. Run the following script after the image is loaded on all the compute nodes listed in hostfile.  
 Usage: sh run_pipline.sh <#ranks> <#threads> <#threads> <#shards> <#ppn>  
 * ranks: Number of mpi process that we want the pipeline to run on  
 * threads/shards: parameters to different tools in the pipeline, calculated as below  
 * ppn: mpi process per compute node. If we are running 2 ranks and provide ppn as 2, then both the ranks will run on 1 compute code (assuming dual socket machine, it will run 1 rank per socket)  
-Note: for best performance, we advice to run 4 ranks per socket on spr nodes. So, assuming dual-socket compute node you can run 8 ranks on 1 compute node.  
+Note: for best performance, we advice to run 4 ranks per socket on spr nodes(#value represents specification for spr node). So, assuming dual-socket compute node you can run 8 ranks on 1 compute node.  
 ```bash 
 ppn=8  
-CPUS=$(lscpu | grep -E '^CPU\(s\)' | awk  '{print $2}')
-Cores=$(lscpu| grep -E '^Core\(s\)' | awk  '{print $4}')
-Thread=$(lscpu | grep -E '^Thread' | awk  '{print $4}')
+Sockets=$(lscpu | grep -E '^Socket\(s\)' | awk  '{print $2}')   #2
+Cores=$(lscpu| grep -E '^Core\(s\)' | awk  '{print $4}')  #56
+Thread=$(lscpu | grep -E '^Thread' | awk  '{print $4}')  #2
 
-a=$(( $(( ${Cores}*${Thread}*2 / $ppn )) - 4 )) 
-b=$(( $(( ${Cores}*${Thread} )) / $ppn ))
+a=$(( $(( ${Cores}*${Thread}*${Sockets} / $ppn )) - 4 ))   #24 (Four threads are removed for IO)
+b=$(( $(( ${Cores}*${Thread} )) / $ppn ))   #14
 
 sh run_pipeline.sh 8 $a $a $b $ppn
 ```
