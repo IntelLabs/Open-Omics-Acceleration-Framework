@@ -1,3 +1,4 @@
+[![GitHub Downloads](https://img.shields.io/github/downloads/IntelLabs/Open-Omics-Acceleration-Framework/total?label=GitHub%20Downloads)](https://github.com/IntelLabs/Open-Omics-Acceleration-Framework)
 # Open Omics Acceleration Framework
 Intel lab's open sourced data science framework for accelerating digital biology
 
