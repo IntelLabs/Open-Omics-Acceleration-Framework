@@ -11,5 +11,6 @@ ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"
 for i in `cat hostfile`
 do
   echo $i
-  ssh $i "podman import ${ABS_DIRECTORY}/deepvariant.tar deepvariant" &
+  ssh $i "podman load -i ${ABS_DIRECTORY}/deepvariant.tar" &
+  #ssh $i "podman import ${ABS_DIRECTORY}/deepvariant.tar deepvariant" &
 done
