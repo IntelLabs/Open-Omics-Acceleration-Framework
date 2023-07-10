@@ -12,8 +12,9 @@ While DeepVariant tools is a docker image; it is not present in the repo as of n
 ```bash
 export INPUT_DIR=./    ## temp
 export OUTPUT_DIR=./   ## temp
-git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git  
-
+git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+cd Open-Omics-Acceleration-Framework
+git submodule update --init --recursive
 ```
 
 ### 2. Setting Envionment and Deepvariant Podman Image
