@@ -17,7 +17,8 @@ git submodule update --init --recursive
 
 ### 2. Setting Envionment and Deepvariant Image
 ```bash
-source setup_env.sh  my_env # Setting environment with name my_env
+#Tested with Ubuntu 22.04.2 LTS
+source setup_env.sh  my_env # Setting environment with name my_env. 
 ```
 ### 3. Cluster setup:  
 #### 3.1.  Cluster using slurm job scheduler.

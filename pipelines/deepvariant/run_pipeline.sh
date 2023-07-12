@@ -15,10 +15,11 @@ Thread=$(lscpu | grep -E '^Thread' | awk  '{print $4}')  #2
 
 a=$(( $(( ${Cores}*${Thread}*${Sockets} / $ppn )) - 2*${Thread} ))   #24 (Four threads are removed for IO)
 b=$(( $(( ${Cores}*${Sockets} )) / $ppn ))   #14
-
-if [ $a -lt 1]; then
+ 
+if (( $a < 1 ))
+then
     echo 'Number of cpus are less to run the pipeline.'
-    exit 1
+    exit 0
 fi
 
 N=$1

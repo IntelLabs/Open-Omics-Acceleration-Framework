@@ -48,6 +48,10 @@ sudo apt -y upgrade
 sudo apt -y install libbz2-dev
 sudo apt -y install liblzma-dev
 
+# Intel® oneAPI HPC Toolkit.
+wget https://registrationcenter-download.intel.com/akdlm/IRC_NAS/1ff1b38a-8218-4c53-9956-f0b264de35a4/l_HPCKit_p_2023.1.0.46346.sh
+sh ./l_HPCKit_p_2023.1.0.46346.sh -a --silent --eula accept
+
 # This will save deepvariant images
 cd ${ABS_DIRECTORY}/../../applications/deepvariant
 docker build -t deepvariant .
