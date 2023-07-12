@@ -21,8 +21,8 @@ export LD_PRELOAD=$LD_PRELOAD:"${ABS_DIRECTORY}/libmimalloc.so.2.0"
 ################################################
 
 cd ${ABS_DIRECTORY}/../../applications/bwa-mem2
-make CXX=icpc multi
-#make
+#make CXX=icpc multi
+make
 #make install   #uncomment this for installation
 
 cd ${ABS_DIRECTORY}/../../applications/htslib

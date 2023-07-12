@@ -30,7 +30,7 @@ echo \
   "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
   "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 #To verify docker installation use below command
 #sudo docker run hello-world 
 ##############################################
@@ -49,8 +49,8 @@ sudo apt -y install libbz2-dev
 sudo apt -y install liblzma-dev
 
 # This will save deepvariant images
-cd ${ABS_DIRECTORY}applications/deepvariant
+cd ${ABS_DIRECTORY}/../../applications/deepvariant
 docker build -t deepvariant .
 #save image(~7 GB) to tar file if you are using multiple nodes.
 cd ${ABS_DIRECTORY}/pipelines/deepvariant/
-dcoker save -o deepvariant.tar deepvariant:latest   #get image id using 'podman images'
+doker save -o deepvariant.tar deepvariant:latest   

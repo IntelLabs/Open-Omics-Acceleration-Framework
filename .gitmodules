@@ -13,3 +13,6 @@
 [submodule "applications/htslib"]
 	path = applications/htslib
 	url = https://github.com/samtools/htslib.git
+[submodule "applications/deepvariant"]
+	path = applications/deepvariant
+	url = https://github.com/IntelLabs/deepvariant.git
