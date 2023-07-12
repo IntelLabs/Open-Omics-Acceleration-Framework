@@ -1,8 +1,11 @@
-username=${USER}
-for i in `cat hostfile`
-do
-  ssh $i "mkdir -p /tmp/${username} && chmod 777 /tmp/${username} && podman images"
-done
+
+
+
+#username=${USER}
+#for i in `cat hostfile`
+#do
+#  ssh $i "mkdir -p /tmp/${username} && chmod 777 /tmp/${username} && podman images"
+#done
 
 
 SCRIPT_PATH="${BASH_SOURCE:-$0}"
@@ -11,6 +14,5 @@ ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"
 for i in `cat hostfile`
 do
   echo $i
-  ssh $i "podman load -i ${ABS_DIRECTORY}/deepvariant.tar" &
-  #ssh $i "podman import ${ABS_DIRECTORY}/deepvariant.tar deepvariant" &
+  ssh $i "docker load -i ${ABS_DIRECTORY}/deepvariant.tar" &
 done

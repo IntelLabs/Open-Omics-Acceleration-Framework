@@ -2,36 +2,27 @@
 ### This repo presents OpenOmics DeepVariant Pipeline: A highly optimized scalable Deep Learning based short-read vaariant calling on x86 CPU clusters. The pipeline comprises of highly optimized: 1. bwa-mem2 for sequence mapping, 2. samtools for sorting output of bwa-mem2, and 3. DeepVariant for variant calling using sorted BAM records out of sorting.
 
 ### 0. Pipeline tools' location:   
-bwa-mem2,samtools, deepvariant C/C++ based tools residing in:
+bwa-mem2,samtools C/C++ based tools residing in:
 ```Open-Omics-Acceleration-Framework/applications/ ```.
-While DeepVariant tools is a docker image; it is not present in the repo as of now; the user needs to create image, convert to tar file and distribute across the cluste nodes. 
-   Prerequisite : Docker /Podman  
-   All the script by default supports podman. If you are using docker use:  **alias podman=docker**
+DeepVariant is used as a Docker image. It is currently not available on Dockerhub. To use it, the user must build an image, convert it to a tar file, and distribute it across the cluster nodes. 
+   * Prerequisite : Docker /Podman  
+   * All the script by default supports podman. If you are using docker use:  **alias podman=docker**
 
-### 1. Download data and Download Code:
+### 1. Download Code:
 ```bash
-export INPUT_DIR=./    ## temp
-export OUTPUT_DIR=./   ## temp
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 cd Open-Omics-Acceleration-Framework
 git submodule update --init --recursive
 ```
 
-### 2. Setting Envionment and Deepvariant Podman Image
+### 2. Setting Envionment and Deepvariant Image
 ```bash
-
-cd Open-Omics-Acceleration-Framework/applications/deepvariant
-podman build -t deepvariant .
-#save image(~7 GB) to tar file if you are using multiple nodes.
-cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/
-podman save -o deepvariant.tar "IMAGE ID"   #get image id using 'podman images'
-source setup_env.sh  # setting environment for installation
-conda activate new_env   ## activate conda env
+source setup_env.sh  my_env # Setting environment with name my_env
 ```
-### 3. Compute nodes setup:  
-#### 3.1.  Compute cluster using slurm job scheduler, e.g.: Allocate 2 spr dnp8480 node having 112 cores per compute node for 12 hrs.
+### 3. Cluster setup:  
+#### 3.1.  Cluster using slurm job scheduler.
 ```bash
-salloc --ntasks=2 --partition=nextgenq --constraint=dnp8480 --cpus-per-task=112 --time=12:0:0
+salloc --ntasks=1 --partition=<> --constraint=<machine type> --cpus-per-task=<cpus> --time=<node allocation time>
 srun hostname > hostfile  
 ```  
 
@@ -43,38 +34,28 @@ hostname > hostfile
 
 [Follow](AWS_CLUSTER_SETUP.md) for detailed instructions.
 
+#### 3.4 Google cloud 
 
 ### 4. Compilation of tools and distribute docker/podman images in the allocated nodes.
 ```bash
 # if you are using single node comment "bash load_deepvariant.sh" in the below script
 source setup.sh      ## tested with gcc 8.5.0
 ```
-Note: It takes ~10 mins to load the image in all the hostfile nodes. 
-You can check if the image in loaded in the compute node using:
-```bash
-podman images
-```
-The output should look like this if the image is loaded.  
-REPOSITORY             TAG         IMAGE ID      CREATED      SIZE   
-localhost/deepvariant  latest      1568d0b32e49  6 weeks ago  7.07 GB   
+Note: It takes ~5 mins to load the image in all the hostfile nodes. 
 
 ### 5. Run the following script after the image is loaded on all the compute nodes listed in hostfile.  
-Usage: sh run_pipline.sh <#ranks> <#threads> <#threads> <#shards> <#ppn>  
+* Note: before running the code download data to INPUT_DIR
+Usage: sh run_pipline.sh <#ranks> <#ppn>  
 * ranks: Number of mpi process that we want the pipeline to run on  
-* threads/shards: parameters to different tools in the pipeline, calculated as below  
 * ppn: mpi process per compute node. If we are running 2 ranks and provide ppn as 2, then both the ranks will run on 1 compute code (assuming dual socket machine, it will run 1 rank per socket)  
 Note: for best performance, we advice to run 4 ranks per socket on spr nodes(#value represents specification for spr node). So, assuming dual-socket compute node you can run 8 ranks on 1 compute node.  
 ```bash 
-ppn=8  
-Sockets=$(lscpu | grep -E '^Socket\(s\)' | awk  '{print $2}')   #2
-Cores=$(lscpu| grep -E '^Core\(s\)' | awk  '{print $4}')  #56
-Thread=$(lscpu | grep -E '^Thread' | awk  '{print $4}')  #2
-
-a=$(( $(( ${Cores}*${Thread}*${Sockets} / $ppn )) - 4 ))   #24 (Four threads are removed for IO)
-b=$(( $(( ${Cores}*${Thread} )) / $ppn ))   #14
-
-sh run_pipeline.sh 8 $a $a $b $ppn
+export INPUT_DIR=./    # This directory contains Reference and Read files.
+export OUTPUT_DIR=./   # This directory contains intermediate and log files.
+ranks=8 
+ppn=8
+sh run_pipeline.sh $ranks $ppn
 ```
 Running on the test dataset on spr should take around ~10 mins.  
 
-### 6. Results  
+ 

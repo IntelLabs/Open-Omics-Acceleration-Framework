@@ -5,26 +5,31 @@ ABS_DIRECTORY="$(dirname "${ABS_SCRIPTINPUT_DIR_PATH}")"
 
 INDIR=$INPUT_DIR
 OUTDIR=$OUTPUT_DIR
-#INDIR=/lfs/lfs12/ashish/testdata/
-#OUTDIR=${ABS_DIRECTORY}/output/
+
+#* ranks: Number of mpi process that we want the pipeline to run on
+#* threads/shards: parameters to different tools in the pipeline, calculated as below
+ppn=$1
+Sockets=$(lscpu | grep -E '^Socket\(s\)' | awk  '{print $2}')   #2
+Cores=$(lscpu| grep -E '^Core\(s\)' | awk  '{print $4}')  #56
+Thread=$(lscpu | grep -E '^Thread' | awk  '{print $4}')  #2
+
+a=$(( $(( ${Cores}*${Thread}*${Sockets} / $ppn )) - 2*${Thread} ))   #24 (Four threads are removed for IO)
+b=$(( $(( ${Cores}*${Sockets} )) / $ppn ))   #14
+
+if [ $a -lt 1]; then
+    echo 'Number of cpus are less to run the pipeline.'
+    exit 1
+fi
+
+N=$1
+PPN=$2
+CPUS=$a
+THREADS=$a
+SHARDS=$b
 INDEX=GRCh38_chr1.fna
-
-N=16
-CPUS=24
-THREADS=24
-SHARDS=14
 FILEBASE=HG001_
-#BINDING=numa
 BINDING=socket
-PPN=8
 
-#sh run_pipeline.sh 256 24 24 14 8 
-[[ $# -gt 0 ]] && N="$1"
-[[ $# -gt 1 ]] && CPUS="$2"
-[[ $# -gt 2 ]] && THREADS="$3"
-[[ $# -gt 3 ]] && SHARDS="$4"
-[[ $# -gt 4 ]] && PPN="$5"
-[[ $SHARDS -eq 0 ]] && SHARDS=$THREADS
 
 
 echo $OUTDIR
