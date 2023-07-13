@@ -1,14 +1,3 @@
-#username=${USER}
-#for i in `cat hostfile`
-#do
-#  ssh $i "mkdir -p /tmp/${username} && chmod 777 /tmp/${username} && podman images"
-#done
-
-for i in `cat hostfile`
-do
-  ssh $i "sh docker_installation.sh" &
-done
-
 SCRIPT_PATH="${BASH_SOURCE:-$0}"
 ABS_SCRIPT_PATH="$(realpath "${SCRIPT_PATH}")"
 ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"

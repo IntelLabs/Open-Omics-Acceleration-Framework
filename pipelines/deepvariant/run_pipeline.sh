@@ -27,8 +27,8 @@ PPN=$2
 CPUS=$a
 THREADS=$a
 SHARDS=$b
-INDEX=GRCh38_chr1.fna
-FILEBASE=HG001_
+INDEX=GRCh38.fna  #Change to your index file
+FILEBASE=HG001_R  #Change intial to your read files       
 BINDING=socket
 
 
@@ -38,4 +38,4 @@ mkdir -p ${OUTDIR}
 
 echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $SHARDS shards, $PPN ppn.
 
-mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u test_pipeline_final.py --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $INDEX --read ${FILEBASE}R1_chr1.fastq.gz ${FILEBASE}R2_chr1.fastq.gz --cpus $CPUS --threads $THREADS --shards $SHARDS |& tee ${OUTDIR}log.txt
+mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u test_pipeline_final.py --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $INDEX --read ${FILEBASE}1.fastq.gz ${FILEBASE}2.fastq.gz --cpus $CPUS --threads $THREADS --shards $SHARDS |& tee ${OUTDIR}log.txt

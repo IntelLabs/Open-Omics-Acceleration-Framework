@@ -5,8 +5,17 @@
 bwa-mem2,samtools C/C++ based tools residing in:
 ```Open-Omics-Acceleration-Framework/applications/ ```.
 DeepVariant is used as a Docker image. It is currently not available on Dockerhub. To use it, the user must build an image, convert it to a tar file, and distribute it across the cluster nodes. 
-   * Prerequisite : Docker /Podman  
-   * All the script by default supports podman. If you are using docker use:  **alias podman=docker**
+   * Prerequisite : 
+	* Docker / Podman
+	* gcc >= gcc 8.5.0 
+	* MPI
+	* make >=4.3
+	* autoconf >= 2.69
+	* zlib1g-dev
+	* libncurses5-dev
+	* libbz2-dev
+	* liblzma-dev
+   * All the script by default supports docker. If you are using podman use:  **alias docker=podman**
 
 ### 1. Download Code:
 ```bash
@@ -31,32 +40,32 @@ srun hostname > hostfile
 ```bash
 hostname > hostfile
 ```
-#### 3.3 Aws cluster setup
 
-[Follow](AWS_CLUSTER_SETUP.md) for detailed instructions.
-
-#### 3.4 Google cloud 
-
-### 4. Compilation of tools and distribute docker/podman images in the allocated nodes.
+### 4. Compilation of tools , creation and distribution of docker/podman image in the allocated nodes.
 ```bash
 # if you are using single node comment "bash load_deepvariant.sh" in the below script
-source setup.sh      ## tested with gcc 8.5.0
+source setup.sh 
 ```
-Note: It takes ~5 mins to load the image in all the hostfile nodes. 
+Note: It takes ~20 mins to create docker image. 
 
 ### 5. Run the following script after the image is loaded on all the compute nodes listed in hostfile.  
-* Note: before running the code download data to INPUT_DIR
 Usage: sh run_pipline.sh <#ranks> <#ppn>  
 * ranks: Number of mpi process that we want the pipeline to run on  
 * ppn: mpi process per compute node. If we are running 2 ranks and provide ppn as 2, then both the ranks will run on 1 compute code (assuming dual socket machine, it will run 1 rank per socket)  
-Note: for best performance, we advice to run 4 ranks per socket on spr nodes(#value represents specification for spr node). So, assuming dual-socket compute node you can run 8 ranks on 1 compute node.  
+
+* Note: 
+	* Before running the code, copy read and reference files to INPUT_DIR
+	* for best performance, we advice to run 4 ranks per socket on spr nodes. So, assuming dual-socket compute node you can run 8 ranks on 1 compute node.  
+	* It takes ~20 mins to create docker image. It might break while installation because of your proxy settings. [Follow](https://docs.docker.com/network/proxy/) instructions to build image using proxy.
+ 
 ```bash 
 export INPUT_DIR=./    # This directory contains Reference and Read files.
 export OUTPUT_DIR=./   # This directory contains intermediate and log files.
 ranks=8 
 ppn=8
-sh run_pipeline.sh $ranks $ppn
+sh run_pipeline.sh $ranks $ppn #change your reference read file names inside the script.
 ```
-Running on the test dataset on spr should take around ~10 mins.  
 
- 
+# Results
+
+For detailed information please refer to [blog](). 

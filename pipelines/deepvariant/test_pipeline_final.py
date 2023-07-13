@@ -309,15 +309,15 @@ def sam_writer( comm, fname ):
 def main(argv):
     parser=ArgumentParser()
     parser.add_argument('--input',help="Input data directory")
-    parser.add_argument('--temp',default="",help="Intermeidate data directory")
+    parser.add_argument('--temp',default="",help="Intermediate data directory")
     parser.add_argument('--refdir',default="",help="Reference genome directory")
     parser.add_argument('--output',help="Output data directory")
     parser.add_argument("-i", "--index", help="name of index file")
     parser.add_argument("-r", "--reads", nargs='+',help="name of reads file seperated by space")
-    parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=72")
-    parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=72")
-    parser.add_argument('-in', '--istart',action='store_true',help="It Will use for indexing reference genome for bwa-mem2. If it is done offline then disable this") 
-    parser.add_argument('-sindex',action='store_true',help="It Will start creating .fai file. If it is done offline then disable this.")
+    parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
+    parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
+    parser.add_argument('-in', '--istart',action='store_true',help="It will index reference genome for bwa-mem2. If it is already done offline then don't use this flag.") 
+    parser.add_argument('-sindex',action='store_true',help="It will create .fai index. If it is done offline then disable this.")
     parser.add_argument('--shards',default=1,help="Number of shards for deepvariant")
     parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling") 
     parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
@@ -440,9 +440,7 @@ def main(argv):
     
     for i in range(bins_per_rank):
         binstr = "%05d"%(i*nranks+rank)
-        #command='podman run -v '+folder+':"/input" -v '+output+':"/output" -v '+tempdir+':"/tempdir" localhost/deepvariant:latest /opt/deepvariant/bin/run_deepvariant --model_type=WES --ref=/input/'+ifile+' --reads=/tempdir/aln'+binstr+'.bam --output_vcf=/output/output'+binstr+'.vcf.gz --output_gvcf=/output/output'+binstr+'.g.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'"'
-        command='mkdir -p '+output+binstr+'; docker run --storage-opt ignore_chown_errors=true -v '+folder+':"/input" -v '+refdir+':"/refdir" -v '+output+'/'+binstr+':"/output" -v '+tempdir+':"/tempdir" localhost/deepvariant:latest python /opt/deepvariant/bazel-out/run_deepvariant.py --model_type=WGS --ref=/refdir/'+ifile+' --reads=/tempdir/aln'+binstr+'.bam --output_vcf=/output/output.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'" --pcl_opt'
-        #print("bin_region:",bin_region[i*nranks+rank])
+        command='mkdir -p '+output+binstr+'; docker run -v '+folder+':"/input" -v '+refdir+':"/refdir" -v '+output+'/'+binstr+':"/output" -v '+tempdir+':"/tempdir" deepvariant:latest python /opt/deepvariant/bazel-out/run_deepvariant.py --model_type=WGS --ref=/refdir/'+ifile+' --reads=/tempdir/aln'+binstr+'.bam --output_vcf=/output/output.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'" --pcl_opt'
         a = run( 'echo "'+command+'" > '+output+'log'+binstr+'.txt', shell=True)
         a = run( command+" &>> "+output+"log"+binstr+".txt", shell=True)
     comm.barrier()

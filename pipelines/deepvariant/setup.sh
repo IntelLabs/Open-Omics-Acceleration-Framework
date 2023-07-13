@@ -11,14 +11,14 @@ export LD_PRELOAD=$LD_PRELOAD:"${ABS_DIRECTORY}/libmimalloc.so.2.0"
 #echo $LD_PRELOAD
 
 
-##############Podman settings ##################
-#use can skip this if you don't need this. This need 
-#mkdir /tmp/${USER}
-#chmod 777 -R ~/.local/
-#mkdir -p ~/.local/share
-#rm -rf  ~/.local/share/containers
-#ln -s /tmp/${USER} ~/.local/share/containers
-################################################
+
+# This will save deepvariant images
+cd ${ABS_DIRECTORY}/../../applications/deepvariant
+docker build -t deepvariant .
+#save image(~7 GB) to tar file if you are using multiple nodes.
+cd ${ABS_DIRECTORY}
+doker save -o deepvariant.tar deepvariant:latest
+
 
 cd ${ABS_DIRECTORY}/../../applications/bwa-mem2
 #make CXX=icpc multi
