@@ -15,7 +15,11 @@ DeepVariant is used as a Docker image. It is currently not available on Dockerhu
         * libncurses5-dev
         * libbz2-dev
         * liblzma-dev
-   * All the script by default supports docker. If you are using podman use:  **alias docker=podman**
+   * All the script by default supports docker. If you are using podman use:
+     ```bash
+     alias docker=podman
+     shopt -s expand_aliases
+     ```
 
 ### 1. Download Code:
 ```bash
@@ -64,7 +68,7 @@ ranks=8
 ppn=8
 sh run_pipeline.sh $ranks $ppn #change your reference read file names inside the script.
 ```
-
+**NOTE: If you are using podman than replace docker word with podman in run_pipline.sh**
 # Results
 
 For detailed information, please refer to the [blog](). 
