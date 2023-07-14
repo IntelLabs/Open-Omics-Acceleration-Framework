@@ -31,6 +31,13 @@ autoreconf -i  # Build the configure script and install files it uses
 make
 #make install   #uncomment this for installation
 
+cd ${ABS_DIRECTORY}/../../applications/bcftools
+# The following is optional:
+#   autoheader && autoconf && ./configure --enable-libgsl --enable-perl-filters
+make
+#make install   #uncomment this for installation
+
+
 cd ${ABS_DIRECTORY}/../../applications/samtools
 autoheader
 autoconf -Wno-syntax

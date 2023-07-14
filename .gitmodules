@@ -16,3 +16,6 @@
 [submodule "applications/deepvariant"]
 	path = applications/deepvariant
 	url = https://github.com/IntelLabs/deepvariant.git
+[submodule "applications/bcftools"]
+	path = applications/bcftools
+	url = https://github.com/samtools/bcftools.git
