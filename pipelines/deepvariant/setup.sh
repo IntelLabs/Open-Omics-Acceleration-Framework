@@ -15,6 +15,9 @@ export LD_PRELOAD=$LD_PRELOAD:"${ABS_DIRECTORY}/libmimalloc.so.2.0"
 # This will save deepvariant images
 cd ${ABS_DIRECTORY}/../../applications/deepvariant
 docker build -t deepvariant .
+# docker build --build-arg http_proxy="http://proxy-us.abc.com:123" --build-arg https_proxy="http://proxy-us.abc.com:123" --build-arg no_proxy="127.0.0.1,localhost"  -t deepvariant .
+
+
 #save image(~7 GB) to tar file if you are using multiple nodes.
 cd ${ABS_DIRECTORY}
 doker save -o deepvariant.tar deepvariant:latest

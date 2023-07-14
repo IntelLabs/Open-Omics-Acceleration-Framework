@@ -46,7 +46,7 @@ hostname > hostfile
 # if you are using single node comment "bash load_deepvariant.sh" in the below script
 source setup.sh 
 ```
-Note: It takes ~25 mins to create docker image. It might break installation, because of your proxy settings. [Follow](https://docs.docker.com/network/proxy/) instructions to build image using proxy.  
+Note: It takes ~30 mins to create docker image. It might break installation, because of your proxy settings. Example to provide proxy for building a docker image is shown in the setup.sh file. [Follow](https://docs.docker.com/network/proxy/) instructions for more details.
 
 ### 5. Run the following script after the image is loaded on all the compute nodes listed in hostfile.  
 Usage: sh run_pipline.sh <#ranks> <#ppn>  
