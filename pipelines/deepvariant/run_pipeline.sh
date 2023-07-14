@@ -8,7 +8,7 @@ OUTDIR=$OUTPUT_DIR
 
 #* ranks: Number of mpi process that we want the pipeline to run on
 #* threads/shards: parameters to different tools in the pipeline, calculated as below
-ppn=$1
+ppn=$2
 Sockets=$(lscpu | grep -E '^Socket\(s\)' | awk  '{print $2}')   #2
 Cores=$(lscpu| grep -E '^Core\(s\)' | awk  '{print $4}')  #56
 Thread=$(lscpu | grep -E '^Thread' | awk  '{print $4}')  #2
