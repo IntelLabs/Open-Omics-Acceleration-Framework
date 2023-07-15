@@ -12,11 +12,11 @@ do
         do
                 printf -v padded_number "%05d" $(( ($i * $2) + $j ))
                 echo $padded_number
-                ls ${1}/${padded_number}/*_output.vcf.gz -v >> {1}/a.txt
+                ls ${1}/${padded_number}/*_output.vcf.gz -v >> ${1}/a.txt
         done
 done
-vcf_list=`cat a.txt`
+vcf_list=`cat ${1}/a.txt`
 
-${ABS_DIRECTORY}/../../bcftools concat $vcf_list > ${1}/output.vcf.gz
+${ABS_DIRECTORY}/../../applications/bcftools/bcftools concat $vcf_list > ${1}/output.vcf.gz
 
 rm ${1}/a.txt
