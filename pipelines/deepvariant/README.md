@@ -37,7 +37,8 @@ source setup_env.sh  my_env # Setting environment with name my_env.
 #### 3.1.  Cluster using slurm job scheduler.
 ```bash
 salloc --ntasks=1 --partition=<> --constraint=<machine type> --cpus-per-task=<cpus> --time=<node allocation time>
-srun hostname > hostfile  
+srun hostname > hostfile
+srun --pty bash    ## login to a compute node from hostfile    
 ```  
 
 #### 3.2 Standalone machine
