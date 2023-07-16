@@ -69,7 +69,7 @@ ranks=8
 ppn=8
 sh run_pipeline.sh $ranks $ppn #change your reference read file names inside the script.
 ```
-**NOTE: If you are using podman than replace docker word with podman in test_pipeline_final.py**
+**NOTE: If you are using podman than replace docker word with podman in test_pipeline_final.py. ```sed -i 's/docker/podman/g' test_pipeline_final.py ```**
 # Results
 
 For detailed information, please refer to the [blog](). 
