@@ -2,7 +2,7 @@
 ### This repo presents OpenOmics DeepVariant Pipeline: A highly optimized scalable Deep Learning based short-read vaariant calling on x86 CPU clusters. The pipeline comprises of highly optimized: 1. bwa-mem2 for sequence mapping, 2. samtools for sorting output of bwa-mem2, and 3. DeepVariant for variant calling using sorted BAM records out of sorting.
 
 ### 0. Pipeline tools' location:   
-bwa-mem2,samtools C/C++ based tools residing in:
+bwa-mem2, samtools C/C++ based tools residing in:
 ```Open-Omics-Acceleration-Framework/applications/ ```.
 DeepVariant is used as a Docker image. It is currently not available on Dockerhub. To use it, the user must build an image, convert it to a tar file, and distribute it across the cluster nodes. 
    * Prerequisite :
@@ -30,6 +30,7 @@ git submodule update --init --recursive
 
 ### 2. Setting Envionment and Deepvariant Image
 ```bash
+cd pipelines/deepvariant/
 #Tested with Ubuntu 22.04.2 LTS
 source setup_env.sh  my_env # Setting environment with name my_env. 
 ```
