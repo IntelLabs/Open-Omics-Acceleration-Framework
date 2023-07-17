@@ -1,10 +1,11 @@
-# Deepvariant Pipeline
-### This repo presents OpenOmics DeepVariant Pipeline: A highly optimized scalable Deep Learning based short-read vaariant calling on x86 CPU clusters. The pipeline comprises of highly optimized: 1. bwa-mem2 for sequence mapping, 2. samtools for sorting output of bwa-mem2, and 3. DeepVariant for variant calling using sorted BAM records out of sorting.
+# OpenOmics Deepvariant Pipeline
+### OpenOmics Deepvariant Pipeline is a highly optimized, scalable, deep-learning-based short-read variant calling pipeline on x86 CPU clusters. The pipeline comprises of 1. bwa-mem2 (a highly optimized version of bwa-mem) for sequence mapping, 2. distributed SAM sorting using samtools, and 3. an optimized version of DeepVariant for variant calling.
 
 ### 0. Pipeline tools' location:   
-bwa-mem2, samtools C/C++ based tools residing in:
+The source code of bwa-mem2, samtools, and DeepVariant is residing in:
 ```Open-Omics-Acceleration-Framework/applications/ ```.
-DeepVariant is used as a Docker image. It is currently not available on Dockerhub. To use it, the user must build an image, convert it to a tar file, and distribute it across the cluster nodes. 
+We build bwa-mem2 and samtools from source. For DeepVariant, we build a docker image and then use the built image while running the pipeline. Note that, the pre-built image is not available on dockerhub and the image needs to be built from source.
+The following are pre-requisites for the pipeline.
    * Prerequisite :
         * Docker / Podman
         * gcc >= 8.5.0
@@ -15,24 +16,23 @@ DeepVariant is used as a Docker image. It is currently not available on Dockerhu
         * libncurses5-dev
         * libbz2-dev
         * liblzma-dev
-   * All the script by default supports docker. If you are using podman use:
+   * We are providing setup and installation scripts located at _Open-Omics-Acceleration-Framework/pipelines/deepvariant_. Note that, all the script by default are written for docker. If you are using podman (a popular alternative to docker) run the following commands to rename _docker_ as _podman_:
      ```bash
      alias docker=podman
      shopt -s expand_aliases
      ```
 
-### 1. Download Code:
+### 1. Clone the repo:
 ```bash
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 cd Open-Omics-Acceleration-Framework
-git submodule update --init --recursive
 ```
 
-### 2. Setting Envionment and Deepvariant Image
+### 2. Setting Envionment
 ```bash
 cd pipelines/deepvariant/
 #Tested with Ubuntu 22.04.2 LTS
-source setup_env.sh  my_env # Setting environment with name my_env. 
+source setup_env.sh  my_env # Setting environment with name _my_env_. 
 ```
 ### 3. Cluster setup:  
 #### 3.1.  Cluster using slurm job scheduler.
@@ -43,34 +43,38 @@ srun --pty bash    ## login to a compute node from hostfile
 ```  
 
 #### 3.2 Standalone machine
+The pipeline can also be tested on a single standalone machine.
 ```bash
 hostname > hostfile
 ```
 
-### 4. Compilation of tools , creation and distribution of docker/podman image in the allocated nodes.
+### 4. Compilation of tools, creation and distribution of docker/podman image on the allocated nodes.
 ```bash
-# if you are using single node comment "bash load_deepvariant.sh" in the below script
+# If you are using single node, comment out line No. 53, i.e., "bash load_deepvariant.sh" of setup.sh.
 source setup.sh 
 ```
-Note: It takes ~30 mins to create docker image. It might break installation, because of your proxy settings. Example to provide proxy for building a docker image is shown in the setup.sh file. [Follow](https://docs.docker.com/network/proxy/) instructions for more details.
+Note: It takes ~30 mins to create the docker image. Docker build might break if you are behind a proxy. Example to provide proxy for building a docker image is shown in the setup.sh file. [Follow](https://docs.docker.com/network/proxy/) instructions for more details.
 
-### 5. Run the following script after the image is loaded on all the compute nodes listed in hostfile.  
-Usage: sh run_pipline.sh <#ranks> <#ppn>  
-* ranks: Number of mpi process that we want the pipeline to run on  
-* ppn: mpi process per compute node. If we are running 2 ranks and provide ppn as 2, then both the ranks will run on 1 compute code (assuming dual socket machine, it will run 1 rank per socket)  
+### 5. Run the following script after the image is loaded on all the compute nodes listed in the hostfile.  
+Usage: sh run_pipline.sh <#ranks> <#ppn> <reference_seq.fasta> <read_r1.gz> <read_r2.gz> 
+* ranks: Number of mpi processes that we want the pipeline to run with  
+* ppn: The number of mpi processes per compute node. If we are running 2 ranks and provide ppn as 2, then both the ranks will run on 1 compute node (assuming dual socket machine, it will run 1 rank per socket)
+* reference_seq.fasta: The name of reference genome sequence file.
+* read_r1.gz: The name of the R1 file of paired-end reads, must be in .gz format.
+* read_r2.gz: The name of the R2 file of paired-end reads, must be in .gz format.   
 * Note: 
-	* Before running the code, copy read and reference files to INPUT_DIR.
+	* Before running the code, copy the read and the reference files to INPUT_DIR.
 	* For the best performance, we advice to run 4 ranks per socket on spr nodes. So, assuming dual-socket compute node you can run 8 ranks on 1 compute node.
  	* Pipeline will not run if there are fewer than 3 CPUs per rank. 	  
 
 ```bash 
-export INPUT_DIR=./    # This directory contains Reference and Read files.
-export OUTPUT_DIR=./   # This directory contains intermediate and log files.
+export INPUT_DIR=./path-to-input    # This directory contains Reference and Read files.
+export OUTPUT_DIR=./path-to-log-dir   # This directory contains intermediate and log files.
 ranks=8 
 ppn=8
-sh run_pipeline.sh $ranks $ppn #change your reference read file names inside the script.
+sh run_pipeline.sh $ranks $ppn reference_seq.fasta R1.gz R2.gz # Change the arguments according to the user specific ones.
 ```
-**NOTE: If you are using podman than replace docker word with podman in test_pipeline_final.py. ```sed -i 's/docker/podman/g' test_pipeline_final.py ```**
+**NOTE: If you are using podman then replace the word _docker_ with _podman_ in test_pipeline_final.py using the following command ```sed -i 's/docker/podman/g' test_pipeline_final.py ```**
 # Results
 
 For detailed information, please refer to the [blog](). 
