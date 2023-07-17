@@ -20,7 +20,7 @@ docker build -t deepvariant .
 
 #save image(~7 GB) to tar file if you are using multiple nodes.
 cd ${ABS_DIRECTORY}
-doker save -o deepvariant.tar deepvariant:latest
+docker save -o deepvariant.tar deepvariant:latest
 
 
 cd ${ABS_DIRECTORY}/../../applications/bwa-mem2
