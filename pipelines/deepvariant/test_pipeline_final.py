@@ -341,7 +341,6 @@ def main(argv):
     global keep
     keep=args["keep_unmapped"]
     container_tool=args["container_tool"]
-    printf("DOCKER/PODMAN:",container_tool)
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     nranks = comm.Get_size()
