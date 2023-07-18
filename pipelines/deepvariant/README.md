@@ -16,11 +16,7 @@ The following are pre-requisites for the pipeline.
         * libncurses5-dev
         * libbz2-dev
         * liblzma-dev
-   * We are providing setup and installation scripts located at _Open-Omics-Acceleration-Framework/pipelines/deepvariant_. Note that, all the script by default are written for docker. If you are using podman (a popular alternative to docker) run the following commands to rename _docker_ as _podman_:
-     ```bash
-     alias docker=podman
-     shopt -s expand_aliases
-     ```
+   * We are providing setup and installation scripts located at _Open-Omics-Acceleration-Framework/pipelines/deepvariant_. Note that, all the script by default are written for docker. Set the variable according to your containerized applications:
 
 ### 1. Clone the repo:
 ```bash
@@ -51,17 +47,21 @@ hostname > hostfile
 ### 4. Compilation of tools, creation and distribution of docker/podman image on the allocated nodes.
 ```bash
 # If you are using single node, comment out line No. 53, i.e., "bash load_deepvariant.sh" of setup.sh.
-source setup.sh 
+source setup.sh docker/podman
+* docker/podman : optional argument. It takes docker by default.
+
 ```
 Note: It takes ~30 mins to create the docker image. Docker build might break if you are behind a proxy. Example to provide proxy for building a docker image is shown in the setup.sh file. [Follow](https://docs.docker.com/network/proxy/) instructions for more details.
 
 ### 5. Run the following script after the image is loaded on all the compute nodes listed in the hostfile.  
-Usage: sh run_pipline.sh <#ranks> <#ppn> <reference_seq.fasta> <read_r1.gz> <read_r2.gz> 
+Usage: sh run_pipline.sh <#ranks> <#ppn> <reference_seq.fasta> <read_r1.gz> <read_r2.gz> <docker/podman>
+
 * ranks: Number of mpi processes that we want the pipeline to run with  
 * ppn: The number of mpi processes per compute node. If we are running 2 ranks and provide ppn as 2, then both the ranks will run on 1 compute node (assuming dual socket machine, it will run 1 rank per socket)
 * reference_seq.fasta: The name of reference genome sequence file.
 * read_r1.gz: The name of the R1 file of paired-end reads, must be in .gz format.
 * read_r2.gz: The name of the R2 file of paired-end reads, must be in .gz format.   
+* docker/podman : optional argument. It takes docker by default.
 * Note: 
 	* Before running the code, copy the read and the reference files to INPUT_DIR.
 	* For the best performance, we advice to run 4 ranks per socket on spr nodes. So, assuming dual-socket compute node you can run 8 ranks on 1 compute node.
@@ -72,9 +72,9 @@ export INPUT_DIR=./path-to-input    # This directory contains Reference and Read
 export OUTPUT_DIR=./path-to-log-dir   # This directory contains intermediate and log files.
 ranks=8 
 ppn=8
-sh run_pipeline.sh $ranks $ppn reference_seq.fasta R1.gz R2.gz # Change the arguments according to the user specific ones.
+sh run_pipeline.sh $ranks $ppn reference_seq.fasta R1.gz R2.gz podman # Change the arguments according to the user specific ones.
 ```
-**NOTE: If you are using podman then replace the word _docker_ with _podman_ in test_pipeline_final.py using the following command ```sed -i 's/docker/podman/g' test_pipeline_final.py ```**
-# Results
+
+#Results
 
 For detailed information, please refer to the [blog](). 

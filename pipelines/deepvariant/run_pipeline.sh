@@ -31,10 +31,14 @@ REF=$(basename "$3")  #Change to your reference file
 READ1=$(basename "$4")  #Change your read files       
 READ2=$(basename "$5")
 BINDING=socket
+Container=docker
 
+[[ $# -gt 5 ]] && Container="$6"
+
+echo $Container
 echo $OUTDIR
 mkdir -p ${OUTDIR}
 
 echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $SHARDS shards, $PPN ppn.
 
-mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u test_pipeline_final.py --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read $READ1 $READ2 --cpus $CPUS --threads $THREADS --shards $SHARDS |& tee ${OUTDIR}log.txt
+mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u test_pipeline_final.py --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read $READ1 $READ2 --cpus $CPUS --threads $THREADS --shards $SHARDS --container_tool $Container |& tee ${OUTDIR}log.txt

@@ -318,6 +318,7 @@ def main(argv):
     parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
     parser.add_argument('-in', '--istart',action='store_true',help="It will index reference genome for bwa-mem2. If it is already done offline then don't use this flag.") 
     parser.add_argument('-sindex',action='store_true',help="It will create .fai index. If it is done offline then disable this.")
+    parser.add_argument('--container_tool',default="docker",help="Container tool used in pipeline : Docker/Podman")
     parser.add_argument('--shards',default=1,help="Number of shards for deepvariant")
     parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling") 
     parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
@@ -339,6 +340,8 @@ def main(argv):
     prof=args["profile"]
     global keep
     keep=args["keep_unmapped"]
+    container_tool=args["container_tool"]
+    printf("DOCKER/PODMAN:",container_tool)
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     nranks = comm.Get_size()
@@ -440,7 +443,7 @@ def main(argv):
     
     for i in range(bins_per_rank):
         binstr = "%05d"%(i*nranks+rank)
-        command='mkdir -p '+output+binstr+'; docker run -v '+folder+':"/input" -v '+refdir+':"/refdir" -v '+output+'/'+binstr+':"/output" -v '+tempdir+':"/tempdir" deepvariant:latest /opt/deepvariant/bin/run_deepvariant --model_type=WGS --ref=/refdir/'+ifile+' --reads=/tempdir/aln'+binstr+'.bam --output_vcf=/output/output.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'" --pcl_opt'
+        command='mkdir -p '+output+binstr+'; '+container_tool +' run -v '+folder+':"/input" -v '+refdir+':"/refdir" -v '+output+'/'+binstr+':"/output" -v '+tempdir+':"/tempdir" deepvariant:latest /opt/deepvariant/bin/run_deepvariant --model_type=WGS --ref=/refdir/'+ifile+' --reads=/tempdir/aln'+binstr+'.bam --output_vcf=/output/output.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'" --pcl_opt'
         a = run( 'echo "'+command+'" > '+output+'log'+binstr+'.txt', shell=True)
         a = run( command+" &>> "+output+"log"+binstr+".txt", shell=True)
     comm.barrier()
