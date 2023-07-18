@@ -21,12 +21,11 @@ The following are pre-requisites for the pipeline.
 ### 1. Clone the repo:
 ```bash
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-cd Open-Omics-Acceleration-Framework
 ```
 
 ### 2. Setting Envionment
 ```bash
-cd pipelines/deepvariant/
+cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/
 #Tested with Ubuntu 22.04.2 LTS
 source setup_env.sh  my_env # Setting environment with name _my_env_. 
 ```
@@ -35,7 +34,7 @@ source setup_env.sh  my_env # Setting environment with name _my_env_.
 ```bash
 salloc --ntasks=1 --partition=<> --constraint=<machine type> --cpus-per-task=<cpus> --time=<node allocation time>
 srun hostname > hostfile
-srun --pty bash    ## login to a compute node from hostfile    
+srun --pty bash    ## login to a compute node from hostfile
 ```  
 
 #### 3.2 Standalone machine
@@ -44,9 +43,16 @@ The pipeline can also be tested on a single standalone machine.
 hostname > hostfile
 ```
 
+#### Activate conda environment into cluster/standalone machine
+
+```bash
+cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/
+conda activate my_env
+```
+
 ### 4. Compilation of tools, creation and distribution of docker/podman image on the allocated nodes.
 ```bash
-# If you are using single node, comment out line No. 53, i.e., "bash load_deepvariant.sh" of setup.sh.
+# If you are using single node, comment out line No. 56, i.e., "bash load_deepvariant.sh" of setup.sh.
 source setup.sh docker/podman
 * docker/podman : optional argument. It takes docker by default.
 
@@ -54,7 +60,7 @@ source setup.sh docker/podman
 Note: It takes ~30 mins to create the docker image. Docker build might break if you are behind a proxy. Example to provide proxy for building a docker image is shown in the setup.sh file. [Follow](https://docs.docker.com/network/proxy/) instructions for more details.
 
 ### 5. Run the following script after the image is loaded on all the compute nodes listed in the hostfile.  
-Usage: sh run_pipline.sh <#ranks> <#ppn> <reference_seq.fasta> <read_r1.gz> <read_r2.gz> <docker/podman>
+Usage: sh run_pipline.sh <#ranks> <#ppn> <reference_seq.fasta> <read_r1.gz> <read_r2.gz> [docker/podman]
 
 * ranks: Number of mpi processes that we want the pipeline to run with  
 * ppn: The number of mpi processes per compute node. If we are running 2 ranks and provide ppn as 2, then both the ranks will run on 1 compute node (assuming dual socket machine, it will run 1 rank per socket)
