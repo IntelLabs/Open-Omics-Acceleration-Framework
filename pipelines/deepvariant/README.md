@@ -51,23 +51,24 @@ conda activate my_env
 ```
 
 ### 4. Compilation of tools, creation and distribution of docker/podman image on the allocated nodes.
+To run docker without sudo acess follow [link](https://docs.docker.com/engine/install/linux-postinstall/), or use "_sudo docker_" as an argument in the below script instead of docker.
 ```bash
 # If you are using single node, comment out line No. 56, i.e., "bash load_deepvariant.sh" of setup.sh.
-source setup.sh docker/podman
-* docker/podman : optional argument. It takes docker by default.
+source setup.sh docker/podman/"sudo docker"  
+* docker/podman/"sudo docker" : optional argument. It takes docker by default.
 
 ```
 Note: It takes ~30 mins to create the docker image. Docker build might break if you are behind a proxy. Example to provide proxy for building a docker image is shown in the setup.sh file. [Follow](https://docs.docker.com/network/proxy/) instructions for more details.
 
 ### 5. Run the following script after the image is loaded on all the compute nodes listed in the hostfile.  
-Usage: sh run_pipline.sh <#ranks> <#ppn> <reference_seq.fasta> <read_r1.gz> <read_r2.gz> [docker/podman]
+Usage: sh run_pipline.sh <#ranks> <#ppn> <reference_seq.fasta> <read_r1.gz> <read_r2.gz> [docker/podman/"sudo docker"]
 
 * ranks: Number of mpi processes that we want the pipeline to run with  
 * ppn: The number of mpi processes per compute node. If we are running 2 ranks and provide ppn as 2, then both the ranks will run on 1 compute node (assuming dual socket machine, it will run 1 rank per socket)
 * reference_seq.fasta: The name of reference genome sequence file.
 * read_r1.gz: The name of the R1 file of paired-end reads, must be in .gz format.
 * read_r2.gz: The name of the R2 file of paired-end reads, must be in .gz format.   
-* docker/podman : optional argument. It takes docker by default.
+* docker/podman/"sudo docker" : optional argument. It takes docker by default.
 * Note: 
 	* Before running the code, copy the read and the reference files to INPUT_DIR.
 	* For the best performance, we advice to run 4 ranks per socket on spr nodes. So, assuming dual-socket compute node you can run 8 ranks on 1 compute node.
