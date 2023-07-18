@@ -16,7 +16,7 @@ The following are pre-requisites for the pipeline.
         * libncurses5-dev
         * libbz2-dev
         * liblzma-dev
-   * We are providing setup and installation scripts located at _Open-Omics-Acceleration-Framework/pipelines/deepvariant_. Note that, all the script by default are written for docker. Set the variable according to your containerized applications:
+   * We are providing setup and installation scripts located at _Open-Omics-Acceleration-Framework/pipelines/deepvariant_. Note that, all the script by default are written for docker.
 
 ### 1. Clone the repo:
 ```bash
@@ -75,6 +75,6 @@ ppn=8
 sh run_pipeline.sh $ranks $ppn reference_seq.fasta R1.gz R2.gz podman # Change the arguments according to the user specific ones.
 ```
 
-#Results
+# Results
 
 For detailed information, please refer to the [blog](). 
