@@ -35,7 +35,6 @@ Container=docker
 
 [[ $# -gt 5 ]] && Container="$6"
 
-echo $Container
 echo $OUTDIR
 mkdir -p ${OUTDIR}
 
