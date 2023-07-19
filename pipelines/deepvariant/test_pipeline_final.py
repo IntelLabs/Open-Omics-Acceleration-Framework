@@ -444,7 +444,7 @@ def main(argv):
         binstr = "%05d"%(i*nranks+rank)
         command='mkdir -p '+output+binstr+'; '+container_tool +' run -v '+folder+':"/input" -v '+refdir+':"/refdir" -v '+output+'/'+binstr+':"/output" -v '+tempdir+':"/tempdir" deepvariant:latest /opt/deepvariant/bin/run_deepvariant --model_type=WGS --ref=/refdir/'+ifile+' --reads=/tempdir/aln'+binstr+'.bam --output_vcf=/output/output.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'" --pcl_opt'
         a = run( 'echo "'+command+'" > '+output+'log'+binstr+'.txt', shell=True)
-        a = run( command+" &>> "+output+"log"+binstr+".txt", shell=True)
+        a = run( command+" 2>&1 >> "+output+"log"+binstr+".txt", shell=True)
     comm.barrier()
     if rank==0:
         cmd= 'sh merge_vcf.sh '+output +' '+str(nranks)+' '+str(bins_per_rank)
