@@ -362,7 +362,7 @@ def main(argv):
         if istart==True :
             print("Indexing Starts")
             begin = time.time()
-            a=run(f'numactl -m 0 -N 0 {BINDIR}/applications/bwa-mem2/bwa-mem2 index '+refdir+ifile,capture_output=True,shell=True)
+            a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 index '+refdir+ifile,capture_output=True,shell=True)
             end=time.time()
             file_size = os.path.getsize(folder+rfile1)
             print("\nIndex time:",end-begin)
