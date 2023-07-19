@@ -6,14 +6,13 @@ ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"
 
 echo $1 $2 $3
 #path ranks bins
-for (( j=0 ; j < $2 ; j++ ))
+total=$(( ($2 * $3) ))
+for (( j=0 ; j < $total ; j++ ))
 do
-        for ((i=0 ; i < $3 ; i++ ))
-        do
-                printf -v padded_number "%05d" $(( ($i * $2) + $j ))
-                echo $padded_number
-                ls ${1}/${padded_number}/*_output.vcf.gz -v >> ${1}/a.txt
-        done
+        printf -v padded_number "%05d" $j
+        echo $padded_number
+        ls ${1}/${padded_number}/*output.vcf.gz -v >> ${1}/a.txt
+        
 done
 vcf_list=`cat ${1}/a.txt`
 
