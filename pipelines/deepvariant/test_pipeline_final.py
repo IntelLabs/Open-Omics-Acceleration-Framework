@@ -447,7 +447,7 @@ def main(argv):
         a = run( command+" 2>&1 >> "+output+"log"+binstr+".txt", shell=True)
     comm.barrier()
     if rank==0:
-        cmd= 'sh merge_vcf.sh '+output +' '+str(nranks)+' '+str(bins_per_rank)
+        cmd= 'bash merge_vcf.sh '+output +' '+str(nranks)+' '+str(bins_per_rank)
         a= run(cmd,capture_output=True,shell=True)
         end5=time.time()
         print("\nDeepVariant runtime",end5-begin5)
