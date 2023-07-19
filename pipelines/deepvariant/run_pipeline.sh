@@ -16,7 +16,7 @@ Thread=$(lscpu | grep -E '^Thread' | awk  '{print $4}')  #2
 a=$(( $(( ${Cores}*${Thread}*${Sockets} / $ppn )) - 2*${Thread} ))   #24 (Four threads are removed for IO)
 b=$(( $(( ${Cores}*${Sockets} )) / $ppn ))   #14
  
-if (( $a < 1 ))
+if [ $a -lt 1 ]
 then
     echo 'Number of cpus are less to run the pipeline.'
     exit 0
@@ -33,11 +33,14 @@ READ2=$(basename "$5")
 BINDING=socket
 Container=docker
 
-[[ $# -gt 5 ]] && Container="$6"
+if [ $# -gt 5 ]
+then
+        Container="$6"
+fi
 
 echo $OUTDIR
 mkdir -p ${OUTDIR}
 
 echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $SHARDS shards, $PPN ppn.
 
-mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u test_pipeline_final.py --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read $READ1 $READ2 --cpus $CPUS --threads $THREADS --shards $SHARDS --container_tool $Container |& tee ${OUTDIR}log.txt
+mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u test_pipeline_final.py --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read $READ1 $READ2 --cpus $CPUS --threads $THREADS --shards $SHARDS --container_tool $Container 2>&1 | tee ${OUTDIR}log.txt
