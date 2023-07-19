@@ -3,7 +3,7 @@
 Intel lab's open sourced data science framework for accelerating digital biology
 
 <p align="center">
-<img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/open-omics-acceleration-framework-2.0.JPG" height="400"/a></br>
+<img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/open-omics-acceleration-framework-v2.0.JPG" height="400"/a></br>
 </p> 
 
 # Blogs & Related News
