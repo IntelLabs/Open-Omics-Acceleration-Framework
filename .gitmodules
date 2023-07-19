@@ -7,3 +7,6 @@
 [submodule "applications/mm2-fast"]
 	path = applications/mm2-fast
 	url = https://github.com/bwa-mem2/mm2-fast.git
+[submodule "applications/alphafold"]
+	path = applications/alphafold
+	url = https://github.com/IntelLabs/open-omics-alphafold.git
