@@ -10,3 +10,15 @@
 [submodule "applications/alphafold"]
 	path = applications/alphafold
 	url = https://github.com/IntelLabs/open-omics-alphafold.git
+[submodule "applications/samtools"]
+	path = applications/samtools
+	url = https://github.com/samtools/samtools.git
+[submodule "applications/htslib"]
+	path = applications/htslib
+	url = https://github.com/samtools/htslib.git
+[submodule "applications/deepvariant"]
+	path = applications/deepvariant
+	url = https://github.com/IntelLabs/deepvariant.git
+[submodule "applications/bcftools"]
+	path = applications/bcftools
+	url = https://github.com/samtools/bcftools.git
