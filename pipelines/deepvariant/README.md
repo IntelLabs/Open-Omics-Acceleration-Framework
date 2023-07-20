@@ -84,4 +84,4 @@ sh run_pipeline.sh $ranks $ppn reference_seq.fasta R1.gz R2.gz podman # Change t
 
 # Results
 
-For detailed information, please refer to the [blog](). 
+For detailed information, please refer to the [blog](https://community.intel.com/t5/Blogs/Tech-Innovation/Artificial-Intelligence-AI/Intel-Xeon-is-all-you-need-for-AI-inference-Performance/post/1506083). 
