@@ -12,8 +12,10 @@ export LD_PRELOAD=$LD_PRELOAD:"${ABS_DIRECTORY}/libmimalloc.so.2.0"
 
 Container=docker
 
-[[ $# -gt 0 ]] && Container="$1"
-
+if [ $# -gt 0 ]
+then
+    Container="$1"
+fi
 
 # This will save deepvariant images
 cd ${ABS_DIRECTORY}/../../applications/deepvariant
