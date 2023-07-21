@@ -88,11 +88,12 @@ For detailed information, please refer to the [blog]().
 
 
 # Instructions to run the pipeline on an AWS ec2 instance
-The following instructions run seamlessly on a standalone AWS ec2 instance.
+The following instructions run seamlessly on a standalone AWS ec2 instance. To run the following steps, create an ec2 instance with Ubuntu-22.04 having at least 60GB of memory. The input reference sequence and the paired-ended read datasets must be downloaded and stored on the disk.  
 
 ### One-time setup
 This step takes around ~15 mins to execute
 ```bash
+git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/scripts/aws
 bash deepvariant_ec2_setup.sh 
 ```
