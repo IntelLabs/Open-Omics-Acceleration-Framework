@@ -87,17 +87,34 @@ sh run_pipeline.sh $ranks $ppn reference_seq.fasta R1.gz R2.gz podman # Change t
 For detailed information, please refer to the [blog](). 
 
 
-## Instructions to run the pipeline on an AWS ec2 instance
-The following instructions runs seamlessly on a standalone AWS ec2 instance.
+# Instructions to run the pipeline on an AWS ec2 instance
+The following instructions run seamlessly on a standalone AWS ec2 instance.
 
 ### One-time setup
-```
+This step takes around ~15 mins to execute
+```bash
 cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/scripts/aws
-
 bash deepvariant_ec2_setup.sh 
-
 ```
 
-### To run the deepvaraint pipeline, we need a reference sequence and paired-ended read datasets. Open the "_config_" file and set the input and output directory
+### Modify _config_ file
+We need a reference sequence and paired-ended read datasets. Open the "_config_" file and set the input and output directories as shown in config file.
+The sample config contains the following lines to be updated.
+```bash
+export INPUT_DIR=/path-to-reference-sequence-and-read-datasets/
+export OUTPUT_DIR=/path-to-output-directory/
+REF=ref.fasta
+R1=R1.fastq.gz
+R2=R2.fastq.gz
+```
 
+### Create the index files for the reference sequence
+```bash
+bash create_reference_index.sh
+```
 
+### Run the pipeline. 
+Note that the script uses default setting for creating multiple mpi ranks based on the system configuration. 
+```bash
+bash run_pipeline_ec2.sh
+```
