@@ -65,40 +65,6 @@ CMD . /opt/intel/oneapi/compiler/latest/env/vars.sh intel64 \
     && mkdir weights && mkdir weights/extracted && python extract_params.py --input /data/params/params_model_1.npz --output_dir ./weights/extracted/model_1 \
     && time bash online_preproc_baremetal.sh /open-omics-alphafold /data /samples /output \
     && time bash online_inference_baremetal.sh /opt/conda /open-omics-alphafold /data /samples /output model_1
-
-
-# # Compile HHsuite from source.
-# RUN . /opt/intel/oneapi/compiler/latest/env/vars.sh intel64 && \
-#     . /opt/intel/oneapi/mkl/latest/env/vars.sh intel64 && \
-#     git clone https://github.com/IntelLabs/hh-suite.git /tmp/hh-suite \
-#     && mkdir /tmp/hh-suite/build \
-#     && cd /tmp/hh-suite/build \
-#     && cmake -DCMAKE_INSTALL_PREFIX=/opt/hhsuite -DCMAKE_CXX_COMPILER="icc" -DCMAKE_CXX_FLAGS_RELEASE="-O3 -march=icelake-server" .. \
-#     && make -j 4 && make install \
-#     && ln -s /opt/hhsuite/bin/* /usr/bin \
-#     && cd - \
-#     && rm -rf /tmp/hh-suite
-
-# # Compile Hmmer from source.
-# RUN . /opt/intel/oneapi/compiler/latest/env/vars.sh intel64 && \
-#     . /opt/intel/oneapi/mkl/latest/env/vars.sh intel64 && \
-#     git clone https://github.com/IntelLabs/hmmer.git /tmp/hmmer \
-#     && git clone https://github.com/EddyRivasLab/easel /tmp/hmmer/easel \
-#     && cd /tmp/hmmer/easel \
-#     && autoconf && ./configure --prefix=`pwd` && cd .. \
-#     && cp easel_makefile.in easel/Makefile.in \
-#     && autoconf && CC=icc CFLAGS="-O3 -march=icelake-server -fPIC" ./configure --prefix=/opt/hmmer \
-#     && make && make install \
-#     && ln -s /opt/hmmer/bin/* /usr/bin \
-#     && cd .. \
-#     && rm -rf /tmp/hmmer \
-#     && /usr/bin/jackhmmer -h
-
-# RUN git clone --recursive https://github.com/libxsmm/tpp-pytorch-extension \
-#     && cd tpp-pytorch-extension \
-#     && CC=gcc python setup.py install \
-#     && python -c "from tpp_pytorch_extension.alphafold.Alpha_Attention import GatingAttentionOpti" \
-#     && cd ..
     
 
 
