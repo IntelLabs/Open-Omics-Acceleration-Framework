@@ -20,3 +20,9 @@ docker run -it -v $DATA_DIR:/data \
     -v $OUTPUT_DIR:/output \
     alphafold:latest
 ```
+
+# Running baremetal
+
+To run the optimized alphafold2 without docker (baremetal)
+1. Clone the open-omics-alphafold submodule present in the applications directory of Open-Omics-Acceleration-Framework.
+2. Follow the readme instructions of the submodule for creating conda environment and runnning inference.
