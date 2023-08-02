@@ -12,18 +12,6 @@ bash build_deepvariant_docker_image.sh
 echo "Setup done!!"
 
 
------ Login node 
-
-
-1. Allocate nodes
-
-2. configure hostfile
-
-
-1 and 2 are running inside the script
-run pcluster_compute_nodes_setup.sh
-
-
 
 
 
