@@ -17,6 +17,7 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 # Install Anaconda and PIP dependency
+RUN conda update -n base conda
 RUN conda install python==3.9
 RUN conda install -y -c conda-forge openmm pdbfixer
 RUN conda install -y -c bioconda hmmer hhsuite kalign2
