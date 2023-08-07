@@ -419,9 +419,11 @@ def main(argv):
         print("\nIndexing of ref and read starts")
         if sindex==True :
             a=run(f'{BINDIR}/applications/samtools/samtools faidx '+refdir+ifile,capture_output=True,shell=True)
-        end=time.time()
-        print("\nIndex creation time",end-begin3)
+            end=time.time()
+            print("\nReference to .fai index creation time",end-begin3)
     
+    if rank==0:
+        begin3=time.time()
     cmd =""
     for i in range(bins_per_rank):
         fname = "aln%05d.bam"%(i*nranks+rank)
@@ -435,8 +437,8 @@ def main(argv):
 
     if rank==0:
         end3=time.time()
-        print("\nIndex creation time",end3-begin3)
-        print("\nStarting Deepvariant")
+        print("\nBAM to .bai index creation time",end3-begin3)
+        print("\nStarting Deepvariant execution...")
         begin5=time.time()  
 
     
@@ -452,7 +454,7 @@ def main(argv):
         end5=time.time()
         print("\nDeepVariant runtime",end5-begin5)
 
-        print("\nTime for whole pipeline",end5-start0)
+        print("\nTime for the whole pipeline",end5-start0)
 
         if prof:
             yappi.get_func_stats().print_all(columns={0:("ncall",5),1:("tsub",8),2:("ttot",8),3:("tavg",8),4:("name",90)})  

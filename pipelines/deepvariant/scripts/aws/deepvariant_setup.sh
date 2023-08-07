@@ -11,6 +11,8 @@ bash build_deepvariant_docker_image.sh
 
 echo "Setup done!!"
 
+echo "Next step, modify the \"config\" file according to the reference sequence and the read datasets, and run \"bash create_reference_index.sh \""
+
 
 
 

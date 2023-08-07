@@ -45,6 +45,5 @@ sudo docker --version
 echo "Running Docker installation hello world!! test"
 sudo docker run hello-world
 
-echo "Creating and activating a conda environment"
-
+#echo "Creating and activating a conda environment"
 #source setup_env.sh deepvaraint_env

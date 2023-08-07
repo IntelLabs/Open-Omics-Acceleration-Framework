@@ -40,7 +40,7 @@ then
         Container="$6"
 fi
 
-echo $OUTDIR
+echo "Output directory: $OUTDIR"
 mkdir -p ${OUTDIR}
 
 echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $SHARDS shards, $PPN ppn.

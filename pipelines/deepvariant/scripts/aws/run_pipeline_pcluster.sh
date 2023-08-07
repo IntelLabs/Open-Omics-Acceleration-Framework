@@ -9,8 +9,8 @@ num_nodes=`cat hostfile | wc -l`
 
 first_ip=`head -n 1 hostfile`
 
-#ssh ${first_ip} lscpu > compute_config
-lscpu > compute_config
+ssh ${first_ip} lscpu > compute_config
+#lscpu > compute_config
 
 
 num_cpus_per_node=$(cat compute_config | grep -E '^CPU\(s\)' | awk  '{print $2}')
@@ -36,3 +36,6 @@ total_num_ranks=`expr ${num_physical_cores_all_nodes} / ${num_physical_cores_per
 ranks_per_node=`expr ${total_num_ranks} / ${num_nodes}`
 
 sh run_pipeline.sh  ${total_num_ranks} ${ranks_per_node} ${REF} ${R1} ${R2} "sudo docker"
+
+echo "Pipeline finished. Output vcf can be found at: $OUTPUT_DIR/output.vcf.gz"
+
