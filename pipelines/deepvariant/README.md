@@ -121,11 +121,12 @@ bash run_pipeline_ec2.sh
 ```
 
 # Instructions to run the pipeline on an AWS ParallelCluster 
-The following instructions run seamlessly on a AWS ParallelCluster. To run the following steps, create an [AWS ParallelCluster](https://docs.aws.amazon.com/parallelcluster/latest/ug/install-v3.html) with Ubuntu-22.04 using ParallelCluster configuration file. The input reference sequence and the paired-ended read datasets must be downloaded and stored on the disk in the _/shared_ folder.  
+The following instructions run seamlessly on AWS ParallelCluster. To run the following steps, create an [AWS ParallelCluster](https://docs.aws.amazon.com/parallelcluster/latest/ug/install-v3.html) with Ubuntu-22.04 using ParallelCluster configuration file. The input reference sequence and the paired-ended read datasets must be downloaded and stored on the disk in the _/shared_ folder.  
 
 ### One-time setup
 This step takes around ~15 mins to execute
 ```bash
+cd /shared
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/scripts/aws
 bash deepvariant_setup.sh 
@@ -147,9 +148,9 @@ bash create_reference_index.sh
 ```
 
 ### Allocate compute nodes and install prerequisite into compute nodes.
-'''bash
+```bash
 bash pcluster_compute_node_setup.sh
-'''
+```
 
 ### Run the pipeline. 
 Note that the script uses default setting for creating multiple mpi ranks based on the system configuration. 
