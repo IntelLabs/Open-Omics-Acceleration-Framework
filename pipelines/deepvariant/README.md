@@ -150,7 +150,7 @@ bash create_reference_index.sh
 ### Allocate compute nodes and install the prerequisites into the compute nodes.
 ```bash
 bash pcluster_compute_node_setup.sh <num_nodes>
-# num_nodes: The _num_nodes_ is the number of compute nodes to be used for distributed multi-node execution.
+# num_nodes: The number of compute nodes to be used for distributed multi-node execution.
 ```
 
 ### Run the pipeline. 
