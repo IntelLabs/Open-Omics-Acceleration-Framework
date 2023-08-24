@@ -4,6 +4,7 @@ cd ../..
 
 source miniconda3/bin/activate dv_env
 
+hostname > hostfile
 
 num_nodes=`cat hostfile | wc -l`
 
