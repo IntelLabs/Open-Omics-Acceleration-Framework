@@ -121,7 +121,7 @@ bash run_pipeline_ec2.sh
 ```
 
 # Instructions to run the pipeline on an AWS ParallelCluster 
-The following instructions run seamlessly on AWS ParallelCluster. To run the following steps, create an [AWS ParallelCluster](https://docs.aws.amazon.com/parallelcluster/latest/ug/install-v3.html) with Ubuntu-22.04 using ParallelCluster configuration file and login into the host node. The input reference sequence and the paired-ended read datasets must be downloaded and stored on the disk in the _/shared_ folder.  
+The following instructions run seamlessly on AWS ParallelCluster. To run the following steps, create an [AWS ParallelCluster](scripts/aws/pcluster.md) with Ubuntu-22.04 using ParallelCluster configuration file and login into the host node. The input reference sequence and the paired-ended read datasets must be downloaded and stored on the disk in the _/shared_ folder.  
 
 ### One-time setup
 This step takes around ~15 mins to execute
