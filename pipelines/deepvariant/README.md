@@ -149,8 +149,11 @@ bash create_reference_index.sh
 
 ### Allocate compute nodes and install the prerequisites into the compute nodes.
 ```bash
-bash pcluster_compute_node_setup.sh <num_nodes>
+bash pcluster_compute_node_setup.sh <num_nodes> <allocation_time>
 # num_nodes: The number of compute nodes to be used for distributed multi-node execution.
+# allocation_time: The maximum allocation time for the compute nodes in "hh:mm:ss" format. 
+Example command for allocating 4 nodes for 3 hours - 
+bash pcluster_compute_node_setup.sh 4 "03:00:00"
 ```
 
 ### Run the pipeline. 
