@@ -59,8 +59,9 @@ enable_intel_hpc_platform = true
 scaledown_idletime=10
 
 [vpc public]
-vpc_id = vpc-0ae8ab2ecbee42daa
-master_subnet_id = subnet-022a836e87667accc
+vpc_id = vpc-0zz8ab2ecbee42daa
+master_subnet_id = subnet-022zz36e87667accc
+ssh_from = 182.25.63.111/1
 
 [ebs myebs]
 shared_dir = /shared
@@ -76,10 +77,17 @@ aws_region_name = us-east-2
 
 ### 8. Create a cluster
 ```bash
-pcluster create <cluster_name>      # it will report the ip address of the master node. ssh to the master node using the ip address.
+pcluster create <cluster_name>      # It will report the ip address of the master node. ssh to the master node using the ip address.
 ```
 
 ### 9. Check the status of the cluster
 ```bash
 pcluster status <cluster_name>
+```
+
+## 10. Stop and Delete the cluster
+```bash
+pcluster stop <cluster_name>    # This command stops all compute nodes. Ensure that the cluster is in STOPPED state using pcluster status command.
+                                # Note that host node remains in running state while the cluster is stopped.
+pcluster detete <cluster_name>  # This command completely terminates the cluster including all compute nodes, host node and the shared drive.
 ```
