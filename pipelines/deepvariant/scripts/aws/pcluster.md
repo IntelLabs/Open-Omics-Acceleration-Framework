@@ -26,7 +26,7 @@ unzip awscliv2.zip
 ```
 
 ### 6. Configure AWS CLI
-Refer AWS documentation for creating [the access key and the secret key](https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html)
+Refer AWS documentation for creating [the access key and the secret key] (https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html)
 ```bash
 aws configure                 # You will be asked to enter your AWS access key and secret key. Ask your admin for the same. You also need to have IAM access.
 ```
@@ -36,7 +36,7 @@ aws configure                 # You will be asked to enter your AWS access key a
 * Create or modify a config file at this path - .parallelcluster/config
 * You need to create vpc_id, master_subnet_id, Key Pair.
 * Refer AWS documentation for creating [vpc_id and master_subnet_id] (https://docs.aws.amazon.com/vpc/latest/userguide/create-vpc.html#create-vpc-only)
-* Refer AWS documentation for creating [a key pair] (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/get-set-up-for-amazon-ec2.html#create-a-key-pair.)
+* Refer AWS documentation for creating [a key pair] (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/get-set-up-for-amazon-ec2.html#create-a-key-pair)
 * Example configration file is given below
 ```bash
 [cluster default]
