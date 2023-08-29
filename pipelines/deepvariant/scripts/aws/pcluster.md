@@ -1,7 +1,5 @@
-
+Creating and managing pcluster from a local terminal  requires few dependencies to be installed on the local system. Follow the steps to install aws-parallelcluster, AWS CLI and the cluster configuration. These steps need to be performed on the local system from where we would be login to pcluster head node. This document follows the instruction from [AWS Reference](https://docs.aws.amazon.com/parallelcluster/latest/ug/install-v3.html).
 # Install AWS parallel cluster and Run using the following commands
-
-### Reference link - [https://docs.aws.amazon.com/parallelcluster/latest/ug/install-linux.html#install-linux-path](https://docs.aws.amazon.com/parallelcluster/latest/ug/install-v3.html)
 
 ### 1. Install anaconda or virtualenv With python version 3.7 or higher 
 ### 2. Install AWS Parallel Cluster
@@ -82,7 +80,8 @@ aws_region_name = us-east-2
 ```bash
 pcluster create <cluster_name>      # It will report the ip address of the master node. ssh to the master node using the ip address.
 ```
-
+Once the cluster is successfully created, the public IP of the head nodes is displayed on the screen. Add the public IP to .ssh/config along with your key-pair for login. 
+You should be able to login to the head node of the cluster using ssh command.
 ### 9. Check the status of the cluster
 ```bash
 pcluster status <cluster_name>
