@@ -85,3 +85,81 @@ sh run_pipeline.sh $ranks $ppn reference_seq.fasta R1.gz R2.gz podman # Change t
 # Results
 
 For detailed information, please refer to the [blog](https://community.intel.com/t5/Blogs/Tech-Innovation/Artificial-Intelligence-AI/Intel-Xeon-is-all-you-need-for-AI-inference-Performance/post/1506083). 
+
+
+# Instructions to run the pipeline on an AWS ec2 instance
+The following instructions run seamlessly on a standalone AWS ec2 instance. To run the following steps, create an ec2 instance with Ubuntu-22.04 having at least 60GB of memory. The input reference sequence and the paired-ended read datasets must be downloaded and stored on the disk.  
+
+### One-time setup
+This step takes around ~15 mins to execute
+```bash
+git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/scripts/aws
+bash deepvariant_ec2_setup.sh 
+```
+
+### Modify _config_ file
+We need a reference sequence and paired-ended read datasets. Open the "_config_" file and set the input and output directories as shown in config file.
+The sample config contains the following lines to be updated.
+```bash
+export INPUT_DIR=/path-to-reference-sequence-and-read-datasets/
+export OUTPUT_DIR=/path-to-output-directory/
+REF=ref.fasta
+R1=R1.fastq.gz
+R2=R2.fastq.gz
+```
+
+### Create the index files for the reference sequence
+```bash
+bash create_reference_index.sh
+```
+
+### Run the pipeline. 
+Note that the script uses default setting for creating multiple mpi ranks based on the system configuration. 
+```bash
+bash run_pipeline_ec2.sh
+```
+<!--
+
+# Instructions to run the pipeline on an AWS ParallelCluster 
+The following instructions run seamlessly on AWS ParallelCluster. To run the following steps, create an [AWS ParallelCluster](https://docs.aws.amazon.com/parallelcluster/latest/ug/install-v3.html) with Ubuntu-22.04 using ParallelCluster configuration file and login into the host node. The input reference sequence and the paired-ended read datasets must be downloaded and stored on the disk in the _/shared_ folder.  
+
+### One-time setup
+This step takes around ~15 mins to execute
+```bash
+cd /shared
+git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/scripts/aws
+bash deepvariant_setup.sh 
+```
+### Modify _config_ file
+We need a reference sequence and paired-ended read datasets. Open the "_config_" file and set the input and output directories as shown in config file.
+The sample config contains the following lines to be updated.
+```bash
+export INPUT_DIR=/path-to-reference-sequence-and-read-datasets/
+export OUTPUT_DIR=/path-to-output-directory/
+REF=ref.fasta
+R1=R1.fastq.gz
+R2=R2.fastq.gz
+```
+
+### Create the index files for the reference sequence
+```bash
+bash create_reference_index.sh
+```
+
+### Allocate compute nodes and install the prerequisites into the compute nodes.
+```bash
+bash pcluster_compute_node_setup.sh <num_nodes> <allocation_time>
+# num_nodes: The number of compute nodes to be used for distributed multi-node execution.
+# allocation_time: The maximum allocation time for the compute nodes in "hh:mm:ss" format. The default value is 2 hours, i.e., 02:00:00. 
+Example command for allocating 4 nodes for 3 hours - 
+bash pcluster_compute_node_setup.sh 4 "03:00:00"
+```
+
+### Run the pipeline. 
+Note that the script uses default setting for creating multiple mpi ranks based on the system configuration. 
+```bash
+bash run_pipeline_pcluster.sh
+```
+-->
