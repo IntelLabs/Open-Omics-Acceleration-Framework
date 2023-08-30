@@ -37,19 +37,23 @@ RUN apt-get update && \
     curl ca-certificates gpg-agent software-properties-common intel-basekit intel-hpckit && \
   rm -rf /var/lib/apt/lists/*
 
-# RUN conda create --name=single_cell -f environment.yml
-RUN conda install python==3.8.0
-RUN conda install -y seaborn=0.12.2 scikit-learn=1.0.2 statsmodels=0.13.2 numba=0.53.1 pytables=3.7.0 matplotlib-base=3.6.2 pandas=1.5.2
-RUN conda install -y -c conda-forge mkl-service=2.4.0
-RUN conda install -y -c conda-forge python-igraph=0.10.3 leidenalg=0.9.1
-RUN conda install -y -c conda-forge cython=0.29.33 jinja2=3.1.2 clang-tools=15.0.7
-RUN conda install -y -c katanagraph/label/dev -c conda-forge katana-python
+RUN conda update -n base conda
+COPY ./environment.yml ./
+RUN conda env create --name=single_cell -f environment.yml
+RUN echo "source activate single_cell" > ~/.bashrc
+ENV PATH /opt/conda/envs/single_cell/bin:$PATH
+# RUN conda install python==3.8.0
+# RUN conda install -y seaborn=0.12.2 scikit-learn=1.0.2 statsmodels=0.13.2 numba=0.53.1 pytables=3.7.0 matplotlib-base=3.6.2 pandas=1.5.2
+# RUN conda install -y -c conda-forge mkl-service=2.4.0
+# RUN conda install -y -c conda-forge python-igraph=0.10.3 leidenalg=0.9.1
+# RUN conda install -y -c conda-forge cython=0.29.33 jinja2=3.1.2 clang-tools=15.0.7
+# RUN conda install -y -c katanagraph/label/dev -c conda-forge katana-python
 
-RUN pip install scanpy==1.8.1
-RUN pip install scikit-learn-intelex==2023.0.1
-RUN pip install pybind11
-RUN pip install jupyter
-RUN pip install wget
+# RUN pip install scanpy==1.8.1
+# RUN pip install scikit-learn-intelex==2023.0.1
+# RUN pip install pybind11
+# RUN pip install jupyter
+# RUN pip install wget
 
 COPY ./_t_sne.py /opt/conda/lib/python3.8/site-packages/daal4py/sklearn/manifold/_t_sne.py
 
