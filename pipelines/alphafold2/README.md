@@ -14,10 +14,12 @@ docker build -t alphafold .           # Build a docker image named alphafold
 export DATA_DIR=<path-to-database-directory>
 export SAMPLES_DIR=<path-to-input-directory>
 export OUTPUT_DIR=<path-to-output-directory>
+export LOG_DIR=<path-to-log-directory>
 
-docker run -it -v $DATA_DIR:/data \
+docker run -it --cap-add SYS_NICE -v $DATA_DIR:/data \
     -v $SAMPLES_DIR:/samples \
     -v $OUTPUT_DIR:/output \
+    -v $LOG_DIR:/open-omics-alphafold/logs \
     alphafold:latest
 ```
 
