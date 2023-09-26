@@ -1,0 +1,5 @@
+export INPUT_DIR=/path-to-reference-sequence-and-read-datasets/
+export OUTPUT_DIR=/path-to-output-directory/
+REF=ref.fasta
+R1=R1.fastq.gz
+R2=R2.fastq.gz
