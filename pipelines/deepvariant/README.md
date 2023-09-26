@@ -1,7 +1,5 @@
 # OpenOmics Deepvariant Pipeline
-## OpenOmics Deepvariant Pipeline is a highly optimized, distirbuted, deep-learning-based short-read germline variant calling pipeline on x86 CPU clusters.
-## The pipeline comprises of:
-## 1. bwa-mem2 (a highly optimized version of bwa-mem) for sequence mapping, 2. distributed SAM sorting using samtools, and 3. an optimized version of DeepVariant tools for variant calling.
+## OpenOmics Deepvariant Pipeline is a highly optimized, distirbuted, deep-learning-based short-read germline variant calling pipeline on x86 CPU clusters. The pipeline comprises of: 1. bwa-mem2 (a highly optimized version of bwa-mem) for sequence mapping, 2. distributed SAM sorting using samtools, and 3. an optimized version of DeepVariant tools for variant calling.
 
 ### 0. Notes:
 * The source code of bwa-mem2, samtools, and DeepVariant are residing in:
@@ -29,7 +27,7 @@ git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Frame
 ```bash
 cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/scripts/cluster/
 #Tested with Ubuntu 22.04.2 LTS
-source setup_env.sh  dv_env # Setting environment with name _dv_env_.
+source setup_env.sh  dv_env # Setting environment with name dv_env.
 ```
 
 ### 3. Compute setup:  You can choose cluster (3.1) or standalone (3.2) mode for the run
