@@ -1,24 +1,24 @@
 # OpenOmics Deepvariant Pipeline
-## OpenOmics Deepvariant Pipeline is a highly optimized, distirbuted, deep-learning-based short-read germline variant calling pipeline on x86 CPU clusters. The pipeline comprises of: 1. bwa-mem2 (a highly optimized version of bwa-mem) for sequence mapping, 2. distributed SAM sorting using samtools, and 3. an optimized version of DeepVariant tools for variant calling.
+### OpenOmics Deepvariant Pipeline is a highly optimized, distirbuted, deep-learning-based short-read germline variant calling pipeline on x86 CPU clusters. The pipeline comprises of: 1. bwa-mem2 (a highly optimized version of bwa-mem) for sequence mapping, 2. distributed SAM sorting using samtools, and 3. an optimized version of DeepVariant tools for variant calling.
 
 ### 0. Notes:
 * The source code of bwa-mem2, samtools, and DeepVariant are residing in:
 ```Open-Omics-Acceleration-Framework/applications/ ```.
 * We build bwa-mem2 and samtools from source; while for DeepVariant, we build a docker image and then use the built image while running the pipeline. Note that, the pre-built image is not available on dockerhub and the image needs to be built from source.
-* We provide scripts for setting-up miniconda environment (setup_env.sh), compilation of the required pipeline tools, builing & loading of DeepVariant docker image (setup.py). These scripts located at _Open-Omics-Acceleration-Framework/pipelines/deepvariant_. Note that, all the script by default are written for docker.
+* We provide scripts for setting-up miniconda environment (setup_env.sh), compilation of the required pipeline tools, builing & loading of DeepVariant docker image (setup.py). These scripts located at _Open-Omics-Acceleration-Framework/pipelines/deepvariant_. Note that, all the script by default are written for docker.  
 
-* Prerequisite : The following are pre-requisites for the pipeline -  our scripts assumed these packages are already installed in the system.
-         * Docker / Podman
-        * gcc >= 8.5.0
-        * MPI
-        * make >= 4.3
-        * autoconf >= 2.69
-        * zlib1g-dev
-        * libncurses5-dev
-        * libbz2-dev
-        * liblzma-dev
+* Prerequisite : The following are pre-requisites for the pipeline -  our scripts assumed these packages are already installed in the system.  
+        * Docker / Podman  
+        * gcc >= 8.5.0  
+        * MPI  
+        * make >= 4.3  
+        * autoconf >= 2.69  
+        * zlib1g-dev   
+        * libncurses5-dev  
+        * libbz2-dev  
+        * liblzma-dev  
 
-### 1. Clone the repo:
+### 1. Clone the repo:  
 ```bash
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 ```
@@ -39,8 +39,8 @@ srun hostname > hostfile
 
 #### 3.2 Standalone machine
 The pipeline can also be tested on a single standalone machine.
-``bash
-hostname > hostfile
+```bash  
+hostname > hostfile   
 ```
 
 ### 4. Compilation of tools, creation and distribution of docker/podman image on the allocated nodes.
@@ -53,17 +53,17 @@ source setup.sh [docker | podman | "sudo docker"]
 Note: It takes ~30 mins to create the docker image. Docker build might break if you are behind a proxy. Example to provide proxy for building a docker image is shown in the setup.sh file. [Follow](https://docs.docker.com/network/proxy/) instructions for more details.
 
 ### 5. Create _config_ file
-We need a reference sequence and paired-ended read datasets. Open the "config" file and set the input and output directories as shown in config file. The sample config contains the following lines to be updated.
+We need a reference sequence and paired-ended read datasets. Open the "config" file and set the input and output directories as shown in config file. The sample config contains the following lines to be updated.  
 
-export INPUT_DIR=/path-to-reference-sequence-and-read-datasets/
-export OUTPUT_DIR=/path-to-output-directory/
-REF=ref.fasta
-R1=R1.fastq.gz
-R2=R2.fastq.gz
+export INPUT_DIR=/path-to-reference-sequence-and-read-datasets/  
+export OUTPUT_DIR=/path-to-output-directory/  
+REF=ref.fasta   
+R1=R1.fastq.gz  
+R2=R2.fastq.gz  
 
 ### 6. Create the index files for the reference sequence
-```bash
-bash create_reference_index.sh
+```bash  
+bash create_reference_index.sh  
 ```
 
 ### 7. Run the pipeline

@@ -18,7 +18,7 @@ then
 fi
 
 # This will save deepvariant images
-cd ${ABS_DIRECTORY}/../../applications/deepvariant
+cd ${ABS_DIRECTORY}/../../../../applications/deepvariant
 $Container build -t deepvariant .
 # docker build --build-arg http_proxy="http://proxy-us.abc.com:123" --build-arg https_proxy="http://proxy-us.abc.com:123" --build-arg no_proxy="127.0.0.1,localhost"  -t deepvariant .
 
@@ -28,25 +28,25 @@ cd ${ABS_DIRECTORY}
 $Container save -o deepvariant.tar deepvariant:latest
 
 
-cd ${ABS_DIRECTORY}/../../applications/bwa-mem2
+cd ${ABS_DIRECTORY}/../../../../applications/bwa-mem2
 #make CXX=icpc multi
 make
 #make install   #uncomment this for installation
 
-cd ${ABS_DIRECTORY}/../../applications/htslib
+cd ${ABS_DIRECTORY}/../../../../applications/htslib
 autoreconf -i  # Build the configure script and install files it uses
 ./configure    # Optional but recommended, for choosing extra functionality
 make
 #make install   #uncomment this for installation
 
-cd ${ABS_DIRECTORY}/../../applications/bcftools
+cd ${ABS_DIRECTORY}/../../../../applications/bcftools
 # The following is optional:
 #   autoheader && autoconf && ./configure --enable-libgsl --enable-perl-filters
 make
 #make install   #uncomment this for installation
 
 
-cd ${ABS_DIRECTORY}/../../applications/samtools
+cd ${ABS_DIRECTORY}/../../../../applications/samtools
 autoheader
 autoconf -Wno-syntax
 chmod 775 configure
