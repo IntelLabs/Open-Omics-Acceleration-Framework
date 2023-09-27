@@ -25,7 +25,7 @@ $Container build -t deepvariant .
 
 #save image(~7 GB) to tar file if you are using multiple nodes.
 cd ${ABS_DIRECTORY}
-$Container save -o deepvariant.tar deepvariant:latest
+$Container save -o ${ABS_DIRECTORY}/../../deepvariant.tar deepvariant:latest
 
 
 cd ${ABS_DIRECTORY}/../../../../applications/bwa-mem2
