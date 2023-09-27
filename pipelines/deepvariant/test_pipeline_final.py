@@ -356,15 +356,15 @@ def main(argv):
     if rank==0:
         yappi.set_clock_type("wall")
         if prof: yappi.start()
-        file_size = os.path.getsize(folder+rfile1)
+        file_size = os.path.getsize(os.path.join(folder,rfile1))
         print("\nSize of FASTQ file:",file_size)
         
         if istart==True :
             print("Indexing Starts")
             begin = time.time()
-            a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 index '+refdir+ifile,capture_output=True,shell=True)
+            a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 index '+os.path.join(refdir,ifile),capture_output=True,shell=True)
             end=time.time()
-            file_size = os.path.getsize(folder+rfile1)
+            file_size = os.path.getsize(os.path.join(folder,rfile1))
             print("\nIndex time:",end-begin)
             print("\nSize of FASTQ file:",file_size)
             # numactl -m 0 -N 0 ./bwa-mem2/bwa-mem2 index data/tempdata/refs/hs37d5.fa.gz
@@ -374,11 +374,11 @@ def main(argv):
 
     # Execute bwamem2 -- may include sort, merge depending on mode
     begin0 = time.time()
-    fn1 = pragzip_reader( comm, int(cpus), folder+rfile1, output )
-    fn2 = pragzip_reader( comm, int(cpus), folder+rfile2, output, last=True )
-    fn3, thr = sam_writer( comm, tempdir+'aln' )
+    fn1 = pragzip_reader( comm, int(cpus), os.path.join(folder,rfile1), output )
+    fn2 = pragzip_reader( comm, int(cpus), os.path.join(folder,rfile2), output, last=True )
+    fn3, thr = sam_writer( comm, os.path.join(tempdir,'aln') )
     begin1 = time.time()
-    a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3,capture_output=True, shell=True)
+    a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+os.path.join(refdir,ifile)+' '+fn1+' '+fn2+' > '+fn3,capture_output=True, shell=True)
     end1b=time.time()
     #print("rank: ",rank," bwa_time: ",end1b-begin1)
     thr.join()
@@ -401,7 +401,7 @@ def main(argv):
     cmd=""
     for i in range(bins_per_rank):
         binstr = '%05d'%(nranks*i+rank)
-        cmd+=f'{BINDIR}/applications/samtools/samtools sort --threads '+threads+' -T '+tempdir+'aln'+binstr+'.sorted -o '+tempdir+'aln'+binstr+'.bam '+tempdir+'aln'+binstr+'.sam;'
+        cmd+=f'{BINDIR}/applications/samtools/samtools sort --threads '+threads+' -T '+os.path.join(tempdir,'aln'+binstr+'.sorted') + ' -o '+ os.path.join(tempdir,'aln'+binstr+'.bam')+' '+ os.path.join(tempdir,'aln'+binstr+'.sam')
         if i%20==0:
             a=run(cmd,capture_output=True,shell=True)
             cmd=""
@@ -418,7 +418,7 @@ def main(argv):
         begin3=time.time()
         print("\nIndexing of ref and read starts")
         if sindex==True :
-            a=run(f'{BINDIR}/applications/samtools/samtools faidx '+refdir+ifile,capture_output=True,shell=True)
+            a=run(f'{BINDIR}/applications/samtools/samtools faidx '+os.path.join(refdir,ifile),capture_output=True,shell=True)
             end=time.time()
             print("\nReference to .fai index creation time",end-begin3)
     
@@ -428,7 +428,7 @@ def main(argv):
     for i in range(bins_per_rank):
         fname = "aln%05d.bam"%(i*nranks+rank)
         #a=run(f'{BINDIR}/applications/samtools/samtools index -M -@ '+threads+' '+folder+fname,capture_output=True,shell=True)
-        cmd+=f'{BINDIR}/applications/samtools/samtools index -M -@ '+threads+' '+tempdir+fname+';'
+        cmd+=f'{BINDIR}/applications/samtools/samtools index -M -@ '+threads+' '+os.path.join(tempdir,fname)+';'
         if i%20==0:
             a=run(cmd,capture_output=True,shell=True)
             cmd=""
@@ -444,7 +444,7 @@ def main(argv):
     
     for i in range(bins_per_rank):
         binstr = "%05d"%(i*nranks+rank)
-        command='mkdir -p '+output+binstr+'; '+container_tool +' run -v '+folder+':"/input" -v '+refdir+':"/refdir" -v '+output+'/'+binstr+':"/output" -v '+tempdir+':"/tempdir" deepvariant:latest /opt/deepvariant/bin/run_deepvariant --model_type=WGS --ref=/refdir/'+ifile+' --reads=/tempdir/aln'+binstr+'.bam --output_vcf=/output/output.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'" --pcl_opt'
+        command='mkdir -p '+os.path.join(output,binstr)+'; '+container_tool +' run -v '+folder+':"/input" -v '+refdir+':"/refdir" -v '+output+'/'+binstr+':"/output" -v '+tempdir+':"/tempdir" deepvariant:latest /opt/deepvariant/bin/run_deepvariant --model_type=WGS --ref=/refdir/'+ifile+' --reads=/tempdir/aln'+binstr+'.bam --output_vcf=/output/output.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'" --pcl_opt'
         a = run( 'echo "'+command+'" > '+output+'log'+binstr+'.txt', shell=True)
         a = run( command+" 2>&1 >> "+output+"log"+binstr+".txt", shell=True)
     comm.barrier()
