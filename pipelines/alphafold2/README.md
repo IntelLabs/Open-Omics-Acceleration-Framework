@@ -1,14 +1,17 @@
 
 # Build a docker image
+
+### Current docker image requires a dual-socket CPUs to run as it runs multiple inferences in parallel. However, it can be easily modied to run on a single socket.
+
 ```bash
 cd ~/Open-Omics-Acceleration-Framework/pipelines/alphafold2/
 docker build -t alphafold .           # Build a docker image named alphafold
 ```
 # Preparation 
 1. Follow the instructions from https://github.com/deepmind/alphafold repo and download dataset for alphafold2.
-2. Create a samples directory that contains fasta files for input protiens. 
+2. Create a samples directory that contains fasta files for input proteins. 
 3. Create a output directory where model output will be written.
-
+4. Create a log directory where log will be written.
 # Run a docker container
 ```bash
 export DATA_DIR=<path-to-database-directory>
