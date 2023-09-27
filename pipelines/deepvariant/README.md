@@ -69,7 +69,8 @@ bash create_reference_index.sh
 ### 7. Run the pipeline
 Note that the script uses default setting for creating multiple mpi ranks based on the system configuration information using hostfile.
 ```bash
-bash run_pipeline_cluster.sh
+bash run_pipeline_cluster.sh [docker | podman | "sudo docker"]
+* docker/podman/"sudo docker" : optional argument. It takes docker by default.
 ```
 
 # Results

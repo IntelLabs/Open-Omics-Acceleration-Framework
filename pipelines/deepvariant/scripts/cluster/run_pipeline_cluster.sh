@@ -1,5 +1,12 @@
 source config
 
+Container=docker
+
+if [ $# -gt 0 ]
+then
+    Container="$1"
+fi
+
 mv hostfile ../../
 cd ../..
 
@@ -35,6 +42,6 @@ total_num_ranks=`expr ${num_physical_cores_all_nodes} / ${num_physical_cores_per
 
 ranks_per_node=`expr ${total_num_ranks} / ${num_nodes}`
 
-sh run_pipeline.sh  ${total_num_ranks} ${ranks_per_node} ${REF} ${R1} ${R2} "sudo docker"
+sh run_pipeline.sh  ${total_num_ranks} ${ranks_per_node} ${REF} ${R1} ${R2} ${Container}
 
 echo "Pipeline finished. Output vcf can be found at: $OUTPUT_DIR/output.vcf.gz"

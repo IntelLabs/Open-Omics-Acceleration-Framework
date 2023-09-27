@@ -7,7 +7,7 @@ ABS_SCRIPT_PATH="$(realpath "${SCRIPT_PATH}")"
 ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"
 #echo "Value of ABS_DIRECTORY: ${ABS_DIRECTORY}"
 
-export LD_PRELOAD=$LD_PRELOAD:"${ABS_DIRECTORY}/libmimalloc.so.2.0"
+export LD_PRELOAD=$LD_PRELOAD:"${ABS_DIRECTORY}/../../libmimalloc.so.2.0"
 #echo $LD_PRELOAD
 
 Container=docker

@@ -9,5 +9,5 @@ Container=docker
 for i in `cat hostfile`
 do
   echo $i
-  ssh $i "${Container} load -i ${ABS_DIRECTORY}/deepvariant.tar" &
+  ssh $i "${Container} load -i ${ABS_DIRECTORY}/../../deepvariant.tar" &
 done
