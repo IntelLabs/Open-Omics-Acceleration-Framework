@@ -27,7 +27,7 @@ git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Frame
 ```bash
 cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/scripts/cluster/
 #Tested with Ubuntu 22.04.2 LTS
-source setup_env.sh  dv_env # Setting environment with name dv_env.
+source ../../setup_env.sh  dv_env # Setting environment with name dv_env.
 ```
 
 ### 3. Compute setup:  You can choose cluster (3.1) or standalone (3.2) mode for the run
@@ -55,12 +55,13 @@ Note: It takes ~30 mins to create the docker image. Docker build might break if 
 ### 5. Create _config_ file
 We need a reference sequence and paired-ended read datasets. Open the "config" file and set the input and output directories as shown in config file. The sample config contains the following lines to be updated.  
 
+```bash
 export INPUT_DIR=/path-to-reference-sequence-and-read-datasets/  
 export OUTPUT_DIR=/path-to-output-directory/  
 REF=ref.fasta   
 R1=R1.fastq.gz  
 R2=R2.fastq.gz  
-
+```
 ### 6. Create the index files for the reference sequence
 ```bash  
 bash create_reference_index.sh  
