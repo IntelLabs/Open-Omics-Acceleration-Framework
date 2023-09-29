@@ -6,13 +6,13 @@ cd ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline
 ```
 
 # Instructions to Run
-We can run this pipeline in three ways: 1. Docker container, 2. Using anaconda environment file, 3. Creating anaconda environment manually.   
+We can run this pipeline in three ways: 1. Docker container( i. interactive, ii. non-interactive), 2. Using anaconda environment file, 3. Creating anaconda environment manually.   
 
-## (Option 1): Docker instructions (Recommended on Cloud Instance)
+## (Option 1): Docker instructions for interactive and non-interactive mode (Recommended on Cloud Instance)
+
+
+### Run with jupyter notebook (interactive)
 ```bash
-# Default values of environment variables is set to NUMEXPR_MAX_THREADS=64, NUMBA_NUM_THREADS=64  (Number of CPUs)
-# inside the docker image. Update Dockerfile to change these variables according to number of CPUs for best performance
-
 cd ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/
 docker build -t scanpy .           # Create a docker image named scanpy
 
@@ -20,7 +20,28 @@ docker build -t scanpy .           # Create a docker image named scanpy
 wget -P ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/data https://rapids-single-cell-examples.s3.us-east-2.amazonaws.com/1M_brain_cells_10X.sparse.h5ad
 
 docker run -it -p 8888:8888 -v ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/data:/data scanpy   # run docker container with the data folder as volume
+
 ```
+
+### Run with non-interactive mode
+
+```bash
+export DATA_DIR=<path-to-database-directory>
+export OUTPUT_DIR=<path-to-output-directory>
+mkdir -p $OUTPUT_DIR
+cd ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/
+
+docker build -f Dockerfile.python -t scanpy_python . # Create a docker image named scanpy_python
+
+# Download dataset
+wget -P  $DATA_DIR https://rapids-single-cell-examples.s3.us-east-2.amazonaws.com/1M_brain_cells_10X.sparse.h5ad
+
+docker run -v $OUTPUT_DIR:/workspace/figures -v $DATA_DIR:/data scanpy_python 
+
+```
+
+
+
 
 ## (Option 2): Create an Anaconda environment from file
 ```bash
