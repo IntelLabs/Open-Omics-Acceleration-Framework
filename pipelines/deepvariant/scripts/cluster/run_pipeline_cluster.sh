@@ -16,8 +16,8 @@ num_nodes=`cat hostfile | wc -l`
 
 first_ip=`head -n 1 hostfile`
 
-#ssh ${first_ip} lscpu > compute_config
-lscpu > compute_config
+ssh ${first_ip} lscpu > compute_config
+#lscpu > compute_config
 
 
 num_cpus_per_node=$(cat compute_config | grep -E '^CPU\(s\)' | awk  '{print $2}')
