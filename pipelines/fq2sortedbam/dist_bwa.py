@@ -209,7 +209,7 @@ def sw_thr( outpipe, comm, comm2 ):
         #sent_msgs = [ rqt for rqt in sent_msgs if not rqt[0].Test() ]
     def read_wrap(f):
         return f.readline()
-        
+
     t0 = time.time()
     #seq_start['*'] = 0    # put all unmatched reads at beginning
     cumlen = 0
@@ -234,13 +234,13 @@ def sw_thr( outpipe, comm, comm2 ):
                         seq_len[sn] = ln
                         cumlen += ln
                     else :
-                        seq_start[sn] = -1	
+                        seq_start[sn] = -1
 		#l = f1.readline()
             l = read_wrap(f1)
         # done reading headers
         if keep:
             seq_start['*'] = cumlen    # put all unmatched reads at end
-        else: 
+        else:
             seq_start['*'] = -1
 
         #print(seq_start)
@@ -262,11 +262,11 @@ def sw_thr( outpipe, comm, comm2 ):
             	#b = bisect.bisect(binstarts, key) - 1
             	bn = bisect_wrap(binstarts, key) - 1
             	#if bn==0 and not (seq=='chr1' or seq=='chr2'):
-            	#    print("BAD BIN", seq, seq_start[seq], offset, key, bn) 
+            	#    print("BAD BIN", seq, seq_start[seq], offset, key, bn)
             	_, r, b = bins[bn]
             	#print (seq, offset, key, bn, r, b)
             	#comm.send( (key, b, l), r )
-            
+
             	send_wrap( l, r, b=bn )
             else :
                 if seq_start[seq]!= -1:
@@ -277,7 +277,7 @@ def sw_thr( outpipe, comm, comm2 ):
                     _, r, b = bins[bn]
 		    #print (seq, offset, key, bn, r, b)
 		    #comm.send( (key, b, l), r )
-                    send_wrap( l, r, b=bn )	
+                    send_wrap( l, r, b=bn )
             l = read_wrap(f1)
             i+=1
     # send done signal
@@ -319,11 +319,11 @@ def main(argv):
     parser.add_argument("-r", "--reads", nargs='+',help="name of reads file seperated by space")
     parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
     parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
-    parser.add_argument('-in', '--istart',action='store_true',help="It will index reference genome for bwa-mem2. If it is already done offline then don't use this flag.") 
+    parser.add_argument('-in', '--istart',action='store_true',help="It will index reference genome for bwa-mem2. If it is already done offline then don't use this flag.")
     #parser.add_argument('-sindex',action='store_true',help="It will create .fai index. If it is done offline then disable this.")
     #parser.add_argument('--container_tool',default="docker",help="Container tool used in pipeline : Docker/Podman")
     #parser.add_argument('--shards',default=1,help="Number of shards for deepvariant")
-    parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling") 
+    parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
     parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
     args = vars(parser.parse_args())
     ifile=args["index"]
@@ -360,7 +360,7 @@ def main(argv):
         if prof: yappi.start()
         file_size = os.path.getsize(folder+rfile1)
         print("\nSize of FASTQ file:",file_size)
-        
+
         if istart==True :
             print("Indexing Starts")
             begin = time.time()
@@ -369,7 +369,7 @@ def main(argv):
             file_size = os.path.getsize(folder+rfile1)
             print("\nIndex time:",end-begin)
             aprint("\nSize of FASTQ file:",file_size)
-        
+
         print("bwa-mem2 starts")
 
 
@@ -382,7 +382,11 @@ def main(argv):
     #a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3,capture_output=True, shell=True)
     #bwastr = '{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'/bwalog' + str(rank) + '.txt'
     #print(bwastr)
-    a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+    try:
+        a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+        assert a.returncode == True
+    except:
+        print("Error in bwa run")
     end1b=time.time()
     thr.join()
     comm.barrier()
@@ -391,10 +395,10 @@ def main(argv):
     if rank==0:
         print("\nFASTQ to SAM time:",end1-begin1)
         print("   (includes wait time:",end1-end1b,")")
-        
+
         print("\nsam to sort-bam starts")
         begin2=time.time()
-        
+
 
     # Finish sort, merge, convert to bam depending on mode
     cmd=""
@@ -406,12 +410,13 @@ def main(argv):
             cmd=""
     if not cmd=="": a=run(cmd,capture_output=True,shell=True)
     comm.barrier()
-    
+
     if rank==0:
         end2=time.time()
         print("SAM to sort-BAM time:",end2-begin2)
 
+    if rank == 0:
+        print('Mergining the bam files, TBD')
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-

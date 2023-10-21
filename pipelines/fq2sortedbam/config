@@ -1,5 +1,5 @@
 export INPUT_DIR=/data/nfs_home/mvasimud/myworkspace/openomics/aws_all/  #  /path-to-reference-sequence-and-read-datasets/
-export OUTPUT_DIR=/data/nfs_home/mvasimud/myworkspace/openomics/aws_all/
+export OUTPUT_DIR=/data/nfs_home/mvasimud/myworkspace/openomics/aws_all/output/
 REF=GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
 R1=HG001.novaseq.pcr-free.30x.R1.fastq.gz
 R2=HG001.novaseq.pcr-free.30x.R2.fastq.gz
