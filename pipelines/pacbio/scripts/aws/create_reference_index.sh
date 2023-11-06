@@ -5,10 +5,10 @@ ref=${INPUT_DIR}/${REF}
 echo "Checking the index files for $ref"
 ls ${ref}*
 
-# mem2 index
+# Minimap2 index
 echo "Creating FM-index for the reference sequence ${ref}"
 cd ../../../../applications/mm2-fast
-./minimap2 index $ref &> minimap2_index_log
+./minimap2 -d ${ref}.mmi ${ref} &> minimap2_index_log
 cd - &> /dev/null
 
 
