@@ -25,7 +25,9 @@ git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Frame
 
 ### 2. Setting Envionment
 ```bash
-cd Open-Omics-Acceleration-Framework/pipelines/pacbio/
+cd  Open-Omics-Acceleration-Framework
+git checkout dev-ooaf
+cd /pipelines/pacbio/
 #Tested with Ubuntu 22.04.2 LTS
 source setup_env.sh  my_env # Setting environment with name _my_env_. 
 ```
@@ -93,7 +95,9 @@ The following instructions run seamlessly on a standalone AWS ec2 instance. To r
 This step takes around ~15 mins to execute
 ```bash
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-cd Open-Omics-Acceleration-Framework/pipelines/pacbio/scripts/aws
+cd Open-Omics-Acceleration-Framework
+git checkout dev-ooaf
+cd pipelines/pacbio/scripts/aws
 bash deepvariant_ec2_setup.sh 
 ```
 
@@ -126,7 +130,9 @@ This step takes around ~15 mins to execute
 ```bash
 cd /shared
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-cd Open-Omics-Acceleration-Framework/pipelines/pacbio/scripts/aws
+cd Open-Omics-Acceleration-Framework
+git checkout dev-ooaf
+cd pipelines/pacbio/scripts/aws
 bash deepvariant_setup.sh 
 ```
 ### Modify _config_ file
