@@ -436,7 +436,7 @@ def main(argv):
         if istart==True :
             print("Indexing Starts")
             begin = time.time()
-            a=run(f'{BINDIR}/applications/mm2-fast/minimap2 index '+os.path.join(refdir,ifile),capture_output=True,shell=True)
+            a=run(f'{BINDIR}/applications/mm2-fast/minimap2 -d '+os.path.join(refdir,ifile)+'.mmi '+os.path.join(refdir,ifile),capture_output=True,shell=True)
             end=time.time()
             file_size = os.path.getsize(os.path.join(folder,rfile1))
             print("\nIndex time:",end-begin)
