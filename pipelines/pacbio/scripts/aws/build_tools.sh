@@ -8,10 +8,7 @@
 cd ../../../../../Open-Omics-Acceleration-Framework
 WDIR=`pwd`
 
-cd ${WDIR}/pipelines/deepvariant/
-
-ls
-
+cd ${WDIR}/pipelines/pacbio/
 
 # Pre-req: conda env
 source setup_env.sh  dv_env
@@ -20,8 +17,8 @@ source setup_env.sh  dv_env
 # compile mm2-fast
 echo "Build mm2-fast"
 cd ${WDIR}/applications/mm2-fast
-make multi
-if [ -e "${WDIR}/applications/mm2-fast/mm2-fast" ]; then
+make
+if [ -e "${WDIR}/applications/mm2-fast/minimap2" ]; then
     echo "mm2-fast build successful"
 else
     echo "Error!! mm2-fast build failed"
