@@ -17,14 +17,16 @@ bash ./Miniconda3-py39_23.3.1-0-Linux-x86_64.sh -b -p ./miniconda3
 echo "Downloading and setting up miniconda...DONE"
 
 echo "Seeting up conda env named with given argument"
-miniconda3/bin/conda env create --name bwa -f environment.yml
+miniconda3/bin/conda env create --name distbwa -f environment.yml
 echo "Seeting up conda env named new_env...DONE"
 
 echo "Activating conda env..."
-source /data/nfs_home/mvasimud/container/miniconda3/bin/activate bwa
+source /data/nfs_home/mvasimud/container/miniconda3/bin/activate distbwa
 echo "localhost" > hostfile
 
-
+echo "Installing pre-requisite tools.."
+bash basic_setup_ubuntu.sh
+echo "Done"
 
 ## build tools
 WDIR=../../
@@ -51,11 +53,11 @@ make
 #make install   #uncomment this for installation
 
 # compile bcftools
-cd ${WDIR}/applications/bcftools
-# The following is optional:
-#   autoheader && autoconf && ./configure --enable-libgsl --enable-perl-filters
-make
-#make install   #uncomment this for installation
+## cd ${WDIR}/applications/bcftools
+## # The following is optional:
+## #   autoheader && autoconf && ./configure --enable-libgsl --enable-perl-filters
+## make
+## #make install   #uncomment this for installation
 
 # compile samtools
 cd ${WDIR}/applications/samtools
@@ -73,3 +75,9 @@ else
 fi
 echo "bwa compilation is "$bwainstall
 #make install         #uncomment this for installation
+
+git clone --recursive https://github.com/broadinstitute/warp-tools.git -b develop
+cd warp-tools/tools/fastqpreprocessing/
+./fetch_and_make_dep_libs.sh && make
+## make -j
+echo "Compelete installation done."

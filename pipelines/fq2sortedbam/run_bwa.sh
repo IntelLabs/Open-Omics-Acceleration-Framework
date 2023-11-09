@@ -1,4 +1,5 @@
 #!/bin/sh
+
 SCRIPT_PATH="${BASH_SOURCE:-$0}"
 ABS_SCRIPT_PATH="$(realpath "${SCRIPT_PATH}")"
 ABS_DIRECTORY="$(dirname "${ABS_SCRIPTINPUT_DIR_PATH}")"
@@ -28,22 +29,30 @@ N=$1
 PPN=$2
 CPUS=$a
 THREADS=$a
-SHARDS=$b
 REF=$(basename "$3")  #Change to your reference file
-READ1=$(basename "$4")  #Change your read files       
+READ1=$(basename "$4")  #Change your read files
 READ2=$(basename "$5")
+READ3=$(basename "$6")
 BINDING=socket
-Container=docker
-
-if [ $# -gt 5 ]
-then
-        Container="$6"
-fi
+mode=$7
+echo "mode: "$mode
 
 echo "Output directory: $OUTDIR"
 mkdir -p ${OUTDIR}
 
-echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $SHARDS shards, $PPN ppn.
-# -in -sindex are required only once for indexing. 
-# Todo : Make index creation parameterized. 
-mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u dist_bwa.py --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read $READ1 $READ2 --cpus $CPUS --threads $THREADS --keep_unmapped 2>&1 | tee ${OUTDIR}log.txt
+echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $PPN ppn.
+# -in -sindex are required only once for indexing.
+# Todo : Make index creation parameterized.
+#exec=dist_bwa.py
+exec=dist_bwav2.py
+mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read2 $READ2 --read3 $READ3 --cpus $CPUS --threads $THREADS --keep_unmapped --mode $mode   2>&1 | tee ${OUTDIR}log.txt
+
+
+
+#if [ "$mode" == "fqprocess" ]
+#then
+#    mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read2 $READ2 --read3 $READ3 --cpus $CPUS --threads $THREADS --keep_unmapped --mode $mode   2>&1 | tee ${OUTDIR}log.txt
+#else
+#        mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --preads $READ1 $READ2 --cpus $CPUS --threads $THREADS --keep_unmapped --mode $mode  2>&1 | tee ${OUTDIR}log.txt
+#
+#fi
