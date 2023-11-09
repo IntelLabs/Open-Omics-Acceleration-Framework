@@ -1,7 +1,7 @@
 
 # Build a docker image
 
-### Current docker image requires a dual-socket CPUs to run as it runs multiple inferences in parallel. However, it can be easily modied to run on a single socket.
+### Current docker image requires a dual-socket CPU because it runs multiple inference instances in parallel. However, it can be easily modied to run on a single socket.
 
 ```bash
 cd ~/Open-Omics-Acceleration-Framework/pipelines/alphafold2/

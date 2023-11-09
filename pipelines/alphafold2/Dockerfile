@@ -65,7 +65,9 @@ CMD . /opt/intel/oneapi/compiler/latest/env/vars.sh intel64 \
     && . /opt/intel/oneapi/mkl/latest/env/vars.sh intel64 \
     && mkdir weights && mkdir weights/extracted && python extract_params.py --input /data/params/params_model_1.npz --output_dir ./weights/extracted/model_1 \
     && python run_multiprocess_pre.py --root_home=/open-omics-alphafold --data_dir=/data --input_dir=/samples --output_dir=/output --model_name=model_1 \
-    && python run_multiprocess_infer.py --root_condaenv=/opt/conda --root_home=/open-omics-alphafold --data_dir=/data --input_dir=/samples --output_dir=/output --model_name=model_1
+    && LD_PRELOAD=/opt/conda/lib/libiomp5.so:/opt/conda/lib/libjemalloc.so:$LD_PRELOAD \
+    MALLOC_CONF="oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms:-1,muzzy_decay_ms:-1" \
+    python run_multiprocess_infer.py --root_condaenv=/opt/conda --root_home=/open-omics-alphafold --data_dir=/data --input_dir=/samples --output_dir=/output --model_name=model_1
     # && time bash online_preproc_baremetal.sh /open-omics-alphafold /data /samples /output \
     # && time bash online_inference_baremetal.sh /opt/conda /open-omics-alphafold /data /samples /output model_1
     
