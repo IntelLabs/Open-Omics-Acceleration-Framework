@@ -29,6 +29,7 @@ echo "localhost" > hostfile
 
 ## build tools
 WDIR=../../
+EXEDIR=`pwd`
 
 # compile bwa-mem2
 echo "Build bwa-mem2"
@@ -65,6 +66,13 @@ autoconf -Wno-syntax
 chmod 775 configure
 ./configure           # Needed for choosing optional functionality
 make
+saminstall="SUCESS"
+if [ -e "${WDIR}/applications/samtools/samtools" ]; then
+    echo "SAMTools build successful"
+else
+    saminstall="FAILED"
+    echo "Error!! SAMTools build failed"
+fi
 
 if [ "$?" == "0" ]
 then
@@ -72,11 +80,23 @@ then
 else
     echo "Samtools installation failed"
 fi
-echo "bwa compilation is "$bwainstall
 #make install         #uncomment this for installation
+
+cd $EXEDIR
 
 git clone --recursive https://github.com/broadinstitute/warp-tools.git -b develop
 cd warp-tools/tools/fastqpreprocessing/
 ./fetch_and_make_dep_libs.sh && make
 ## make -j
+
+if [ "$?" == "0" ]
+then
+    echo "fqprocess installed successfully"
+else
+    echo "fqprocess installation failed"
+fi
+
+echo "bwa compilation is "$bwainstall
+echo "samtools compilation is "$saminstall
+
 echo "Compelete installation done."

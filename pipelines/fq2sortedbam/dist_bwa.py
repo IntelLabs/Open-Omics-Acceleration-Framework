@@ -383,8 +383,8 @@ def main(argv):
     cpus=args["cpus"]
     threads=args["threads"]    ## read prefix for R1, I1, R2 files
     istart=args["istart"]
-    folder=args["input"]
-    output=args["output"]
+    folder=args["input"] + "/"
+    output=args["output"] + "/"
     tempdir=args["temp"]
     if tempdir=="": tempdir=output
     refdir=args["refdir"]
@@ -414,7 +414,7 @@ def main(argv):
              begin = time.time()
              a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 index '+refdir+ifile,capture_output=True,shell=True)
              end=time.time()
-             file_size = os.path.getsize(folder+rfile1)
+             #file_size = os.path.getsize(folder+rfile1)
              print("\nIndex time:",end-begin)
              aprint("\nSize of FASTQ file:",file_size)
 
@@ -450,7 +450,7 @@ def main(argv):
     elif mode == 'fqprocess':
         ## fastq preprocess and split
         if rank == 0:
-            if True:
+            if False:
                 print("#############################################")
                 print("Whitelist: ", whitelist)
                 print("read_structure: ", read_structure)
