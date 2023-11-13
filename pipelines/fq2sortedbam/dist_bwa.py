@@ -1,4 +1,3 @@
-#!/usr/bin/python
 from subprocess import Popen, PIPE, run
 import subprocess
 import time
@@ -15,10 +14,35 @@ import numpy as np
 import yappi
 from multiprocessing import Pool
 from operator import itemgetter
+#from warp-tools.tools.scripts import dynamic-barcode-orientation
 mydict = {"chr1": 1,"chr2": 2,"chr3": 3,"chr4": 4,"chr5": 5,"chr6": 6,"chr7": 7,"chr8": 8, "chr9": 9, "chr10": 10, "chr11": 11, "chr12": 12, "chr13": 13, "chr14":14,"chr15":15,"chr16": 16, "chr17": 17, "chr18": 18, "chr19": 19,"chr20":20,"chr21":21,"chr22":22,"chrX": 23,"chrY": 24,"chrM": 25}
 
 BINDIR="../.."
 
+
+def read_input(fp_read1, fp_read2, num_ranks):
+    file_path_r1 = fp_read1
+    file_path_r2 = fp_read2
+    lcount_r1, lcount_r2 = 0, 0
+    try:
+        with open(file_path_r1, 'r') as file:
+            lines_r1 = file.readlines()
+            lcount_r1 = len(lines_r1)
+            if (lcount_r1 % num_ranks != 0):
+                print("Num reads files {} is not multiple of \
+                num_ranks {}".format(lcount_r1, num_ranks))
+
+        if file_path_r2 != None:
+            with open(file_path_r2, 'r') as file:
+                lines_r2 = file.readlines()
+                lcount_r2 = len(lines_r2)
+
+    except FileNotFoundError:
+        print(f"File not found: {file_path}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    return lines_r1, lines_r2, lcount_r1, lcount_r2
 
 def pr_t1( f, start, end, bufs, sems ):  # thread to read from fastq.gz file
     f.seek(start)
@@ -49,8 +73,9 @@ def pr_t2( outpipe, bufs, sems ):   # thread to output data to pipe
     os.unlink(outpipe)  # delete outpipe
 
 
+
 def pragzip_reader_real( comm, cpus, fname, outpipe, outdir, last=False ):
-    time.sleep(0.1)  # yield so bwamem ca start, overlapping pragzip preindex with bwamem loading reference genome
+    time.sleep(0.1)  # yield so bwamem can start, overlapping pragzip preindex with bwamem loading reference genome
     rank = comm.Get_rank()
     nranks = comm.Get_size()
     idxname = outdir+(fname.split('/')[-1])+".idx"
@@ -103,6 +128,7 @@ def pragzip_reader(comm, cpus, fname, outdir, last=False):
     comm2 = comm.Clone()
     threading.Thread(target=pragzip_reader_real, args=(comm2, cpus, fname, outpipe, outdir, last)).start()
     return outpipe
+
 
 #bins_per_rank = 500  # actually -- set this to number of bins, it will get adjusted by main to something reasonable per rank
 bins_per_rank = 1
@@ -309,16 +335,27 @@ def sam_writer( comm, fname ):
     thr.start()
     return outpipe, thr
 
+
 def main(argv):
     parser=ArgumentParser()
     parser.add_argument('--input',help="Input data directory")
     parser.add_argument('--temp',default="",help="Intermediate data directory")
     parser.add_argument('--refdir',default="",help="Reference genome directory")
+    parser.add_argument('--read1',default="",help="name of r1 files seperated by spaces")
+    parser.add_argument('--read2',default="",help="name of r2 files seperated by spaces")
+    parser.add_argument('--read3',default="",help="name of r3 files seperated by spaces")
+    parser.add_argument('--whitelist',default="whitelist.txt",help="10x whitelist file")
+    parser.add_argument('--read_structure',default="16C",help="read structure")
+    parser.add_argument('--barcode_orientation',default="FIRST_BP_RC",help="barcode orientation")
     parser.add_argument('--output',help="Output data directory")
+    parser.add_argument('--mode', default='', help="flatmode/fqprocess/pragzip. flatmode is just bwa w/o sort.")
+    parser.add_argument('--params', default='', help="parameter string to bwa-mem2 barring threads paramter")
     parser.add_argument("-i", "--index", help="name of index file")
-    parser.add_argument("-r", "--reads", nargs='+',help="name of reads file seperated by space")
+    parser.add_argument("-p", "--outfile", help="prefix for read files")
+    parser.add_argument("-r", "--preads", nargs='+',help="name of reads file seperated by space")
     parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
     parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
+    parser.add_argument("-b", "--bam_size",default=9, help="bam file size in GB")
     parser.add_argument('-in', '--istart',action='store_true',help="It will index reference genome for bwa-mem2. If it is already done offline then don't use this flag.")
     #parser.add_argument('-sindex',action='store_true',help="It will create .fai index. If it is done offline then disable this.")
     #parser.add_argument('--container_tool',default="docker",help="Container tool used in pipeline : Docker/Podman")
@@ -327,13 +364,25 @@ def main(argv):
     parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
     args = vars(parser.parse_args())
     ifile=args["index"]
-    rfile1=args["reads"][0]
-    rfile2=args["reads"][1]
+    params=args["params"]
+    if args["preads"] != None:
+        ## for flatmode and pragzip mode
+        rfile1=args["preads"][0]
+        rfile2=args["preads"][1]
+    else:
+        ## for fqprocss
+        read1 = args["read1"]
+        read2 = args["read2"]
+        read3 = args["read3"]
+    whitelist=args["whitelist"]
+    read_structure=args["read_structure"]
+    barcode_orientation=args["barcode_orientation"]
+    bam_size=args["bam_size"]
+    outfile=args["outfile"]
+    mode=args["mode"]
     cpus=args["cpus"]
-    threads=args["threads"]
+    threads=args["threads"]    ## read prefix for R1, I1, R2 files
     istart=args["istart"]
-    #sindex=args["sindex"]
-    #nproc=args["shards"]
     folder=args["input"]
     output=args["output"]
     tempdir=args["temp"]
@@ -354,57 +403,187 @@ def main(argv):
 
     start0 = time.time()
 
-    # Preindex refernce genome if requested
     if rank==0:
-        yappi.set_clock_type("wall")
-        if prof: yappi.start()
-        file_size = os.path.getsize(folder+rfile1)
-        print("\nSize of FASTQ file:",file_size)
+         yappi.set_clock_type("wall")
+         if prof: yappi.start()
+         #file_size = os.path.getsize(folder+rfile1)
+         #print("\nSize of FASTQ file:",file_size)
 
-        if istart==True :
-            print("Indexing Starts")
-            begin = time.time()
-            a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 index '+refdir+ifile,capture_output=True,shell=True)
-            end=time.time()
-            file_size = os.path.getsize(folder+rfile1)
-            print("\nIndex time:",end-begin)
-            aprint("\nSize of FASTQ file:",file_size)
+         if istart==True :
+             print("Indexing Starts")
+             begin = time.time()
+             a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 index '+refdir+ifile,capture_output=True,shell=True)
+             end=time.time()
+             file_size = os.path.getsize(folder+rfile1)
+             print("\nIndex time:",end-begin)
+             aprint("\nSize of FASTQ file:",file_size)
 
-        print("bwa-mem2 starts")
+    if mode == 'flatmode':
+        if rank == 0:
+            print("dist bwa-mem2 starts in flatmode")
 
+        # Execute bwamem2 -- may include sort, merge depending on mode
+        begin0 = time.time()
+        fn1 = pragzip_reader( comm, int(cpus), folder+rfile1, output )
+        fn2 = pragzip_reader( comm, int(cpus), folder+rfile2, output, last=True )
+        fn3 = os.path.join(output, 'aln' + str("%05d"%rank) + ".sam")
+        begin1 = time.time()
+        #a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3,capture_output=True, shell=True)
+        #bwastr = '{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'/bwalog' + str(rank) + '.txt'
+        #print(bwastr)
+        a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+        assert a.returncode == 0
+        end1b=time.time()
+        #thr.join()
+        comm.barrier()
+        end1=time.time()
 
-    # Execute bwamem2 -- may include sort, merge depending on mode
-    begin0 = time.time()
-    fn1 = pragzip_reader( comm, int(cpus), folder+rfile1, output )
-    fn2 = pragzip_reader( comm, int(cpus), folder+rfile2, output, last=True )
-    fn3, thr = sam_writer( comm, output+'/aln' )
-    begin1 = time.time()
-    #a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3,capture_output=True, shell=True)
-    #bwastr = '{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'/bwalog' + str(rank) + '.txt'
-    #print(bwastr)
-    try:
-        a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
-        assert a.returncode == True
-    except:
-        print("Error in bwa run")
-    end1b=time.time()
-    thr.join()
-    comm.barrier()
-    end1=time.time()
+        if rank==0:
+            print("\nFASTQ to SAM time (flatmode):",end1-begin1)
+            print("   (includes wait time:",end1-end1b,")")
 
-    if rank==0:
-        print("\nFASTQ to SAM time:",end1-begin1)
-        print("   (includes wait time:",end1-end1b,")")
+            print("\nsam to sort-bam starts")
+            begin2=time.time()
 
-        print("\nsam to sort-bam starts")
-        begin2=time.time()
+        return
 
+    elif mode == 'fqprocess':
+        ## fastq preprocess and split
+        if rank == 0:
+            if True:
+                print("#############################################")
+                print("Whitelist: ", whitelist)
+                print("read_structure: ", read_structure)
+                print("barcode_orientation: ", barcode_orientation)
+                print("bam_size: ", bam_size)
+                print("#############################################")
+                print("Starting fqprocess....", flush=True)
+
+                tic = time.time()
+                rl1, rl2, rl3 = read1.split(), read2.split(), read3.split()
+                barcode_index = rl2[0]
+                #cmd='zcat ' + folder/barcode_index '| sed -n "2~4p" | shuf -n 1000 > ' + output + '/downsample.fq'
+                bash_command = '''zcat '''+  folder + "/" + barcode_index + \
+                ''' | sed -n '2~4p' | shuf -n 1000 > downsample.fq'''
+                a = run(bash_command,shell=True, check=True, executable='/bin/bash')
+                assert a.returncode == 0
+
+                # dynamic-barcode-orientation downsample.fq  whitelist best_match.txt
+                try:
+                    cmd='python3 warp-tools/tools/scripts/dynamic-barcode-orientation.py downsample.fq ' \
+                        + whitelist + ' best_match.txt'
+                    a = run(cmd, shell=True, check=True, executable='/bin/bash')
+                    assert a.returncode == 0
+                except:
+                    print("Exception in dynamic-barcode-orientation!!")
+
+                # Read the contents of the file into a variable
+                with open('best_match.txt', 'r') as file:
+                    barcode_choice = file.read().strip()
+
+                r1, r2, r3="--R1 ", "--R2 ", "--R3 "
+                for r in range(len(rl1)):
+                    r1+=folder + "/" + rl1[r] + ' '
+                    r2+=folder + "/" + rl2[r] + ' '
+                    r3+=folder + "/" + rl3[r] + ' '
+
+                ## print(r1)
+                ## print(r2)
+                ## print(r3)
+                cmd=f'warp-tools/tools/fastqpreprocessing/bin/fastqprocess --verbose --bam-size ' \
+                    +  str(bam_size) + \
+                    ' --sample-id ' + output + ' ' + r1 + ' ' + r2 + ' ' + r3 + \
+                    ' --output-format "FASTQ" '+  '--barcode-orientation ' + barcode_choice + \
+                    ' --read-structure ' + read_structure + '  --white-list ' + whitelist
+
+                print('fastqprocess cmd: ', cmd)
+                a=run(cmd, shell=True, check=True, executable='/bin/bash')
+                assert a.returncode == 0
+                ## Create #output files equal to the number of ranks
+                ## create output file names as rprefix + str(rank) + '_1/2.fastq.gz'
+                toc = time.time()
+                print("Time for fq processing: ", toc - tic)
+
+        # Preindex reference genome if requested
+        comm.barrier()
+        if rank==0:
+            print("\nbwa-mem2 starts..")
+
+        # Execute bwamem2 -- may include sort, merge depending on mode
+        begin0 = time.time()
+        #fn1 = pragzip_reader( comm, int(cpus), folder+rfile1, output )
+        #fn2 = pragzip_reader( comm, int(cpus), folder+rfile2, output, last=True )
+        #fn1 = os.path.join(folder, "fastq_R1_" + str(rank) + ".fastq.gz")
+        #fn2 = os.path.join(folder, "fastq_R3_" + str(rank) + ".fastq.gz")
+
+        fn1 = "fastq_R1_" + str(rank) + ".fastq.gz"
+        fn2 = "fastq_R3_" + str(rank) + ".fastq.gz"
+        #fn1 = folder + "/fastq_R1_" + str(rank) + ".fastq.gz"
+        #fn2 = folder + "/fastq_R3_" + str(rank) + ".fastq.gz"
+        if rank == 0:
+            print("Input files: ")
+            print(fn1)
+            print(fn2)
+        #assert os.path.isfile(fn1) == True
+        #assert os.path.isfile(fn2) == True
+        fn3, thr = sam_writer( comm, output+'/aln' )
+        begin1 = time.time()
+        #a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3,capture_output=True, shell=True)
+        #bwastr = '{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'/bwalog' + str(rank) + '.txt'
+        #print(bwastr)
+        if os.path.isfile(fn1) == True:
+            a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+            assert a.returncode == 0
+        else:
+            print(f"{rank} No input file for me")
+        end1b=time.time()
+
+        thr.join()
+        comm.barrier()
+        end1=time.time()
+
+        if rank==0:
+            print("\nFASTQ to SAM time (fqprocess):",end1-begin1)
+            print("   (includes wait time:",end1 - end1b,")")
+
+            print("\nsam to sort-bam starts")
+            begin2=time.time()
+
+    elif mode == 'pragzip':
+        # Preindex refernce genome if requested
+
+        if rank == 0:
+            print("bwa-mem2 starts")
+
+        # Execute bwamem2 -- may include sort, merge depending on mode
+        begin0 = time.time()
+        fn1 = pragzip_reader( comm, int(cpus), folder+rfile1, output )
+        fn2 = pragzip_reader( comm, int(cpus), folder+rfile2, output, last=True )
+        fn3, thr = sam_writer( comm, output+'/aln' )
+        begin1 = time.time()
+        a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+        assert a.returncode == 0
+        end1b=time.time()
+        thr.join()
+        comm.barrier()
+        end1=time.time()
+
+        if rank==0:
+            print("\nFASTQ to SAM time:",end1-begin1)
+            print("   (includes wait time:",end1-end1b,")")
+
+            print("\nsam to sort-bam starts")
+            begin2=time.time()
+
+    else:
+        print("Incorrect mode specified!")
+        os.sys.exit(1)
 
     # Finish sort, merge, convert to bam depending on mode
     cmd=""
     for i in range(bins_per_rank):
         binstr = '%05d'%(nranks*i+rank)
-        cmd+=f'{BINDIR}/applications/samtools/samtools sort --threads '+threads+' -T '+tempdir+'/aln'+binstr+'.sorted -o '+ output +'/aln'+binstr+'.bam '+output+'/aln'+binstr+'.sam;'
+        cmd+=f'{BINDIR}/applications/samtools/samtools sort --threads '+threads+' -T '+tempdir+'/aln'+binstr+'.sorted -o '+ output +'/aln'+binstr+'.bam '+ output+'/aln'+binstr+'.sam;'
         if i%20==0:
             a=run(cmd,capture_output=True,shell=True)
             cmd=""
@@ -415,8 +594,44 @@ def main(argv):
         end2=time.time()
         print("SAM to sort-BAM time:",end2-begin2)
 
+
+    ## concat bams
     if rank == 0:
-        print('Mergining the bam files, TBD')
+        tic = time.time()
+        bf = []
+        print('Concating the bam files...')
+        for b in range(bins_per_rank):
+            for r in range(nranks):
+                binstr = '%05d'%(nranks*b + r)
+                bf.append(output+'/aln'+binstr+'.bam')
+
+        infstr = bf[0]
+        for i in range(1, len(bf)):
+            infstr = infstr + " " + bf[i]
+        if outfile == None:
+            outfile = "final"
+
+        cmd+=f'{BINDIR}/applications/samtools/samtools cat -o ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr
+        #print("merge cmd: ", cmd, flush=True)
+        a=run(cmd,capture_output=True,shell=True)
+        assert a.returncode == 0
+        print("Concat done.\nTime for cat: ", time.time() - tic)
+
+
+def concatenate_files(input_files, output_file):
+    try:
+        with open(output_file, 'wb') as output:
+            for input_file in input_files:
+                with open(input_file, 'rb') as file:
+                    data = file.read()
+                    output.write(data)
+                # Optionally, you can insert a separator (e.g., newline) between files.
+                output.write(b'\n')  # Add a newline between concatenated files
+
+        print(f"Concatenated {len(input_files)} files into '{output_file}'.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])

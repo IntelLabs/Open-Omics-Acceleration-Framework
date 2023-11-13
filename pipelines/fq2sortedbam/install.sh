@@ -1,11 +1,14 @@
 #!/bin/bash
 
-SCRIPT_PATH="${BASH_SOURCE:-$0}"
-ABS_SCRIPT_PATH="$(realpath "${SCRIPT_PATH}")"
-#echo "Value of ABS_SCRIPT_PATH: ${ABS_SCRIPT_PATH}"
-ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"
-#echo "Value of ABS_DIRECTORY: ${ABS_DIRECTORY}"
+#SCRIPT_PATH="${BASH_SOURCE:-$0}"
+#ABS_SCRIPT_PATH="$(realpath "${SCRIPT_PATH}")"
+##echo "Value of ABS_SCRIPT_PATH: ${ABS_SCRIPT_PATH}"
+#ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"
+##echo "Value of ABS_DIRECTORY: ${ABS_DIRECTORY}"
 
+echo "Installing pre-requisite tools.."
+bash basic_setup_ubuntu.sh
+echo "Done"
 
 echo "Downloading and setting up miniconda..."
 if [ ! -e "Miniconda3-py39_23.3.1-0-Linux-x86_64.sh" ]
@@ -23,10 +26,6 @@ echo "Seeting up conda env named new_env...DONE"
 echo "Activating conda env..."
 source /data/nfs_home/mvasimud/container/miniconda3/bin/activate distbwa
 echo "localhost" > hostfile
-
-echo "Installing pre-requisite tools.."
-bash basic_setup_ubuntu.sh
-echo "Done"
 
 ## build tools
 WDIR=../../
