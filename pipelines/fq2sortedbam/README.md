@@ -49,13 +49,13 @@ PARAMS - parameters to bwa-mem2 mapping, excluding "-t <threads>" as value for -
 ISTART    - flag for bwa-mem2 index creation. You can use this if your bwa-mem2 index is not already created or present in the INPUT_DIR location provided in config file.  
   
   
-./run_bwa.sh <mode>  
-```./autorun.sh fqprocess```  
+```./run_bwa.sh <mode>```  
+e.g.: ```./run_bwa.sh fqprocess```  
   
-run_bwa.sh automatically determines the optimal configuration (number of ranks) for the distributed bwa-mem2 run based on the number of cores/sockets/NUMA on the compute platform. Each rank executes bwa-mem2 and downstream processing in parallel. The fqprocess executes only on rank 0 and writes the processed fastq files in the current working directory as fastq_R1_<i> and fastq_R2_<i>, here "i" represents the numbering of the split files e.g. fastq_R1_0, fastq_R1_1, .... Note that if the number of fastq files generated is greater than number of MPI ranks, then the extra fastq files won't be processed by bwa-mem2. Else, if the number of fastq files generated is less then number of MPI rank then the code breaks.  
+run_bwa.sh automatically determines the optimal configuration (number of ranks) for the distributed bwa-mem2 run based on the number of cores/sockets/NUMA on the compute platform. Each rank executes bwa-mem2 and downstream processing in parallel. The fqprocess executes only on rank 0 and writes the processed fastq files in the current working directory as fastq\_R1\_\<i\> and fastq\_R2\_\<i\>, here "i" represents the numbering of the split files e.g. fastq\_R1\_0, fastq\_R1\_1, .... Note that if the number of fastq files generated is greater than number of MPI ranks, then the extra fastq files won't be processed by bwa-mem2. Else, if the number of fastq files generated is less than number of MPI rank then the code breaks.  
   
   
-Please note:  
+Please Note (Important):  
 1. To tune bam_size parameter, we are providing 'print_condig.sh' script.  
 This script prints the number of ranks that will be created by run_bwa.sh during execution.  
 This should helps the user in setting bam_size parameter value as input to run_bwa.sh so that the fqprocess can create number of fastq files equal to number of MPI ranks.  
