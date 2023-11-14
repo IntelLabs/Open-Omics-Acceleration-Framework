@@ -19,7 +19,7 @@ Installation does the following:
   
   
 ### How to run:  
-setup "config" file -- supplies paramters to the pipeline -- in the current folder as:  
+setup "config" file -- supplies parameters to the pipeline -- in the current folder as:  
 ```  
 export INPUT_DIR=~/input/  
 export OUTPUT_DIR=~/output/  
@@ -67,7 +67,7 @@ dist-bwa-mem2 supports 3 different modes:
 1. fqprocess: fqprocess does fastqprocessing before invoking bwa-mem2 on the processed fastq files.   - This mode is specifically designed for Broad's requirements.  
    - It takes fastq files R1, R2, R3 as input (provided in config file)  
    - fastqprocess uses bam_size parameters to split the input files into multiple files. The number of files created should be equal to the number of MPI ranks to get better performance. Moreover, all split files with equal size are desirable to get proper load balancing across MPI rank and for better performance.  
-   - By default the output file name is 'final.sorted.bam', it can be provided as command line parameter in config file with parameter nam 'OUTFILE'  
+   - By default the output file name is 'final.sorted.bam', it can be provided as command line parameter in config file with parameter name 'OUTFILE'  
    - dist_bwa.py contains the mpi4py code. it supports options for providing arguments required for fqprocess and bwa-mem2. These parameters can be provided in config file  
   
 2. pragzip: invokes bwa-mem2 on input gzipped fastq file and produces sorted bam files as output  
