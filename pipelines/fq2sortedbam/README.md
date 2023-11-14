@@ -66,34 +66,35 @@ ISTART    - flag for bwa-mem2 index creation. You can use this if your bwa-mem2 
 e.g.: ```./run_bwa.sh fqprocess```
 
 Commentary:  
-run_bwa.sh automatically determines the optimal configuration (number of MPI ranks) for the distributed bwa-mem2 run based on the number of cores/sockets/NUMA on the compute platform. Each rank executes bwa-mem2 and downstream processing in parallel.  
-The fastqprocess executes only on rank 0 and writes the processed fastq files in the **current working directory** as fastq\_R1\_\<i\> and fastq\_R2\_\<i\>, here "i" represents the numbering of the split files e.g. fastq\_R1\_0, fastq\_R1\_1, ....  
-Note that, if the number of fastq files generated is greater than number of MPI ranks, then the extra fastq files won't be processed by bwa-mem2. Else, if the number of fastq files generated is less than number of MPI rank then the code breaks.  
-**Please go through the notes below on how to tune bam_size parameter so that number of fastq files produced by fastqprocess matches the number of MPI ranks.**
+1. run_bwa.sh automatically determines the optimal configuration (number of MPI ranks) for the distributed bwa-mem2 run based on the number of cores/sockets/NUMA on the compute node. Each MPI rank performs bwa-mem2 and downstream processing in parallel.  
+2. The fastqprocess executes only on rank 0 and writes the processed fastq files in the **current working directory** as fastq\_R1\_\<i\> and fastq\_R2\_\<i\>, here "i" represents the numbering of the split files e.g. fastq\_R1\_0, fastq\_R1\_1, ....
+3. Each MPI rank executes on one processed fastq file (paired-end).  
+4. Note that, if the number of fastq files generated is greater than number of MPI ranks, then the extra fastq files won't be processed by bwa-mem2. Else, if the number of fastq files generated is less than number of MPI ranks then the code breaks.  
+5. **Please go through the notes below on how to tune bam_size parameter so that number of fastq files produced by fastqprocess matches the number of MPI ranks.**
 
 Important Notes:  
-1. To tune bam_size parameter, we are providing **'print_condig.sh'** script.  
-This script prints the number of ranks that will be created by run_bwa.sh during execution.  
-**This should help the user in setting "bam_size" parameter value as input to run_bwa.sh so that the fqprocess can create number of fastq files equal to  number of MPI ranks.**
+1. To tune bam_size parameter, we are providing **'print_config.sh'** script: ```./print_config.sh```.  
+This script prints the number of MPI ranks that will be created by run_bwa.sh during execution.  
+**This should help the user in setting "bam_size" parameter value as input to run_bwa.sh so that the fastqprocess can create number of fastq files equal to number of MPI ranks.**
 
-2. Since the fastq files produced by fastqprocess tools are stored in current working directory, these files may interfere with subsequent runs of the pipeline. The user can delete the previous fastq files from previous runs before commencing the next run.  
+2. Since the fastq files produced by fastqprocess are stored in current working directory, these files may interfere with subsequent runs of the pipeline. The user can delete the previous fastq files from previous runs before commencing the next run.  
 
 ### Modes:  
 Distributed bwa-mem2 supports 3 different modes:
-1. fqprocess: fqprocess does fastqprocessing before invoking bwa-mem2 on the processed fastq files.   - **This mode is specifically designed for Broad's requirements.**  
+1. fqprocess: fqprocess mode does fastqprocessing before invoking bwa-mem2 on the processed fastq files.   - **This mode is specifically designed for Broad's requirements.**  
    - It takes fastq files R1, R2, R3 as input (provided in config file)  
-   - It works with gzip and un-compressed files  
+   - It works with gzipped as well as with un-compressed files  
    - fastqprocess uses bam_size parameters to split the input files into multiple files. The number of files created should be equal to the number of  MPI ranks to get better performance. Moreover, all split files with equal size are desirable to get proper load balancing across MPI rank and for better performance.  
    - By default the output file name is 'final.sorted.bam', it can be provided as command line parameter in config file with parameter name 'OUTFILE'  
-   - dist_bwa.py contains the mpi4py code. it supports options for providing arguments required for fqprocess and bwa-mem2. These parameters can be provided in config file  
+   - dist_bwa.py contains the mpi4py code. it supports options for providing arguments required for fqprocess and bwa-mem2. These parameters can be provided in the config file  
 
 2. pragzip: invokes bwa-mem2 on input gzipped fastq file and produces sorted bam files as output  
-   - Splitting of input files not required. It is desiged to work with un-split files.  
-   - To facilitate using single file for multiple MPI ranks, pragzip mode uses pragzip library to first index the input files. Then, this file is equally divided among the MPI ranks. These equal size chunks are used as input to bwa-mem2 processes. The pragzip index of the input files helps in location these chunks in the input gzip files.  
+   - Splitting of the input files into multiple files on disk is not required. 
+   - To facilitate using single file for multiple MPI ranks, pragzip mode uses pragzip library to first index the input file. Then, this file is equally divided (or chunked) among the MPI ranks. These equal size chunks are used as input to bwa-mem2 processes -- one chunk per bwa-mem2. The pragzip index of the input files helps in locating and reading these chunks from the input gzip file.  
    - This mode needs gzip fastq files  
    - Each bwa-mem2 process figures out its chunk from the input gzipped fastq files  
    - Multiple SAM files from each bwa-mem2 process are sorted using SAMTools  
    - The sorted BAM files are concatenated to produce the final bam file  
 
-3. flatmode: Same as pragzip mode but does not sort and merge the output SAM/BAM files from each rank  
+3. flatmode: Same as pragzip mode but does not sort and concat the output SAM/BAM files from each rank  
      
