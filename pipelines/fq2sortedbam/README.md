@@ -89,11 +89,11 @@ Distributed bwa-mem2 supports 3 different modes:
 
 2. pragzip: invokes bwa-mem2 on input gzipped fastq file and produces sorted bam files as output  
    - Splitting of input files not required. It is desiged to work with un-split files.  
-   - To facilitate using single for for multiple MPI ranks, pragzip mode uses pragzip library to first index the input files. Then, this file equally divided among the MPI ranks. These equal size chunks are used as input to bwa-mem2 processes. The pragzip index of the input files helps in location these chunks in the input gzip files.  
+   - To facilitate using single file for multiple MPI ranks, pragzip mode uses pragzip library to first index the input files. Then, this file is equally divided among the MPI ranks. These equal size chunks are used as input to bwa-mem2 processes. The pragzip index of the input files helps in location these chunks in the input gzip files.  
    - This mode needs gzip fastq files  
    - Each bwa-mem2 process figures out its chunk from the input gzipped fastq files  
-   - multiple sam files from each bwa-mem2 process are sorted using SAMTools  
-   - The sorted BAM files are merged to produce the final bam file  
+   - Multiple SAM files from each bwa-mem2 process are sorted using SAMTools  
+   - The sorted BAM files are concatenated to produce the final bam file  
 
 3. flatmode: Same as pragzip mode but does not sort and merge the output SAM/BAM files from each rank  
      
