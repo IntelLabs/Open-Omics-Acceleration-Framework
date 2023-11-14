@@ -450,7 +450,7 @@ def main(argv):
     elif mode == 'fqprocess':
         ## fastq preprocess and split
         if rank == 0:
-            if False:
+            if True:
                 print("#############################################")
                 print("Whitelist: ", whitelist)
                 print("read_structure: ", read_structure)
