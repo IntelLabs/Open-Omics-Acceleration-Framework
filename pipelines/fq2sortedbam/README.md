@@ -49,10 +49,10 @@ PARAMS=""
 ISTART="False"  
 ```  
 
-INPUT_DIR: directory path containing reference genome, bwa-mem2 index, and input read files  
-OUTPUT_DIR: directory path for the output SAM/BAM files and intermediate files  
-REF: reference sequence file  
-R1, R2, R3: input read files as input to fqprocess  
+INPUT_DIR - directory path containing reference genome, bwa-mem2 index, and input read files  
+OUTPUT_DIR - directory path for the output SAM/BAM files and intermediate files  
+REF - reference sequence file  
+R1, R2, R3 - input read files as input to fqprocess  
 WHITELIST - 10x genomics whitelist file for fqprocess  
 READ_STRUCTURE - read structure for fqprocess  
 BARCODE_ORIENTATION - barcode orientation for fqprocess  
