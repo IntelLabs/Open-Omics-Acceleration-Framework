@@ -38,5 +38,6 @@ ranks_per_node=`expr ${total_num_ranks} / ${num_nodes}`
 echo "Number of MPI ranks: "${total_num_ranks}
 echo "Number of cores per MPI rank: "$num_physical_cores_per_nodes
 echo "#############################################"
-echo "Note: Each MPI rank runs a bwa-mem2 process on its input fastq files produced by fqprocess. Please ensure that the number of files created due to bam_size parameter to fqprocess (in config file) creates number of fastq files equal to ${total_num_ranks}"
+#echo "Note: Each MPI rank runs a bwa-mem2 process on its input fastq files produced by fqprocess. Please ensure that the number of files created due to bam_size parameter to fqprocess (in config file) creates number of fastq files equal to ${total_num_ranks}"
+echo "Please set bam_size such that fastqprocess creates ${total_num_ranks} splits of input fastq files"
 echo "#############################################"
