@@ -46,4 +46,4 @@ mkdir -p ${OUTDIR}
 echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $SHARDS shards, $PPN ppn.
 # -in -sindex are required only once for indexing. 
 # Todo : Make index creation parameterized. 
-mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u test_pipeline_final.py --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read $READ1 $READ2 --cpus $CPUS --threads $THREADS --shards $SHARDS --container_tool "$Container" 2>&1 | tee ${OUTDIR}log.txt
+mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u test_pipeline_final.py --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read $READ1 $READ2 --cpus $CPUS --threads $THREADS --shards $SHARDS --container_tool "$Container" --keep_unmapped 2>&1 | tee ${OUTDIR}log.txt
