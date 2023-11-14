@@ -6,8 +6,8 @@ The pipeline takes input fastq files and produces sorted BAM file using the foll
 3. sorting (using samtools, partially overlapped (the communication part) with bwa-mem2 compute)
 4. concatenation of the bam files produced in the previous stages (using samtools)
 
-Although the code supports parallel execution on a distributed memory parallel cluster of nodes, right now I've setup the scripts to execute on a single compute node (can have multiple sockets). We can enable the code for distributed parallel execution on multiple compute nodes when required.  
-**I've tested the code on GCP C3 instance as well as on on-prem cluster node containing Intel(R) Xeon(R) 4th generation scalable processor**.
+Although the code supports distributed memory parallel execution on a set of compute nodes, right now we've setup the scripts to execute on a single compute node (can have multiple sockets or NUMA domains). We plan to enable the code for distributed parallel execution on multiple compute nodes in the future.  
+**We've tested the code on GCP C3 instance as well as on on-prem cluster node containing Intel(R) Xeon(R) 4th generation scalable processor**.
 
 
 ### Installation (2-step process):
