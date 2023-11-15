@@ -1,16 +1,15 @@
-#INPUT_DIR=/cold_storage/omics/genomes-indexes-reads/human/reads/broad/10k_PBMC_Multiome_nextgem_Chromium_Controller_fastqs/10k_PBMC_Multiome_nextgem_Chromium_Controller_atac/
-INPUT_DIR=~/broad
-OUTPUT_DIR=~/broad/output/
-REF=GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
-R1=10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L001_R1_001.fastq.gz
-R2=10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L001_R2_001.fastq.gz
-R3=10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L001_R3_001.fastq.gz
+INPUT_DIR=/cold_storage/omics/genomes-indexes-reads/human/reads/broad/10k_PBMC_Multiome_nextgem_Chromium_Controller_fastqs/10k_PBMC_Multiome_nextgem_Chromium_Controller_atac/
+OUTPUT_DIR=/data/nfs_home/mvasimud/myworkspace/openomics/aws_all/output/
+REF=GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
+R1="10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L001_R1_001.fastq.gz 10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L002_R1_001.fastq.gz"
+R2="10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L001_R2_001.fastq.gz 10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L002_R2_001.fastq.gz"
+R3="10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L001_R3_001.fastq.gz 10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L002_R3_001.fastq.gz"
 
 # default values
 ISTART="False"   ## flag for bwa-mem2 index creation False/True
 WHITELIST="whitelist.txt"
 READ_STRUCTURE="16C"
 BARCODE_ORIENTATION="FIRST_BP_RC"
-BAM_SIZE="1"   # in GB by default
+BAM_SIZE="5"   # in GB by default
 OUTFILE="broadfinal"    ##name of the output bam file
 PARAMS=""     ## bwa-mem2 paramas barring -t <threads> option

@@ -28,7 +28,7 @@ Notes: Step 1 installs the following pre-requisites. The script is only written 
 Notes:  Installs miniconda, creates an environment in it, and installs required packages. It also installs bwa-mem2, samtools, and warptools (fastqprocess).
 
 Important Notes:
-1. The code is tested on GCP C3 instance (176 and 88 vCPUs) w/ ubuntu 22.04 using the install script.
+1. The code is tested on GCP C3 instance (176 and 88 vCPUs) w/ ubuntu 22.04 w/ gcc 11.3.0 using the install script.
 2. Thde code is also tested on an onprem cluster node.
 
 ### How to run (2-step process):

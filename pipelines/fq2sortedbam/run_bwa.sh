@@ -98,9 +98,13 @@ BINDING=socket
 echo "mode: "$mode
 
 ## parameters
-READ1=${R1}
-READ2=${R2}
-READ3=${R3}
+READ1=${R1[@]}
+READ2=${R2[@]}
+READ3=${R3[@]}
+echo "reads:"
+echo "READ1 $READ1"
+echo "READ2 $READ2"
+echo "READ3 $READ3"
 
 whitelist=""
 read_structure=""

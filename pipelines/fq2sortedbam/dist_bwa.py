@@ -341,9 +341,9 @@ def main(argv):
     parser.add_argument('--input',help="Input data directory")
     parser.add_argument('--temp',default="",help="Intermediate data directory")
     parser.add_argument('--refdir',default="",help="Reference genome directory")
-    parser.add_argument('--read1',default="",help="name of r1 files seperated by spaces")
-    parser.add_argument('--read2',default="",help="name of r2 files seperated by spaces")
-    parser.add_argument('--read3',default="",help="name of r3 files seperated by spaces")
+    parser.add_argument('--read1',default="", nargs='+',help="name of r1 files seperated by spaces")
+    parser.add_argument('--read2',default="", nargs='+',help="name of r2 files seperated by spaces")
+    parser.add_argument('--read3',default="", nargs='+',help="name of r3 files seperated by spaces")
     parser.add_argument('--whitelist',default="whitelist.txt",help="10x whitelist file")
     parser.add_argument('--read_structure',default="16C",help="read structure")
     parser.add_argument('--barcode_orientation',default="FIRST_BP_RC",help="barcode orientation")
@@ -374,6 +374,9 @@ def main(argv):
         read1 = args["read1"]
         read2 = args["read2"]
         read3 = args["read3"]
+        #print(read1)
+        #print(read2)
+        #print(read3)
     whitelist=args["whitelist"]
     read_structure=args["read_structure"]
     barcode_orientation=args["barcode_orientation"]
@@ -460,7 +463,8 @@ def main(argv):
                 print("Starting fqprocess....", flush=True)
 
                 tic = time.time()
-                rl1, rl2, rl3 = read1.split(), read2.split(), read3.split()
+                #rl1, rl2, rl3 = read1.split(), read2.split(), read3.split()
+                rl1, rl2, rl3 = read1, read2, read3
                 barcode_index = rl2[0]
                 #cmd='zcat ' + folder/barcode_index '| sed -n "2~4p" | shuf -n 1000 > ' + output + '/downsample.fq'
                 bash_command = '''zcat '''+  folder + "/" + barcode_index + \
@@ -481,11 +485,12 @@ def main(argv):
                 with open('best_match.txt', 'r') as file:
                     barcode_choice = file.read().strip()
 
-                r1, r2, r3="--R1 ", "--R2 ", "--R3 "
+                #r1, r2, r3="--R1 ", "--R2 ", "--R3 "
+                r1, r2, r3="", "", ""
                 for r in range(len(rl1)):
-                    r1+=folder + "/" + rl1[r] + ' '
-                    r2+=folder + "/" + rl2[r] + ' '
-                    r3+=folder + "/" + rl3[r] + ' '
+                    r1+="--R1 " + folder + "/" + rl1[r] + ' '
+                    r2+="--R2 " + folder + "/" + rl2[r] + ' '
+                    r3+="--R3 " + folder + "/" + rl3[r] + ' '
 
                 ## print(r1)
                 ## print(r2)
@@ -515,7 +520,18 @@ def main(argv):
         #fn2 = pragzip_reader( comm, int(cpus), folder+rfile2, output, last=True )
         #fn1 = os.path.join(folder, "fastq_R1_" + str(rank) + ".fastq.gz")
         #fn2 = os.path.join(folder, "fastq_R3_" + str(rank) + ".fastq.gz")
+        if rank == 0:
+            for r in range(nranks):
+                fn1 = "fastq_R1_" + str(r) + ".fastq.gz"
+                fn2 = "fastq_R3_" + str(r) + ".fastq.gz"
+                if os.path.isfile(fn1) == False or os.path.isfile(fn2) == False:
+                    print(f"Error: Number of files fastq files ({r}) < number of ranks ({nranks})")
+                    print(f"!!! Fastq file(s) are not available for processing by rank {r} aborting..\n\n")
+                    #sys.exit(1)
+                    error_code = 1
+                    comm.Abort(error_code)
 
+        comm.barrier()
         fn1 = "fastq_R1_" + str(rank) + ".fastq.gz"
         fn2 = "fastq_R3_" + str(rank) + ".fastq.gz"
         #fn1 = folder + "/fastq_R1_" + str(rank) + ".fastq.gz"
