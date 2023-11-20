@@ -2,9 +2,42 @@
 # Open Omics Acceleration Framework
 Intel lab's open sourced data science framework for accelerating digital biology
 
+# Introduction
+We are in the epoch of digital biology, that is fueled by the convergence of three revolutions: 1) Measurement of biological systems at high resolution resulting in massive multi-modal, multi-scale, unstructured, distributed data, 2) Novel data science (AI and data management) techniques on this data, and 3) Wide-spread cloud use enabling massive compute and public data repositories, large collaborative projects and consortia. It will require computing and data management at unprecedented scale and speed. However, performance alone would not suffice if it significantly compromised the productivity of biologists and data scientists who are at the forefront of this transformation. 
+
+With a goal to build a performant, cost effective and productive platform, we are building **Open Omics acceleration framework**: a one-click, containerized, customizable, open-sourced framework for accelerating digital biology research. The framework is being built with a modular design that keeps in mind the different ways the users would want to interact with it. As shown in the following block diagram, it consists of three layers:
+* **Pipeline layer**: for users who are looking for one click solution to run standard pipelines. Currently, we support the following pipelines:
+  * [**DeepVariant based germline pipeline for variant calling (fq2vcf)**](https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/tree/main/pipelines/deepvariant): Given paired end gzipped fastq files of an individual, this workflow performs sequence mapping ([BWA-MEM2](https://github.com/bwa-mem2/bwa-mem2)), sorting ([SAMtools](https://github.com/samtools/samtools) sort) and variant calling ([Open Omics DeepVariant](https://github.com/IntelLabs/open-omics-deepvariant)) to call the variants in the genome of the individual.
+  * [**AlphaFold2-based protein folding**](https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/tree/main/pipelines/alphafold2): Given one or more protein sequences, this workflow performs preprocessing (database search and multiple sequence alignment using Open Omics [HMMER](https://github.com/IntelLabs/hmmer) and [HH-suite](https://github.com/IntelLabs/hh-suite)) and structure prediction ([Open Omics AlphaFold2](https://github.com/IntelLabs/open-omics-alphafold)) to output the structure(s) of the protein sequences.
+  * [**Single cell RNASeq analysis**](https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/tree/main/pipelines/single_cell_pipeline): Given a cell by gene matrix, this [scanpy](https://github.com/scverse/scanpy) based workflow performs data preprocessing (filter, linear regression and normalization), dimensionality reduction (PCA), clustering (Louvain/Leiden/kmeans) to cluster the cells into different cell types and visualize those clusters (UMAP/t-SNE).
+* **Toolkit layer**: for users who want to use individual tools or to create their own custom pipelines by combining various tools.
+* **Building blocks layer**: for tool developers, this layer consists of key building blocks -- biology specific and generic AI algorithms and data structures -- that can replace ones used in existing tools to accelerate them or can be used as ingredients to build new efficient tools.
+
 <p align="center">
 <img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/Open-Omics-Acceleration-Framework-v2.0.JPG" height="300"/a></br>
 </p> 
+
+# Getting Started
+```sh
+# Download release
+curl -L https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/2.0/Source_code_with_submodules.tar.gz
+tar -xvzf Source_code_with_submodules.tar.gz
+
+# Clone master
+git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework
+
+# Go to the pipelines directory
+cd pipelines
+# For running a specific pipeline, follow the instructions in the respective pipeline's README file.
+
+# Go to the directory with toolkit
+cd applications
+
+# Go to the directory with biology building blocks
+cd lib/tal
+
+```
+
 
 # Blogs & Related News
 * [Intel Xeon is all you need for AI inference: Performance Leadership on Real World Applications](https://community.intel.com/t5/Blogs/Tech-Innovation/Artificial-Intelligence-AI/Intel-Xeon-is-all-you-need-for-AI-inference-Performance/post/1506083). Blog under Intel Communities/Blogs/Tech Innovation/Artificial Intelligence (AI); July, 2023.
