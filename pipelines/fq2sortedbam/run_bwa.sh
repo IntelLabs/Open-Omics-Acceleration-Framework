@@ -1,11 +1,11 @@
 source config
 
-mode="fqprocess"
+mode="multifq2sortedbam"
 if [ "$#" == "1" ]
     then
     mode=$1
 else
-    echo "<exec> <pragzip/flatmode/fqprocess>"
+    echo "<exec> <pragzip/flatmode/fqprocessonly/multifq2sortedbam>"
     exit
 fi
 echo "mode: "$mode
@@ -57,10 +57,10 @@ echo "Cores per node: "$num_physical_cores_per_nodes
 echo "Total number of ranks: "${total_num_ranks}
 echo "Ranks per node: "${ranks_per_node}
 echo "#############################################"
-if [ "$R3" == "" ]
-then
-    R3="NONE"
-fi
+#if [ "$R3" == "" ]
+#then
+#    R3="NONE"
+#fi
 
 INDIR=$INPUT_DIR
 OUTDIR=$OUTPUT_DIR
@@ -101,15 +101,22 @@ echo "mode: "$mode
 READ1=${R1[@]}
 READ2=${R2[@]}
 READ3=${R3[@]}
+READI1=${I1[@]}
+
 echo "reads:"
 echo "READ1 $READ1"
 echo "READ2 $READ2"
 echo "READ3 $READ3"
+echo "READI1 $READI1"
+echo "R1PREFIX $R1PREFIX"
+echo "R3PREFIX $R3PREFIX"
 
 whitelist=""
 read_structure=""
 barcode_orientation=""
 bam_size=""
+sample_id=""
+output_format=""
 params=""
 outfile=""
 istart=""
@@ -118,6 +125,8 @@ istart=""
 [[ -n $READ_STRUCTURE ]] && read_structure="--read_structure $READ_STRUCTURE" && echo "Read Structure: $read_structure"
 [[ -n $BARCODE_ORIENTATION ]] && barcode_orientation="--barcode_orientation $BARCODE_ORIENTATION" && echo "Barcode Orientation: $barcode_orientation"
 [[ -n $BAM_SIZE ]] && bam_size="--bam_size $BAM_SIZE" && echo "BAM Size: $bam_size"
+[[ -n $SAMPLE_ID ]] && sample_id="--sample_id $SAMPLE_ID" && echo "sample_id: $sample_id"
+[[ -n $OUTPUT_FORMAT ]] && output_format="--output_format $OUTPUT_FORMAT" && echo "output_format: $output_format"
 [[ -n $PARAMS ]] && params="--params $PARAMS" && echo "params: $params"
 [[ -n $OUTFILE ]] && outfile="--outfile $OUTFILE" && echo "outfile: $outfile"
 if [ "$ISTART" == "True" ]
@@ -143,7 +152,7 @@ echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $PPN ppn.
 # Todo : Make index creation parameterized.
 
 exec=dist_bwa.py
-mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read2 $READ2 --read3 $READ3 --cpus $CPUS --threads $THREADS --keep_unmapped ${whitelist} ${read_structure} ${barcode_orientation} ${bam_size} ${params} ${outfile} ${istart}  --mode $mode   2>&1 | tee ${OUTDIR}log.txt
+mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read2 $READ2 --read3 $READ3 --cpus $CPUS --threads $THREADS --keep_unmapped ${whitelist} ${read_structure} ${barcode_orientation} ${bam_size} ${params} ${outfile} ${istart} ${sample_id} ${output_format} --r1prefix $R1PREFIX --r3prefix $R3PREFIX --mode $mode   2>&1 | tee ${OUTDIR}log.txt
 
 
 

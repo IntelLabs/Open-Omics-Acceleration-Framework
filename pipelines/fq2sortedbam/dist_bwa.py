@@ -1,3 +1,33 @@
+#*************************************************************************************
+#                           The MIT License
+#
+#   Distirbuted Parallel BWA-MEM2  (Sequence alignment using Burrows-Wheeler Transform),
+#   Copyright (C) 2023  Intel Corporation.
+#
+#   Permission is hereby granted, free of charge, to any person obtaining
+#   a copy of this software and associated documentation files (the
+#   "Software"), to deal in the Software without restriction, including
+#   without limitation the rights to use, copy, modify, merge, publish,
+#   distribute, sublicense, and/or sell copies of the Software, and to
+#   permit persons to whom the Software is furnished to do so, subject to
+#   the following conditions:
+#
+#   The above copyright notice and this permission notice shall be
+#   included in all copies or substantial portions of the Software.
+#
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+#   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+#   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+#   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+#   BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+#   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+#   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#   SOFTWARE.
+#
+#Authors: Babu Pillai <padmanabhan.s.pillai@intel.com>; Vasimuddin Md <vasimuddin.md@intel.com>;
+#*****************************************************************************************/
+
+
 from subprocess import Popen, PIPE, run
 import subprocess
 import time
@@ -341,14 +371,19 @@ def main(argv):
     parser.add_argument('--input',help="Input data directory")
     parser.add_argument('--temp',default="",help="Intermediate data directory")
     parser.add_argument('--refdir',default="",help="Reference genome directory")
-    parser.add_argument('--read1',default="", nargs='+',help="name of r1 files seperated by spaces")
-    parser.add_argument('--read2',default="", nargs='+',help="name of r2 files seperated by spaces")
-    parser.add_argument('--read3',default="", nargs='+',help="name of r3 files seperated by spaces")
+    parser.add_argument('--read1',default="", nargs='+',help="name of r1 files (for fqprocess) seperated by spaces")
+    parser.add_argument('--read2',default="", nargs='+',help="name of r2 files (for fqprocess) seperated by spaces")
+    parser.add_argument('--read3',default="", nargs='+',help="name of r3 files (for fqprocess) seperated by spaces")
+    parser.add_argument('--readi1',default="", nargs='+',help="name of i1 files (for fqprocess) seperated by spaces")
+    parser.add_argument('--r1prefix',default="", help="processed R1 files for bwa-mem2")
+    parser.add_argument('--r3prefix',default="", help="processed R3 files for bwa-mem2")
     parser.add_argument('--whitelist',default="whitelist.txt",help="10x whitelist file")
     parser.add_argument('--read_structure',default="16C",help="read structure")
     parser.add_argument('--barcode_orientation',default="FIRST_BP_RC",help="barcode orientation")
+    parser.add_argument('--sample_id',default="",help="sample id")
+    parser.add_argument('--output_format',default="",help="output_format")
     parser.add_argument('--output',help="Output data directory")
-    parser.add_argument('--mode', default='', help="flatmode/fqprocess/pragzip. flatmode is just bwa w/o sort.")
+    parser.add_argument('--mode', default='multifq', help="flatmode/fqprocessonly/multifq/pragzip. flatmode is just bwa w/o sort.")
     parser.add_argument('--params', default='', help="parameter string to bwa-mem2 barring threads paramter")
     parser.add_argument("-i", "--index", help="name of index file")
     parser.add_argument("-p", "--outfile", help="prefix for read files")
@@ -374,6 +409,7 @@ def main(argv):
         read1 = args["read1"]
         read2 = args["read2"]
         read3 = args["read3"]
+        readi1 = args["readi1"]
         #print(read1)
         #print(read2)
         #print(read3)
@@ -395,6 +431,12 @@ def main(argv):
     prof=args["profile"]
     global keep
     keep=args["keep_unmapped"]
+
+    sample_id=args['sample_id']
+    if sample_id == "": sample_id = output
+    output_format = args["output_format"]
+    r1prefix=args["r1prefix"]  ## for mutlifq2sortedbam mode reading 'fqprocess' processed fastq files
+    r3prefix=args["r3prefix"]
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     nranks = comm.Get_size()
@@ -450,80 +492,86 @@ def main(argv):
 
         return
 
-    elif mode == 'fqprocess':
+    elif mode == 'fqprocessonly':
         ## fastq preprocess and split
         if rank == 0:
-            if True:
-                print("#############################################")
-                print("Whitelist: ", whitelist)
-                print("read_structure: ", read_structure)
-                print("barcode_orientation: ", barcode_orientation)
-                print("bam_size: ", bam_size)
-                print("#############################################")
-                print("Starting fqprocess....", flush=True)
+            print("#############################################")
+            print("Whitelist: ", whitelist)
+            print("read_structure: ", read_structure)
+            print("barcode_orientation: ", barcode_orientation)
+            print("bam_size: ", bam_size)
+            print("sample_id: ", sample_id)
+            print("output_format: ", output_format)
+            print("#############################################")
+            print("Starting fqprocess....", flush=True)
 
-                tic = time.time()
-                #rl1, rl2, rl3 = read1.split(), read2.split(), read3.split()
-                rl1, rl2, rl3 = read1, read2, read3
-                barcode_index = rl2[0]
-                #cmd='zcat ' + folder/barcode_index '| sed -n "2~4p" | shuf -n 1000 > ' + output + '/downsample.fq'
-                bash_command = '''zcat '''+  folder + "/" + barcode_index + \
-                ''' | sed -n '2~4p' | shuf -n 1000 > downsample.fq'''
-                a = run(bash_command,shell=True, check=True, executable='/bin/bash')
+            tic = time.time()
+            #rl1, rl2, rl3 = read1.split(), read2.split(), read3.split()
+            rl1, rl2, rl3, ri1 = read1, read2, read3, readi1
+            barcode_index = rl2[0]
+            #cmd='zcat ' + folder/barcode_index '| sed -n "2~4p" | shuf -n 1000 > ' + output + '/downsample.fq'
+            bash_command = '''zcat '''+  folder + "/" + barcode_index + \
+            ''' | sed -n '2~4p' | shuf -n 1000 > downsample.fq'''
+            a = run(bash_command,shell=True, check=True, executable='/bin/bash')
+            assert a.returncode == 0
+
+            # dynamic-barcode-orientation downsample.fq  whitelist best_match.txt
+            try:
+                cmd='python3 warp-tools/tools/scripts/dynamic-barcode-orientation.py downsample.fq ' \
+                    + whitelist + ' best_match.txt'
+                a = run(cmd, shell=True, check=True, executable='/bin/bash')
                 assert a.returncode == 0
+            except:
+                print("Exception in dynamic-barcode-orientation!!")
 
-                # dynamic-barcode-orientation downsample.fq  whitelist best_match.txt
-                try:
-                    cmd='python3 warp-tools/tools/scripts/dynamic-barcode-orientation.py downsample.fq ' \
-                        + whitelist + ' best_match.txt'
-                    a = run(cmd, shell=True, check=True, executable='/bin/bash')
-                    assert a.returncode == 0
-                except:
-                    print("Exception in dynamic-barcode-orientation!!")
+            # Read the contents of the file into a variable
+            with open('best_match.txt', 'r') as file:
+                barcode_choice = file.read().strip()
 
-                # Read the contents of the file into a variable
-                with open('best_match.txt', 'r') as file:
-                    barcode_choice = file.read().strip()
+            #r1, r2, r3="--R1 ", "--R2 ", "--R3 "
+            r1, r2, r3, i1 ="", "", "", ""
+            for r in range(len(rl1)):
+                r1+="--R1 " + folder + "/" + rl1[r] + ' '
+                r2+="--R2 " + folder + "/" + rl2[r] + ' '
+                r3+="--R3 " + folder + "/" + rl3[r] + ' '
 
-                #r1, r2, r3="--R1 ", "--R2 ", "--R3 "
-                r1, r2, r3="", "", ""
-                for r in range(len(rl1)):
-                    r1+="--R1 " + folder + "/" + rl1[r] + ' '
-                    r2+="--R2 " + folder + "/" + rl2[r] + ' '
-                    r3+="--R3 " + folder + "/" + rl3[r] + ' '
+            for r in range(len(ri1)):
+                i1+="--I1 " + folder + "/" + ri1[r] + ' '
 
-                ## print(r1)
-                ## print(r2)
-                ## print(r3)
-                cmd=f'warp-tools/tools/fastqpreprocessing/bin/fastqprocess --verbose --bam-size ' \
-                    +  str(bam_size) + \
-                    ' --sample-id ' + output + ' ' + r1 + ' ' + r2 + ' ' + r3 + \
-                    ' --output-format "FASTQ" '+  '--barcode-orientation ' + barcode_choice + \
-                    ' --read-structure ' + read_structure + '  --white-list ' + whitelist
+            ## print(r1)
+            ## print(r2)
+            ## print(r3)
+            cmd=f'warp-tools/tools/fastqpreprocessing/bin/fastqprocess --verbose --bam-size ' \
+                +  str(bam_size) + \
+                ' --sample-id ' + sample_id + ' ' + r1 + ' ' + r2 + ' ' + r3 + \
+                ' --output-format ' + output_format +  '  --barcode-orientation ' + barcode_choice + \
+                ' --read-structure ' + read_structure + '  --white-list ' + whitelist
 
-                print('fastqprocess cmd: ', cmd)
-                a=run(cmd, shell=True, check=True, executable='/bin/bash')
-                assert a.returncode == 0
-                ## Create #output files equal to the number of ranks
-                ## create output file names as rprefix + str(rank) + '_1/2.fastq.gz'
-                toc = time.time()
-                print("Time for fq processing: ", toc - tic)
+            print('fastqprocess cmd: ', cmd)
+            a=run(cmd, shell=True, check=True, executable='/bin/bash')
+            assert a.returncode == 0
+            ## Create #output files equal to the number of ranks
+            ## create output file names as rprefix + str(rank) + '_1/2.fastq.gz'
+            toc = time.time()
+            print("Time for fq processing: ", toc - tic)
 
         # Preindex reference genome if requested
         comm.barrier()
+        return
+
+    elif mode == "multifq":
         if rank==0:
             print("\nbwa-mem2 starts..")
 
         # Execute bwamem2 -- may include sort, merge depending on mode
         begin0 = time.time()
-        #fn1 = pragzip_reader( comm, int(cpus), folder+rfile1, output )
-        #fn2 = pragzip_reader( comm, int(cpus), folder+rfile2, output, last=True )
-        #fn1 = os.path.join(folder, "fastq_R1_" + str(rank) + ".fastq.gz")
-        #fn2 = os.path.join(folder, "fastq_R3_" + str(rank) + ".fastq.gz")
         if rank == 0:
             for r in range(nranks):
-                fn1 = "fastq_R1_" + str(r) + ".fastq.gz"
-                fn2 = "fastq_R3_" + str(r) + ".fastq.gz"
+                #fn1 = "fastq_R1_" + str(r) + ".fastq.gz"
+                #fn2 = "fastq_R3_" + str(r) + ".fastq.gz"
+                fn1 = os.path.join(folder, r1prefix + "_" + str(r) + ".fastq.gz")
+                fn2 = os.path.join(folder, r3prefix + "_" + str(r) + ".fastq.gz")
+
                 if os.path.isfile(fn1) == False or os.path.isfile(fn2) == False:
                     print(f"Error: Number of files fastq files ({r}) < number of ranks ({nranks})")
                     print(f"!!! Fastq file(s) are not available for processing by rank {r} aborting..\n\n")
@@ -532,8 +580,11 @@ def main(argv):
                     comm.Abort(error_code)
 
         comm.barrier()
-        fn1 = "fastq_R1_" + str(rank) + ".fastq.gz"
-        fn2 = "fastq_R3_" + str(rank) + ".fastq.gz"
+        #fn1 = "fastq_R1_" + str(rank) + ".fastq.gz"
+        #fn2 = "fastq_R3_" + str(rank) + ".fastq.gz"
+        fn1 = os.path.join(folder, r1prefix + "_" + str(rank) + ".fastq.gz")
+        fn2 = os.path.join(folder, r3prefix + "_" + str(rank) + ".fastq.gz")
+
         #fn1 = folder + "/fastq_R1_" + str(rank) + ".fastq.gz"
         #fn2 = folder + "/fastq_R3_" + str(rank) + ".fastq.gz"
         if rank == 0:
