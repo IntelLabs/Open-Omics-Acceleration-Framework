@@ -6,15 +6,15 @@ The pipeline takes input fastq files and produces sorted BAM file using the foll
 3. sorting (using samtools, partially overlapped (the communication part) with bwa-mem2 compute)
 4. concatenation of the bam files produced in the previous stages (using samtools)
 
-The code supports distributed memory parallel execution on a set of compute nodes using MPI. However, right now we've setup the scripts to execute on a single compute node (can have multiple sockets or NUMA domains) using multiple MPI ranks. We plan to enable the code for distributed parallel execution on multiple compute nodes in the future.
-**We've tested the code on GCP C3 instance as well as on on-prem cluster node containing Intel(R) Xeon(R) 4th generation scalable processor**.
+The code supports distributed memory parallel execution on a set of compute nodes using MPI. However, right now we've setup the scripts to execute on a single compute node (can have multiple sockets or NUMA domains) using multiple MPI ranks. We plan to enable the code for distributed parallel execution on multiple compute nodes in the future.  
+**We've tested the code on GCP C3 instance as well as on on-prem cluster node containing Intel(R) Xeon(R) 4th generation scalable processor**.  
 
-MPI:
-MPI is a library for parallel execution where each MPI rank executes one process where processes interact with each other through message passing interface (MPI).
+MPI:  
+MPI is a library for parallel execution where each MPI rank executes one process where processes interact with each other through message passing interface (MPI).  
 
 ### Modes:
-Distributed bwa-mem2 supports 3 different modes:
-1. fqprocessonly: Invokes Broad's fastqprocess tool on raw input files.  - **This mode is specifically designed for Broad's requirements.**
+Distributed bwa-mem2 supports 3 different modes:  
+1. fqprocessonly: Invokes Broad's fastqprocess tool on raw input files.  - **This mode is specifically designed for Broad's requirements.**  
    - It takes R1, R2, R3, (I1) fastq files as input
    - It produces processed fastq files. The number of files produced are dependent on the bam_size parameter
    - Input paramters can be provided through config file
@@ -34,37 +34,37 @@ Distributed bwa-mem2 supports 3 different modes:
    - It uses pragzip library to split the input gzipped fastq files into chunks and process those chunks in parallel using multiple instances of bwa-mem2
    - It uses pragzip library to first index the input file, and then this file is equally divided (or chunked) among bwa-mem2 instances. These equal size chunks are used as input to bwa-mem2 -- one chunk per bwa-mem2 instance. The pragzip index of the input files helps in locating and reading these chunks from the input gzip file.
    - Multiple SAM files from each bwa-mem2 instance are sorted using SAMTools
-   - The sorted BAM files are concatenated to produce the final bam file
+   - The sorted BAM files are concatenated to produce the final bam file  
 
-4. flatmode: Same as pragzip mode but does not sort and concat the output SAM/BAM files from each MPI rank
+4. flatmode: Same as pragzip mode but does not sort and concat the output SAM/BAM files from each MPI rank  
 
 
 
 ### Installation (2-step process):
-1. ```./basic_setup_ubuntu.sh```
-Notes: Step 1 installs the following pre-requisites. The script is only written for ubuntu. In case of other OSes, the users are instructed to manually install these dependencies. The installaion requires sudo access.
-       - make
-       - gcc/g++
-       - autoconf
-       - wget
-       - git
-       - numactl
-       - zlib1g-dev
-       - libbz2-dev
-       - liblzma-dev
-       - libncurses5-dev
+1. ```./basic_setup_ubuntu.sh```  
+Notes: Step 1 installs the following pre-requisites. The script is only written for ubuntu. In case of other OSes, the users are instructed to manually install these dependencies. The installaion requires sudo access.  
+       - make  
+       - gcc/g++  
+       - autoconf  
+       - wget  
+       - git  
+       - numactl  
+       - zlib1g-dev  
+       - libbz2-dev  
+       - liblzma-dev  
+       - libncurses5-dev  
 
-2. ```./install.sh```
-Notes:  Installs miniconda, creates an environment in it, and installs required packages. It also installs bwa-mem2, samtools, and warptools (fastqprocess).
+2. ```./install.sh```    
+Notes:  Installs miniconda, creates an environment in it, and installs required packages. It also installs bwa-mem2, samtools, and warptools (fastqprocess).  
 
-Important Notes:
-1. The code is tested on GCP C3 instance (176 and 88 vCPUs) w/ ubuntu 22.04 w/ gcc 11.3.0 using the install script.
-2. Thde code is also tested on an onprem cluster node.
+Important Notes:   
+1. The code is tested on GCP C3 instance (176 and 88 vCPUs) w/ ubuntu 22.04 w/ gcc 11.3.0 using the install script.   
+2. Thde code is also tested on an onprem cluster node.  
 
 ### How to run (3-step process):
-1. ```./print_config.sh```   ## this reports the number of required splits of the inpute file. Use this to tune bam_size parameter in step 2 below.
+1. ```./print_config.sh```   ## this reports the number of required splits of the inpute file. Use this to tune bam_size parameter in step 2 below.  
 
-2. Setup "config" file in the current folder. It supplies parameters to the pipeline. The "config" file contains the following parameters:
+2. Setup "config" file in the current folder. It supplies parameters to the pipeline. The "config" file contains the following parameters:  
 ```
 export INPUT_DIR=~/input/
 export OUTPUT_DIR=~/output/
@@ -86,31 +86,33 @@ PARAMS=""
 ISTART="False"
 ```
 
-INPUT_DIR - directory path containing reference genome, bwa-mem2 index, and input read files
-OUTPUT_DIR - directory path for the output SAM/BAM files and intermediate files
-REF - reference sequence file
-OUTFILE - name of the output sorted bam file, by default it is set to "final"
-PARAMS - parameters to bwa-mem2 mapping, excluding "-t <threads>" as value for -t is set automatically
-ISTART    - flag for bwa-mem2 index creation. You can use this if your bwa-mem2 index is not already created or present in the INPUT_DIR location provided in config file.
-%% multifq mode parameters: set these parameters if you are running multifq mode
-R1PREFIX - fastq R1 file name prefix. e.g fastq_R1_0.fastq.gz, fastq_R1_1.fastq.gz, here "_0", "_1" can be used by MPI ranks to identify their file to process. Use this for fastq input when running multifq mode. ** These files shouuld be present at INPUT_DIR location **.
-R3PREFIX - fastq R3 file name prefix. e.g fastq_R3_0.fastq.gz, fastq_R3_1.fastq.gz, here "_0", "_1" can be used by MPI ranks to identify their file to process. Use this for fastq input when running multifq mode. ** These files shouuld be present at INPUT_DIR location **.
-%%fqpocess mode paramters: set these parameters if you are running fastqprocess mode
-R1, R2, R3, I1 - input read files as input to fqprocess. These files shouuld be present at INPUT_DIR location.
-WHITELIST - 10x genomics whitelist file for fqprocess
-READ_STRUCTURE - read structure for fqprocess
-BARCODE_ORIENTATION - barcode orientation for fqprocess
-BAM_SIZE - threshold on the size of the output files from fqprocess
-SAMPLE_ID="" - parameter to fqprocess
-OUTPUT_FORMAT="FASTQ" - parameters to fqprocess for ouptut file format
+INPUT_DIR - directory path containing reference genome, bwa-mem2 index, and input read files  
+OUTPUT_DIR - directory path for the output SAM/BAM files and intermediate files  
+REF - reference sequence file  
+OUTFILE - name of the output sorted bam file, by default it is set to "final"  
+PARAMS - parameters to bwa-mem2 mapping, excluding "-t <threads>" as value for -t is set automatically  
+ISTART    - flag for bwa-mem2 index creation. You can use this if your bwa-mem2 index is not already created or present in the INPUT_DIR location provided in config file.  
+
+%% multifq mode parameters: set these parameters if you are running multifq mode  
+R1PREFIX - fastq R1 file name prefix. e.g fastq_R1_0.fastq.gz, fastq_R1_1.fastq.gz, here "_0", "_1" can be used by MPI ranks to identify their file to process. Use this for fastq input when running multifq mode. **These files should be present in INPUT_DIR**.  
+R3PREFIX - fastq R3 file name prefix. e.g fastq_R3_0.fastq.gz, fastq_R3_1.fastq.gz, here "_0", "_1" can be used by MPI ranks to identify their file to process. Use this for fastq input when running multifq mode. **These files should be present in INPUT_DIR**.  
+
+%%fqpocess mode paramters: set these parameters if you are running fastqprocess mode  
+R1, R2, R3, I1 - input read files as input to fqprocess. These files shouuld be present at INPUT_DIR location.  
+WHITELIST - 10x genomics whitelist file for fqprocess  
+READ_STRUCTURE - read structure for fqprocess  
+BARCODE_ORIENTATION - barcode orientation for fqprocess  
+BAM_SIZE - threshold on the size of the output files from fqprocess  
+SAMPLE_ID="" - parameter to fqprocess  
+OUTPUT_FORMAT="FASTQ" - parameters to fqprocess for ouptut file format  
 
 
 3. Run
-```./run_bwa.sh <mode>```
-e.g.: ```./run_bwa.sh multifq```
+```./run_bwa.sh <mode>```  
+e.g.: ```./run_bwa.sh multifq```  
 
 Commentary:
-1. User needs to execute all the above three steps for "fqprocess" mode to get the desired number of processed fastq files. If the input files are available then for multifq mode just execute step 2 & 3 above
+1. **User needs to execute all the above three steps for "fqprocess" mode to get the desired number of processed fastq files. If the input files are available then for multifq mode just execute step 2 & 3 above.**
 2. run_bwa.sh automatically determines the optimal configuration (number of MPI ranks) for the distributed bwa-mem2 run based on the number of cores/sockets/NUMA on the compute node. Each MPI rank performs bwa-mem2 and downstream processing in parallel.
 3. The fastqprocess executes only on rank 0 and writes the processed fastq files in the **current working directory** as fastq\_R1\_\<i\> and fastq\_R2\_\<i\>, here "i" represents the numbering of the split files e.g. fastq\_R1\_0, fastq\_R1\_1, ....
 4. Each MPI rank executes on one processed fastq file (paired-end).
