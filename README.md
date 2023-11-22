@@ -18,6 +18,22 @@ With a goal to build a performant, cost effective and productive platform, we ar
 <img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/Open-Omics-Acceleration-Framework-v2.0.JPG" height="300"/a></br>
 </p> 
 
+With a goal of providing a one-stop platform, this framework brings our following repositories for digital biology under one umbrella:
+* Architecture efficient versions of several popular applications as part of our toolkit layer
+
+| Original Application | Our architecure-efficient version |
+| --- | --- |
+| Short read sequence mapping tool, [BWA-MEM](https://github.com/lh3/bwa) | [BWA-MEM2](https://github.com/bwa-mem2/bwa-mem2) |
+| long read sequence mapping tool, [minimap2](https://github.com/lh3/minimap2) | [mm2-fast](https://github.com/bwa-mem2/mm2-fast) |
+| Deep learning based variant calling tool, [DeepVariant](https://github.com/google/deepvariant) | [Open-Omics-DeepVariant](https://github.com/IntelLabs/open-omics-deepvariant) |
+| Deep learning based tool for protein structure prediction, [AlphaFold2](https://github.com/google-deepmind/alphafold) | [Open-Omics-AlphaFold](https://github.com/IntelLabs/open-omics-alphafold) |
+| Tool for biological sequence analysis using profile HMMs, [HMMER](https://github.com/EddyRivasLab/hmmer) | [IntelLabs HMMER](https://github.com/IntelLabs/hmmer) |
+| Tool for HMM based sensitive protein sequence searching, [HH-suite](https://github.com/soedinglab/hh-suite) | [IntelLabs HH-suite](https://github.com/IntelLabs/hh-suite) |
+
+* [Trans-Omics Acceleration Library](https://github.com/IntelLabs/Trans-Omics-Acceleration-Library): As part of our building blocks layer, this is a library containing architecture-efficient versions of key algorithms and data structures used for Omics analysis. 
+
+In addition, we also use several existing AI libraries: oneDNN, oneDAL, oneCCL, Katana Graph, LIBXSMM.
+
 # Getting Started
 ```sh
 # Download release
@@ -34,7 +50,7 @@ cd pipelines
 # Go to the directory with toolkit
 cd applications
 
-# Go to the directory with biology building blocks
+# Go to the directory with biology building blocks to access Trans-Omics Acceleration Library
 cd lib/tal
 
 ```
