@@ -1,11 +1,16 @@
 # OpenOmics Deepvariant Pipeline
-### OpenOmics Deepvariant Pipeline is a highly optimized, distirbuted, deep-learning-based short-read germline variant calling pipeline on x86 CPU clusters. The pipeline comprises of: 1. bwa-mem2 (a highly optimized version of bwa-mem) for sequence mapping, 2. distributed SAM sorting using samtools, and 3. an optimized version of DeepVariant tools for variant calling.
+### OpenOmics Deepvariant Pipeline is a highly optimized, distributed, deep-learning-based short-read germline variant calling pipeline on x86 CPU clusters. The pipeline comprises of: 1. bwa-mem2 (a highly optimized version of bwa-mem) for sequence mapping, 2. distributed SAM sorting using samtools, and 3. an optimized version of DeepVariant tools for variant calling. The following figure illustrates the pipeline.
+
+<p align="center">
+<img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/deepvariant-fq2vcf.jpg"/a></br>
+</p> 
+
 
 ### 0. Notes:
 * The source code of bwa-mem2, samtools, and DeepVariant are residing in:
 ```Open-Omics-Acceleration-Framework/applications/ ```.
 * We build bwa-mem2 and samtools from source; while for DeepVariant, we build a docker image and then use the built image while running the pipeline. Note that, the pre-built image is not available on dockerhub and the image needs to be built from source.
-* We provide scripts for setting-up miniconda environment (setup_env.sh), compilation of the required pipeline tools, builing & loading of DeepVariant docker image (setup.py). These scripts located at _Open-Omics-Acceleration-Framework/pipelines/deepvariant_. Note that, all the script by default are written for docker.  
+* We provide scripts for setting-up miniconda environment (setup_env.sh), compilation of the required pipeline tools, building & loading of DeepVariant docker image (setup.py). These scripts located at _Open-Omics-Acceleration-Framework/pipelines/deepvariant_. Note that, all the scripts are, by default, written for docker.  
 
 * Prerequisite : The following are pre-requisites for the pipeline -  our scripts assumed these packages are already installed in the system.  
         * Docker / Podman  
@@ -44,7 +49,7 @@ hostname > hostfile
 ```
 
 ### 4. Compilation of tools, creation and distribution of docker/podman image on the allocated nodes.
-To run docker without sudo acess follow [link](https://docs.docker.com/engine/install/linux-postinstall/), or use "_sudo docker_" as an argument in the below script instead of docker.
+To run docker without sudo access follow [link](https://docs.docker.com/engine/install/linux-postinstall/), or use "_sudo docker_" as an argument in the below script instead of docker.
 ```bash
 # If you are using single node, comment out line No. 56, i.e., "bash load_deepvariant.sh" of setup.sh.
 source setup.sh [docker | podman | "sudo docker"]
@@ -68,7 +73,7 @@ bash create_reference_index.sh
 ```
 
 ### 7. Run the pipeline
-Note that the script uses default setting for creating multiple mpi ranks based on the system configuration information using hostfile.
+Note that the script uses default setting for creating multiple MPI ranks based on the system configuration information using hostfile.
 ```bash
 bash run_pipeline_cluster.sh [docker | podman | "sudo docker"]
 * docker/podman/"sudo docker" : optional argument. It takes docker by default.
@@ -76,7 +81,7 @@ bash run_pipeline_cluster.sh [docker | podman | "sudo docker"]
 
 # Results
 
-For detailed information, please refer to the [blog](https://community.intel.com/t5/Blogs/Tech-Innovation/Artificial-Intelligence-AI/Intel-Xeon-is-all-you-need-for-AI-inference-Performance/post/1506083).
+Our latest results are published in this [blog](https://community.intel.com/t5/Blogs/Tech-Innovation/Artificial-Intelligence-AI/Intel-Xeon-is-all-you-need-for-AI-inference-Performance/post/1506083).
 
 
 # Instructions to run the pipeline on an AWS ec2 instance
@@ -107,7 +112,7 @@ bash create_reference_index.sh
 ```
 
 ### Run the pipeline.
-Note that the script uses default setting for creating multiple mpi ranks based on the system configuration.
+Note that the script uses default setting for creating multiple MPI ranks based on the system configuration.
 ```bash
 bash run_pipeline_ec2.sh
 ```
@@ -150,7 +155,7 @@ bash pcluster_compute_node_setup.sh 4 "03:00:00"
 ```
 
 ### Run the pipeline.
-Note that the script uses default setting for creating multiple mpi ranks based on the system configuration.
+Note that the script uses default setting for creating multiple MPI ranks based on the system configuration.
 ```bash
 bash run_pipeline_pcluster.sh
 ```
