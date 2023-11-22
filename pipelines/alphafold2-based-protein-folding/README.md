@@ -1,7 +1,7 @@
 # Pipeline overview
 
 <p align="center">
-<img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/alphafold2-protein-folding.jpg" height="300"/a></br>
+<img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/alphafold2-protein-folding.jpg"/a></br>
 </p> 
 
 # Build a docker image
