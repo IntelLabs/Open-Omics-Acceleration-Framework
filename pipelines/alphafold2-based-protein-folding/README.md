@@ -1,4 +1,5 @@
 # Pipeline overview
+Given one or more protein sequences, this workflow performs preprocessing (database search and multiple sequence alignment using Open Omics [HMMER](https://github.com/IntelLabs/hmmer) and [HH-suite](https://github.com/IntelLabs/hh-suite)) and structure prediction through AlphaFold2's Evoformer model ([Open Omics AlphaFold2](https://github.com/IntelLabs/open-omics-alphafold)) to output the structure(s) of the protein sequences. The following block diagram illustrates the pipeline.
 
 <p align="center">
 <img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/alphafold2-protein-folding.jpg"/a></br>
