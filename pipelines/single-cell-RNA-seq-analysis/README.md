@@ -1,3 +1,11 @@
+# Pipeline overview
+
+Given a cell by gene matrix, this [scanpy](https://github.com/scverse/scanpy) based pipeline performs data preprocessing (filter, linear regression and normalization), dimensionality reduction (PCA), clustering (Louvain/Leiden/kmeans) to cluster the cells into different cell types and visualize those clusters (UMAP/t-SNE). The following block diagram illustrates the pipeline.
+
+<p align="center">
+<img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/scrnaseq-analysis.jpg"/a></br>
+</p> 
+
 
 # Download entire repository
 ```bash
@@ -6,7 +14,7 @@ cd ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline
 ```
 
 # Instructions to Run
-We can run this pipeline in three ways: 1. Docker container( i. interactive, ii. non-interactive), 2. Using anaconda environment file, 3. Creating anaconda environment manually.   
+We can run this pipeline in three ways: 1. Docker container (i. interactive, ii. non-interactive), 2. Using anaconda environment file, 3. Creating anaconda environment manually.   
 
 ## (Option 1): Docker instructions for interactive and non-interactive mode (Recommended on Cloud Instance)
 
