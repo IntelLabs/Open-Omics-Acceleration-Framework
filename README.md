@@ -11,15 +11,15 @@ With a goal to build a performant, cost effective and productive platform, we ar
   * [**DeepVariant based germline pipeline for variant calling (fq2vcf)**](https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/tree/main/pipelines/deepvariant-based-germline-variant-calling-fq2vcf): Given paired end gzipped fastq files of an individual, this workflow performs sequence mapping ([BWA-MEM2](https://github.com/bwa-mem2/bwa-mem2)), sorting ([SAMtools](https://github.com/samtools/samtools) sort) and variant calling ([Open Omics DeepVariant](https://github.com/IntelLabs/open-omics-deepvariant)) to call the variants in the genome of the individual.
   * [**AlphaFold2-based protein folding**](https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/tree/main/pipelines/alphafold2-based-protein-folding): Given one or more protein sequences, this workflow performs preprocessing (database search and multiple sequence alignment using Open Omics [HMMER](https://github.com/IntelLabs/hmmer) and [HH-suite](https://github.com/IntelLabs/hh-suite)) and structure prediction ([Open Omics AlphaFold2](https://github.com/IntelLabs/open-omics-alphafold)) to output the structure(s) of the protein sequences.
   * [**Single cell RNASeq analysis**](https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/tree/main/pipelines/single-cell-RNA-seq-analysis): Given a cell by gene matrix, this [scanpy](https://github.com/scverse/scanpy) based workflow performs data preprocessing (filter, linear regression and normalization), dimensionality reduction (PCA), clustering (Louvain/Leiden/kmeans) to cluster the cells into different cell types and visualize those clusters (UMAP/t-SNE).
-* **Toolkit layer**: for users who want to use individual tools or to create their own custom pipelines by combining various tools.
-* **Building blocks layer**: for tool developers, this layer consists of key building blocks -- biology specific and generic AI algorithms and data structures -- that can replace ones used in existing tools to accelerate them or can be used as ingredients to build new efficient tools.
+* **Toolkit (applications) layer**: for users who want to use individual tools or to create their own custom pipelines by combining various tools.
+* **Building blocks (lib) layer**: for tool developers, this layer consists of key building blocks -- biology specific and generic AI algorithms and data structures -- that can replace ones used in existing tools to accelerate them or can be used as ingredients to build new efficient tools.
 
 <p align="center">
 <img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/Open-Omics-Acceleration-Framework-v2.0.JPG" height="300"/a></br>
 </p> 
 
 With a goal of providing a one-stop platform, this framework brings our following repositories for digital biology under one umbrella:
-* Architecture efficient versions of several popular applications as part of our toolkit layer
+* Architecture efficient versions of several popular applications as part of our toolkit layer (under 'applications' folder)
 
 | Original Application | Our architecure-efficient version |
 | --- | --- |
@@ -30,7 +30,7 @@ With a goal of providing a one-stop platform, this framework brings our followin
 | Tool for biological sequence analysis using profile HMMs, [HMMER](https://github.com/EddyRivasLab/hmmer) | [IntelLabs HMMER](https://github.com/IntelLabs/hmmer) |
 | Tool for HMM based sensitive protein sequence searching, [HH-suite](https://github.com/soedinglab/hh-suite) | [IntelLabs HH-suite](https://github.com/IntelLabs/hh-suite) |
 
-* [Trans-Omics Acceleration Library](https://github.com/IntelLabs/Trans-Omics-Acceleration-Library): As part of our building blocks layer, this is a library containing architecture-efficient versions of key algorithms and data structures used for Omics analysis. 
+* [Trans-Omics Acceleration Library](https://github.com/IntelLabs/Trans-Omics-Acceleration-Library): As part of our building blocks layer (under 'lib' folder), this is a library containing architecture-efficient versions of key algorithms and data structures used for Omics analysis. 
 
 In addition, we also use several existing AI libraries: oneDNN, oneDAL, oneCCL, Katana Graph, LIBXSMM.
 
