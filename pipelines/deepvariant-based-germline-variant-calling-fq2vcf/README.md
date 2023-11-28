@@ -121,10 +121,10 @@ bash run_pipeline_ec2.sh
 # Instructions to run the pipeline on an AWS ParallelCluster
 
 The following instructions run seamlessly on AWS ParallelCluster. To run the following steps, first create asn AWS parallelCluster as follows,
-- Follow these steps to setup an [AWS ParallelCluster](https://docs.aws.amazon.com/parallelcluster/v2/ug/what-is-aws-parallelcluster.html).  Please see example [config file](scripts/aws/pcluster_example_config) to create pcluster. Please note, for best performance use shared file system with Amazon EBS _volume\_type = io2_ and _volume\_iops = 64000_ in the config file
+- Cluster setup: follow these steps to setup an [AWS ParallelCluster](https://docs.aws.amazon.com/parallelcluster/v2/ug/what-is-aws-parallelcluster.html).  Please see example [config file](scripts/aws/pcluster_example_config) to setup pcluster (_config_ file resides at ~/.parallelcluster/config/ on local machine). Please note: for best performance use shared file system with Amazon EBS _volume\_type = io2_ and _volume\_iops = 64000_ in the config file.
 - Create pcluster: pcluster create <cluster_name>
-- Login into the pcluster host node.
-- The input reference sequence and the paired-ended read datasets must be downloaded and stored on the disk in the _/sharedgp_ (shared directory defined in the config file) folder.
+- Login: login to the pcluster host/head node using the IP address of the cluster created in the previous step  
+- Datasets: The input reference sequence and the paired-ended read datasets must be downloaded and stored in the _/sharedgp_ (pcluster shared directory defined in the config file) folder.
 
 
 ### One-time setup
