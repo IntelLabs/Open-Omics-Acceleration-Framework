@@ -8,7 +8,7 @@
 cd ../../../../../Open-Omics-Acceleration-Framework
 WDIR=`pwd`
 
-cd ${WDIR}/pipelines/deepvariant/
+cd ${WDIR}/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
 
 ls
 
