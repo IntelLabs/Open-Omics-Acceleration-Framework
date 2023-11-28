@@ -10,7 +10,7 @@ Given a cell by gene matrix, this [scanpy](https://github.com/scverse/scanpy) ba
 # Download entire repository
 ```bash
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-cd ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline
+cd ~/Open-Omics-Acceleration-Framework/pipelines/single-cell-RNA-seq-analysis
 ```
 
 # Instructions to Run
@@ -21,13 +21,13 @@ We can run this pipeline in three ways: 1. Docker container (i. interactive, ii.
 
 ### Run with jupyter notebook (interactive)
 ```bash
-cd ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/
+cd ~/Open-Omics-Acceleration-Framework/pipelines/single-cell-RNA-seq-analysis/
 docker build -t scanpy .           # Create a docker image named scanpy
 
 # Download dataset
-wget -P ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/data https://rapids-single-cell-examples.s3.us-east-2.amazonaws.com/1M_brain_cells_10X.sparse.h5ad
+wget -P ~/Open-Omics-Acceleration-Framework/pipelines/single-cell-RNA-seq-analysis/data https://rapids-single-cell-examples.s3.us-east-2.amazonaws.com/1M_brain_cells_10X.sparse.h5ad
 
-docker run -it -p 8888:8888 -v ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/data:/data scanpy   # run docker container with the data folder as volume
+docker run -it -p 8888:8888 -v ~/Open-Omics-Acceleration-Framework/pipelines/single-cell-RNA-seq-analysis/data:/data scanpy   # run docker container with the data folder as volume
 
 ```
 
@@ -37,7 +37,7 @@ docker run -it -p 8888:8888 -v ~/Open-Omics-Acceleration-Framework/pipelines/sin
 export DATA_DIR=<path-to-database-directory>
 export OUTPUT_DIR=<path-to-output-directory>
 mkdir -p $OUTPUT_DIR
-cd ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/
+cd ~/Open-Omics-Acceleration-Framework/pipelines/single-cell-RNA-seq-analysis/
 
 docker build -f Dockerfile.python -t scanpy_python . # Create a docker image named scanpy_python
 
@@ -78,7 +78,7 @@ python setup.py install                     # do python setup.py install if movi
 ### Example Dataset
 The dataset was made publicly available by 10X Genomics. Use the following command to download the count matrix for this dataset and store it in the data folder:
 ```bash
-wget -P ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/data https://rapids-single-cell-examples.s3.us-east-2.amazonaws.com/1M_brain_cells_10X.sparse.h5ad
+wget -P ~/Open-Omics-Acceleration-Framework/pipelines/single-cell-RNA-seq-analysis/data https://rapids-single-cell-examples.s3.us-east-2.amazonaws.com/1M_brain_cells_10X.sparse.h5ad
 ```
 
 ### Setup and run
@@ -88,7 +88,7 @@ export NUMBA_NUM_THREADS=56            # Remember to delete __pycache__ folder f
 
 # also update sc.settings.n_jobs=56 to set number of threads inside 1M_brain_cpu_analysis.py
 
-cd ~/Open-Omics-Acceleration-Framework/pipelines/single_cell_pipeline/notebooks/
+cd ~/Open-Omics-Acceleration-Framework/pipelines/single-cell-RNA-seq-analysis/notebooks/
 
 # Or the jupyter notebook with sklearn patch in it. 
 # from sklearnex import patch_sklearn

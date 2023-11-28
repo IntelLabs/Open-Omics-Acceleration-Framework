@@ -1,0 +1,40 @@
+# This example configuration file is created for parallel cluster version 2.11.9
+# This file resides in the  ~/.parallelcluster/config on local machine
+[cluster default]
+key_name = <key_in_the_region>
+vpc_settings = public
+ebs_settings = myebs
+compute_instance_type = c7i.48xlarge #change as per your need
+master_instance_type = c6i.4xlarge  #change as per your need
+master_root_volume_size = 200 #change as per your need
+maintain_initial_size = false
+initial_queue_size = 0
+max_queue_size = 32  #maximum number of compute nodes in the cluster 
+placement_group = DYNAMIC
+placement = cluster
+scaling_settings = custom
+tags = {"name": "xyz"}
+base_os = ubuntu2204 #ubuntu gives best performance
+scheduler = slurm
+enable_efa = compute
+enable_intel_hpc_platform = false
+
+[scaling custom]
+scaledown_idletime=10
+
+[vpc public]
+vpc_id = vpc-xxxxxxxxxx  #get vpc id from your aws region
+master_subnet_id = subnet-xxxxxxxxxxxxx  #get subnet id from your aws region
+ssh_from = 172.17.0.1/1
+
+[ebs myebs]
+shared_dir = /sharedgp
+volume_size = 1024
+volume_type = io2
+volume_iops = 64000
+
+[aliases]
+ssh = ssh {CFN_USER}@{MASTER_IP} {ARGS}
+
+[aws]
+aws_region_name = us-west-2  #change as per your need

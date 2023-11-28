@@ -10,7 +10,7 @@
 * The source code of bwa-mem2, samtools, and DeepVariant are residing in:
 ```Open-Omics-Acceleration-Framework/applications/ ```.
 * We build bwa-mem2 and samtools from source; while for DeepVariant, we build a docker image and then use the built image while running the pipeline. Note that, the pre-built image is not available on dockerhub and the image needs to be built from source.
-* We provide scripts for setting-up miniconda environment (setup_env.sh), compilation of the required pipeline tools, building & loading of DeepVariant docker image (setup.py). These scripts located at _Open-Omics-Acceleration-Framework/pipelines/deepvariant_. Note that, all the scripts are, by default, written for docker.  
+* We provide scripts for setting-up miniconda environment (setup_env.sh), compilation of the required pipeline tools, building & loading of DeepVariant docker image (setup.py). These scripts located at _Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf_. Note that, all the scripts are, by default, written for docker.  
 
 * Prerequisite : The following are pre-requisites for the pipeline -  our scripts assumed these packages are already installed in the system.  
         * Docker / Podman  
@@ -30,7 +30,7 @@ git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Frame
 
 ### 2. Setting Envionment
 ```bash
-cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/scripts/cluster/
+cd Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/cluster/
 #Tested with Ubuntu 22.04.2 LTS
 source ../../setup_env.sh  dv_env # Setting environment with name dv_env.
 ```
@@ -91,7 +91,7 @@ The following instructions run seamlessly on a standalone AWS ec2 instance. To r
 This step takes around ~15 mins to execute
 ```bash
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/scripts/aws
+cd Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws
 bash deepvariant_ec2_setup.sh
 ```
 
@@ -116,17 +116,23 @@ Note that the script uses default setting for creating multiple MPI ranks based 
 ```bash
 bash run_pipeline_ec2.sh
 ```
-<!--
+
 
 # Instructions to run the pipeline on an AWS ParallelCluster
-The following instructions run seamlessly on AWS ParallelCluster. To run the following steps, create an [AWS ParallelCluster](https://docs.aws.amazon.com/parallelcluster/latest/ug/install-v3.html) with Ubuntu-22.04 using ParallelCluster configuration file and login into the host node. The input reference sequence and the paired-ended read datasets must be downloaded and stored on the disk in the _/shared_ folder.
+
+The following instructions run seamlessly on AWS ParallelCluster. To run the following steps, first create asn AWS parallelCluster as follows,
+- Follow these steps to setup an [AWS ParallelCluster](https://docs.aws.amazon.com/parallelcluster/v2/ug/what-is-aws-parallelcluster.html).  Please see example [config file](scripts/aws/pcluster_example_config) to create pcluster. Please note, for best performance use shared file system with Amazon EBS _volume\_type = io2_ and _volume\_iops = 64000_ in the config file
+- Create pcluster: pcluster create <cluster_name>
+- Login into the pcluster host node.
+- The input reference sequence and the paired-ended read datasets must be downloaded and stored on the disk in the _/sharedgp_ (shared directory defined in the config file) folder.
+
 
 ### One-time setup
 This step takes around ~15 mins to execute
 ```bash
-cd /shared
+cd /sharedgp
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-cd Open-Omics-Acceleration-Framework/pipelines/deepvariant/scripts/aws
+cd Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws
 bash deepvariant_setup.sh
 ```
 ### Modify _config_ file
@@ -159,4 +165,3 @@ Note that the script uses default setting for creating multiple MPI ranks based 
 ```bash
 bash run_pipeline_pcluster.sh
 ```
--->
