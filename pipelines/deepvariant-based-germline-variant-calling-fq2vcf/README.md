@@ -61,6 +61,7 @@ Note: It takes ~30 mins to create the docker image. Docker build might break if 
 We need a reference sequence and paired-ended read datasets. Open the "config" file and set the input and output directories as shown in config file. The sample config contains the following lines to be updated.  
 
 ```bash
+export LD_PRELOAD=<absolute_path>/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
 export INPUT_DIR=/path-to-reference-sequence-and-read-datasets/  
 export OUTPUT_DIR=/path-to-output-directory/  
 REF=ref.fasta   
@@ -99,6 +100,7 @@ bash deepvariant_ec2_setup.sh
 We need a reference sequence and paired-ended read datasets. Open the "_config_" file and set the input and output directories as shown in config file.
 The sample config contains the following lines to be updated.
 ```bash
+export LD_PRELOAD=<absolute_path>/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
 export INPUT_DIR=/path-to-reference-sequence-and-read-datasets/
 export OUTPUT_DIR=/path-to-output-directory/
 REF=ref.fasta
@@ -139,6 +141,7 @@ bash deepvariant_setup.sh
 We need a reference sequence and paired-ended read datasets. Open the "_config_" file and set the input and output directories as shown in config file.
 The sample config contains the following lines to be updated.
 ```bash
+export LD_PRELOAD=<absolute_path>/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
 export INPUT_DIR=/path-to-reference-sequence-and-read-datasets/
 export OUTPUT_DIR=/path-to-output-directory/
 REF=ref.fasta

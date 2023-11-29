@@ -68,6 +68,7 @@ Important Notes:
 ```
 export INPUT_DIR=~/input/
 export OUTPUT_DIR=~/output/
+export LD_PRELOAD=<absolute_path>/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
 REF=GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
 R1=r1.fastq.gz
 R2=r2.fastq.gz
