@@ -1,4 +1,4 @@
-export LD_PRELOAD=<absolute-path>/sharedgp/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
+export LD_PRELOAD=<absolute-path>/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
 export INPUT_DIR=/path-to-reference-sequence-and-read-datasets/
 export OUTPUT_DIR=/path-to-output-directory/
 REF=ref.fasta
