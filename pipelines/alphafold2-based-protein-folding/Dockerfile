@@ -29,9 +29,10 @@ RUN python -m pip install absl-py biopython chex dm-haiku dm-tree immutabledict 
 RUN python -m pip install jax==0.4.8 jaxlib==0.4.7
 RUN python -m pip install intel-extension-for-pytorch==2.0.100
 
-RUN git clone --recursive https://github.com/IntelLabs/open-omics-alphafold.git
-RUN cd /open-omics-alphafold
-WORKDIR /open-omics-alphafold
+# RUN git clone --recursive https://github.com/IntelLabs/open-omics-alphafold.git
+RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+RUN cd /Open-Omics-Acceleration-Framework/applications/alphafold
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
 
 # Compile HHsuite from source.
 RUN . /opt/intel/oneapi/compiler/latest/env/vars.sh intel64 \
@@ -39,7 +40,7 @@ RUN . /opt/intel/oneapi/compiler/latest/env/vars.sh intel64 \
     && git clone --recursive https://github.com/IntelLabs/hh-suite.git \
     && cd hh-suite \
     && mkdir build && cd build \
-    && cmake -DCMAKE_INSTALL_PREFIX=`pwd`/release -DCMAKE_CXX_COMPILER="icc" -DCMAKE_CXX_FLAGS_RELEASE="-O3 -march=icelake-server" .. \
+    && cmake -DCMAKE_INSTALL_PREFIX=`pwd`/release -DCMAKE_CXX_COMPILER="icpx" -DCMAKE_CXX_FLAGS_RELEASE="-O3 -march=icelake-server" .. \
     && make -j 4 && make install \
     && ./release/bin/hhblits -h \
     && cd .. && cd .. \
@@ -51,7 +52,7 @@ RUN . /opt/intel/oneapi/compiler/latest/env/vars.sh intel64 \
     && cd hmmer \
     && cp easel_makefile.in easel/Makefile.in \
     && cd easel && autoconf && ./configure --prefix=`pwd` && cd .. \
-    && autoconf && CC=icc CFLAGS="-O3 -march=icelake-server -fPIC" ./configure --prefix=`pwd`/release \
+    && autoconf && CC=icx CFLAGS="-O3 -march=icelake-server -fPIC" ./configure --prefix=`pwd`/release \
     && make -j 4 && make install \
     && ./release/bin/jackhmmer -h \
     && cd ..
@@ -64,12 +65,12 @@ RUN cd tpp-pytorch-extension \
 CMD . /opt/intel/oneapi/compiler/latest/env/vars.sh intel64 \
     && . /opt/intel/oneapi/mkl/latest/env/vars.sh intel64 \
     && mkdir weights && mkdir weights/extracted && python extract_params.py --input /data/params/params_model_1.npz --output_dir ./weights/extracted/model_1 \
-    && python run_multiprocess_pre.py --root_home=/open-omics-alphafold --data_dir=/data --input_dir=/samples --output_dir=/output --model_name=model_1 \
+    && python run_multiprocess_pre.py --root_home=/Open-Omics-Acceleration-Framework/applications/alphafold --data_dir=/data --input_dir=/samples --output_dir=/output --model_name=model_1 \
     && LD_PRELOAD=/opt/conda/lib/libiomp5.so:/opt/conda/lib/libjemalloc.so:$LD_PRELOAD \
     MALLOC_CONF="oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms:-1,muzzy_decay_ms:-1" \
-    python run_multiprocess_infer.py --root_condaenv=/opt/conda --root_home=/open-omics-alphafold --data_dir=/data --input_dir=/samples --output_dir=/output --model_name=model_1
-    # && time bash online_preproc_baremetal.sh /open-omics-alphafold /data /samples /output \
-    # && time bash online_inference_baremetal.sh /opt/conda /open-omics-alphafold /data /samples /output model_1
+    python run_multiprocess_infer.py --root_condaenv=/opt/conda --root_home=/Open-Omics-Acceleration-Framework/applications/alphafold --data_dir=/data --input_dir=/samples --output_dir=/output --model_name=model_1
+    # && time bash online_preproc_baremetal.sh /Open-Omics-Acceleration-Framework/applications/alphafold /data /samples /output \
+    # && time bash online_inference_baremetal.sh /opt/conda /Open-Omics-Acceleration-Framework/applications/alphafold /data /samples /output model_1
     
 
 
