@@ -24,7 +24,7 @@ miniconda3/bin/conda env create --name distbwa -f environment.yml
 echo "Seeting up conda env named new_env...DONE"
 
 echo "Activating conda env..."
-source /data/nfs_home/mvasimud/container/miniconda3/bin/activate distbwa
+source miniconda3/bin/activate distbwa
 echo "localhost" > hostfile
 
 ## build tools
