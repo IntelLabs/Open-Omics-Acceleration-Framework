@@ -10,7 +10,7 @@ ln -s ${ABS_DIRECTORY}/miniconda3 ~/miniconda3
 
 echo "Downloading and setting up miniconda..."
 wget https://repo.anaconda.com/miniconda/Miniconda3-py39_23.3.1-0-Linux-x86_64.sh
-bash ./Miniconda3-py39_23.3.1-0-Linux-x86_64.sh -b -u -p ./miniconda3
+bash ./Miniconda3-py39_23.3.1-0-Linux-x86_64.sh -b -u -p ~/miniconda3
 echo "Downloading and setting up miniconda...DONE"
 
 echo "Seeting up conda env named with given argument"
