@@ -122,7 +122,7 @@ bash run_pipeline_ec2.sh
 
 # Instructions to run the pipeline on an AWS ParallelCluster
 
-The following instructions run seamlessly on AWS ParallelCluster. To run the following steps, first create asn AWS parallelCluster as follows,
+The following instructions run seamlessly on AWS ParallelCluster. To run the following steps, first create an AWS parallelCluster as follows,
 - Cluster setup: follow these steps to setup an [AWS ParallelCluster](https://docs.aws.amazon.com/parallelcluster/v2/ug/what-is-aws-parallelcluster.html).  Please see example [config file](scripts/aws/pcluster_example_config) to setup pcluster (_config_ file resides at ~/.parallelcluster/config/ on local machine). Please note: for best performance use shared file system with Amazon EBS _volume\_type = io2_ and _volume\_iops = 64000_ in the config file.
 - Create pcluster: pcluster create <cluster_name>
 - Login: login to the pcluster host/head node using the IP address of the cluster created in the previous step  
