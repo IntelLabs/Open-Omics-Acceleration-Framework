@@ -375,8 +375,10 @@ def main(argv):
     parser.add_argument('--read2',default="", nargs='+',help="name of r2 files (for fqprocess) seperated by spaces")
     parser.add_argument('--read3',default="", nargs='+',help="name of r3 files (for fqprocess) seperated by spaces")
     parser.add_argument('--readi1',default="", nargs='+',help="name of i1 files (for fqprocess) seperated by spaces")
-    parser.add_argument('--r1prefix',default="", help="processed R1 files for bwa-mem2")
-    parser.add_argument('--r3prefix',default="", help="processed R3 files for bwa-mem2")
+    
+    parser.add_argument('--prefix',default="", help="prefix for processed R1 and R3 files for bwa-mem2")
+    parser.add_argument('--suffix',default="", help="suffix for processed R1 and R3 files for bwa-mem2")
+   
     parser.add_argument('--whitelist',default="whitelist.txt",help="10x whitelist file")
     parser.add_argument('--read_structure',default="16C",help="read structure")
     parser.add_argument('--barcode_orientation',default="FIRST_BP_RC",help="barcode orientation")
@@ -435,8 +437,10 @@ def main(argv):
     sample_id=args['sample_id']
     if sample_id == "": sample_id = output
     output_format = args["output_format"]
-    r1prefix=args["r1prefix"]  ## for mutlifq2sortedbam mode reading 'fqprocess' processed fastq files
-    r3prefix=args["r3prefix"]
+    
+    prefix=args["prefix"]  ## prefix for mutlifq2sortedbam mode reading 'fqprocess' processed fastq files
+    suffix=args["suffix"]  ## suffix for mutlifq2sortedbam mode reading 'fqprocess' processed fastq files
+    
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     nranks = comm.Get_size()
@@ -569,8 +573,9 @@ def main(argv):
             for r in range(nranks):
                 #fn1 = "fastq_R1_" + str(r) + ".fastq.gz"
                 #fn2 = "fastq_R3_" + str(r) + ".fastq.gz"
-                fn1 = os.path.join(folder, r1prefix + "_" + str(r) + ".fastq.gz")
-                fn2 = os.path.join(folder, r3prefix + "_" + str(r) + ".fastq.gz")
+                #multiome-practice-may15_arcgtf_0.R1.trimmed_adapters.fastq.gz
+                fn1 = os.path.join(folder, prefix + "_" + str(r) + ".R1." + suffix)
+                fn2 =  os.path.join(folder, prefix + "_" + str(r) + ".R3." + suffix)
 
                 if os.path.isfile(fn1) == False or os.path.isfile(fn2) == False:
                     print(f"Error: Number of files fastq files ({r}) < number of ranks ({nranks})")
@@ -582,8 +587,8 @@ def main(argv):
         comm.barrier()
         #fn1 = "fastq_R1_" + str(rank) + ".fastq.gz"
         #fn2 = "fastq_R3_" + str(rank) + ".fastq.gz"
-        fn1 = os.path.join(folder, r1prefix + "_" + str(rank) + ".fastq.gz")
-        fn2 = os.path.join(folder, r3prefix + "_" + str(rank) + ".fastq.gz")
+        fn1 = os.path.join(folder, prefix + "_" + str(rank) + ".R1." + suffix)
+        fn2 = os.path.join(folder, prefix + "_" + str(rank) + ".R3." + suffix)
 
         #fn1 = folder + "/fastq_R1_" + str(rank) + ".fastq.gz"
         #fn2 = folder + "/fastq_R3_" + str(rank) + ".fastq.gz"
