@@ -402,6 +402,7 @@ def main(argv):
     args = vars(parser.parse_args())
     ifile=args["index"]
     params=args["params"]
+    params=params.replace("+","-") 
     if args["preads"] != None:
         ## for flatmode and pragzip mode
         rfile1=args["preads"][0]
