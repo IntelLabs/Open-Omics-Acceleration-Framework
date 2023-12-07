@@ -9,6 +9,8 @@ R3="multiome-practice-may15_arcgtf_0.R3.trimmed_adapters.fastq.gz"
 R2=""
 I1=""
 REF=genome_referenceODrWMu/genome.fa
+## used + instead of - to avoid confusion in python parsing in dist_bwa
+PARAMS='+R "@RG\tID:RG1\tSM:RGSN1" +C' 
 
 # default values
 ISTART="False"   ## flag for bwa-mem2 index creation False/True
@@ -19,4 +21,3 @@ BAM_SIZE="5"   # in GB by default
 SAMPLE_ID=""
 OUTPUT_FORMAT="FASTQ"
 OUTFILE="broadfinal"    ##name of the output bam file
-PARAMS=""     ## bwa-mem2 paramas barring -t <threads> option
