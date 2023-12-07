@@ -99,17 +99,17 @@ echo "mode: "$mode
 
 ## parameters
 READ1=${R1[@]}
-READ2=${R2[@]}
+#READ2=${R2[@]}
 READ3=${R3[@]}
 READI1=${I1[@]}
 
 echo "reads:"
 echo "READ1 $READ1"
-echo "READ2 $READ2"
+#echo "READ2 $READ2"
 echo "READ3 $READ3"
 echo "READI1 $READI1"
-echo "R1PREFIX $R1PREFIX"
-echo "R3PREFIX $R3PREFIX"
+echo "PREFIX $PREFIX"
+echo "SUFFIX $SUFFIX"
 
 whitelist=""
 read_structure=""
@@ -152,7 +152,7 @@ echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $PPN ppn.
 # Todo : Make index creation parameterized.
 
 exec=dist_bwa.py
-mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read2 $READ2 --read3 $READ3 --cpus $CPUS --threads $THREADS --keep_unmapped ${whitelist} ${read_structure} ${barcode_orientation} ${bam_size} ${params} ${outfile} ${istart} ${sample_id} ${output_format} --r1prefix $R1PREFIX --r3prefix $R3PREFIX --mode $mode   2>&1 | tee ${OUTDIR}log.txt
+mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read3 $READ3 --cpus $CPUS --threads $THREADS --keep_unmapped ${whitelist} ${read_structure} ${barcode_orientation} ${bam_size} ${params} ${outfile} ${istart} ${sample_id} ${output_format} --prefix $PREFIX --suffix $SUFFIX --mode $mode   2>&1 | tee ${OUTDIR}log.txt
 
 
 
