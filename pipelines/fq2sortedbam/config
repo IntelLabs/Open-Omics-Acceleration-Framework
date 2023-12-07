@@ -4,8 +4,9 @@ export LD_PRELOAD=<absolute_path>/Open-Omics-Acceleration-Framework/pipelines/de
 REF=GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
 
 ## Inputs for multifq bwa-mem2
-R1PREFIX="fastq_R1"    ## prefix for R1 as input to bwamem2 in multifq
-R3PREFIX="fastq_R3"    ## prefix for R1 as input to bwamem2 in multifq
+## multiome-practice-may15_arcgtf_0.R1.trimmed_adapters.fastq.gz
+PREFIX="multiome-practice-may15_arcgtf"    ## prefix for R1 and R3 as input to bwamem2 in multifq
+SUFFIX="trimmed_adapters.fastq.gz"    ## suffix for R1 and R3 as input to bwamem2 in multifq
 
 ## followin are inputs to fqprocess
 R1="10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L001_R1_001.fastq.gz 10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L002_R1_001.fastq.gz"
