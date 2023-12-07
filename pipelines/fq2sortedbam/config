@@ -1,18 +1,14 @@
-INPUT_DIR=/cold_storage/omics/genomes-indexes-reads/human/reads/broad/10k_PBMC_Multiome_nextgem_Chromium_Controller_fastqs/10k_PBMC_Multiome_nextgem_Chromium_Controller_atac/
-OUTPUT_DIR=/data/nfs_home/mvasimud/myworkspace/openomics/aws_all/output/
-export LD_PRELOAD=<absolute_path>/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
-REF=GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
-
 ## Inputs for multifq bwa-mem2
 ## multiome-practice-may15_arcgtf_0.R1.trimmed_adapters.fastq.gz
 PREFIX="multiome-practice-may15_arcgtf"    ## prefix for R1 and R3 as input to bwamem2 in multifq
 SUFFIX="trimmed_adapters.fastq.gz"    ## suffix for R1 and R3 as input to bwamem2 in multifq
-
-## followin are inputs to fqprocess
-R1="10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L001_R1_001.fastq.gz 10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L002_R1_001.fastq.gz"
-R2="10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L001_R2_001.fastq.gz 10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L002_R2_001.fastq.gz"
-R3="10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L001_R3_001.fastq.gz 10k_PBMC_Multiome_nextgem_Chromium_Controller_atac_S1_L002_R3_001.fastq.gz"
+INPUT_DIR=/home/awdeh/input_data
+OUTPUT_DIR=/home/awdeh/input_data/output
+R1="multiome-practice-may15_arcgtf_0.R1.trimmed_adapters.fastq.gz"
+R3="multiome-practice-may15_arcgtf_0.R3.trimmed_adapters.fastq.gz"
+R2=""
 I1=""
+REF=genome_referenceODrWMu/genome.fa
 
 # default values
 ISTART="False"   ## flag for bwa-mem2 index creation False/True
