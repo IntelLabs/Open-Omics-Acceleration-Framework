@@ -403,6 +403,7 @@ def main(argv):
     ifile=args["index"]
     params=args["params"]
     params=params.replace("+","-") 
+    print(params)
     if args["preads"] != None:
         ## for flatmode and pragzip mode
         rfile1=args["preads"][0]
