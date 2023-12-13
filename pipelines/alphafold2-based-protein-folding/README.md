@@ -28,7 +28,7 @@ export LOG_DIR=<path-to-log-directory>
 docker run -it --cap-add SYS_NICE -v $DATA_DIR:/data \
     -v $SAMPLES_DIR:/samples \
     -v $OUTPUT_DIR:/output \
-    -v $LOG_DIR:/open-omics-alphafold/logs \
+    -v $LOG_DIR:/Open-Omics-Acceleration-Framework/applications/alphafold/logs \
     alphafold:latest
 ```
 

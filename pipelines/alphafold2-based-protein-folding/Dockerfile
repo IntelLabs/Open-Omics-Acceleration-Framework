@@ -26,10 +26,9 @@ RUN conda install -c intel onednn-cpu-iomp mkl-devel
 
 RUN python -m pip install torch==2.0.1 pybind11
 RUN python -m pip install absl-py biopython chex dm-haiku dm-tree immutabledict jax ml-collections numpy scipy tensorflow pandas psutil tqdm joblib
-RUN python -m pip install jax==0.4.8 jaxlib==0.4.7
+RUN python -m pip install jax==0.4.21 jaxlib==0.4.21
 RUN python -m pip install intel-extension-for-pytorch==2.0.100
 
-# RUN git clone --recursive https://github.com/IntelLabs/open-omics-alphafold.git
 RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 RUN cd /Open-Omics-Acceleration-Framework/applications/alphafold
 WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
