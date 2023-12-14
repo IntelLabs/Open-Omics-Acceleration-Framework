@@ -7,7 +7,7 @@ Given one or more protein sequences, this workflow performs preprocessing (datab
 
 # Build a docker image
 
-### Current docker image requires a dual-socket CPU because it runs multiple inference instances in parallel. However, it can be easily modified to run on a single socket.
+### Current docker image requires a single socket/dual-socket CPU with 1 or 2 NUMA domains, because it runs multiple inference instances in parallel. It can be easily modified to run at other types of machines.
 
 ```bash
 cd ~/Open-Omics-Acceleration-Framework/pipelines/alphafold2-based-protein-folding
