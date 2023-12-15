@@ -402,6 +402,8 @@ def main(argv):
     args = vars(parser.parse_args())
     ifile=args["index"]
     params=args["params"]
+    print("PARAMS")
+    print(params)
     params=params.replace("+","-") 
     print(params)
     if args["preads"] != None:
