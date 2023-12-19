@@ -127,7 +127,7 @@ istart=""
 [[ -n $BAM_SIZE ]] && bam_size="--bam_size $BAM_SIZE" && echo "BAM Size: $bam_size"
 [[ -n $SAMPLE_ID ]] && sample_id="--sample_id $SAMPLE_ID" && echo "sample_id: $sample_id"
 [[ -n $OUTPUT_FORMAT ]] && output_format="--output_format $OUTPUT_FORMAT" && echo "output_format: $output_format"
-[[ -n $PARAMS ]] && params="--params $PARAMS" && echo "params: $params"
+#[[ -n $PARAMS ]] && params="--params $PARAMS" && echo "params: $params"
 [[ -n $OUTFILE ]] && outfile="--outfile $OUTFILE" && echo "outfile: $outfile"
 if [ "$ISTART" == "True" ]
 then
@@ -145,6 +145,7 @@ fi
 
 echo "Input directory: $INDIR"
 echo "Output directory: $OUTDIR"
+echo "Params" : "${PARAMS}"
 mkdir -p ${OUTDIR}
 
 echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $PPN ppn.
@@ -152,7 +153,7 @@ echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $PPN ppn.
 # Todo : Make index creation parameterized.
 
 exec=dist_bwa.py
-mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read3 $READ3 --cpus $CPUS --threads $THREADS --keep_unmapped ${whitelist} ${read_structure} ${barcode_orientation} ${bam_size} ${params} ${outfile} ${istart} ${sample_id} ${output_format} --prefix $PREFIX --suffix $SUFFIX --mode $mode   2>&1 | tee ${OUTDIR}log.txt
+mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read3 $READ3 --cpus $CPUS --threads $THREADS --keep_unmapped ${whitelist} ${read_structure} ${barcode_orientation} ${bam_size} ${outfile} ${istart} ${sample_id} ${output_format} --prefix $PREFIX --suffix $SUFFIX --params "${PARAMS}" --mode $mode   2>&1 | tee ${OUTDIR}log.txt
 
 
 
