@@ -7,8 +7,17 @@ ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"
 
 cd $ABS_DIRECTORY
 source config
+filename=${REF}
+file_ext=${filename##*.}
+file_name_without_extension=$(basename "$filename" .gz )
 
 
+if [ ${file_ext} == 'gz' ]
+then
+	echo "Refecence file is decompressing..."
+        gzip -d ${REF_DIR}/${filename}
+	REF=${file_name_without_extension}
+fi
 ref=${REF_DIR}/${REF}
 mkdir -p ${OUTPUT_DIR}
 

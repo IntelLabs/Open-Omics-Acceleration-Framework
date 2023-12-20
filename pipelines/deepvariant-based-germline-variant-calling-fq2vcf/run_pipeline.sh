@@ -42,8 +42,21 @@ fi
 
 echo "Output directory: $OUTDIR"
 mkdir -p ${OUTDIR}
+#It is assumed that if reference file is .gz then it is converted using create_reference_index.sh or pcluster_reference_index.sh script.
+file_ext=${REF##*.}
+
+if [ "${file_ext}" = "gz" ]
+then
+	REF=$(basename "$REF" .gz )
+	if ! [ -f $REFDIR/${REF} ]; then
+  		echo "File $REFDIR/${REF} does not exist."
+		exit 0
+	fi
+fi
 
 echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $SHARDS shards, $PPN ppn.
 # -in -sindex are required only once for indexing. 
 # Todo : Make index creation parameterized. 
 mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u test_pipeline_final.py --input $INDIR --output  $OUTDIR $TEMPDIR --refdir $REFDIR --index $REF --read $READ1 $READ2 --cpus $CPUS --threads $THREADS --shards $SHARDS --container_tool "$Container" --keep_unmapped 2>&1 | tee ${OUTDIR}log.txt
+
+echo "Pipeline finished. Output vcf can be found at: $OUTPUT_DIR/output.vcf.gz"
