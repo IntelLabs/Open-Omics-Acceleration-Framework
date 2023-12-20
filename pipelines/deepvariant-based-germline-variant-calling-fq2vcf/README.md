@@ -65,7 +65,7 @@ We need a reference sequence and paired-ended read datasets. Open the "config" f
 export LD_PRELOAD=<absolute_path>/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
 export INPUT_DIR=/path-to-read-datasets/  
 export OUTPUT_DIR=/path-to-output-directory/  
-exoort REF_DIR=/path-to-ref-directory/
+export REF_DIR=/path-to-ref-directory/
 REF=ref.fasta   
 R1=R1.fastq.gz  
 R2=R2.fastq.gz  
@@ -105,7 +105,7 @@ The sample config contains the following lines to be updated.
 export LD_PRELOAD=<absolute_path>/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
 export INPUT_DIR=/path-to-read-datasets/
 export OUTPUT_DIR=/path-to-output-directory/
-exoort REF_DIR=/path-to-ref-directory/
+export REF_DIR=/path-to-ref-directory/
 REF=ref.fasta
 R1=R1.fastq.gz
 R2=R2.fastq.gz
@@ -147,7 +147,7 @@ The sample config contains the following lines to be updated.
 export LD_PRELOAD=<absolute_path>/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
 export INPUT_DIR=/path-to-read-datasets/
 export OUTPUT_DIR=/path-to-output-directory/
-exoort REF_DIR=/path-to-ref-directory/
+export REF_DIR=/path-to-ref-directory/
 REF=ref.fasta
 R1=R1.fastq.gz
 R2=R2.fastq.gz
