@@ -155,7 +155,7 @@ R2=R2.fastq.gz
 
 ### Create the index files for the reference sequence
 ```bash
-bash create_reference_index.sh
+bash pcluster_reference_index.sh
 ```
 
 ### Allocate compute nodes and install the prerequisites into the compute nodes.

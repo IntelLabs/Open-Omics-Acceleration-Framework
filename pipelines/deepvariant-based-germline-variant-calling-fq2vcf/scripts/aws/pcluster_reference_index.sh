@@ -1,6 +1,9 @@
+#!/bin/bash 
+set –e 
+
 WDIR=`pwd`
 num_compute_nodes=1
-allocation_time="02:00:00"
+allocation_time="03:00:00"
 
 if [ -z $2 ]
 then 
@@ -19,13 +22,13 @@ rm tmp_salloc tmp_jobid
 
 srun --jobid=$jid hostname > ../../hostfile
 
-echo "Cluster alloccation done!!"
+echo "Cluster allocation done!!"
 cat ../../hostfile
 
 for i in `cat ../../hostfile`
 do
   echo $i
-  ssh $i "bash ${WDIR}/create_reference_index.sh"
+  ssh $i "bash ${WDIR}/basic_setup.sh && bash ${WDIR}/create_reference_index.sh ${jid}" &
 done
-scancel $jid
+
 
