@@ -53,7 +53,7 @@ def pragzip_reader_real( comm, cpus, fname, outpipe, outdir, last=False ):
     time.sleep(0.1)  # yield so bwamem ca start, overlapping pragzip preindex with bwamem loading reference genome
     rank = comm.Get_rank()
     nranks = comm.Get_size()
-    idxname = outdir+(fname.split('/')[-1])+".idx"
+    idxname = os.path.join(outdir,fname.split('/')[-1]+".idx")
     if (rank==0 and not last) or (rank==nranks-1 and last):  # create index
         t0 = time.time()
         oldmask = os.sched_getaffinity(0)
@@ -322,6 +322,7 @@ def main(argv):
     parser.add_argument('--shards',default=1,help="Number of shards for deepvariant")
     parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling") 
     parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
+    parser.add_argument('--keep_intermediate_sam',action='store_true',help="Keep intermediate sam files.")
     args = vars(parser.parse_args())
     ifile=args["index"]
     rfile1=args["reads"][0]
@@ -340,6 +341,7 @@ def main(argv):
     prof=args["profile"]
     global keep
     keep=args["keep_unmapped"]
+    keep_sam=args["keep_intermediate_sam"]
     container_tool=args["container_tool"]
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
@@ -363,6 +365,7 @@ def main(argv):
             print("Indexing Starts")
             begin = time.time()
             a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 index '+os.path.join(refdir,ifile),capture_output=True,shell=True)
+            assert a.returncode==0,"Index Creation Failed"
             end=time.time()
             file_size = os.path.getsize(os.path.join(folder,rfile1))
             print("\nIndex time:",end-begin)
@@ -379,6 +382,7 @@ def main(argv):
     fn3, thr = sam_writer( comm, os.path.join(tempdir,'aln') )
     begin1 = time.time()
     a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+os.path.join(refdir,ifile)+' '+fn1+' '+fn2+' > '+fn3,capture_output=True, shell=True)
+    assert a.returncode==0,"bwa-mem2 Run Failed"
     end1b=time.time()
     #print("rank: ",rank," bwa_time: ",end1b-begin1)
     thr.join()
@@ -404,14 +408,25 @@ def main(argv):
         cmd+=f'{BINDIR}/applications/samtools/samtools sort --threads '+threads+' -T '+os.path.join(tempdir,'aln'+binstr+'.sorted') + ' -o '+ os.path.join(tempdir,'aln'+binstr+'.bam')+' '+ os.path.join(tempdir,'aln'+binstr+'.sam')
         if i%20==0:
             a=run(cmd,capture_output=True,shell=True)
+            assert a.returncode==0,"samtools sort Failed"
             cmd=""
-    if not cmd=="": a=run(cmd,capture_output=True,shell=True)
+    if not cmd=="": 
+        a=run(cmd,capture_output=True,shell=True)
+        assert a.returncode==0,"samtools sort Failed"
     comm.barrier()
     
     if rank==0:
         end2=time.time()
         print("SAM to sort-BAM time:",end2-begin2)
+        cmd=""
+    if not keep_sam:
+        for i in range(bins_per_rank):
+            binstr = '%05d'%(nranks*i+rank)
+            cmd+=f'rm -rf '+os.path.join(tempdir,'aln'+binstr+'.sam')
         
+        a=run(cmd,capture_output=True,shell=True)
+        assert a.returncode==0,"Delete sam file failed"
+
 
     # Generate index file(s)
     if rank==0:
@@ -419,6 +434,7 @@ def main(argv):
         print("\nIndexing of ref and read starts")
         if sindex==True :
             a=run(f'{BINDIR}/applications/samtools/samtools faidx '+os.path.join(refdir,ifile),capture_output=True,shell=True)
+            assert a.returncode==0,"samtools reference index creation failed"
             end=time.time()
             print("\nReference to .fai index creation time",end-begin3)
     
@@ -431,6 +447,7 @@ def main(argv):
         cmd+=f'{BINDIR}/applications/samtools/samtools index -M -@ '+threads+' '+os.path.join(tempdir,fname)+';'
         if i%20==0:
             a=run(cmd,capture_output=True,shell=True)
+            assert a.returncode==0,"samtools bam index creation failed"
             cmd=""
     if not cmd=="": a=run(cmd,capture_output=True,shell=True)
     comm.barrier()
@@ -445,12 +462,14 @@ def main(argv):
     for i in range(bins_per_rank):
         binstr = "%05d"%(i*nranks+rank)
         command='mkdir -p '+os.path.join(output,binstr)+'; '+container_tool +' run -v '+folder+':"/input" -v '+refdir+':"/refdir" -v '+output+'/'+binstr+':"/output" -v '+tempdir+':"/tempdir" deepvariant:latest /opt/deepvariant/bin/run_deepvariant --model_type=WGS --ref=/refdir/'+ifile+' --reads=/tempdir/aln'+binstr+'.bam --output_vcf=/output/output.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'"'
-        a = run( 'echo "'+command+'" > '+output+'log'+binstr+'.txt', shell=True)
-        a = run( command+" 2>&1 >> "+output+"log"+binstr+".txt", shell=True)
+        a = run( 'echo "'+command+'" > '+os.path.join(output,'log'+binstr+'.txt'), shell=True)
+        a = run( command+" 2>&1 >> "+os.path.join(output,'log'+binstr+'.txt'), shell=True)
+        assert a.returncode==0,"Deepvariant Failed"
     comm.barrier()
     if rank==0:
         cmd= 'bash merge_vcf.sh '+output +' '+str(nranks)+' '+str(bins_per_rank)
         a= run(cmd,capture_output=True,shell=True)
+        assert a.returncode==0,"VCF merge failed"
         end5=time.time()
         print("\nDeepVariant runtime",end5-begin5)
 

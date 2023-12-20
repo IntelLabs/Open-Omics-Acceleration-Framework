@@ -1,6 +1,9 @@
+#!/bin/bash
+set -e
+
 source config
 
-ref=${INPUT_DIR}/${REF}
+ref=${REF_DIR}/${REF}
 
 echo "Checking the index files for $ref"
 ls ${ref}*

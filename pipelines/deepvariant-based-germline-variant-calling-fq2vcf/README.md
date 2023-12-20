@@ -23,6 +23,7 @@
         * libbz2-dev  
         * liblzma-dev  
 
+# Instructions to run the pipeline on On-premises
 ### 1. Clone the repo:  
 ```bash
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
@@ -62,8 +63,9 @@ We need a reference sequence and paired-ended read datasets. Open the "config" f
 
 ```bash
 export LD_PRELOAD=<absolute_path>/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
-export INPUT_DIR=/path-to-reference-sequence-and-read-datasets/  
+export INPUT_DIR=/path-to-read-datasets/  
 export OUTPUT_DIR=/path-to-output-directory/  
+exoort REF_DIR=/path-to-ref-directory/
 REF=ref.fasta   
 R1=R1.fastq.gz  
 R2=R2.fastq.gz  
@@ -89,7 +91,7 @@ Our latest results are published in this [blog](https://community.intel.com/t5/B
 The following instructions run seamlessly on a standalone AWS ec2 instance. To run the following steps, create an ec2 instance with Ubuntu-22.04 having at least 60GB of memory. The input reference sequence and the paired-ended read datasets must be downloaded and stored on the disk.
 
 ### One-time setup
-This step takes around ~15 mins to execute
+This step takes around ~15 mins to execute. During the installation process, it is recommended that the user select all default options.
 ```bash
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 cd Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws
@@ -101,8 +103,9 @@ We need a reference sequence and paired-ended read datasets. Open the "_config_"
 The sample config contains the following lines to be updated.
 ```bash
 export LD_PRELOAD=<absolute_path>/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
-export INPUT_DIR=/path-to-reference-sequence-and-read-datasets/
+export INPUT_DIR=/path-to-read-datasets/
 export OUTPUT_DIR=/path-to-output-directory/
+exoort REF_DIR=/path-to-ref-directory/
 REF=ref.fasta
 R1=R1.fastq.gz
 R2=R2.fastq.gz
@@ -142,8 +145,9 @@ We need a reference sequence and paired-ended read datasets. Open the "_config_"
 The sample config contains the following lines to be updated.
 ```bash
 export LD_PRELOAD=<absolute_path>/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
-export INPUT_DIR=/path-to-reference-sequence-and-read-datasets/
+export INPUT_DIR=/path-to-read-datasets/
 export OUTPUT_DIR=/path-to-output-directory/
+exoort REF_DIR=/path-to-ref-directory/
 REF=ref.fasta
 R1=R1.fastq.gz
 R2=R2.fastq.gz
@@ -167,4 +171,9 @@ bash pcluster_compute_node_setup.sh 4 "03:00:00"
 Note that the script uses default setting for creating multiple MPI ranks based on the system configuration.
 ```bash
 bash run_pipeline_pcluster.sh
+```
+
+### Delete Cluster
+```bash
+pcluster delete <cluster_name>
 ```
