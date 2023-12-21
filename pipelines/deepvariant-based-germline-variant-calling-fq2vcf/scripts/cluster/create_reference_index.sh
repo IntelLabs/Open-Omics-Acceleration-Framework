@@ -1,8 +1,12 @@
 #!/bin/bash
 set -e
+SCRIPT_PATH="${BASH_SOURCE:-$0}"
+ABS_SCRIPT_PATH="$(realpath "${SCRIPT_PATH}")"
+#echo "Value of ABS_SCRIPT_PATH: ${ABS_SCRIPT_PATH}"
+ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"
 
+cd $ABS_DIRECTORY
 source config
-
 filename=${REF}
 file_ext=${filename##*.}
 file_name_without_extension=$(basename "$filename" .gz )
@@ -17,21 +21,21 @@ fi
 
 
 ref=${REF_DIR}/${REF}
-
+mkdir -p ${OUTPUT_DIR}
 echo "Checking the index files for $ref"
 ls ${ref}*
 
 # mem2 index
 echo "Creating FM-index for the reference sequence ${ref}"
 cd ../../../../applications/bwa-mem2
-./bwa-mem2 index $ref &> bwa_mem2_index_log
+./bwa-mem2 index $ref &> ${OUTPUT_DIR}/bwa_mem2_index_log
 cd - &> /dev/null
 
 
 # samtool idfai index
 echo "Creating fai index for the reference sequence ${ref}"
 cd ../../../../applications/samtools
-./samtools faidx $ref &> samtools_fai_log
+./samtools faidx $ref &> ${OUTPUT_DIR}/samtools_fai_log
 cd - &> /dev/null
 
 

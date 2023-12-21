@@ -34,7 +34,7 @@ cd - &> /dev/null
 # samtool idfai index
 echo "Creating fai index for the reference sequence ${ref}"
 cd ../../../../applications/samtools
-./samtools faidx $ref &> ${OUTPUT_DIR}samtools_fai_log
+./samtools faidx $ref &> ${OUTPUT_DIR}/samtools_fai_log
 cd - &> /dev/null
 
 
