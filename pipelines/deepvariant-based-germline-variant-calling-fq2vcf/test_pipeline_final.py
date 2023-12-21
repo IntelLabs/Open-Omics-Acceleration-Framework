@@ -15,10 +15,8 @@ import numpy as np
 import yappi
 from multiprocessing import Pool
 from operator import itemgetter
-mydict = {"chr1": 1,"chr2": 2,"chr3": 3,"chr4": 4,"chr5": 5,"chr6": 6,"chr7": 7,"chr8": 8, "chr9": 9, "chr10": 10, "chr11": 11, "chr12": 12, "chr13": 13, "chr14":14,"chr15":15,"chr16": 16, "chr17": 17, "chr18": 18, "chr19": 19,"chr20":20,"chr21":21,"chr22":22,"chrX": 23,"chrY": 24,"chrM": 25}
 
 BINDIR="../.."
-
 
 def pr_t1( f, start, end, bufs, sems ):  # thread to read from fastq.gz file
     f.seek(start)
@@ -118,7 +116,7 @@ ncpus = 8
 binrounding = 1000
 keep=False
 headers_done = threading.Semaphore(0)
-
+chromo_dict={}
 # NOTE:  Code relies on insert order of dictionary keys -- so needs python>=3.7
 
 # Calculate bins
@@ -213,6 +211,7 @@ def sw_thr( outpipe, comm, comm2 ):
     #seq_start['*'] = 0    # put all unmatched reads at beginning
     cumlen = 0
     global keep
+    global chromo_dict
     with open(outpipe,'r') as f1:
         #l = f1.readline()
         l = read_wrap(f1)
@@ -228,7 +227,8 @@ def sw_thr( outpipe, comm, comm2 ):
                     seq_len[sn] = ln
                     cumlen += ln
                 else:
-                    if sn in mydict.keys():
+                    #print(sn)
+                    if sn in chromo_dict.keys():
                         seq_start[sn] = cumlen
                         seq_len[sn] = ln
                         cumlen += ln
@@ -350,10 +350,21 @@ def main(argv):
     #global bins_per_rank
     #bins_per_rank = max(4,bins_per_rank//nranks)
     global ncpus
+    global chromo_dict
     ncpus = int(cpus)
-
     start0 = time.time()
-
+    # chromo_dict information added
+    chromo_file=os.path.join(refdir,ifile)+".fai"
+    if os.path.isfile(chromo_file):
+        f = open(chromo_file, "r")
+    else :
+        print(f'File "{chromo_file}" not found')
+        exit()
+    lines=f.readlines()
+    f.close()
+    for line in lines[0:25]:
+        chromo=line.split("\t")[0]
+        chromo_dict[chromo]= 1
     # Preindex refernce genome if requested
     if rank==0:
         yappi.set_clock_type("wall")
