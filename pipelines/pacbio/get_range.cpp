@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <sstream>
 using namespace std;
 
 class meta {
@@ -70,6 +71,31 @@ void fill_buffer(meta* m, int64_t &buff_size, string &tasks) {
 	// 2. if size is larger than buffer size
 	if ( m->get_size() > buff_size){
 		int64_t range_end = ((m->start + buff_size) - 1);
+		
+		
+		cout<<"range_end = "<<range_end<<endl;
+		//cout<<"Region_file_name = "<<m->region_file_name<<endl;
+                ifstream fp(m->region_file_name);
+                
+		string word;
+	        int first, second;
+		int i=0;
+                while(fp>>word){
+			if (i>=7){
+				stringstream ss(word);
+		                ss>>first;
+		                ss.ignore();
+		                ss>>second;
+		                //cout<<"First = "<<first<<", Second = "<<second<<endl;		
+
+				if (range_end >= first && range_end <= second){
+					range_end = second;
+				}	
+			}
+			i++;
+		}
+		fp.close();
+
 		generate_output(m, range_end);
 		m->start = range_end + 1;
 		buff_size = 0;

@@ -518,7 +518,7 @@ def main(argv):
     deepstart=time.time()
     for i in range(bins_per_rank):
         binstr = "%05d"%(i*nranks+rank)
-        command='mkdir -p '+os.path.join(output,binstr)+'; '+container_tool+' run --storage-opt ignore_chown_errors=true -v '+folder+':"/input" -v '+refdir+':"/refdir" -v '+output+'/'+binstr+':"/output" -v '+tempdir+':"/tempdir" localhost/deepvariant /opt/deepvariant/bin/run_deepvariant --model_type=PACBIO --ref=/refdir/'+ifile+' --reads=/tempdir/aln'+binstr+'.bam --output_vcf=/output/output.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'" --pcl_opt --make_examples_1'
+        command='mkdir -p '+os.path.join(output,binstr)+'; '+container_tool+' run -v '+folder+':"/input" -v '+refdir+':"/refdir" -v '+output+'/'+binstr+':"/output" -v '+tempdir+':"/tempdir" deepvariant /opt/deepvariant/bin/run_deepvariant --model_type=PACBIO --ref=/refdir/'+ifile+' --reads=/tempdir/aln'+binstr+'.bam --output_vcf=/output/output.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'" --make_examples_1'
         a = run( 'echo "'+command+'" > '+output+'log'+binstr+'.txt', shell=True)
         a = run( command+" 2>&1 >> "+output+"log"+binstr+".txt", shell=True)
     
@@ -535,7 +535,7 @@ def main(argv):
         temp=int(nproc)*nranks
         command='bash strategy.sh '+str(temp)+" "+output+" /output"
         print(command)
-        a = run(command+" &> "+output+"/strategy_log.txt", shell=True)
+        a = run(command+" 2>&1 >> "+output+"/strategy_log.txt", shell=True)
         prefix = 'inter'
         values=[output+"/candidate_file_list",output+"/counter_file_list"]
         threads = []
@@ -575,9 +575,9 @@ def main(argv):
     contents = file.readlines()
     for i in range(bins_per_rank):
         binstr = "%05d"%(i*nranks+rank)
-        command='mkdir -p '+os.path.join(output,binstr)+'; '+container_tool+' run --storage-opt ignore_chown_errors=true -v '+folder+':"/input" -v '+refdir+':"/refdir" -v '+output+'/'+binstr+':"/output" -v '+tempdir+':"/tempdir" localhost/deepvariant /opt/deepvariant/bin/run_deepvariant --model_type=PACBIO --ref=/refdir/'+ifile+' --reads="'+ contents[rank].strip('\n') +'" --output_vcf=/output/output.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'" --pcl_opt --make_examples_2 --candidate_file_list candidate_file_list  --counter_file_list counter_file_list --offset_list offset_list --max_candidates max_candidates'
+        command='mkdir -p '+os.path.join(output,binstr)+'; '+container_tool+' run -v '+folder+':"/input" -v '+refdir+':"/refdir" -v '+output+'/'+binstr+':"/output" -v '+tempdir+':"/tempdir" deepvariant:latest /opt/deepvariant/bin/run_deepvariant --model_type=PACBIO --ref=/refdir/'+ifile+' --reads="'+ contents[rank].strip('\n') +'" --output_vcf=/output/output.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'" --make_examples_2 --candidate_file_list candidate_file_list  --counter_file_list counter_file_list --offset_list offset_list --max_candidates max_candidates'
         a = run( 'echo "'+command+'" > '+output+'log_'+binstr+'.txt', shell=True)
-        a = run( command+" &>> "+output+"log_"+binstr+".txt", shell=True)
+        a = run( command+" 2>&1 >> "+output+"log_"+binstr+".txt", shell=True)
     deepend=time.time()
     deeptime=deepend - deepstart
     deepresult_sum=comm.allreduce(deeptime,op=MPI.SUM)

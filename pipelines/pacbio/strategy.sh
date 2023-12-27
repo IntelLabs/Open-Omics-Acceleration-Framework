@@ -8,7 +8,7 @@ dir=$2
 
 #cd $dir
 
-candidate_files=`ls $dir/intermediate_results_dir*/candidates.tfrecord-*`
+#candidate_files=`ls $dir/intermediate_results_dir*/candidate*`
 
 : '
 for file in ${candidate_files}; do
@@ -27,7 +27,7 @@ echo "Copy Part1: $duration sec"
 SECONDS=0
 
 # Total number of candidates across all shards
-TotalCandidates=`awk '{ sum += $7 } END { print sum }' $dir/intermediate_results_dir*/*region.txt`
+TotalCandidates=`awk '{ sum += $7 } END { print sum }' $dir/intermediate_results_dir*/region_*`
 
 equal_distribution=`expr $TotalCandidates / $num_shards  `
 
@@ -40,18 +40,18 @@ duration=$SECONDS
 echo "Total Part1: $duration sec"
 SECONDS=0
 
-regions_meta=`ls -v $dir/intermediate_results_dir*/*region.txt`
-candidate_file_list=`ls -v $dir/intermediate_results_dir*/candidates.tfrecord-*.gz` #changed
+regions_meta=`ls -v $dir/intermediate_results_dir*/region*`
+candidate_file_list=`ls -v $dir/intermediate_results_dir*/candidate_*.gz` #changed
 list1=(${regions_meta})
 list2=(${candidate_file_list})
 
 # Check if the lists have the same length
-: '
+
 if [ ${#list1[@]} -ne ${#list2[@]} ]; then
   echo "Error: Lists have different lengths"
   exit 1
 fi
-'
+
 echo "list1 ${#list1[@]}"
 echo "list2 ${#list2[@]}"
 duration=$SECONDS
@@ -81,12 +81,7 @@ for ((i=0; i<${#list1[@]}; i++)); do
 	  sum=$((sum + word))
 	done < $item1 #"yourfile.txt"
    #echo $sum
-  candidates_in_shards=$sum   
-  
-  
-  
-  
-  
+  candidates_in_shards=$sum  
   #end=$(date +%s%3N)
   #duration=$((end-start))
   #echo "Find: $duration millisec"

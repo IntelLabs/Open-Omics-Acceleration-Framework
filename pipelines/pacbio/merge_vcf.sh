@@ -11,7 +11,7 @@ for (( j=0 ; j < $total ; j++ ))
 do
         printf -v padded_number "%05d" $j
         echo $padded_number
-        ls ${1}/${padded_number}/*output.vcf.gz -v >> ${1}/b.txt
+        ls ${1}/${padded_number}/output.vcf.gz -v >> ${1}/b.txt
         
 done
 vcf_list=`cat ${1}/b.txt`
