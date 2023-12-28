@@ -518,7 +518,7 @@ def main(argv):
     deepstart=time.time()
     for i in range(bins_per_rank):
         binstr = "%05d"%(i*nranks+rank)
-        command='mkdir -p '+os.path.join(output,binstr)+'; '+container_tool+' run -v '+folder+':"/input" -v '+refdir+':"/refdir" -v '+output+'/'+binstr+':"/output" -v '+tempdir+':"/tempdir" deepvariant /opt/deepvariant/bin/run_deepvariant --model_type=PACBIO --ref=/refdir/'+ifile+' --reads=/tempdir/aln'+binstr+'.bam --output_vcf=/output/output.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'" --make_examples_1'
+        command='mkdir -p '+os.path.join(output,binstr)+'; '+container_tool+' run -v '+folder+':"/input" -v '+refdir+':"/refdir" -v '+output+'/'+binstr+':"/output" -v '+tempdir+':"/tempdir" deepvariant:latest /opt/deepvariant/bin/run_deepvariant --model_type=PACBIO --ref=/refdir/'+ifile+' --reads=/tempdir/aln'+binstr+'.bam --output_vcf=/output/output.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'" --make_examples_1'
         a = run( 'echo "'+command+'" > '+output+'log'+binstr+'.txt', shell=True)
         a = run( command+" 2>&1 >> "+output+"log"+binstr+".txt", shell=True)
     
@@ -535,17 +535,21 @@ def main(argv):
         temp=int(nproc)*nranks
         command='bash strategy.sh '+str(temp)+" "+output+" /output"
         print(command)
-        a = run(command+" 2>&1 >> "+output+"/strategy_log.txt", shell=True)
+        #a = run(command+" > "+output+"/strategy_log.txt", shell=True)
+        a = os.system(command+" > "+output+"/strategy_log" )
         prefix = 'inter'
         values=[output+"/candidate_file_list",output+"/counter_file_list"]
         threads = []
         for value in values:
             print("value",value)
             t = threading.Thread(target=update_file_paths, args=(value,))
-            t.start()
             threads.append(t)
         for t in threads:
+            t.start()
+        for t in threads:
             t.join()
+        #time.sleep(5)
+
         folders = [folder for folder in os.listdir(tempdir) if folder.startswith(prefix) and os.path.isdir(os.path.join(tempdir, folder))]
         folders.sort()
         #print(folders)
@@ -555,8 +559,9 @@ def main(argv):
         for value in values:
             print("value",value)
             t = threading.Thread(target=split_file, args=(value, int(nranks),folders,tempdir))
-            t.start()
             threads.append(t)
+        for t in threads:
+            t.start()
         for t in threads:
             t.join()
         
