@@ -23,7 +23,7 @@
         * libbz2-dev  
         * liblzma-dev  
 
-# Instructions to run the pipeline on On-premises
+# Instructions to run the pipeline on on-prem
 ### 1. Clone the repo:  
 ```bash
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
