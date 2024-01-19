@@ -153,6 +153,13 @@ echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $PPN ppn.
 # Todo : Make index creation parameterized.
 
 # Check if number of ranks equals number of splits
+echo $R1; 
+echo $R2; 
+echo $R3; 
+echo ${#R1};
+echo ${#R2};
+echo ${#R3};
+
 if [ "$N" != ${#R1} ]; then
     echo "Error: Number of ranks does not equal number of splits. Program failed."
     exit 1
