@@ -152,6 +152,18 @@ echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $PPN ppn.
 # -in -sindex are required only once for indexing.
 # Todo : Make index creation parameterized.
 
+# Check if number of ranks equals number of splits
+if [ "$N" != ${#R1} ]; then
+    echo "Error: Number of ranks does not equal number of splits. Program failed."
+    exit 1
+fi
+
+# Check if number of R1 and R3 fastq files is equal
+if [ ${#R1} != ${#R3} ]; then
+    echo "Error: Number of R1 fastq files doesnt equal number of R3 files. Program failed."
+    exit 1
+fi
+
 exec=dist_bwa.py
 mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read3 $READ3 --cpus $CPUS --threads $THREADS --keep_unmapped ${whitelist} ${read_structure} ${barcode_orientation} ${bam_size} ${outfile} ${istart} ${sample_id} ${output_format} --prefix $PREFIX --suffix $SUFFIX --params "${PARAMS}" --mode $mode   2>&1 | tee ${OUTDIR}log.txt
 
