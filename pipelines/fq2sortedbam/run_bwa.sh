@@ -154,19 +154,21 @@ echo Starting run with $N ranks, $CPUS threads,$THREADS threads, $PPN ppn.
 
 # Check if number of ranks equals number of splits
 echo $R1; 
-echo $R2; 
 echo $R3; 
-echo ${#R1};
-echo ${#R2};
-echo ${#R3};
 
-if [ "$N" != ${#R1} ]; then
+R1_LEN=`echo $R1 | tr ' ' '\n' | wc -l`
+R3_LEN=`echo $R3 | tr ' ' '\n' | wc -l`
+
+echo $R1_LEN;
+echo $R3_LEN;
+
+if [ "$N" != "$R1_LEN" ]; then
     echo "Error: Number of ranks does not equal number of splits. Program failed."
     exit 1
 fi
 
 # Check if number of R1 and R3 fastq files is equal
-if [ ${#R1} != ${#R3} ]; then
+if [ "$R1_LEN" != "$R3_LEN" ]; then
     echo "Error: Number of R1 fastq files doesnt equal number of R3 files. Program failed."
     exit 1
 fi
