@@ -159,11 +159,8 @@ echo $R3;
 R1_LEN=`echo $R1 | tr ' ' '\n' | wc -l`
 R3_LEN=`echo $R3 | tr ' ' '\n' | wc -l`
 
-echo $R1_LEN;
-echo $R3_LEN;
-
 if [ "$N" != "$R1_LEN" ]; then
-    echo "Error: Number of ranks does not equal number of splits. Program failed."
+    echo "Error: Number of ranks ("$N") does not equal number of splits ("$R1_LEN"). Program failed."
     exit 1
 fi
 
