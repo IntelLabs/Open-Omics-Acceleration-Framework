@@ -129,7 +129,7 @@ wget https://broad-references.s3.amazonaws.com/hg38/v0/Homo_sapiens_assembly38.f
 #### Baseline
 
 EC2Instance: c7i.24xlarge
-Prerequisite : docker/podman 
+
 ```sh
 cd ~
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
