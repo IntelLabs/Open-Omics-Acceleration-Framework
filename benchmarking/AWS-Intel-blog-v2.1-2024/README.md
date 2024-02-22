@@ -13,6 +13,7 @@
 3.	Use SSH to login to the machine after the instance is up and running
   * $ ssh -i <key.pem> username@Public-DNS
 4.	The logged in AWS instance machine is now ready to use – you can download Open Omics workloads and related datasets to be executed on this instance.
+5. Follow these instructions to install and set up docker: https://medium.com/@srijaanaparthy/step-by-step-guide-to-install-docker-on-ubuntu-in-aws-a39746e5a63d.
 
 
 ## AlphaFold2-based Protein Folding Pipeline
