@@ -78,7 +78,8 @@ python3 run_pretrained_openfold.py \
     --cpus 96 \
     --long_sequence_inference
 ```
-Note: Change cpus as available vcpus and use --long_seququence_inference option if you are running long sequences.
+Note 1: If you are using a different instance, modify --cpus flag to available vcpus. 
+Note 2: Use --long_seququence_inference option if you are running long sequences.
 
 
 #### Open Omics Acceleration Framework alphafold2-based-protein-folding pipeline
