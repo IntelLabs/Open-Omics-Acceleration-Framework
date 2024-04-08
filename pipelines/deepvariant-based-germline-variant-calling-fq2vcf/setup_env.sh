@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set –e 
 SCRIPT_PATH="${BASH_SOURCE:-$0}"
 ABS_SCRIPT_PATH="$(realpath "${SCRIPT_PATH}")"
 #echo "Value of ABS_SCRIPT_PATH: ${ABS_SCRIPT_PATH}"
