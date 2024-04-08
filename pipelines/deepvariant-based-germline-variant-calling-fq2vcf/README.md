@@ -26,7 +26,8 @@
 # Instructions to run the pipeline on on-prem
 ### 1. Clone the repo:  
 ```bash
-git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/2.1/Source_code_with_submodules.tar.gz
+tar -xzf Source_code_with_submodules.tar.gz
 ```
 
 ### 2. Setting Envionment
@@ -93,7 +94,8 @@ The following instructions run seamlessly on a standalone AWS ec2 instance. To r
 ### One-time setup
 This step takes around ~15 mins to execute. During the installation process, whenever prompted for user input, it is recommended that the user select all default options.
 ```bash
-git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/2.1/Source_code_with_submodules.tar.gz
+tar -xzf Source_code_with_submodules.tar.gz
 cd Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws
 bash deepvariant_ec2_setup.sh
 ```
@@ -136,7 +138,8 @@ The following instructions run seamlessly on AWS ParallelCluster. To run the fol
 This step takes around ~15 mins to execute. During the installation process, whenever prompted for user input, it is recommended that the user select all default options.
 ```bash
 cd /sharedgp
-git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/2.1/Source_code_with_submodules.tar.gz
+tar -xzf Source_code_with_submodules.tar.gz
 cd Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws
 bash deepvariant_setup.sh
 ```

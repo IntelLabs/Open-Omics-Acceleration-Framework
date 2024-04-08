@@ -4,7 +4,7 @@ ARG BASE_IMAGE=continuumio/miniconda3
 FROM ${BASE_IMAGE} as conda_setup
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    git build-essential cmake wget tzdata gcc curl gnupg gnupg2 gnupg1 sudo kalign autoconf numactl time vim \
+    git build-essential cmake wget tzdata gcc curl gnupg gnupg2 gnupg1 sudo kalign autoconf numactl time vim tar \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get autoremove -y \
     && apt-get clean
@@ -29,7 +29,9 @@ RUN python -m pip install absl-py==2.0.0 biopython==1.81 chex==0.1.84 dm-haiku==
 RUN python -m pip install jax==0.4.21 jaxlib==0.4.21
 RUN python -m pip install intel-extension-for-pytorch==2.0.100
 #COPY . /Open-Omics-Acceleration-Framework/
-RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/2.1/Source_code_with_submodules.tar.gz
+RUN tar -xzf Source_code_with_submodules.tar.gz
 RUN cd /Open-Omics-Acceleration-Framework/applications/alphafold
 WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
 RUN git submodule update --recursive --init -- .

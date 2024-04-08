@@ -27,7 +27,7 @@ ARG BASE_IMAGE=continuumio/miniconda3
 FROM ${BASE_IMAGE}
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    git build-essential gcc curl gnupg gnupg2 gnupg1 sudo
+    git build-essential gcc curl gnupg gnupg2 gnupg1 sudo tar wget
 
 RUN wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
 | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
@@ -65,7 +65,8 @@ COPY ./notebooks/ /workspace
 
 RUN pip uninstall -y umap-learn
 WORKDIR /
-RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/2.1/Source_code_with_submodules.tar.gz
+RUN tar -xzf Source_code_with_submodules.tar.gz
 WORKDIR ./Open-Omics-Acceleration-Framework/lib/tal/applications/UMAP_fast/umap_extend/
 RUN python setup.py install
 

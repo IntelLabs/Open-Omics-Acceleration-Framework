@@ -29,7 +29,8 @@
 
 ```sh
  cd ~
- git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+ wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/2.1/Source_code_with_submodules.tar.gz
+ tar -xzf Source_code_with_submodules.tar.gz
 ```
 #### Baseline ([OpenFold](https://github.com/aqlaboratory/openfold))
 EC2Instance: m7i.24xlarge\
@@ -156,7 +157,8 @@ Disk: 500GB(gp2)
 
 ```sh
 cd ~
-git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/2.1/Source_code_with_submodules.tar.gz
+tar -xzf Source_code_with_submodules.tar.gz
 #pull deepvariant docker image
 docker pull google/deepvariant:1.5.0
 
@@ -247,7 +249,8 @@ Note: Open Jupyter notebook and Select **1M_brain_cpu_analysis.ipynb** file and 
 EC2Instance: r7i.24xlarge and c7i.24xlarge 
 ```sh
 cd ~
-git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/2.1/Source_code_with_submodules.tar.gz
+tar -xzf Source_code_with_submodules.tar.gz
 cd ~/Open-Omics-Acceleration-Framework/pipelines/single-cell-RNA-seq-analysis/
 docker build -t scanpy .           # Create a docker image named scanpy
 

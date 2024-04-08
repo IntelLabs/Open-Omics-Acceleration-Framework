@@ -37,7 +37,8 @@ In addition, we also use several existing AI libraries: oneDNN, oneDAL, oneCCL, 
 # Getting Started
 ```sh
 # Download release
-curl -L https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/2.0/Source_code_with_submodules.tar.gz | tar xvzf -
+wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/2.1/Source_code_with_submodules.tar.gz 
+tar -xzf Source_code_with_submodules.tar.gz
 
 # Clone master
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework
