@@ -34,7 +34,7 @@ RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases
 RUN tar -xzf Source_code_with_submodules.tar.gz
 RUN cd /Open-Omics-Acceleration-Framework/applications/alphafold
 WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
-RUN git submodule update --recursive --init -- .
+
 # Compile HHsuite from source.
 RUN . /opt/intel/oneapi/compiler/latest/env/vars.sh intel64 \
     && . /opt/intel/oneapi/mkl/latest/env/vars.sh intel64 \
