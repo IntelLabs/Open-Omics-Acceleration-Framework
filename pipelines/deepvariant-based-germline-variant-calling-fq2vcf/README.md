@@ -88,7 +88,7 @@ Our latest results are published in this [blog](https://community.intel.com/t5/B
 
 
 # Instructions to run the pipeline on an AWS ec2 instance
-The following instructions run seamlessly on a standalone AWS ec2 instance. To run the following steps, create an ec2 instance with Ubuntu-22.04 having at least 60GB of memory. The input reference sequence and the paired-ended read datasets must be downloaded and stored on the disk.
+The following instructions run seamlessly on a standalone AWS ec2 instance. To run the following steps, create an ec2 instance with Ubuntu-22.04 having at least 60GB of memory and 500GB of disk. The input reference sequence and the paired-ended read datasets must be downloaded and stored on the disk.
 
 ### One-time setup
 This step takes around ~15 mins to execute. During the installation process, whenever prompted for user input, it is recommended that the user select all default options.

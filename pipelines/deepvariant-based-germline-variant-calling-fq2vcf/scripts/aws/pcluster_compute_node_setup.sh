@@ -1,3 +1,5 @@
+#!/bin/bash
+set -e
 WDIR=`pwd`
 num_compute_nodes=$1
 allocation_time="02:00:00"

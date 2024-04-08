@@ -1,4 +1,5 @@
-
+#!/bin/bash
+set -e
 # All basic dev tools for Ubuntu 22.04
 
 sudo apt update 

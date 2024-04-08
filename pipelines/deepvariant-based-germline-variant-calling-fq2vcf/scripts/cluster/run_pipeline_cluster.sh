@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 source config
 
 Container=docker

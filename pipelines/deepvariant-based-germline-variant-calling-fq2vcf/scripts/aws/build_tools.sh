@@ -1,3 +1,5 @@
+#!/bin/bash
+set -e
 # Prerequisites: conda env activated
 
 

@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 #ENV=/nfs/work04/ashish/envs/new_env/bin/activate
 #source $ENV
 

@@ -1,4 +1,5 @@
-
+#!/bin/bash
+set -e
 
 echo "Step 1: Basic installation.." 
 bash basic_setup.sh
