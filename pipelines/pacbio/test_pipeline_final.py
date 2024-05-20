@@ -41,7 +41,7 @@ def get_bam(filename,output,n_shards):
                 if len(processed_line)>0:
                     for i in range(len(processed_line)):
                         data = processed_line[i].split("/")[-2]
-                        processed_line[i]=re.findall(r'\d+', data)[0] 
+                        processed_line[i]=re.findall(r'\d+', data)[0]
                     if count < n_shards:
                         lines+=processed_line
                     else:
@@ -307,13 +307,13 @@ def sw_thr( outpipe, comm, comm2 ):
                         seq_len[sn] = ln
                         cumlen += ln
                     else :
-                        seq_start[sn] = -1	
+                        seq_start[sn] = -1
 		#l = f1.readline()
             l = read_wrap(f1)
         # done reading headers
         if keep:
             seq_start['*'] = cumlen    # put all unmatched reads at end
-        else: 
+        else:
             seq_start['*'] = -1
         calculate_bins(nranks)
         binstarts = [ b[0] for b in bins ]
@@ -333,11 +333,11 @@ def sw_thr( outpipe, comm, comm2 ):
             	#b = bisect.bisect(binstarts, key) - 1
             	bn = bisect_wrap(binstarts, key) - 1
             	#if bn==0 and not (seq=='chr1' or seq=='chr2'):
-            	#    print("BAD BIN", seq, seq_start[seq], offset, key, bn) 
+            	#    print("BAD BIN", seq, seq_start[seq], offset, key, bn)
             	_, r, b = bins[bn]
             	#print (seq, offset, key, bn, r, b)
             	#comm.send( (key, b, l), r )
-            
+
             	send_wrap( l, r, b=bn )
             else :
                 if seq_start[seq]!= -1:
@@ -348,7 +348,7 @@ def sw_thr( outpipe, comm, comm2 ):
                     _, r, b = bins[bn]
 		    #print (seq, offset, key, bn, r, b)
 		    #comm.send( (key, b, l), r )
-                    send_wrap( l, r, b=bn )	
+                    send_wrap( l, r, b=bn )
             l = read_wrap(f1)
             i+=1
     # send done signal
@@ -380,6 +380,22 @@ def sam_writer( comm, fname ):
     thr.start()
     return outpipe, thr
 
+def read_files(path,no_shards):
+    lines = []
+    for i in range(no_shards):  # Iterate from 0 to 13
+        filename = path+f"/{i}region.txt"
+        with open(filename, 'r') as f:
+            lines.extend(f.readlines())
+    return lines
+def read_rank_files(path,no_rank):
+    lines = []
+    for i in range(no_rank):  # Iterate from 0 to 13
+        binstr='%05d'%(i)
+        filename= path+binstr+"/region.txt"
+        with open(filename, 'r') as f:
+            lines.extend(f.readlines())
+    return lines
+
 def main(argv):
     parser=ArgumentParser()
     parser.add_argument('--input',help="Input data directory")
@@ -390,11 +406,11 @@ def main(argv):
     parser.add_argument("-r", "--reads", nargs='+',help="name of reads file seperated by space")
     parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
     parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
-    parser.add_argument('-in', '--istart',action='store_true',help="It will index reference genome for bwa-mem2. If it is already done offline then don't use this flag.") 
+    parser.add_argument('-in', '--istart',action='store_true',help="It will index reference genome for bwa-mem2. If it is already done offline then don't use this flag.")
     parser.add_argument('-sindex',action='store_true',help="It will create .fai index. If it is done offline then disable this.")
     parser.add_argument('--container_tool',default="docker",help="Container tool used in pipeline : Docker/Podman")
     parser.add_argument('--shards',default=1,help="Number of shards for deepvariant")
-    parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling") 
+    parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
     parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
     args = vars(parser.parse_args())
     ifile=args["index"]
@@ -425,14 +441,14 @@ def main(argv):
     ncpus = int(cpus)
 
     start0 = time.time()
-    
+
     # Preindex refernce genome if requested
     if rank==0:
         yappi.set_clock_type("wall")
         if prof: yappi.start()
         file_size = os.path.getsize(os.path.join(folder,rfile1))
         print("\nSize of FASTQ file:",file_size)
-        
+
         if istart==True :
             print("Indexing Starts")
             begin = time.time()
@@ -442,7 +458,7 @@ def main(argv):
             print("\nIndex time:",end-begin)
             print("\nSize of FASTQ file:",file_size)
             # numactl -m 0 -N 0 ./bwa-mem2/bwa-mem2 index data/tempdata/refs/hs37d5.fa.gz
-        
+
         print("minimap2 starts")
 
 
@@ -466,10 +482,10 @@ def main(argv):
         #    print("\nPreindex source files time:",begin1-begin0)
         print("\nFASTQ to SAM time:",end1-begin1)
         print("   (includes wait time:",end1-end1b,")")
-        
+
         print("\nsam to sort-bam starts")
         begin2=time.time()
-        
+
 
     # Finish sort, merge, convert to bam depending on mode
     cmd=""
@@ -481,11 +497,11 @@ def main(argv):
             cmd=""
     if not cmd=="": a=run(cmd,capture_output=True,shell=True)
     comm.barrier()
-    
+
     if rank==0:
         end2=time.time()
         print("SAM to sort-BAM time:",end2-begin2)
-        
+
 
     # Generate index file(s)
     if rank==0:
@@ -495,7 +511,7 @@ def main(argv):
             a=run(f'{BINDIR}/applications/samtools/samtools faidx '+os.path.join(refdir,ifile),capture_output=True,shell=True)
             end=time.time()
             print("\nReference to .fai index creation time",end-begin3)
-    
+
     if rank==0:
         begin3=time.time()
     cmd =""
@@ -513,7 +529,7 @@ def main(argv):
         end3=time.time()
         print("\nBAM to .bai index creation time",end3-begin3)
         print("\nStarting Deepvariant execution...")
-        begin5=time.time()  
+        begin5=time.time()
 
     deepstart=time.time()
     for i in range(bins_per_rank):
@@ -521,16 +537,26 @@ def main(argv):
         command='mkdir -p '+os.path.join(output,binstr)+'; '+container_tool+' run -v '+folder+':"/input" -v '+refdir+':"/refdir" -v '+output+'/'+binstr+':"/output" -v '+tempdir+':"/tempdir" deepvariant:latest /opt/deepvariant/bin/run_deepvariant --model_type=PACBIO --ref=/refdir/'+ifile+' --reads=/tempdir/aln'+binstr+'.bam --output_vcf=/output/output.vcf.gz --intermediate_results_dir /tempdir/intermediate_results_dir'+binstr+' --num_shards='+nproc+' --dry_run=false --regions "'+bin_region[i*nranks+rank]+'" --make_examples_1'
         a = run( 'echo "'+command+'" > '+output+'log'+binstr+'.txt', shell=True)
         a = run( command+" 2>&1 >> "+output+"log"+binstr+".txt", shell=True)
-    
+        lines = read_files('/tempdir/intermediate_results_dir'+binstr+'/',nproc)
+        with open('/tempdir/intermediate_results_dir'+binstr+'/region.txt', 'w') as f:
+            for line in lines:
+                f.write(line)
+
     deepend=time.time()
     deeptime=deepend - deepstart
     deepresult_sum=comm.allreduce(deeptime,op=MPI.SUM)
     deepresult_max=comm.allreduce(deeptime,op=MPI.MAX)
     if rank==0:
         print("\n Deepvariant time, avg: {:.4f}, max : {:.4f}".format(deepresult_sum/nranks,deepresult_max))
-
     comm.barrier()
     if rank==0:
+        #for i in range(nranks):
+        lines=read_rank_files("/tempdir/intermediate_results_dir",nranks)
+        with open('/tempdir/region.txt', 'w') as f:
+            for line in lines:                                                                                                                                              f.write(line)
+    comm.barrier()
+    if rank==0:
+
         strategy_start=time.time()
         temp=int(nproc)*nranks
         command='bash strategy.sh '+str(temp)+" "+output+" /output"
@@ -564,12 +590,12 @@ def main(argv):
             t.start()
         for t in threads:
             t.join()
-        
+
         #split_file("candidate_file_list", int(nranks),folders,tempdir)
         #split_file("offset_list", int(nranks),folders,tempdir)
         #split_file("counter_file_list", int(nranks),folders,tempdir)
         #split_file("max_candidates",int(nranks),folders,tempdir)
-        
+
         get_bam(output+"/candidate_file_list",output,int(nproc))
         #for i in range(len(folders)):
         #    shutil.copy(os.path.join(tempdir,"max_candidates"), os.path.join(tempdir,folders[i],"max_candidates"))
@@ -590,8 +616,8 @@ def main(argv):
     if rank==0:
         print("\n Deepvariant time, avg: {:.4f}, max : {:.4f}".format(deepresult_sum/nranks,deepresult_max))
 
-    comm.barrier()  
-    
+    comm.barrier()
+
     if rank==0:
         cmd= 'bash merge_vcf.sh '+output +' '+str(nranks)+' '+str(bins_per_rank)
         print(cmd)
@@ -602,9 +628,9 @@ def main(argv):
         print("\nTime for the whole pipeline",end5-start0)
 
         if prof:
-            yappi.get_func_stats().print_all(columns={0:("ncall",5),1:("tsub",8),2:("ttot",8),3:("tavg",8),4:("name",90)})  
-            yappi.get_thread_stats().print_all() 
-    
+            yappi.get_func_stats().print_all(columns={0:("ncall",5),1:("tsub",8),2:("ttot",8),3:("tavg",8),4:("name",90)})
+            yappi.get_thread_stats().print_all()
+
 if __name__ == "__main__":
     main(sys.argv[1:])
 
