@@ -6,25 +6,33 @@
 #ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"
 ##echo "Value of ABS_DIRECTORY: ${ABS_DIRECTORY}"
 
+if [ "$#" == "1" ]
+then
+    echo "pls. provide args: cloud/on-prem"
+fi
+
+if [ "$1" == "cloud" ]
+then
 echo "Installing pre-requisite tools.."
 bash basic_setup_ubuntu.sh
 echo "Done"
-
-echo "Downloading and setting up miniconda..."
-if [ ! -e "Miniconda3-py39_23.3.1-0-Linux-x86_64.sh" ]
-then
-    wget https://repo.anaconda.com/miniconda/Miniconda3-py39_23.3.1-0-Linux-x86_64.sh
 fi
 
-bash ./Miniconda3-py39_23.3.1-0-Linux-x86_64.sh -b -p ./miniconda3
-echo "Downloading and setting up miniconda...DONE"
-
-echo "Seeting up conda env named with given argument"
-miniconda3/bin/conda env create --name distbwa -f environment.yml
-echo "Seeting up conda env named new_env...DONE"
-
-echo "Activating conda env..."
-source miniconda3/bin/activate distbwa
+#echo "Downloading and setting up miniconda..."
+#if [ ! -e "Miniconda3-py39_23.3.1-0-Linux-x86_64.sh" ]
+#then
+#    wget https://repo.anaconda.com/miniconda/Miniconda3-py39_23.3.1-0-Linux-x86_64.sh
+#fi
+#
+#bash ./Miniconda3-py39_23.3.1-0-Linux-x86_64.sh -b -p ./miniconda3
+#echo "Downloading and setting up miniconda...DONE"
+#
+#echo "Seeting up conda env named with given argument"
+#miniconda3/bin/conda env create --name distbwa -f environment.yml
+#echo "Seeting up conda env named new_env...DONE"
+#
+#echo "Activating conda env..."
+#source miniconda3/bin/activate distbwa
 echo "localhost" > hostfile
 
 ## build tools
@@ -34,6 +42,7 @@ EXEDIR=`pwd`
 # compile bwa-mem2
 echo "Build bwa-mem2"
 cd ${WDIR}/applications/bwa-mem2
+make clean
 make -j multi
 bwainstall="SUCESS"
 if [ -e "${WDIR}/applications/bwa-mem2/bwa-mem2" ]; then

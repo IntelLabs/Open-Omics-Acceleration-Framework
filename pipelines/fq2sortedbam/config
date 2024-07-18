@@ -2,15 +2,16 @@
 ## multiome-practice-may15_arcgtf_0.R1.trimmed_adapters.fastq.gz
 PREFIX="multiome-practice-may15_arcgtf"    ## prefix for R1 and R3 as input to bwamem2 in multifq
 SUFFIX="trimmed_adapters.fastq.gz"    ## suffix for R1 and R3 as input to bwamem2 in multifq
-INPUT_DIR=/home/awdeh/input_data
-OUTPUT_DIR=/home/awdeh/input_data/output
-R1="multiome-practice-may15_arcgtf_0.R1.trimmed_adapters.fastq.gz"
-R3="multiome-practice-may15_arcgtf_0.R3.trimmed_adapters.fastq.gz"
-R2=""
+INPUT_DIR=./data/
+OUTPUT_DIR=./out/
+R1="HG001.novaseq.pcr-free.30x.R1_10M.fastq.gz"
+R3=""
+R2="HG001.novaseq.pcr-free.30x.R2_10M.fastq.gz"
 I1=""
-REF=genome_referenceODrWMu/genome.fa
+REF=GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
+OUTFILE="broadfinal"    ##name prefix of the output bam file: broadfinal.sorted.bam
 ## used + instead of - to avoid confusion in python parsing in dist_bwa
-PARAMS='+R "@RG\tID:RG1\tSM:RGSN1" +C' 
+PARAMS='+R "@RG\tID:RG1\tSM:RGSN1"' 
 
 # default values
 ISTART="False"   ## flag for bwa-mem2 index creation False/True
@@ -20,4 +21,4 @@ BARCODE_ORIENTATION="FIRST_BP_RC"
 BAM_SIZE="5"   # in GB by default
 SAMPLE_ID=""
 OUTPUT_FORMAT="FASTQ"
-OUTFILE="broadfinal"    ##name of the output bam file
+
