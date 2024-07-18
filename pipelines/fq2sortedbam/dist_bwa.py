@@ -417,8 +417,18 @@ def main(argv):
     params=params.replace("+","-")    
     if args["preads"] != None:
         ## for flatmode and pragzip mode
-        rfile1=args["preads"][0]
-        rfile2=args["preads"][1]
+        try:
+            rfile1=args["preads"][0]
+        except:            
+            print('Error: Please provide read1 file name')
+            exit()
+        if not se_mode:
+            try:
+                rfile2=args["preads"][1]
+            except:
+                print('Error: Please provide read2 file name')
+                exit()
+                
     else:
         ## for fqprocss
         read1 = args["read1"]
