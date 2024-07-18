@@ -52,6 +52,19 @@ else
     echo "Error!! bwa-mem2 build failed"
 fi
 
+cd ${WDIR}/applications/mm2-fast
+make clean
+make -j
+mm2install="SUCESS"
+if [ -e "${WDIR}/applications/mm2-fast/minimap2" ]; then
+    echo "mm2-fast build successful"
+else
+    mm2install="FAILED"
+    echo "Error!! mm2-fast build failed"
+    exit
+fi
+
+
 #make install   #uncomment this for installation
 
 # compile htslib
@@ -106,6 +119,7 @@ else
 fi
 
 echo "bwa compilation is "$bwainstall
+echo "mm2-fast compilation is "$mm2install
 echo "samtools compilation is "$saminstall
 
 echo "Compelete installation done."

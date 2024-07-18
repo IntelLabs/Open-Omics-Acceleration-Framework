@@ -402,13 +402,18 @@ def main(argv):
     parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
     parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
     parser.add_argument('--se_mode',action='store_true',help="Single End (SE) reads only. Paired End (PE) mode is default")
+    parser.add_argument('--read_type',default="short", help="(short/long): bwa-mem2 with short reads, mm2-fast with long reads")
     args = vars(parser.parse_args())
 
     global chromo_dict
     #ncpus = int(cpus)
     #start0 = time.time()
     
-    se_mode=args["se_mode"]    
+    se_mode=args["se_mode"]
+    read_type=args["read_type"]
+    if read_type == "long":
+        assert se_mode == True, "for long reads se_mode should be enabled by the code"
+        
     ifile=args["index"]
     params=args["params"]
     #print("PARAMS")
@@ -591,8 +596,12 @@ def main(argv):
         - It needs reads files in gzip format
         '''
         
-        if rank == 0:
-            print("dist bwa-mem2 starts in flatmode")
+        #if rank == 0:
+        #    print("dist bwa-mem2 starts in flatmode")
+        if rank == 0 and read_type == "short":
+            print("bwa-mem2 starts in flatmode")
+        if rank == 0 and read_type == "long":
+            print("mm2-fast starts in flatmode")
             
         # Execute bwamem2 -- may include sort, merge depending on mode
         begin0 = time.time()
@@ -605,7 +614,10 @@ def main(argv):
         #bwastr = '{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'/bwalog' + str(rank) + '.txt'
         #print(bwastr)
         if se_mode:
-            a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+            if read_type == "long":
+                a=run(f'{BINDIR}/applications/mm2-fast/minimap2 -ax map-hifi ' + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' + str(rank) + '.txt',capture_output=True, shell=True)
+            else:
+                a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
 
         else:                
             a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
@@ -752,9 +764,10 @@ def main(argv):
     elif mode == 'pragzip':
         # Preindex refernce genome if requested
 
-        if rank == 0:
+        if rank == 0 and read_type == "short":
             print("bwa-mem2 starts")
-                        
+        if rank == 0 and read_type == "long":
+            print("mm2-fast starts")
         # Execute bwamem2 -- may include sort, merge depending on mode
         begin0 = time.time()
         try:
@@ -764,7 +777,10 @@ def main(argv):
             fn3, thr = sam_writer( comm, output+'/aln' )
             begin1 = time.time()
             if se_mode:
-                a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+                if read_type == "long":
+                    a=run(f'{BINDIR}/applications/mm2-fast/minimap2 -ax map-hifi ' + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' + str(rank) + '.txt',capture_output=True, shell=True)
+                else:                
+                    a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
             else:
                 a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
             assert a.returncode == 0

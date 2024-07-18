@@ -25,7 +25,11 @@ num_nodes=1
 lscpu > compute_config
 
 semode=""
+read_type="--read_type short"
 [[ "$se_mode" == "se" ]] && semode="--se_mode"
+[[ "$READ_TYPE" == "long" ]] && read_type="--read_type long"
+[[ "$READ_TYPE" == "long" ]] && semode="--se_mode"  ## resetting to se reads for long reads
+
 
 num_cpus_per_node=$(cat compute_config | grep -E '^CPU\(s\)' | awk  '{print $2}')
 num_numa=$(cat compute_config | grep '^NUMA node(s)' | awk '{print $3}')
@@ -204,7 +208,7 @@ then
 fi
 
 exec=dist_bwa.py
-#mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --preads $READ1 $READ2 --cpus $CPUS --threads $THREADS --keep_unmapped ${whitelist} ${read_structure} ${barcode_orientation} ${bam_size} ${outfile} ${istart} ${sample_id} ${output_format} --prefix $PREFIX --suffix $SUFFIX --params "${PARAMS}" --mode $mode   2>&1 | tee ${OUTDIR}log.txt
+#mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --preads $READ1 $READ2 --cpus $CPUS --threads $THREADS --keep_unmapped ${whitelist} ${read_structure} ${barcode_orientation} ${bam_size} ${outfile} ${istart} ${sample_id} ${output_format} --prefix $PREFIX --suffix $SUFFIX --params "${PARAMS}" --mode $mode --read_type $READ_TYPE  2>&1 | tee ${OUTDIR}log.txt
 
 
 envs=""
@@ -212,15 +216,15 @@ envs=" -env I_MPI_PIN_DOMAIN=${c}:compact -env I_MPI_PIN_ORDER=range "
 #echo "envs: "$envs
 if [ "$mode" == "fqprocess" ]
 then
-    mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read2 $READ2 --read3 $READ3 --cpus $CPUS --threads $THREADS --keep_unmapped --params "${PARAMS}" --mode $mode ${semode} ${outfile} 2>&1 | tee ${OUTDIR}/logs/log.txt
+    mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read2 $READ2 --read3 $READ3 --cpus $CPUS --threads $THREADS --keep_unmapped --params "${PARAMS}" --mode $mode ${semode} ${outfile} ${read_type}  2>&1 | tee ${OUTDIR}/logs/log.txt
     
 elif [ "$mode" == "pragzip" ] || [ "$mode" == "flatmode" ]
 then
     #/data/swtools/intel/mpi/2021.12/bin/
-    mpiexec  --hostfile hostfile -n $N -ppn $PPN $envs python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --preads $READ1 $READ2 --cpus $CPUS --threads $THREADS --keep_unmapped --params "${PARAMS}" --mode  $mode ${semode} ${outfile} 2>&1 | tee ${OUTDIR}/logs/log.txt
-    #mpiexec  -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --preads $READ1 $READ2 --cpus $CPUS --threads $THREADS --keep_unmapped --mode $mode ${semode}  2>&1 | tee ${OUTDIR}log.txt
+    mpiexec  --hostfile hostfile -n $N -ppn $PPN $envs python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --preads $READ1 $READ2 --cpus $CPUS --threads $THREADS --keep_unmapped --params "${PARAMS}" --mode  $mode ${semode} ${outfile} ${read_type} 2>&1 | tee ${OUTDIR}/logs/log.txt
+    #mpiexec  -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPNpython -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --preads $READ1 $READ2 --cpus $CPUS --threads $THREADS --keep_unmapped --mode $mode ${semode} ${read_type} ${read_type}  2>&1 | tee ${OUTDIR}log.txt
 
 else
-    mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --preads $READ1 $READ2 --cpus $CPUS --threads $THREADS --keep_unmapped ${whitelist} ${read_structure} ${barcode_orientation} ${bam_size} ${outfile} ${istart} ${sample_id} ${output_format} --prefix $PREFIX --suffix $SUFFIX --params "${PARAMS}" --mode $mode ${semode}  2>&1 | tee ${OUTDIR}/logs/log.txt
+    mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --preads $READ1 $READ2 --cpus $CPUS --threads $THREADS --keep_unmapped ${whitelist} ${read_structure} ${barcode_orientation} ${bam_size} ${outfile} ${istart} ${sample_id} ${output_format} --prefix $PREFIX --suffix $SUFFIX --params "${PARAMS}" --mode $mode ${semode} ${read_type} 2>&1 | tee ${OUTDIR}/logs/log.txt
     
 fi
