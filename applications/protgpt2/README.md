@@ -8,9 +8,10 @@ ProtGPT2 is a decoder-only transformer model pre-trained on the protein space, d
 
 ProtGPT2 was trained in a self-supervised fashion, i.e., the raw sequence data was used during training without including the annotation of sequences. In particular, ProtGPT2 was trained using a causal modelling objective, in which the model is trained to predict the next token (or, in this case, oligomer) in the sequence. By doing so, the model learns an internal representation of proteins and is able to speak the protein language.
 
-# ## Downloading the Model
+# Downloading the Model
 
 If you want to download the model, use the following option:
+
 --model_source download
 
 By default, `--model_source` is set to `local`, and we have provided the model in the project.
@@ -28,21 +29,26 @@ export DATA_DIR=<path-to-database-directory>
 export OUTPUT_DIR=<path-to-output-directory>
 
 # outside of the docker
-docker run -v $DATA_DIR:/data/model 
+docker run -v $DATA_DIR:/model 
      -v $OUTPUT:/app/output protgpt2:latest 
-     python protgpt.py --max_length 150 --do_sample False 
+     python protgpt.py --max_length 150 --do_sample False --model_source local/download
      --top_k 900 --repetition_penalty 1.5 --num_return_sequences 5 
-     --eos_token_id 1  --dtype float32 --iterations 5
+     --eos_token_id 1  --dtype float32/float16 --iterations 5
 
 # inside of the docker
 
-docker run -v $DATA_DIR:/data/model -v $OUTPUT:/app/output -it sequence:latest bash
+docker run -v $DATA_DIR:/model -v $OUTPUT:/app/output -it sequence:latest bash
 
-python protgpt.py --max_length 150 --do_sample False 
+python protgpt.py --max_length 150 --do_sample False --model_source local/download
 --top_k 900 --repetition_penalty 1.5 --num_return_sequences 5 
---eos_token_id 1  --dtype float32 --iterations 5
+--eos_token_id 1  --dtype float32/bfloat16 --iterations 5
 
 ```
+
+# Example 1: Generating de novo proteins in a zero-shot fashion
+
+In the example below, ProtGPT2 generates sequences that follow the amino acid 'M'. Any other amino acid, oligomer, fragment, or protein of choice can be selected instead. The model will generate the most probable sequences that follow the input. Alternatively, the input field can also be left empty and it will choose the starting tokens.
+
 
 ```bash
 >>> from transformers import pipeline
