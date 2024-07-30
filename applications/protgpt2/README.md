@@ -9,12 +9,23 @@ ProtGPT2 is a decoder-only transformer model pre-trained on the protein space, d
 ProtGPT2 was trained in a self-supervised fashion, i.e., the raw sequence data was used during training without including the annotation of sequences. In particular, ProtGPT2 was trained using a causal modelling objective, in which the model is trained to predict the next token (or, in this case, oligomer) in the sequence. By doing so, the model learns an internal representation of proteins and is able to speak the protein language.
 
 # Downloading the Model
+```bash
+mkdir -p ~/models/
+cd model
+wget https://huggingface.co/nferruz/ProtGPT2/blob/main/README.md
+wget https://huggingface.co/nferruz/ProtGPT2/blob/main/config.json
+wget https://huggingface.co/nferruz/ProtGPT2/blob/main/merges.txt
+wget https://huggingface.co/nferruz/ProtGPT2/blob/main/pytorch_model.bin
+wget https://huggingface.co/nferruz/ProtGPT2/blob/main/special_tokens_map.json
+wget https://huggingface.co/nferruz/ProtGPT2/blob/main/special_tokens_map.json
+wget https://huggingface.co/nferruz/ProtGPT2/blob/main/tokenizer.json
+wget https://huggingface.co/nferruz/ProtGPT2/blob/main/vocab.json
+```
+# RUN a Protgpt2 Standalone 
 
-If you want to download the model, use the following option:
-
---model_source download
-
-By default, `--model_source` is set to `local`, and we have provided the model in the project.
+```bash
+python protgpt.py --max_length 150 --do_sample False --top_k 900 --repetition_penalty 1.5 --num_return_sequences 5 --eos_token_id 1  --dtype float32 --iterations 5
+```
 
 ## How to use ProtGPT2
 
@@ -25,23 +36,16 @@ docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_p
 # Run a docker container
 
 ```bash
-export DATA_DIR=<path-to-database-directory>
+export MODEL_DIR=<path-to-database-directory>
 export OUTPUT_DIR=<path-to-output-directory>
 
-# outside of the docker
-docker run -v $DATA_DIR:/model 
+
+docker run -v $MODEL_DIR:/model 
      -v $OUTPUT:/app/output protgpt2:latest 
-     python protgpt.py --max_length 150 --do_sample False --model_source local/download
+     python protgpt.py --max_length 150 --do_sample False 
      --top_k 900 --repetition_penalty 1.5 --num_return_sequences 5 
      --eos_token_id 1  --dtype float32/float16 --iterations 5
 
-# inside of the docker
-
-docker run -v $DATA_DIR:/model -v $OUTPUT:/app/output -it sequence:latest bash
-
-python protgpt.py --max_length 150 --do_sample False --model_source local/download
---top_k 900 --repetition_penalty 1.5 --num_return_sequences 5 
---eos_token_id 1  --dtype float32/bfloat16 --iterations 5
 
 ```
 
