@@ -10,8 +10,6 @@ from transformers import pipeline
 def main():
     # Setting up argument parser
     parser = argparse.ArgumentParser(description='Generate protein sequences using ProtGPT2 with IPEX optimization.')
-    #parser.add_argument("--model_source", type=str, choices=["local", "download"], default="local",
-    #                    help="Choose whether to use the local model or download the model.")
     parser.add_argument('--max_length', type=int, default=100, help='Maximum length of generated sequence')
     parser.add_argument('--do_sample', type=bool, default=True, help='Whether to sample the output or not')
     parser.add_argument('--top_k', type=int, default=950, help='The number of highest probability vocabulary tokens to keep for top-k-filtering')
@@ -20,19 +18,15 @@ def main():
     parser.add_argument('--eos_token_id', type=int, default=0, help='The id of the end of sequence token')
     parser.add_argument('--dtype', type=str, choices=['float32', 'bfloat16'], default='float32', help='Data type for model optimization')
     parser.add_argument('--iterations', type=int, default=5, help='Number of iterations to run')
-
+    parser.add_argument('--model_dir', type=str, required=True, help='Directory to save or load the model')
     args = parser.parse_args()
 
     # Setting dtype
     dtype = torch.float32 if args.dtype == 'float32' else torch.bfloat16
 
-    #if args.model_source == "local":
-    #    model_path = "./model"
-    #else:
-    #    model_path = "nferruz/ProtGPT2"
-    model_path = "~/model"
+    model_dir = args.model_dir
     # Generate sequences using ProtGPT2 with IPEX optimization
-    protgpt2 = pipeline('text-generation', model=model_path, torch_dtype=dtype)
+    protgpt2 = pipeline('text-generation', model=model_dir, torch_dtype=dtype)
     #protgpt2.model = ipex.optimize(protgpt2.model, dtype=dtype)
 
     tic = time.time()
@@ -49,19 +43,19 @@ def main():
             eos_token_id=args.eos_token_id
         )
 
-    output_path = "/app/output/output_file.txt"
+    #output_path = "/app/output/output_file.txt"
 
-    with open(output_path, 'w') as f:
-        for seq in sequences:
-            f.write(seq['generated_text'] + '\n')
+    #with open(output_path, 'w') as f:
+    #    for seq in sequences:
+    #        f.write(seq['generated_text'] + '\n')
 
     toc = time.time()
     print('Time taken for', args.iterations, 'iterations:', toc - tic, 'seconds')
     print('Average time per iteration:', (toc - tic) / args.iterations, 'seconds')
 
     # Printing the first two sequences after all iterations
-    #for seq in sequences:
-    #    print(seq)
+	for seq in sequences[0:2]:
+        print(seq)
 
 if __name__ == "__main__":
     main()
