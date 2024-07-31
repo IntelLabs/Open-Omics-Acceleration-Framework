@@ -10,7 +10,7 @@ ProtGPT2 was trained in a self-supervised fashion, i.e., the raw sequence data w
 
 # Downloading the Model
 ```bash
-model_script.sh
+bash model_script.sh
 ```
 # Run a Protgpt2 Standalone 
 
