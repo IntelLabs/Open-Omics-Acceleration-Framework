@@ -10,21 +10,12 @@ ProtGPT2 was trained in a self-supervised fashion, i.e., the raw sequence data w
 
 # Downloading the Model
 ```bash
-mkdir -p ~/models/
-cd model
-wget https://huggingface.co/nferruz/ProtGPT2/blob/main/README.md
-wget https://huggingface.co/nferruz/ProtGPT2/blob/main/config.json
-wget https://huggingface.co/nferruz/ProtGPT2/blob/main/merges.txt
-wget https://huggingface.co/nferruz/ProtGPT2/blob/main/pytorch_model.bin
-wget https://huggingface.co/nferruz/ProtGPT2/blob/main/special_tokens_map.json
-wget https://huggingface.co/nferruz/ProtGPT2/blob/main/special_tokens_map.json
-wget https://huggingface.co/nferruz/ProtGPT2/blob/main/tokenizer.json
-wget https://huggingface.co/nferruz/ProtGPT2/blob/main/vocab.json
+model_script.sh
 ```
-# RUN a Protgpt2 Standalone 
+# Run a Protgpt2 Standalone 
 
 ```bash
-python protgpt.py --max_length 150 --do_sample False --top_k 900 --repetition_penalty 1.5 --num_return_sequences 5 --eos_token_id 1  --dtype float32 --iterations 5
+python protgpt.py --model_dir ./model_dir --max_length 150 --do_sample True --top_k 950 --repetition_penalty 1.5 --num_return_sequences 5 --eos_token_id 1  --dtype float32/bfloat16 --iterations 5
 ```
 
 ## How to use ProtGPT2
@@ -40,7 +31,7 @@ export MODEL_DIR=<path-to-database-directory>
 export OUTPUT_DIR=<path-to-output-directory>
 
 
-docker run -v $MODEL_DIR:/model 
+docker run -v $MODEL_DIR:/model_dir
      -v $OUTPUT:/app/output protgpt2:latest 
      python protgpt.py --max_length 150 --do_sample False 
      --top_k 900 --repetition_penalty 1.5 --num_return_sequences 5 
