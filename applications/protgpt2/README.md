@@ -14,6 +14,10 @@ bash model_script.sh
 ```
 # Run a Protgpt2 Standalone 
 
+```bash 
+conda env create -f env.yml
+```
+
 ```bash
 python protgpt.py --model_dir ./model_dir --max_length 150 --do_sample True --top_k 950 --repetition_penalty 1.5 --num_return_sequences 5 --eos_token_id 1  --dtype float32/bfloat16 --iterations 5
 ```
@@ -35,7 +39,7 @@ docker run -v $MODEL_DIR:/model_dir
      -v $OUTPUT:/app/output protgpt2:latest 
      python protgpt.py --max_length 150 --do_sample False 
      --top_k 900 --repetition_penalty 1.5 --num_return_sequences 5 
-     --eos_token_id 1  --dtype float32/float16 --iterations 5
+     --eos_token_id 1  --dtype float32/bfloat16 --iterations 5
 
 
 ```
