@@ -96,7 +96,7 @@ export OUTPUT_DIR=<path-to-output-directory>
 docker run -v $MODEL_DIR:/app/RFdiffusion/models 
            -v $OUTPUT_FOLDER:/app/RFdiffusion/example_outputs rfdiffusion:latest 
            ./scripts/run_inference.py inference.output_prefix=example_outputs/design_motifscaffolding                                                                            inference.input_pdb=examples/input_pdbs/5TPN.pdb 
-           'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=1
+           'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=1 inference.precision=bfloat16/float32
 ```
 
 
