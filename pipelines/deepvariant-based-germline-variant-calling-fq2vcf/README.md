@@ -24,7 +24,7 @@
         * liblzma-dev  
 
 # Instructions to run the pipeline on on-prem
-### 1. Clone the repo:  
+### 1. Download the latest release:  
 ```bash
 wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/2.1/Source_code_with_submodules.tar.gz
 tar -xzf Source_code_with_submodules.tar.gz
