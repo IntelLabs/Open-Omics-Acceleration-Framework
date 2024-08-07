@@ -21,6 +21,7 @@ inference:
   trb_save_ckpt_path: null
   schedule_directory_path: null
   model_directory_path: null
+  precision: null
 
 contigmap:
   contigs: null

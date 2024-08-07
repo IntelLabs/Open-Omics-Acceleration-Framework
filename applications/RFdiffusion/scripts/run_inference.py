@@ -27,7 +27,22 @@ from hydra.core.hydra_config import HydraConfig
 import numpy as np
 import random
 import glob
+from omegaconf import DictConfig
+from rfdiffusion.inference import model_runners
 
+def sampler_selector(conf: DictConfig):
+    if conf.scaffoldguided.scaffoldguided:
+        sampler = model_runners.ScaffoldedSampler(conf)
+    else:
+        if conf.inference.model_runner == "default":
+            sampler = model_runners.Sampler(conf)
+        elif conf.inference.model_runner == "SelfConditioning":
+            sampler = model_runners.SelfConditioning(conf)
+        elif conf.inference.model_runner == "ScaffoldedSampler":
+            sampler = model_runners.ScaffoldedSampler(conf)
+        else:
+            raise ValueError(f"Unrecognized sampler {conf.model_runner}")
+    return sampler
 
 def make_deterministic(seed=0):
     torch.manual_seed(seed)
@@ -38,6 +53,7 @@ def make_deterministic(seed=0):
 @hydra.main(version_base=None, config_path="../config/inference", config_name="base")
 def main(conf: HydraConfig) -> None:
     log = logging.getLogger(__name__)
+    torch.cuda.is_available = lambda : False
     if conf.inference.deterministic:
         make_deterministic()
 
@@ -87,8 +103,18 @@ def main(conf: HydraConfig) -> None:
         seq_stack = []
         plddt_stack = []
 
-        x_t = torch.clone(x_init)
-        seq_t = torch.clone(seq_init)
+        if conf.inference.precision == "bfloat16":
+            dtype=torch.bfloat16
+            x_t = torch.clone(x_init)
+            seq_t = torch.clone(seq_init)
+            x_t = x_t.to(dtype=dtype)
+            seq_t = seq_t.to(dtype=dtype)
+        else:
+            x_t = torch.clone(x_init)
+            seq_t = torch.clone(seq_init)
+
+        #x_t = torch.clone(x_init)
+        #seq_t = torch.clone(seq_init)
         # Loop over number of reverse diffusion time steps.
         for t in range(int(sampler.t_step_input), sampler.inf_conf.final_step - 1, -1):
             px0, x_t, seq_t, plddt = sampler.sample_step(
@@ -147,9 +173,10 @@ def main(conf: HydraConfig) -> None:
         trb = dict(
             config=OmegaConf.to_container(sampler._conf, resolve=True),
             plddt=plddt_stack.cpu().numpy(),
-            device=torch.cuda.get_device_name(torch.cuda.current_device())
-            if torch.cuda.is_available()
-            else "CPU",
+            #device=torch.cuda.get_device_name(torch.cuda.current_device())
+            device='cpu',
+            #if torch.cuda.is_available()
+            #else "CPU",
             time=time.time() - start_time,
         )
         if hasattr(sampler, "contig_map"):
