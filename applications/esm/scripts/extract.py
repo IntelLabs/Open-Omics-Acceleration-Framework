@@ -6,9 +6,9 @@
 
 import argparse
 import pathlib
+import time
 
 import torch
-
 from esm import Alphabet, FastaBatchedDataset, ProteinBertModel, pretrained, MSATransformer
 
 
@@ -57,12 +57,26 @@ def create_parser():
     )
 
     parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
+    parser.add_argument(
+        "--noipex", action="store_true", help="Do not use intel_extension_for_pytorch"
+    )
+    parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
+    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
     return parser
 
 
 def run(args):
     model, alphabet = pretrained.load_model_and_alphabet(args.model_location)
     model.eval()
+    if not args.noipex:
+        dtype = torch.bfloat16 if args.bf16 else torch.float32
+        import intel_extension_for_pytorch as ipex
+
+        model = ipex.optimize(model, dtype=dtype)
+
+    if args.noipex and args.bf16:
+        model.bfloat16()
+
     if isinstance(model, MSATransformer):
         raise ValueError(
             "This script currently does not handle models with MSA input (MSA Transformer)."
@@ -74,7 +88,9 @@ def run(args):
     dataset = FastaBatchedDataset.from_file(args.fasta_file)
     batches = dataset.get_batch_indices(args.toks_per_batch, extra_toks_per_seq=1)
     data_loader = torch.utils.data.DataLoader(
-        dataset, collate_fn=alphabet.get_batch_converter(args.truncation_seq_length), batch_sampler=batches
+        dataset,
+        collate_fn=alphabet.get_batch_converter(args.truncation_seq_length),
+        batch_sampler=batches,
     )
     print(f"Read {args.fasta_file} with {len(dataset)} sequences")
 
@@ -83,7 +99,8 @@ def run(args):
 
     assert all(-(model.num_layers + 1) <= i <= model.num_layers for i in args.repr_layers)
     repr_layers = [(i + model.num_layers + 1) % (model.num_layers + 1) for i in args.repr_layers]
-
+    total_inference_time = 0
+    enable_autocast = args.bf16
     with torch.no_grad():
         for batch_idx, (labels, strs, toks) in enumerate(data_loader):
             print(
@@ -91,9 +108,13 @@ def run(args):
             )
             if torch.cuda.is_available() and not args.nogpu:
                 toks = toks.to(device="cuda", non_blocking=True)
-
-            out = model(toks, repr_layers=repr_layers, return_contacts=return_contacts)
-
+            if args.timing:
+                start_time = time.perf_counter()
+            with torch.amp.autocast("cpu", enabled=enable_autocast):
+                out = model(toks, repr_layers=repr_layers, return_contacts=return_contacts)
+            if args.timing:
+                end_time = time.perf_counter()
+                total_inference_time = total_inference_time + (end_time - start_time)
             logits = out["logits"].to(device="cpu")
             representations = {
                 layer: t.to(device="cpu") for layer, t in out["representations"].items()
@@ -123,18 +144,30 @@ def run(args):
                         layer: t[i, 0].clone() for layer, t in representations.items()
                     }
                 if return_contacts:
-                    result["contacts"] = contacts[i, : truncate_len, : truncate_len].clone()
+                    result["contacts"] = contacts[i, :truncate_len, :truncate_len].clone()
 
                 torch.save(
                     result,
                     args.output_file,
                 )
+    if args.timing:
+        print(f"Total Inference Time = {total_inference_time}")
 
 
 def main():
     parser = create_parser()
     args = parser.parse_args()
+
+    # Print the parsed arguments:
+
+    print("{:-^62}\n".format("  Parsed arguments  "))
+
+    for key, val in vars(args).items():
+        if val is not None:
+            print("--", key, ":", val)
+
     run(args)
+
 
 if __name__ == "__main__":
     main()

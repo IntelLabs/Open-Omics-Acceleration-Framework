@@ -22,7 +22,7 @@ import numpy as np
 from omegaconf import DictConfig, OmegaConf
 import torch
 import torch.nn.functional as F
-
+#import intel_extension_for_pytorch as ipex
 # make sure script started from the root of the this file
 assert Path.cwd().name == 'lm-design', 'Please run this script from examples/lm-design/'
 sys.path.append('../../')
@@ -72,6 +72,8 @@ class Designer:
             use_cuda = torch.cuda.is_available() and not cfg.disable_cuda
             device_idx = f":{cfg.cuda_device_idx}" if cfg.get('cuda_device_idx') else ""
             self.device = torch.device(f'cuda{device_idx}' if use_cuda else 'cpu')
+        print("self.device",self.device)
+        self.device = "cpu"
         SEED_SENTINEL = 1238
         self.seed = cfg.seed + SEED_SENTINEL
         self.cfg = cfg
@@ -86,7 +88,7 @@ class Designer:
         else:
             target_pdb_path = Path(target_pdb_path)
             self._init_target(target_pdb_path)
-        
+
         set_rng_seeds(self.seed)
         self.schedulers = {}  # reset schedulers
         self.resuming_stage = False
@@ -111,6 +113,16 @@ class Designer:
         def apply_common_settings(model):
             model.to(self.device)
             model.eval()
+            print("direct run....")
+            if not self.cfg.noipex:
+                print("ipex use.........")
+                import intel_extension_for_pytorch as ipex
+                dtype = torch.bfloat16 if self.cfg.bfloat16 else torch.float32
+                print("dtype.....",dtype)
+                model = ipex.optimize(model, dtype=dtype)
+            if self.cfg.noipex and self.cfg.bfloat16:
+                model.bfloat16()
+                print("bf16 run....................")
             # No grads for models
             for p in model.parameters():
                 p.requires_grad = False
@@ -138,7 +150,7 @@ class Designer:
         assert seq_enc.dim() == 2
         # Must do cpu conversion here!
         # Or else pytorch runtime will do it O(L) times and incur a very
-        # large slowdown. 
+        # large slowdown.
         seq_enc = seq_enc.cpu()
         seqs = [
             ''.join([self.vocab.get_tok(c) for c in _seq]) for _seq in seq_enc
@@ -191,7 +203,7 @@ class Designer:
     def init_sequences(self, num_seqs):
         assert num_seqs == 1, "Only 1 sequence design in parallel supported for now."
         self.B = B = self.num_seqs = num_seqs
-        
+
         K = len(self.vocab)
         AA_indices = torch.arange(K, device=self.device)[self.vocab_mask_AA]
         bt = torch.from_numpy(np.random.choice(AA_indices.cpu().numpy(), size=(B, self.L))).to(self.device)
@@ -242,8 +254,8 @@ class Designer:
         B, L, K = x_seq.shape
 
         res_preds = self.struct_model(x_seq)
-        
-        if temp_struct is not None: 
+
+        if temp_struct is not None:
             # Apply temp to res_preds output
             for coord in COORDS4D_NAMES:
                 res_preds[f'{coord}_logits'] /= temp_struct
@@ -283,12 +295,12 @@ class Designer:
         return total_loss, loss_dict
 
     def calc_total_loss(
-        self, 
-        x, 
-        mask, 
-        LM_w, 
-        struct_w, 
-        ngram_w, ngram_orders, 
+        self,
+        x,
+        mask,
+        LM_w,
+        struct_w,
+        ngram_w, ngram_orders,
         temp_struct=None):
         """
         Easy one-stop-shop that calls out to all the implemented loss calculators,
@@ -312,7 +324,7 @@ class Designer:
         total_loss = torch.zeros(x.size(0)).to(x)
         if LM_w:
             lm_m_nlls, _, lm_loss_dict = self.calc_sequence_loss(x, mask=mask)
-            lm_m_nlls *= LM_w / self.L 
+            lm_m_nlls *= LM_w / self.L
             total_loss += lm_m_nlls
             logs['lm_loss'] = lm_m_nlls
             logs.update(lm_loss_dict)
@@ -340,20 +352,24 @@ class Designer:
         Main run-loop for the Designer. Runs a relevant design procedure from the config.
         """
         logger.info(f'Designing sequence for task: {self.cfg.task}')
-        
-        design_cfg = self.cfg.tasks[self.cfg.task]
-        if self.cfg.task == 'fixedbb':
-            stage_fixedbb(self, design_cfg)
-        elif self.cfg.task == 'free_generation':
-            stage_free_generation(self, **design_cfg)
-        else:
-            raise ValueError(f'Invalid task: {self.cfg.task}')
 
+        design_cfg = self.cfg.tasks[self.cfg.task]
+        enable_autocast = self.cfg.bfloat16
+        print("enable_autocast......",enable_autocast)
+        p0=time.time()
+        with torch.amp.autocast("cpu", enabled=enable_autocast):
+            if self.cfg.task == 'fixedbb':
+                stage_fixedbb(self, design_cfg)
+            elif self.cfg.task == 'free_generation':
+                stage_free_generation(self, **design_cfg)
+            else:
+                raise ValueError(f'Invalid task: {self.cfg.task}')
+        print("infernce time.......................",time.time()-p0)
         logger.info(f'Final designed sequences:')
         for seq in self.decode(self.x_seqs):
             logger.info(seq)
         self.output_seq = self.decode(self.x_seqs)[0]
-            
+
     def init_schedulers_from_cfg(self, cfg: DictConfig):
         """
         Similar to init_schedulers, but expects a stage-specific DictConfig.
@@ -377,10 +393,10 @@ class Designer:
                 yield (new_key, v)
                 if isinstance(v, MutableMapping):
                     yield from walk_cfg(v, new_key, sep=sep)
-                    
+
         from typing import Optional, Dict, List, Any, Union
         def is_sspec(maybe_sspec: Union[SchedulerSpec, Any]):
-            infer_from_key = (isinstance(maybe_sspec, DictConfig) 
+            infer_from_key = (isinstance(maybe_sspec, DictConfig)
                 and maybe_sspec.get('scheduler', None) is not None)
             # infer_from_type = OmegaConf.get_type(maybe_sspec) is SchedulerSpec
             return infer_from_key
@@ -390,7 +406,7 @@ class Designer:
                 if is_sspec(maybe_sspec):
                     assert not name in self.schedulers, f"Trying to re-register {name}"
                     self.schedulers[name] = to_scheduler(maybe_sspec)
-    
+
     def gen_step_cfg(self, cfg):
         """
         Replace schedulers in a cfg with step-specific values.
@@ -406,7 +422,7 @@ class Designer:
 
     def stepper(self, iterable, update_schedulers=True, cfg=None):
         self.init_schedulers_from_cfg(cfg)
-        
+
         for local_step in iterable:
             yield local_step, self.gen_step_cfg(cfg)
 
@@ -448,7 +464,7 @@ def main(cfg: DictConfig) -> None:
     start_time = time.time()
     des = Designer(cfg, pdb_fn)
 
-    des.run_from_cfg()    
+    des.run_from_cfg()
     logger.info("finished after %s hours", (time.time() - start_time) / 3600)
 
 
