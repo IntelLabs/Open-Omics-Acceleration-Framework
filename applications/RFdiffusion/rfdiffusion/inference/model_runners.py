@@ -36,7 +36,6 @@ class Sampler:
         """
         self.initialized = False
         self.initialize(conf)
-
     def initialize(self, conf: DictConfig) -> None:
         """
         Initialize sampler.
