@@ -12,7 +12,6 @@ import argparse
 import numpy as np
 from pathlib import Path
 import torch
-#import intel_extension_for_pytorch as ipex
 import esm
 import esm.inverse_folding
 import time
@@ -125,25 +124,17 @@ def main():
     model = model.eval()
     set_seeds(10)
     if not args.noipex:
-        print("use ipex .......................")
         dtype = torch.bfloat16 if args.bf16 else torch.float32
-        print("dtype.............",dtype)
         import intel_extension_for_pytorch as ipex
         model = ipex.optimize(model, dtype=dtype)
     if args.noipex and args.bf16:
-        print("direct code with bf16")
         model=model.bfloat16()
-    print("stright.....")
     enable_autocast = args.bf16
-    p0=time.time()
     with torch.cpu.amp.autocast(enable_autocast):
         if args.multichain_backbone:
-            print("enable_autocast.............",enable_autocast)
             sample_seq_multichain(model, alphabet, args)
         else:
-            print("enable_autocast.............",enable_autocast)
             sample_seq_singlechain(model, alphabet, args)
-    print("infernce time",time.time()-p0)
 
 
 if __name__ == '__main__':

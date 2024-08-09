@@ -57,9 +57,7 @@ def create_parser():
     )
 
     parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
-    parser.add_argument(
-        "--noipex", action="store_true", help="Do not use intel_extension_for_pytorch"
-    )
+    parser.add_argument("--noipex", action="store_true", help="Do not use intel_extension_for_pytorch")
     parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
     parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
     return parser
@@ -71,9 +69,7 @@ def run(args):
     if not args.noipex:
         dtype = torch.bfloat16 if args.bf16 else torch.float32
         import intel_extension_for_pytorch as ipex
-
         model = ipex.optimize(model, dtype=dtype)
-
     if args.noipex and args.bf16:
         model.bfloat16()
 

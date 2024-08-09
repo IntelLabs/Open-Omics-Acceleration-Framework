@@ -15,7 +15,6 @@ from pathlib import Path
 import torch
 import torch.nn.functional as F
 from tqdm import tqdm
-import time
 import esm
 import esm.inverse_folding
 
@@ -31,7 +30,7 @@ def score_singlechain_backbone(model, alphabet, args):
 
     ll, _ = esm.inverse_folding.util.score_sequence(
             model, alphabet, coords, native_seq)
-    print('Native sequence')
+	print('Native sequence')
     print(f'Log likelihood: {ll:.2f}')
     print(f'Perplexity: {np.exp(-ll):.2f}')
 
@@ -46,7 +45,7 @@ def score_singlechain_backbone(model, alphabet, args):
             ll, _ = esm.inverse_folding.util.score_sequence(
                     model, alphabet, coords, str(seq))
             fout.write(header + ',' + str(ll) + '\n')
-    print(f'Results saved to {args.outpath}')
+	print(f'Results saved to {args.outpath}')
 
 
 def score_multichain_backbone(model, alphabet, args):
@@ -122,25 +121,18 @@ def main():
     model = model.eval()
 
     if not args.noipex:
-        print("use ipex .......................")
         dtype = torch.bfloat16 if args.bf16 else torch.float32
-        print("dtype.............",dtype)
         import intel_extension_for_pytorch as ipex
         model = ipex.optimize(model, dtype=dtype)
     if args.noipex and args.bf16:
-        print("direct code with bf16")
         model=model.bfloat16()
 
     enable_autocast = args.bf16
-    p0=time.time()
     with torch.cpu.amp.autocast(enable_autocast):
         if args.multichain_backbone:
-            print("enable_autocast.............",enable_autocast)
             score_multichain_backbone(model, alphabet, args)
         else:
-            print("enable_autocast.............",enable_autocast)
             score_singlechain_backbone(model, alphabet, args)
-    print("infernce time",time.time()-p0)
 
 
 if __name__ == '__main__':

@@ -22,7 +22,6 @@ import numpy as np
 from omegaconf import DictConfig, OmegaConf
 import torch
 import torch.nn.functional as F
-#import intel_extension_for_pytorch as ipex
 # make sure script started from the root of the this file
 assert Path.cwd().name == 'lm-design', 'Please run this script from examples/lm-design/'
 sys.path.append('../../')
@@ -72,8 +71,6 @@ class Designer:
             use_cuda = torch.cuda.is_available() and not cfg.disable_cuda
             device_idx = f":{cfg.cuda_device_idx}" if cfg.get('cuda_device_idx') else ""
             self.device = torch.device(f'cuda{device_idx}' if use_cuda else 'cpu')
-        print("self.device",self.device)
-        self.device = "cpu"
         SEED_SENTINEL = 1238
         self.seed = cfg.seed + SEED_SENTINEL
         self.cfg = cfg
@@ -113,16 +110,12 @@ class Designer:
         def apply_common_settings(model):
             model.to(self.device)
             model.eval()
-            print("direct run....")
             if not self.cfg.noipex:
-                print("ipex use.........")
                 import intel_extension_for_pytorch as ipex
                 dtype = torch.bfloat16 if self.cfg.bfloat16 else torch.float32
-                print("dtype.....",dtype)
                 model = ipex.optimize(model, dtype=dtype)
             if self.cfg.noipex and self.cfg.bfloat16:
                 model.bfloat16()
-                print("bf16 run....................")
             # No grads for models
             for p in model.parameters():
                 p.requires_grad = False
@@ -355,7 +348,6 @@ class Designer:
 
         design_cfg = self.cfg.tasks[self.cfg.task]
         enable_autocast = self.cfg.bfloat16
-        print("enable_autocast......",enable_autocast)
         p0=time.time()
         with torch.amp.autocast("cpu", enabled=enable_autocast):
             if self.cfg.task == 'fixedbb':
@@ -364,7 +356,6 @@ class Designer:
                 stage_free_generation(self, **design_cfg)
             else:
                 raise ValueError(f'Invalid task: {self.cfg.task}')
-        print("infernce time.......................",time.time()-p0)
         logger.info(f'Final designed sequences:')
         for seq in self.decode(self.x_seqs):
             logger.info(seq)

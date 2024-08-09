@@ -13,7 +13,8 @@ cuda_device_idx:  # Set to numberic value to override default GPU device used.
 task: free_generation  # fixedbb or free_generation
 pdb_fn:  # set as empty string when using free_generation
 free_generation_length: 100
-
+noipex: False
+bfloat16: False
 tasks:
   free_generation:
       num_iter: 170000

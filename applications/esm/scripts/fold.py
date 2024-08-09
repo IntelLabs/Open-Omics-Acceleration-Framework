@@ -14,7 +14,6 @@ from pathlib import Path
 from timeit import default_timer as timer
 
 import torch
-
 import esm
 from esm.data import read_fasta
 
@@ -119,6 +118,8 @@ def create_parser():
     )
     parser.add_argument("--cpu-only", help="CPU only", action="store_true")
     parser.add_argument("--cpu-offload", help="Enable CPU offloading", action="store_true")
+    parser.add_argument("--noipex", action="store_true", help="Do not use ipex even if available")
+    parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
     return parser
 
 
@@ -145,7 +146,6 @@ def run(args):
 
     model = model.eval()
     model.set_chunk_size(args.chunk_size)
-
     if args.cpu_only:
         model.esm.float()  # convert to fp32 as ESM-2 in fp16 is not supported on CPU
         model.cpu()
@@ -153,6 +153,13 @@ def run(args):
         model = init_model_on_gpu_with_cpu_offloading(model)
     else:
         model.cuda()
+    if not args.noipex:
+        dtype = torch.bfloat16 if args.bf16 else torch.float32
+        import intel_extension_for_pytorch as ipex
+        model = ipex.optimize(model, dtype=dtype)
+    if args.noipex and args.bf16:
+        model=model.bfloat16()
+    enable_autocast = args.bf16
     logger.info("Starting Predictions")
     batched_sequences = create_batched_sequence_datasest(all_sequences, args.max_tokens_per_batch)
 
@@ -161,7 +168,11 @@ def run(args):
     for headers, sequences in batched_sequences:
         start = timer()
         try:
-            output = model.infer(sequences, num_recycles=args.num_recycles)
+            if args.bf16:
+                with torch.cpu.amp.autocast(enabled=True):
+                    output = model.infer(sequences, num_recycles=args.num_recycles)
+            else:
+                output = model.infer(sequences, num_recycles=args.num_recycles)
         except RuntimeError as e:
             if e.args[0].startswith("CUDA out of memory"):
                 if len(sequences) > 1:
