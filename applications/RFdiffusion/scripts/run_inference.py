@@ -44,7 +44,7 @@ def sampler_selector(conf: DictConfig):
             raise ValueError(f"Unrecognized sampler {conf.model_runner}")
     return sampler
 
-def make_deterministic(seed=0):
+def make_deterministic(seed=37):
     torch.manual_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
@@ -173,10 +173,7 @@ def main(conf: HydraConfig) -> None:
         trb = dict(
             config=OmegaConf.to_container(sampler._conf, resolve=True),
             plddt=plddt_stack.cpu().numpy(),
-            #device=torch.cuda.get_device_name(torch.cuda.current_device())
             device='cpu',
-            #if torch.cuda.is_available()
-            #else "CPU",
             time=time.time() - start_time,
         )
         if hasattr(sampler, "contig_map"):

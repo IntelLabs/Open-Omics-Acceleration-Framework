@@ -59,14 +59,17 @@ We strongly recommend reading this README carefully before getting started with 
 
 If you want to set up RFdiffusion locally, follow the steps below:
 
-To get started using RFdiffusion, clone the repo:
-```
-git clone https://github.com/RosettaCommons/RFdiffusion.git
-```
+To get started using RFdiffusion
 
-You'll then need to download the model weights into the RFDiffusion directory.
+You'll then need to download the model weights
+
+```bash
+mkdir models 
+bash download_models.sh /path/to/download/directory/models
 ```
-cd RFdiffusion
+# You can download manually
+
+```bash
 mkdir models && cd models
 wget http://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063dc4/Base_ckpt.pt
 wget http://files.ipd.uw.edu/pub/RFdiffusion/e29311f6f1bf1af907f9ef9f44b8328b/Complex_base_ckpt.pt
@@ -83,6 +86,34 @@ wget http://files.ipd.uw.edu/pub/RFdiffusion/f572d396fae9206628714fb2ce00f72e/Co
 wget http://files.ipd.uw.edu/pub/RFdiffusion/1befcb9b28e2f778f53d47f18b7597fa/RF_structure_prediction_weights.pt
 ```
 
+# Run a docker container
+
+```bash
+mkdir output
+export MODEL_DIR=<path-to-database-directory>
+export OUTPUT_DIR=<path-to-output-directory>
+
+docker run -v $MODEL_DIR:/app/RFdiffusion/models 
+           -v $OUTPUT_FOLDER:/app/RFdiffusion/example_outputs rfdiffusion:latest 
+           ./scripts/run_inference.py inference.output_prefix=example_outputs/design_motifscaffolding                                                                            inference.input_pdb=examples/input_pdbs/5TPN.pdb 
+           'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=1 inference.precision=bfloat16/float32
+```
+
+
+# Run a RFdiffusion Standalone
+```bash
+source setup_conda.sh
+
+cp -r models RFdiffusion/
+```
+
+
+
+
+# You can manually install
+```
+git clone https://github.com/RosettaCommons/RFdiffusion.git
+```
 
 ### Conda Install SE3-Transformer
 
@@ -91,10 +122,12 @@ Ensure that you have either [Anaconda or Miniconda](https://conda.io/projects/co
 You also need to install [NVIDIA's implementation of SE(3)-Transformers](https://developer.nvidia.com/blog/accelerating-se3-transformers-training-using-an-nvidia-open-source-model-implementation/) Here is how to install the NVIDIA SE(3)-Transformer code:
 
 ```
-conda env create -f env/SE3nv.yml
+conda env create -f SE3nv.yml
 
 conda activate SE3nv
-cd env/SE3Transformer
+
+cp -r models RFdiffusion/
+cd RFdiffusion/env/SE3Transformer
 pip install --no-cache-dir -r requirements.txt
 python setup.py install
 cd ../.. # change into the root directory of the repository
