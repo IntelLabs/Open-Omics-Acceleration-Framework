@@ -15,6 +15,7 @@ from pathlib import Path
 import torch
 import torch.nn.functional as F
 from tqdm import tqdm
+
 import esm
 import esm.inverse_folding
 
@@ -45,7 +46,7 @@ def score_singlechain_backbone(model, alphabet, args):
             ll, _ = esm.inverse_folding.util.score_sequence(
                     model, alphabet, coords, str(seq))
             fout.write(header + ',' + str(ll) + '\n')
-	print(f'Results saved to {args.outpath}')
+    print(f'Results saved to {args.outpath}')
 
 
 def score_multichain_backbone(model, alphabet, args):
@@ -111,7 +112,6 @@ def main():
             action='store_false',
             help='use the backbone of only target chain in the input for conditioning'
     )
-
     parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
     parser.add_argument("--noipex", action="store_true", help="Do not use intel_extension_for_pytorch")
     parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")

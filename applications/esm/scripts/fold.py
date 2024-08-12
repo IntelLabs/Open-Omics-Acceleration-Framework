@@ -168,10 +168,7 @@ def run(args):
     for headers, sequences in batched_sequences:
         start = timer()
         try:
-            if args.bf16:
-                with torch.cpu.amp.autocast(enabled=True):
-                    output = model.infer(sequences, num_recycles=args.num_recycles)
-            else:
+            with torch.cpu.amp.autocast(enable_autocast):
                 output = model.infer(sequences, num_recycles=args.num_recycles)
         except RuntimeError as e:
             if e.args[0].startswith("CUDA out of memory"):

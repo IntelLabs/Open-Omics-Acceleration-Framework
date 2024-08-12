@@ -22,6 +22,7 @@ import numpy as np
 from omegaconf import DictConfig, OmegaConf
 import torch
 import torch.nn.functional as F
+
 # make sure script started from the root of the this file
 assert Path.cwd().name == 'lm-design', 'Please run this script from examples/lm-design/'
 sys.path.append('../../')
@@ -85,7 +86,6 @@ class Designer:
         else:
             target_pdb_path = Path(target_pdb_path)
             self._init_target(target_pdb_path)
-
         set_rng_seeds(self.seed)
         self.schedulers = {}  # reset schedulers
         self.resuming_stage = False
@@ -348,7 +348,6 @@ class Designer:
 
         design_cfg = self.cfg.tasks[self.cfg.task]
         enable_autocast = self.cfg.bfloat16
-        p0=time.time()
         with torch.amp.autocast("cpu", enabled=enable_autocast):
             if self.cfg.task == 'fixedbb':
                 stage_fixedbb(self, design_cfg)

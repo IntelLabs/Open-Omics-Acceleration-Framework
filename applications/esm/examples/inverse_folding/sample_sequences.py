@@ -12,18 +12,10 @@ import argparse
 import numpy as np
 from pathlib import Path
 import torch
+
 import esm
 import esm.inverse_folding
-import time
-from typing import Union, Dict, Any
-import random
-SeedDict = Dict[str, Any]
-def set_seeds(seed: Union[SeedDict, int]):
-    """ Sets seeds of all rngs based on a single integer """
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    random.seed(seed)
-    np.random.seed(seed)
+
 
 def sample_seq_singlechain(model, alphabet, args):
     if torch.cuda.is_available() and not args.nogpu:
@@ -122,7 +114,6 @@ def main():
 
     model, alphabet = esm.pretrained.esm_if1_gvp4_t16_142M_UR50()
     model = model.eval()
-    set_seeds(10)
     if not args.noipex:
         dtype = torch.bfloat16 if args.bf16 else torch.float32
         import intel_extension_for_pytorch as ipex
