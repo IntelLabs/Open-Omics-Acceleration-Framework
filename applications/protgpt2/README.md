@@ -8,11 +8,11 @@ ProtGPT2 is a decoder-only transformer model pre-trained on the protein space, d
 
 ProtGPT2 was trained in a self-supervised fashion, i.e., the raw sequence data was used during training without including the annotation of sequences. In particular, ProtGPT2 was trained using a causal modelling objective, in which the model is trained to predict the next token (or, in this case, oligomer) in the sequence. By doing so, the model learns an internal representation of proteins and is able to speak the protein language.
 
-# Downloading the Model
+## Downloading the Model
 ```bash
 bash model_script.sh
 ```
-# Run a Protgpt2 Standalone 
+## Run a Protgpt2 Standalone 
 
 ```bash 
 conda env create -f env.yml
@@ -22,13 +22,13 @@ conda env create -f env.yml
 python protgpt.py --model_dir ./model_dir --max_length 150 --do_sample True --top_k 950 --repetition_penalty 1.5 --num_return_sequences 5 --eos_token_id 1  --dtype float32/bfloat16 --iterations 5
 ```
 
-## How to use ProtGPT2
+## How to use Docker
 
 ```bash
 cd ~/TransOmics.OpenOmicsInternal/applications/protgpt2
 docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t protgpt2 . 
 ```
-# Run a docker container
+## Run a docker container
 
 ```bash
 export MODEL_DIR=<path-to-database-directory>
@@ -44,7 +44,7 @@ docker run -v $MODEL_DIR:/model_dir
 
 ```
 
-# Example 1: Generating de novo proteins in a zero-shot fashion
+## Example 1: Generating de novo proteins in a zero-shot fashion
 
 In the example below, ProtGPT2 generates sequences that follow the amino acid 'M'. Any other amino acid, oligomer, fragment, or protein of choice can be selected instead. The model will generate the most probable sequences that follow the input. Alternatively, the input field can also be left empty and it will choose the starting tokens.
 

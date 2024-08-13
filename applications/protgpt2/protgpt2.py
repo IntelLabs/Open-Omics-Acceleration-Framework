@@ -14,7 +14,6 @@ def make_deterministic(seed=42):
     np.random.seed(seed)
     random.seed(seed)
 
-
 def main():
     # Setting up argument parser
     parser = argparse.ArgumentParser(description='Generate protein sequences using ProtGPT2 with IPEX optimization.')
@@ -29,18 +28,14 @@ def main():
     parser.add_argument('--model_dir', type=str, required=True, help='Directory to save or load the model')
     args = parser.parse_args()
 
-
     make_deterministic()
     # Setting dtype
     dtype = torch.float32 if args.dtype == 'float32' else torch.bfloat16
-
     model_dir = args.model_dir
     # Generate sequences using ProtGPT2 with IPEX optimization
     protgpt2 = pipeline('text-generation', model=model_dir, torch_dtype=dtype)
     protgpt2.model = ipex.optimize(protgpt2.model, dtype=dtype)
-
     tic = time.time()
-
     for i in range(args.iterations):
         print("Iteration:", i)
         t0 = time.time()
