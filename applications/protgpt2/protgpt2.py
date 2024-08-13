@@ -43,6 +43,7 @@ def main():
 
     for i in range(args.iterations):
         print("Iteration:", i)
+        t0 = time.time()
         sequences = protgpt2(
             "<|endoftext|>",
             max_length=args.max_length,
@@ -52,19 +53,14 @@ def main():
             num_return_sequences=args.num_return_sequences,
             eos_token_id=args.eos_token_id
         )
-
-    #output_path = "/app/output/output_file.txt"
-
-    #with open(output_path, 'w') as f:
-    #    for seq in sequences:
-    #        f.write(seq['generated_text'] + '\n')
-
+        t1 = time.time()
+        print('Time taken for', i, 'iteration:', t1 - t0, 'seconds')
     toc = time.time()
     print('Time taken for', args.iterations, 'iterations:', toc - tic, 'seconds')
     print('Average time per iteration:', (toc - tic) / args.iterations, 'seconds')
 
     # Printing the first two sequences after all iterations
-	for seq in sequences[0:2]:
+    for seq in sequences[0:2]:
         print(seq)
 
 if __name__ == "__main__":
