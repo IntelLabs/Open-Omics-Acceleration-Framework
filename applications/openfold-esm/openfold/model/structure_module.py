@@ -39,7 +39,7 @@ from openfold.utils.tensor_utils import (
     flatten_final_dims,
 )
 
-attn_core_inplace_cuda = importlib.import_module("attn_core_inplace_cuda")
+#attn_core_inplace_cuda = importlib.import_module("attn_core_inplace_cuda")
 
 
 class AngleResnetBlock(nn.Module):
@@ -253,7 +253,7 @@ class InvariantPointAttention(nn.Module):
             z = _z_reference_list
         else:
             z = [z]
-       
+
         #######################################
         # Generate scalar and point activations
         #######################################
@@ -305,7 +305,7 @@ class InvariantPointAttention(nn.Module):
         ##########################
         # [*, N_res, N_res, H]
         b = self.linear_b(z[0])
-        
+
         if(_offload_inference):
             z[0] = z[0].cpu()
 
@@ -345,7 +345,7 @@ class InvariantPointAttention(nn.Module):
 
         # [*, H, N_res, N_res]
         pt_att = permute_final_dims(pt_att, (2, 0, 1))
-        
+
         if(inplace_safe):
             a += pt_att
             del pt_att
@@ -357,7 +357,7 @@ class InvariantPointAttention(nn.Module):
                 a.shape[-1],
             )
         else:
-            a = a + pt_att 
+            a = a + pt_att
             a = a + square_mask.unsqueeze(-3)
             a = self.softmax(a)
 
@@ -372,11 +372,11 @@ class InvariantPointAttention(nn.Module):
         # [*, N_res, H * C_hidden]
         o = flatten_final_dims(o, 2)
 
-        # [*, H, 3, N_res, P_v] 
+        # [*, H, 3, N_res, P_v]
         if(inplace_safe):
             v_pts = permute_final_dims(v_pts, (1, 3, 0, 2))
             o_pt = [
-                torch.matmul(a, v.to(a.dtype)) 
+                torch.matmul(a, v.to(a.dtype))
                 for v in torch.unbind(v_pts, dim=-3)
             ]
             o_pt = torch.stack(o_pt, dim=-3)
@@ -416,7 +416,7 @@ class InvariantPointAttention(nn.Module):
                 (o, *torch.unbind(o_pt, dim=-1), o_pt_norm, o_pair), dim=-1
             ).to(dtype=z[0].dtype)
         )
-        
+
         return s
 
 
@@ -442,12 +442,12 @@ class BackboneUpdate(nn.Module):
         Args:
             [*, N_res, C_s] single representation
         Returns:
-            [*, N_res, 6] update vector 
+            [*, N_res, 6] update vector
         """
         # [*, 6]
         update = self.linear(s)
 
-        return update 
+        return update
 
 
 class StructureModuleTransitionLayer(nn.Module):
@@ -638,7 +638,7 @@ class StructureModule(nn.Module):
             A dictionary of outputs
         """
         s = evoformer_output_dict["single"]
-        
+
         if mask is None:
             # [*, N]
             mask = s.new_ones(s.shape[:-1])
@@ -661,9 +661,9 @@ class StructureModule(nn.Module):
 
         # [*, N]
         rigids = Rigid.identity(
-            s.shape[:-1], 
-            s.dtype, 
-            s.device, 
+            s.shape[:-1],
+            s.dtype,
+            s.device,
             self.training,
             fmt="quat",
         )
@@ -671,18 +671,18 @@ class StructureModule(nn.Module):
         for i in range(self.no_blocks):
             # [*, N, C_s]
             s = s + self.ipa(
-                s, 
-                z, 
-                rigids, 
-                mask, 
+                s,
+                z,
+                rigids,
+                mask,
                 inplace_safe=inplace_safe,
-                _offload_inference=_offload_inference, 
+                _offload_inference=_offload_inference,
                 _z_reference_list=z_reference_list
             )
             s = self.ipa_dropout(s)
             s = self.layer_norm_ipa(s)
             s = self.transition(s)
-           
+
             # [*, N]
             rigids = rigids.compose_q_update_vec(self.bb_update(s))
 
@@ -691,7 +691,7 @@ class StructureModule(nn.Module):
             # here
             backb_to_global = Rigid(
                 Rotation(
-                    rot_mats=rigids.get_rots().get_rot_mats(), 
+                    rot_mats=rigids.get_rots().get_rot_mats(),
                     quats=None
                 ),
                 rigids.get_trans(),
@@ -716,7 +716,7 @@ class StructureModule(nn.Module):
             )
 
             scaled_rigids = rigids.scale_translation(self.trans_scale_factor)
-            
+
             preds = {
                 "frames": scaled_rigids.to_tensor_7(),
                 "sidechain_frames": all_frames_to_global.to_tensor_4x4(),
@@ -731,7 +731,7 @@ class StructureModule(nn.Module):
             rigids = rigids.stop_rot_gradient()
 
         del z, z_reference_list
-        
+
         if(_offload_inference):
             evoformer_output_dict["pair"] = (
                 evoformer_output_dict["pair"].to(s.device)

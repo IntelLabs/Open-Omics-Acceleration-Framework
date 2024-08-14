@@ -184,26 +184,26 @@ class Linear(nn.Linear):
 class LayerNorm(nn.Module):
     def __init__(self, c_in, eps=1e-5):
         super(LayerNorm, self).__init__()
-        
+
         self.c_in = (c_in,)
         self.eps = eps
 
         self.weight = nn.Parameter(torch.ones(c_in))
         self.bias = nn.Parameter(torch.zeros(c_in))
 
-    def forward(self, x): 
+    def forward(self, x):
         d = x.dtype
         deepspeed_is_initialized = (
-            deepspeed_is_installed and 
+            deepspeed_is_installed and
             deepspeed.utils.is_initialized()
         )
         if(d is torch.bfloat16 and not deepspeed_is_initialized):
             with torch.cuda.amp.autocast(enabled=False):
                 out = nn.functional.layer_norm(
-                    x, 
-                    self.c_in, 
-                    self.weight.to(dtype=d), 
-                    self.bias.to(dtype=d), 
+                    x,
+                    self.c_in,
+                    self.weight,#.to(dtype=d),
+                    self.bias,#.to(dtype=d),
                     self.eps
                 )
         else:
@@ -226,7 +226,7 @@ def softmax_no_cast(t: torch.Tensor, dim: int = -1) -> torch.Tensor:
     """
     d = t.dtype
     deepspeed_is_initialized = (
-        deepspeed_is_installed and 
+        deepspeed_is_installed and
         deepspeed.utils.is_initialized()
     )
     if(d is torch.bfloat16 and not deepspeed_is_initialized):
@@ -259,7 +259,7 @@ def _attention(query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, bias
 
 @torch.jit.ignore
 def _attention_chunked_trainable(
-    query, key, value, biases, chunk_size, chunk_dim, checkpoint, 
+    query, key, value, biases, chunk_size, chunk_dim, checkpoint,
 ):
     if(checkpoint and len(biases) > 2):
         raise ValueError(
@@ -304,7 +304,7 @@ def _attention_chunked_trainable(
             ]
 
             o_chunk = _attention(q_chunk, k_chunk, v_chunk, bias_chunks)
-            
+
         o_chunk = o_chunk.transpose(-2, -3)
         o_chunks.append(o_chunk)
 
@@ -375,7 +375,7 @@ class Attention(nn.Module):
         self.sigmoid = nn.Sigmoid()
 
     def _prep_qkv(self,
-        q_x: torch.Tensor, 
+        q_x: torch.Tensor,
         kv_x: torch.Tensor
     ) -> Tuple[
         torch.Tensor, torch.Tensor, torch.Tensor
@@ -400,12 +400,12 @@ class Attention(nn.Module):
         return q, k, v
 
     def _wrap_up(self,
-        o: torch.Tensor, 
+        o: torch.Tensor,
         q_x: torch.Tensor
     ) -> torch.Tensor:
         if(self.linear_g is not None):
             g = self.sigmoid(self.linear_g(q_x))
-        
+
             # [*, Q, H, C_hidden]
             g = g.view(g.shape[:-1] + (self.no_heads, -1))
             o = o * g
@@ -445,7 +445,7 @@ class Attention(nn.Module):
                 is used instead
             use_lma:
                 Whether to use low-memory attention (Staats & Rabe 2021). If
-                none of the "use_<...>" flags are True, a stock PyTorch 
+                none of the "use_<...>" flags are True, a stock PyTorch
                 implementation is used instead
             lma_q_chunk_size:
                 Query chunk size (for LMA)
@@ -474,7 +474,7 @@ class Attention(nn.Module):
 
         if(biases is None):
             biases = []
-        
+
         # [*, H, Q/K, C_hidden]
         q, k, v = self._prep_qkv(q_x, kv_x)
 
@@ -489,7 +489,7 @@ class Attention(nn.Module):
             o = o.transpose(-2, -3)
         elif(use_lma):
             biases = [
-                b.expand(b.shape[:-2] + (q_x.shape[-2],) + (kv_x.shape[-2],)) 
+                b.expand(b.shape[:-2] + (q_x.shape[-2],) + (kv_x.shape[-2],))
                 for b in biases
             ]
             o = _lma(q, k, v, biases, lma_q_chunk_size, lma_kv_chunk_size)
@@ -530,8 +530,8 @@ class GlobalAttention(nn.Module):
 
         self.sigmoid = nn.Sigmoid()
 
-    def forward(self, 
-        m: torch.Tensor, 
+    def forward(self,
+        m: torch.Tensor,
         mask: torch.Tensor,
         use_lma: bool = False,
     ) -> torch.Tensor:
@@ -568,11 +568,11 @@ class GlobalAttention(nn.Module):
             )
         else:
             o = _lma(
-                q, 
-                k, 
-                v, 
-                [bias], 
-                DEFAULT_LMA_Q_CHUNK_SIZE, 
+                q,
+                k,
+                v,
+                [bias],
+                DEFAULT_LMA_Q_CHUNK_SIZE,
                 DEFAULT_LMA_KV_CHUNK_SIZE
             )
 
@@ -595,11 +595,11 @@ class GlobalAttention(nn.Module):
 
 
 def _lma(
-    q: torch.Tensor, 
-    k: torch.Tensor, 
-    v: torch.Tensor, 
-    biases: List[torch.Tensor], 
-    q_chunk_size: int, 
+    q: torch.Tensor,
+    k: torch.Tensor,
+    v: torch.Tensor,
+    biases: List[torch.Tensor],
+    q_chunk_size: int,
     kv_chunk_size: int,
 ):
     no_q, no_kv = q.shape[-2], k.shape[-2]
@@ -625,14 +625,14 @@ def _lma(
             a = torch.einsum(
                 "...hqd,...hkd->...hqk", q_chunk, k_chunk,
             )
-       
+
             for b in small_bias_chunks:
                 a += b
-        
+
             max_a = torch.max(a, dim=-1, keepdim=True)[0]
             exp_a = torch.exp(a - max_a)
             exp_v = torch.einsum("...hvf,...hqv->...hqf", v_chunk, exp_a)
- 
+
             maxes.append(max_a.detach().squeeze(-1))
             weights.append(torch.sum(exp_a, dim=-1))
             values.append(exp_v)
@@ -662,7 +662,7 @@ def _flash_attn(q, k, v, kv_mask):
         raise ValueError(
             "_flash_attn requires that FlashAttention be installed"
         )
-   
+
     batch_dims = q.shape[:-3]
     no_heads, n, c = q.shape[-3:]
     dtype = q.dtype
@@ -684,25 +684,25 @@ def _flash_attn(q, k, v, kv_mask):
 
     # Flattened batch size
     batch_size = q.shape[0]
-    
+
     # [B_flat * N, H, C]
     q = q.reshape(-1, *q.shape[-2:])
-    
+
     q_max_s = n
     q_cu_seqlens = torch.arange(
         0, (batch_size + 1) * n, step=n, dtype=torch.int32, device=q.device
     )
 
     # [B_flat, N, 2, H, C]
-    kv = torch.stack([k, v], dim=-3) 
+    kv = torch.stack([k, v], dim=-3)
     kv_shape = kv.shape
-    
+
     # [B_flat, N, 2 * H * C]
-    kv = kv.reshape(*kv.shape[:-3], -1) 
-    
+    kv = kv.reshape(*kv.shape[:-3], -1)
+
     kv_unpad, _, kv_cu_seqlens, kv_max_s = unpad_input(kv, kv_mask)
     kv_unpad = kv_unpad.reshape(-1, *kv_shape[-3:])
-   
+
     out = flash_attn_unpadded_kvpacked_func(
         q,
         kv_unpad,
@@ -713,9 +713,9 @@ def _flash_attn(q, k, v, kv_mask):
         dropout_p = 0.,
         softmax_scale = 1., # q has been scaled already
     )
-  
+
     # [*, B, N, H, C]
-    out = out.reshape(*batch_dims, n, no_heads, c) 
+    out = out.reshape(*batch_dims, n, no_heads, c)
 
     out = out.to(dtype=dtype)
 

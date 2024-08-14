@@ -17,7 +17,7 @@ from operator import mul
 
 import torch
 
-attn_core_inplace_cuda = importlib.import_module("attn_core_inplace_cuda")
+#attn_core_inplace_cuda = importlib.import_module("attn_core_inplace_cuda")
 
 
 SUPPORTED_DTYPES = [torch.float32, torch.bfloat16]
@@ -34,9 +34,9 @@ class AttentionCoreFunction(torch.autograd.Function):
         q = q.contiguous()
         k = k.contiguous()
 
-        # [*, H, Q, K] 
+        # [*, H, Q, K]
         attention_logits = torch.matmul(
-            q, k.transpose(-1, -2), 
+            q, k.transpose(-1, -2),
         )
 
         if(bias_1 is not None):
@@ -45,12 +45,12 @@ class AttentionCoreFunction(torch.autograd.Function):
             attention_logits += bias_2
 
         attn_core_inplace_cuda.forward_(
-            attention_logits, 
+            attention_logits,
             reduce(mul, attention_logits.shape[:-1]),
             attention_logits.shape[-1],
         )
 
-        o = torch.matmul(attention_logits, v) 
+        o = torch.matmul(attention_logits, v)
 
         ctx.bias_1_shape = bias_1.shape if bias_1 is not None else None
         ctx.bias_2_shape = bias_2.shape if bias_2 is not None else None
@@ -62,9 +62,9 @@ class AttentionCoreFunction(torch.autograd.Function):
     def backward(ctx, grad_output):
         q, k, v, attention_logits = ctx.saved_tensors
         grad_q = grad_k = grad_v = grad_bias_1 = grad_bias_2 = None
-       
+
         grad_v = torch.matmul(
-            attention_logits.transpose(-1, -2), 
+            attention_logits.transpose(-1, -2),
             grad_output
         )
 
