@@ -11,7 +11,10 @@ Given one or more protein sequences, this workflow performs preprocessing (datab
 
 ```bash
 cd ~/Open-Omics-Acceleration-Framework/pipelines/alphafold2-based-protein-folding
-docker build -t alphafold .           # Build a docker image named alphafold
+docker build -t alphafold:pre -f Dockerfile_Pre .   # Build a docker image named alphafold:pre for pre-processing step
+docker build -t alphafold:inf -f Dockerfile_Inf .   # Build a docker image named alphafold:inf for inference step
+
+
 ```
 # Preparation 
 1. Follow the instructions from https://github.com/deepmind/alphafold repo and download the database for alphafold2.
@@ -25,11 +28,20 @@ export SAMPLES_DIR=<path-to-input-directory>
 export OUTPUT_DIR=<path-to-output-directory>
 export LOG_DIR=<path-to-log-directory>
 
+
+# Run pre-processign step
 docker run -it --cap-add SYS_NICE -v $DATA_DIR:/data \
     -v $SAMPLES_DIR:/samples \
     -v $OUTPUT_DIR:/output \
     -v $LOG_DIR:/Open-Omics-Acceleration-Framework/applications/alphafold/logs \
-    alphafold:latest
+    alphafold:pre
+
+# Run inference step
+docker run -it --cap-add SYS_NICE -v $DATA_DIR:/data \
+    -v $SAMPLES_DIR:/samples \
+    -v $OUTPUT_DIR:/output \
+    -v $LOG_DIR:/Open-Omics-Acceleration-Framework/applications/alphafold/logs \
+    alphafold:inf
 ```
 
 # Running baremetal
