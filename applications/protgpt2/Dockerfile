@@ -38,8 +38,19 @@ ENV PATH="/opt/conda/envs/protgpt2_env/bin:/opt/conda/bin:$PATH"
 # Create output directory
 RUN mkdir -p /app/output
 
+# Non-root user setup
+ENV SERVICE_NAME="my-service"
+
+RUN groupadd --gid 1001 $SERVICE_NAME && \
+    useradd -m -g $SERVICE_NAME --shell /bin/false --uid 1001 $SERVICE_NAME && \
+    chown -R $SERVICE_NAME:$SERVICE_NAME /app/output /app
+
 # Copy application code
 COPY . /app
+
+# Switch to non-root user
+USER $SERVICE_NAME
+
 
 # Set the default command to run the application
 #CMD ["python"]
