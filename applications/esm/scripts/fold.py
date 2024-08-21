@@ -14,6 +14,7 @@ from pathlib import Path
 from timeit import default_timer as timer
 
 import torch
+
 import esm
 from esm.data import read_fasta
 
@@ -146,6 +147,7 @@ def run(args):
 
     model = model.eval()
     model.set_chunk_size(args.chunk_size)
+
     if args.cpu_only:
         model.esm.float()  # convert to fp32 as ESM-2 in fp16 is not supported on CPU
         model.cpu()

@@ -29,9 +29,8 @@ def score_singlechain_backbone(model, alphabet, args):
     print(native_seq)
     print('\n')
 
-    ll, _ = esm.inverse_folding.util.score_sequence(
-            model, alphabet, coords, native_seq)
-	print('Native sequence')
+    ll, _ = esm.inverse_folding.util.score_sequence(model, alphabet, coords, native_seq)
+    print('Native sequence')
     print(f'Log likelihood: {ll:.2f}')
     print(f'Perplexity: {np.exp(-ll):.2f}')
 

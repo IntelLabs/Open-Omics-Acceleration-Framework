@@ -86,6 +86,7 @@ class Designer:
         else:
             target_pdb_path = Path(target_pdb_path)
             self._init_target(target_pdb_path)
+
         set_rng_seeds(self.seed)
         self.schedulers = {}  # reset schedulers
         self.resuming_stage = False
@@ -355,6 +356,7 @@ class Designer:
                 stage_free_generation(self, **design_cfg)
             else:
                 raise ValueError(f'Invalid task: {self.cfg.task}')
+
         logger.info(f'Final designed sequences:')
         for seq in self.decode(self.x_seqs):
             logger.info(seq)

@@ -9,6 +9,7 @@ import pathlib
 import time
 
 import torch
+
 from esm import Alphabet, FastaBatchedDataset, ProteinBertModel, pretrained, MSATransformer
 
 
@@ -84,9 +85,7 @@ def run(args):
     dataset = FastaBatchedDataset.from_file(args.fasta_file)
     batches = dataset.get_batch_indices(args.toks_per_batch, extra_toks_per_seq=1)
     data_loader = torch.utils.data.DataLoader(
-        dataset,
-        collate_fn=alphabet.get_batch_converter(args.truncation_seq_length),
-        batch_sampler=batches,
+        dataset, collate_fn=alphabet.get_batch_converter(args.truncation_seq_length), batch_sampler=batches
     )
     print(f"Read {args.fasta_file} with {len(dataset)} sequences")
 
@@ -106,8 +105,10 @@ def run(args):
                 toks = toks.to(device="cuda", non_blocking=True)
             if args.timing:
                 start_time = time.perf_counter()
+
             with torch.amp.autocast("cpu", enabled=enable_autocast):
                 out = model(toks, repr_layers=repr_layers, return_contacts=return_contacts)
+
             if args.timing:
                 end_time = time.perf_counter()
                 total_inference_time = total_inference_time + (end_time - start_time)
@@ -140,7 +141,7 @@ def run(args):
                         layer: t[i, 0].clone() for layer, t in representations.items()
                     }
                 if return_contacts:
-                    result["contacts"] = contacts[i, :truncate_len, :truncate_len].clone()
+                    result["contacts"] = contacts[i, : truncate_len, : truncate_len].clone()
 
                 torch.save(
                     result,
