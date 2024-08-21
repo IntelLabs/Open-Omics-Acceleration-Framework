@@ -19,11 +19,11 @@ from typing import Optional, Callable, List, Tuple, Sequence
 import numpy as np
 
 deepspeed_is_installed = importlib.util.find_spec("deepspeed") is not None
-if(deepspeed_is_installed):
+if deepspeed_is_installed:
     import deepspeed
 
 fa_is_installed = importlib.util.find_spec("flash_attn") is not None
-if(fa_is_installed):
+if fa_is_installed:
     from flash_attn.bert_padding import unpad_input, pad_input
     from flash_attn.flash_attention import FlashAttention
     from flash_attn.flash_attn_interface import flash_attn_unpadded_kvpacked_func
@@ -41,8 +41,8 @@ from openfold.utils.tensor_utils import (
 )
 
 
-DEFAULT_LMA_Q_CHUNK_SIZE=1024
-DEFAULT_LMA_KV_CHUNK_SIZE=4096
+DEFAULT_LMA_Q_CHUNK_SIZE = 1024
+DEFAULT_LMA_KV_CHUNK_SIZE = 4096
 
 
 def _prod(nums):
@@ -194,17 +194,16 @@ class LayerNorm(nn.Module):
     def forward(self, x):
         d = x.dtype
         deepspeed_is_initialized = (
-            deepspeed_is_installed and
-            deepspeed.utils.is_initialized()
+            deepspeed_is_installed and deepspeed.utils.is_initialized()
         )
-        if(d is torch.bfloat16 and not deepspeed_is_initialized):
+        if d is torch.bfloat16 and not deepspeed_is_initialized:
             with torch.cuda.amp.autocast(enabled=False):
                 out = nn.functional.layer_norm(
                     x,
                     self.c_in,
-                    self.weight,#.to(dtype=d),
-                    self.bias,#.to(dtype=d),
-                    self.eps
+                    self.weight,  # .to(dtype=d),
+                    self.bias,  # .to(dtype=d),
+                    self.eps,
                 )
         else:
             out = nn.functional.layer_norm(
@@ -221,15 +220,14 @@ class LayerNorm(nn.Module):
 @torch.jit.ignore
 def softmax_no_cast(t: torch.Tensor, dim: int = -1) -> torch.Tensor:
     """
-        Softmax, but without automatic casting to fp32 when the input is of
-        type bfloat16
+    Softmax, but without automatic casting to fp32 when the input is of
+    type bfloat16
     """
     d = t.dtype
     deepspeed_is_initialized = (
-        deepspeed_is_installed and
-        deepspeed.utils.is_initialized()
+        deepspeed_is_installed and deepspeed.utils.is_initialized()
     )
-    if(d is torch.bfloat16 and not deepspeed_is_initialized):
+    if d is torch.bfloat16 and not deepspeed_is_initialized:
         with torch.cuda.amp.autocast(enabled=False):
             s = torch.nn.functional.softmax(t, dim=dim)
     else:
@@ -238,8 +236,13 @@ def softmax_no_cast(t: torch.Tensor, dim: int = -1) -> torch.Tensor:
     return s
 
 
-#@torch.jit.script
-def _attention(query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, biases: List[torch.Tensor]) -> torch.Tensor:
+# @torch.jit.script
+def _attention(
+    query: torch.Tensor,
+    key: torch.Tensor,
+    value: torch.Tensor,
+    biases: List[torch.Tensor],
+) -> torch.Tensor:
     # [*, H, C_hidden, K]
     key = permute_final_dims(key, (1, 0))
 
@@ -259,12 +262,16 @@ def _attention(query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, bias
 
 @torch.jit.ignore
 def _attention_chunked_trainable(
-    query, key, value, biases, chunk_size, chunk_dim, checkpoint,
+    query,
+    key,
+    value,
+    biases,
+    chunk_size,
+    chunk_dim,
+    checkpoint,
 ):
-    if(checkpoint and len(biases) > 2):
-        raise ValueError(
-            "Checkpointed version permits only permits two bias terms"
-        )
+    if checkpoint and len(biases) > 2:
+        raise ValueError("Checkpointed version permits only permits two bias terms")
 
     def _checkpointable_attention(q, k, v, b1, b2):
         bs = [b for b in [b1, b2] if b is not None]
@@ -289,19 +296,22 @@ def _attention_chunked_trainable(
             )
             return b[tuple(idx)]
 
-        if(checkpoint):
+        if checkpoint:
             bias_1_chunk, bias_2_chunk = [
                 _slice_bias(b) if b is not None else None
                 for b in (biases + [None, None])[:2]
             ]
 
-            o_chunk = checkpoint_fn(_checkpointable_attention,
-                q_chunk, k_chunk, v_chunk, bias_1_chunk, bias_2_chunk
+            o_chunk = checkpoint_fn(
+                _checkpointable_attention,
+                q_chunk,
+                k_chunk,
+                v_chunk,
+                bias_1_chunk,
+                bias_2_chunk,
             )
         else:
-            bias_chunks = [
-                _slice_bias(b) for b in biases
-            ]
+            bias_chunks = [_slice_bias(b) for b in biases]
 
             o_chunk = _attention(q_chunk, k_chunk, v_chunk, bias_chunks)
 
@@ -317,6 +327,7 @@ class Attention(nn.Module):
     Standard multi-head attention using AlphaFold's default layer
     initialization. Allows multiple bias vectors.
     """
+
     def __init__(
         self,
         c_q: int,
@@ -362,9 +373,7 @@ class Attention(nn.Module):
         self.linear_v = Linear(
             self.c_v, self.c_hidden * self.no_heads, bias=False, init="glorot"
         )
-        self.linear_o = Linear(
-            self.c_hidden * self.no_heads, self.c_q, init="final"
-        )
+        self.linear_o = Linear(self.c_hidden * self.no_heads, self.c_q, init="final")
 
         self.linear_g = None
         if self.gating:
@@ -374,12 +383,9 @@ class Attention(nn.Module):
 
         self.sigmoid = nn.Sigmoid()
 
-    def _prep_qkv(self,
-        q_x: torch.Tensor,
-        kv_x: torch.Tensor
-    ) -> Tuple[
-        torch.Tensor, torch.Tensor, torch.Tensor
-    ]:
+    def _prep_qkv(
+        self, q_x: torch.Tensor, kv_x: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         # [*, Q/K/V, H * C_hidden]
         q = self.linear_q(q_x)
         k = self.linear_k(kv_x)
@@ -399,11 +405,8 @@ class Attention(nn.Module):
 
         return q, k, v
 
-    def _wrap_up(self,
-        o: torch.Tensor,
-        q_x: torch.Tensor
-    ) -> torch.Tensor:
-        if(self.linear_g is not None):
+    def _wrap_up(self, o: torch.Tensor, q_x: torch.Tensor) -> torch.Tensor:
+        if self.linear_g is not None:
             g = self.sigmoid(self.linear_g(q_x))
 
             # [*, Q, H, C_hidden]
@@ -454,47 +457,45 @@ class Attention(nn.Module):
         Returns
             [*, Q, C_q] attention update
         """
-        if(use_lma and (lma_q_chunk_size is None or lma_kv_chunk_size is None)):
+        if use_lma and (lma_q_chunk_size is None or lma_kv_chunk_size is None):
             raise ValueError(
                 "If use_lma is specified, lma_q_chunk_size and "
                 "lma_kv_chunk_size must be provided"
             )
 
-        if(use_flash and biases is not None):
+        if use_flash and biases is not None:
             raise ValueError(
                 "use_flash is incompatible with the bias option. For masking, "
                 "use flash_mask instead"
             )
 
         attn_options = [use_memory_efficient_kernel, use_lma, use_flash]
-        if(sum(attn_options) > 1):
-            raise ValueError(
-                "Choose at most one alternative attention algorithm"
-            )
+        if sum(attn_options) > 1:
+            raise ValueError("Choose at most one alternative attention algorithm")
 
-        if(biases is None):
+        if biases is None:
             biases = []
 
         # [*, H, Q/K, C_hidden]
         q, k, v = self._prep_qkv(q_x, kv_x)
 
         # [*, Q, H, C_hidden]
-        if(use_memory_efficient_kernel):
-            if(len(biases) > 2):
+        if use_memory_efficient_kernel:
+            if len(biases) > 2:
                 raise ValueError(
                     "If use_memory_efficient_kernel is True, you may only "
                     "provide up to two bias terms"
                 )
             o = attention_core(q, k, v, *((biases + [None] * 2)[:2]))
             o = o.transpose(-2, -3)
-        elif(use_lma):
+        elif use_lma:
             biases = [
                 b.expand(b.shape[:-2] + (q_x.shape[-2],) + (kv_x.shape[-2],))
                 for b in biases
             ]
             o = _lma(q, k, v, biases, lma_q_chunk_size, lma_kv_chunk_size)
             o = o.transpose(-2, -3)
-        elif(use_flash):
+        elif use_flash:
             o = _flash_attn(q, k, v, flash_mask)
         else:
             o = _attention(q, k, v, biases)
@@ -515,22 +516,27 @@ class GlobalAttention(nn.Module):
         self.inf = inf
         self.eps = eps
 
-        self.linear_q = Linear(
-            c_in, c_hidden * no_heads, bias=False, init="glorot"
-        )
+        self.linear_q = Linear(c_in, c_hidden * no_heads, bias=False, init="glorot")
 
         self.linear_k = Linear(
-            c_in, c_hidden, bias=False, init="glorot",
+            c_in,
+            c_hidden,
+            bias=False,
+            init="glorot",
         )
         self.linear_v = Linear(
-            c_in, c_hidden, bias=False, init="glorot",
+            c_in,
+            c_hidden,
+            bias=False,
+            init="glorot",
         )
         self.linear_g = Linear(c_in, c_hidden * no_heads, init="gating")
         self.linear_o = Linear(c_hidden * no_heads, c_in, init="final")
 
         self.sigmoid = nn.Sigmoid()
 
-    def forward(self,
+    def forward(
+        self,
         m: torch.Tensor,
         mask: torch.Tensor,
         use_lma: bool = False,
@@ -542,7 +548,7 @@ class GlobalAttention(nn.Module):
 
         # [*, N_res, H * C_hidden]
         q = self.linear_q(q)
-        q *= (self.c_hidden ** (-0.5))
+        q *= self.c_hidden ** (-0.5)
 
         # [*, N_res, H, C_hidden]
         q = q.view(q.shape[:-1] + (self.no_heads, -1))
@@ -552,7 +558,7 @@ class GlobalAttention(nn.Module):
         v = self.linear_v(m)
 
         bias = (self.inf * (mask - 1))[..., :, None, :]
-        if(not use_lma):
+        if not use_lma:
             # [*, N_res, H, N_seq]
             a = torch.matmul(
                 q,
@@ -568,12 +574,7 @@ class GlobalAttention(nn.Module):
             )
         else:
             o = _lma(
-                q,
-                k,
-                v,
-                [bias],
-                DEFAULT_LMA_Q_CHUNK_SIZE,
-                DEFAULT_LMA_KV_CHUNK_SIZE
+                q, k, v, [bias], DEFAULT_LMA_Q_CHUNK_SIZE, DEFAULT_LMA_KV_CHUNK_SIZE
             )
 
         # [*, N_res, N_seq, C_hidden]
@@ -607,23 +608,23 @@ def _lma(
     # [*, H, Q, C_hidden]
     o = q.new_zeros(q.shape)
     for q_s in range(0, no_q, q_chunk_size):
-        q_chunk = q[..., q_s: q_s + q_chunk_size, :]
-        large_bias_chunks = [
-            b[..., q_s: q_s + q_chunk_size, :] for b in biases
-        ]
+        q_chunk = q[..., q_s : q_s + q_chunk_size, :]
+        large_bias_chunks = [b[..., q_s : q_s + q_chunk_size, :] for b in biases]
 
         maxes = []
         weights = []
         values = []
         for kv_s in range(0, no_kv, kv_chunk_size):
-            k_chunk = k[..., kv_s: kv_s + kv_chunk_size, :]
-            v_chunk = v[..., kv_s: kv_s + kv_chunk_size, :]
+            k_chunk = k[..., kv_s : kv_s + kv_chunk_size, :]
+            v_chunk = v[..., kv_s : kv_s + kv_chunk_size, :]
             small_bias_chunks = [
-                b[..., kv_s: kv_s + kv_chunk_size] for b in large_bias_chunks
+                b[..., kv_s : kv_s + kv_chunk_size] for b in large_bias_chunks
             ]
 
             a = torch.einsum(
-                "...hqd,...hkd->...hqk", q_chunk, k_chunk,
+                "...hqd,...hkd->...hqk",
+                q_chunk,
+                k_chunk,
             )
 
             for b in small_bias_chunks:
@@ -651,17 +652,15 @@ def _lma(
 
         q_chunk_out = all_values / all_weights
 
-        o[..., q_s: q_s + q_chunk_size, :] = q_chunk_out
+        o[..., q_s : q_s + q_chunk_size, :] = q_chunk_out
 
     return o
 
 
 @torch.jit.ignore
 def _flash_attn(q, k, v, kv_mask):
-    if(not fa_is_installed):
-        raise ValueError(
-            "_flash_attn requires that FlashAttention be installed"
-        )
+    if not fa_is_installed:
+        raise ValueError("_flash_attn requires that FlashAttention be installed")
 
     batch_dims = q.shape[:-3]
     no_heads, n, c = q.shape[-3:]
@@ -710,8 +709,8 @@ def _flash_attn(q, k, v, kv_mask):
         kv_cu_seqlens,
         q_max_s,
         kv_max_s,
-        dropout_p = 0.,
-        softmax_scale = 1., # q has been scaled already
+        dropout_p=0.0,
+        softmax_scale=1.0,  # q has been scaled already
     )
 
     # [*, B, N, H, C]
