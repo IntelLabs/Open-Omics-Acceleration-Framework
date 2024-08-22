@@ -202,8 +202,8 @@ class LayerNorm(nn.Module):
                 out = nn.functional.layer_norm(
                     x, 
                     self.c_in, 
-                    self.weight.to(dtype=d), 
-                    self.bias.to(dtype=d), 
+                    self.weight,#.to(dtype=d), 
+                    self.bias,#.to(dtype=d), 
                     self.eps
                 )
         else:
