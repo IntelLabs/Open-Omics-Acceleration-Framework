@@ -1,3 +1,63 @@
+# OpenOmics RF*diffusion*
+
+# Table of contents
+
+- [RF*diffusion*](#rfdiffusion)
+  - [Description](#description)
+- [Table of contents](#table-of-contents)
+- [Getting started / installation](#getting-started--installation)
+    - [Conda Install SE3-Transformer](#conda-install-se3-transformer)
+    - [Get PPI Scaffold Examples](#get-ppi-scaffold-examples)
+- [Usage](#usage)
+    - [Running the diffusion script](#running-the-diffusion-script)
+    - [Basic execution - an unconditional monomer](#basic-execution---an-unconditional-monomer)
+    - [Motif Scaffolding](#motif-scaffolding)
+    - [The "active site" model holds very small motifs in place](#the-active-site-model-holds-very-small-motifs-in-place)
+    - [The `inpaint_seq` flag](#the-inpaint_seq-flag)
+    - [A note on `diffuser.T`](#a-note-on-diffusert)
+    - [Partial diffusion](#partial-diffusion)
+    - [Binder Design](#binder-design)
+    - [Practical Considerations for Binder Design](#practical-considerations-for-binder-design)
+    - [Fold Conditioning](#fold-conditioning)
+    - [Generation of Symmetric Oligomers](#generation-of-symmetric-oligomers)
+    - [Using Auxiliary Potentials](#using-auxiliary-potentials)
+    - [Symmetric Motif Scaffolding.](#symmetric-motif-scaffolding)
+    - [A Note on Model Weights](#a-note-on-model-weights)
+    - [Things you might want to play with at inference time](#things-you-might-want-to-play-with-at-inference-time)
+    - [Understanding the output files](#understanding-the-output-files)
+    - [Docker](#docker)
+    - [Conclusion](#conclusion)
+
+## Getting started / installation
+
+If you want to set up OpenOmics RFdiffusion, follow the steps below:
+
+To get started using RFdiffusion:
+
+## Run a RFdiffusion Standalone:
+
+```bash
+source setup_conda.sh
+```
+Note: All use case scripts are available inside the examples folder.
+
+## How to use Docker
+```bash
+cd ~/TransOmics.OpenOmicsInternal/applications/RFdiffusion
+docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t rfdiffusion .
+```
+
+## Run a docker container
+```bash
+mkdir outputs
+export OUTPUT_DIR=<path-to-output-directory>
+
+docker run -v $OUTPUT_FOLDER:/app/RFdiffusion/example_outputs rfdiffusion:latest
+    ./scripts/run_inference.py inference.output_prefix=example_outputs/design_motifscaffolding
+    inference.input_pdb=examples/input_pdbs/5TPN.pdb 'contigmap.contigs=[10-40/A163-181/10-40]'
+    inference.num_designs=1 inference.precision=bfloat16/float32
+```
+
 # RF*diffusion*
 
 <!--
