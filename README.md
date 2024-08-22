@@ -57,6 +57,7 @@ cd lib/tal
 
 
 # Blogs & Related News
+* [Intel Open Omics Acceleration Framework on AWS: fast, cost-efficient, and seamless](https://aws.amazon.com/blogs/hpc/intel-open-omics-acceleration-framework-on-aws-fast-cost-efficient-and-seamless/). AWS HPC blog, April, 2024.
 * [Intel Xeon is all you need for AI inference: Performance Leadership on Real World Applications](https://community.intel.com/t5/Blogs/Tech-Innovation/Artificial-Intelligence-AI/Intel-Xeon-is-all-you-need-for-AI-inference-Performance/post/1506083). Blog under Intel Communities/Blogs/Tech Innovation/Artificial Intelligence (AI); July, 2023.
 * [Intel and Mila Join Forces for Responsible AI](https://www.intel.com/content/www/us/en/newsroom/news/intel-mila-join-forces-for-responsible-ai.html#gs.ht5v6q). Intel newsroom, September, 2022.
 * [Accelerating Genomics Pipelines Using Intel’s Open Omics Acceleration Framework on AWS](https://aws.amazon.com/blogs/hpc/accelerating-genomics-pipelines-using-intel-open-omics-on-aws/). AWS HPC blog, Aug, 2022.
