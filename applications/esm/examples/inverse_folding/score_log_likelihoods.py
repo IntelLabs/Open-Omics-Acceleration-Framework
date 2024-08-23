@@ -29,7 +29,8 @@ def score_singlechain_backbone(model, alphabet, args):
     print(native_seq)
     print('\n')
 
-    ll, _ = esm.inverse_folding.util.score_sequence(model, alphabet, coords, native_seq)
+    ll, _ = esm.inverse_folding.util.score_sequence(
+            model, alphabet, coords, native_seq) 
     print('Native sequence')
     print(f'Log likelihood: {ll:.2f}')
     print(f'Perplexity: {np.exp(-ll):.2f}')
@@ -45,7 +46,7 @@ def score_singlechain_backbone(model, alphabet, args):
             ll, _ = esm.inverse_folding.util.score_sequence(
                     model, alphabet, coords, str(seq))
             fout.write(header + ',' + str(ll) + '\n')
-    print(f'Results saved to {args.outpath}')
+    print(f'Results saved to {args.outpath}') 
 
 
 def score_multichain_backbone(model, alphabet, args):
@@ -61,7 +62,7 @@ def score_multichain_backbone(model, alphabet, args):
     print('\n')
 
     ll, _ = esm.inverse_folding.multichain_util.score_sequence_in_complex(
-            model, alphabet, coords, target_chain_id, native_seq)
+            model, alphabet, coords, target_chain_id, native_seq) 
     print('Native sequence')
     print(f'Log likelihood: {ll:.2f}')
     print(f'Perplexity: {np.exp(-ll):.2f}')
@@ -77,7 +78,7 @@ def score_multichain_backbone(model, alphabet, args):
             ll, _ = esm.inverse_folding.multichain_util.score_sequence_in_complex(
                     model, alphabet, coords, target_chain_id, str(seq))
             fout.write(header + ',' + str(ll) + '\n')
-    print(f'Results saved to {args.outpath}')
+    print(f'Results saved to {args.outpath}') 
 
 
 def main():
@@ -114,6 +115,8 @@ def main():
     parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
     parser.add_argument("--noipex", action="store_true", help="Do not use intel_extension_for_pytorch")
     parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
+    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
+    
     args = parser.parse_args()
 
     model, alphabet = esm.pretrained.esm_if1_gvp4_t16_142M_UR50()
@@ -125,13 +128,20 @@ def main():
         model = ipex.optimize(model, dtype=dtype)
     if args.noipex and args.bf16:
         model=model.bfloat16()
-
     enable_autocast = args.bf16
-    with torch.cpu.amp.autocast(enable_autocast):
+    device_type ="cpu" if args.nogpu else "cuda"
+    if args.timing:
+        import time
+        start_time = time.time()
+    with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
         if args.multichain_backbone:
             score_multichain_backbone(model, alphabet, args)
         else:
             score_singlechain_backbone(model, alphabet, args)
+    if args.timing:
+        print(f"Total Inference Time = {time.time() - start_time} seconds")
+
+
 
 
 if __name__ == '__main__':

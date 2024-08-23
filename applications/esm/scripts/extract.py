@@ -6,7 +6,6 @@
 
 import argparse
 import pathlib
-import time
 
 import torch
 
@@ -94,8 +93,8 @@ def run(args):
 
     assert all(-(model.num_layers + 1) <= i <= model.num_layers for i in args.repr_layers)
     repr_layers = [(i + model.num_layers + 1) % (model.num_layers + 1) for i in args.repr_layers]
-    total_inference_time = 0
     enable_autocast = args.bf16
+    device_type ="cpu" if args.nogpu else "cuda"
     with torch.no_grad():
         for batch_idx, (labels, strs, toks) in enumerate(data_loader):
             print(
@@ -104,9 +103,11 @@ def run(args):
             if torch.cuda.is_available() and not args.nogpu:
                 toks = toks.to(device="cuda", non_blocking=True)
             if args.timing:
+                import time
+                total_inference_time = 0
                 start_time = time.perf_counter()
 
-            with torch.amp.autocast("cpu", enabled=enable_autocast):
+            with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
                 out = model(toks, repr_layers=repr_layers, return_contacts=return_contacts)
 
             if args.timing:
@@ -148,7 +149,7 @@ def run(args):
                     args.output_file,
                 )
     if args.timing:
-        print(f"Total Inference Time = {total_inference_time}")
+        print(f"Total Inference Time = {total_inference_time} seconds")
 
 
 def main():

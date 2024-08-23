@@ -121,6 +121,7 @@ def create_parser():
     parser.add_argument("--cpu-offload", help="Enable CPU offloading", action="store_true")
     parser.add_argument("--noipex", action="store_true", help="Do not use ipex even if available")
     parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
+    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
     return parser
 
 
@@ -167,11 +168,17 @@ def run(args):
 
     num_completed = 0
     num_sequences = len(all_sequences)
+    device_type ="cpu" if args.nogpu else "cuda"
     for headers, sequences in batched_sequences:
         start = timer()
         try:
-            with torch.cpu.amp.autocast(enable_autocast):
+            if args.timing:
+                import time
+                start_time = time.time()
+            with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
                 output = model.infer(sequences, num_recycles=args.num_recycles)
+            if args.timing:
+                print(f"Total Inference Time = {time.time() - start_time} seconds")
         except RuntimeError as e:
             if e.args[0].startswith("CUDA out of memory"):
                 if len(sequences) > 1:

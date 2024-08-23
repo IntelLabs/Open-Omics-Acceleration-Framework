@@ -110,6 +110,7 @@ def main():
     parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
     parser.add_argument("--noipex", action="store_true", help="Do not use intel_extension_for_pytorch")
     parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
+    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
     args = parser.parse_args()
 
     model, alphabet = esm.pretrained.esm_if1_gvp4_t16_142M_UR50()
@@ -121,11 +122,17 @@ def main():
     if args.noipex and args.bf16:
         model=model.bfloat16()
     enable_autocast = args.bf16
-    with torch.cpu.amp.autocast(enable_autocast):
+    if args.timing:
+        import time
+        start_time = time.time()
+    device_type ="cpu" if args.nogpu else "cuda"
+    with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
         if args.multichain_backbone:
             sample_seq_multichain(model, alphabet, args)
         else:
             sample_seq_singlechain(model, alphabet, args)
+    if args.timing:
+        print(f"Total Inference Time = {time.time() - start_time} seconds")
 
 
 if __name__ == '__main__':
