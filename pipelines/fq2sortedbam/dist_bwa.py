@@ -1,7 +1,7 @@
 #*************************************************************************************
 #                           The MIT License
 #
-#   Distirbuted Parallel BWA-MEM2  (Sequence alignment using Burrows-Wheeler Transform),
+#   Intel OpenOmics - fq2sortedbam pipeline
 #   Copyright (C) 2023  Intel Corporation.
 #
 #   Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #   SOFTWARE.
 #
-#Authors: Babu Pillai <padmanabhan.s.pillai@intel.com>; Vasimuddin Md <vasimuddin.md@intel.com>;
+#Authors:  Vasimuddin Md <vasimuddin.md@intel.com>; Babu Pillai <padmanabhan.s.pillai@intel.com>;
 #*****************************************************************************************/
 
 
@@ -44,11 +44,36 @@ import numpy as np
 import yappi
 from multiprocessing import Pool
 from operator import itemgetter
+import yaml
 #from warp-tools.tools.scripts import dynamic-barcode-orientation
 mydict = {"chr1": 1,"chr2": 2,"chr3": 3,"chr4": 4,"chr5": 5,"chr6": 6,"chr7": 7,"chr8": 8, "chr9": 9, "chr10": 10, "chr11": 11, "chr12": 12, "chr13": 13, "chr14":14,"chr15":15,"chr16": 16, "chr17": 17, "chr18": 18, "chr19": 19,"chr20":20,"chr21":21,"chr22":22,"chrX": 23,"chrY": 24,"chrM": 25}
 
 BINDIR="../.."
+APPSDIR=os.path.join(BINDIR + "/applications/")
+SAMTOOLS=os.path.join(APPSDIR + "/samtools/samtools")
+BWA=os.path.join(APPSDIR + "/bwa-mem2/bwa-mem2")
+MINIMAP2=os.path.join(APPSDIR + "/mm2-fast/minimap2")
 
+def populate_yaml(args):
+    with open(args['config'], 'r') as f:
+        data = yaml.safe_load(f)
+    #print(data)
+    for keys in ['dataset', 'fqprocess', 'bwa', 'mm2']:
+        arg = data[keys]  #['arguments']
+        for k,v in arg.items():
+            if v != "None" and v != "":
+                #print(k,v)
+                if k == "params":
+                    if keys == 'bwa' and args['read_type'] == 'short':
+                        args[k] = v
+                    if keys == 'mm2' and args['read_type'] == 'long':
+                        args[k] = v
+                    else:
+                        assert True, 'Error: Incorrect parameter settings in config'
+                else:
+                    args[k] = v
+
+    return args
 
 def read_input(fp_read1, fp_read2, num_ranks):
     file_path_r1 = fp_read1
@@ -74,6 +99,7 @@ def read_input(fp_read1, fp_read2, num_ranks):
 
     return lines_r1, lines_r2, lcount_r1, lcount_r2
 
+
 def pr_t1( f, start, end, bufs, sems ):  # thread to read from fastq.gz file
     f.seek(start)
     buf_i = 0
@@ -88,7 +114,8 @@ def pr_t1( f, start, end, bufs, sems ):  # thread to read from fastq.gz file
         bufs[buf_i] = d
         buf_i = 1-buf_i
         sems[1].release()
-
+    #print('k: ', k, " d: ", d)
+        
 def pr_t2( outpipe, bufs, sems ):   # thread to output data to pipe
     fifo = open(outpipe, 'wb')
     buf_i = 0
@@ -101,7 +128,32 @@ def pr_t2( outpipe, bufs, sems ):   # thread to output data to pipe
         fifo.write(d)
     fifo.close()
     os.unlink(outpipe)  # delete outpipe
+    #print('unlink the pipe...')
 
+    
+def fastq_reader_real( comm, cpus, fname, outpipe, outdir, last=False ):
+    ## TBW
+    pass
+    f = open(fname, "r")
+    f.seek(0, 2) # go to end
+    total_len = f.tell()
+    startpos = total_len*rank//nranks  # approx starting point for each rank
+    f.seek(startpos)
+    while 1:
+        d = f.readline()
+        if d[0] == 64:  # @ symbol, begin new record
+            break
+        startpos = f.tell()
+    #print (rank, startpos, d[0:32])
+    st_vec = comm.allgather(startpos)  # get all ranks start positions
+    if rank==nranks-1:
+        endpos = total_len
+    else:
+        endpos = st_vec[rank+1]
+    bufs = [0, 0]
+    sems = [threading.Semaphore(2), threading.Semaphore(0)]
+    threading.Thread(target=pr_t1, args=(f,startpos,endpos,bufs,sems)).start()
+    threading.Thread(target=pr_t2, args=(outpipe,bufs,sems)).start()
 
 
 def pragzip_reader_real( comm, cpus, fname, outpipe, outdir, last=False ):
@@ -120,7 +172,7 @@ def pragzip_reader_real( comm, cpus, fname, outpipe, outdir, last=False ):
         f.close()
         os.sched_setaffinity(0,oldmask)
         t1 = time.time()
-        print("Time for pragzip index: "+str(t1-t0))
+        print("[Info] Time for pragzip index: "+str(t1-t0))
     comm.Barrier()
     #f = pz.open( fname, parallelization=cpus//2 )
     f = pz.open( fname, parallelization=cpus )
@@ -218,19 +270,38 @@ def sort_thr5(fname, comm):
     for f in fl:
         f.write(h)
     # get binned items, output to bin file
-    while ndone<nranks:
-        #b, vl = comm.recv()
-        req = comm.irecv()
+    sz = 0
+    while ndone < nranks:
+        bf_sz = 100000000
+        #bf_sz2 = 100 #100000
+        #req1 = comm.irecv(bf_sz, tag=0)
+        #stat1 = MPI.Status()
+        #vl = req1.wait(stat1)
+        #print(f'[{rank}] recv size vl: ', stat1.Get_count(MPI.CHAR))
+        ##print(f'[{rank}] Error vl: ', MPI.Get_error_string(stat1.Get_error()))
+        #req = comm.irecv(bf_sz2, tag=1)
+        #stat = MPI.Status()
+        #print(f'[{rank}] status: ', stat)
+        #print(f'[{rank}] req', req)
+        #b = req.wait(stat)
+        #print(f'[{rank}] #size: ', stat.Get_count(MPI.CHAR))
+        #req = comm.irecv()
+        #b, vl = req.wait()
+        req = comm.irecv(bf_sz)
         b, vl = req.wait()
+        #recv_rank = b
+        #print(f" [{rank}] after wait ", ndone, "/", nranks, ' recvd from: ', b)
         b = b//nranks
         if len(vl)>0 and  vl[0]=="done":
             ndone+=1
+            #print(f"[{rank}] recvd done from rank ", recv_rank, sz)
             #print ("sort_thr "+str(rank)+", got done:"+str(ndone))
         else:
             fl[b].writelines(vl)
+            #pass
     [f.close() for f in fl]
     t1 = time.time()
-    #print("sort_thr "+str(rank)+" time: "+str(t1-t0))
+    #print(f"[{rank}] Done sort_thr "+str(rank)+" time: "+str(t1-t0))
 
 
 # used for mode 2 and above
@@ -253,8 +324,22 @@ def sw_thr( outpipe, comm, comm2 ):
         if force or len(send_bufs[b])>=20:
             #print("send",rank,r)
             #comm.send( (b, send_bufs[b]),r)
+            #assert len(send_bufs[b]) < 10000000
             req = comm.isend( (b, send_bufs[b]),r)
             req.wait()
+            #req.test()
+            #req1 = comm.isend(send_bufs[b],r, tag=0)
+            ##req1 = comm.isend(["wasim"],r)
+            #stat1 = MPI.Status()
+            #req1.wait(stat1)
+            #print(f"[{rank}] wait", stat1.Get_count(MPI.CHAR), len(send_bufs[b]))
+            #assert stat1.Get_count(MPI.CHAR) < 100000000
+            #
+            #req = comm.isend(b,r, tag=1)
+            #stat = MPI.Status()
+            #req.wait(stat)
+            #print(f"[{rank}] free", stat.Get_count(MPI.CHAR))
+
             #if not req.Test():
             #    sent_msgs.append( (req, send_bufs[b]) )  # if send is not yet complete, save this request and data
             #    print("saved request",rank,r)
@@ -262,6 +347,7 @@ def sw_thr( outpipe, comm, comm2 ):
             send_bufs[b].clear()
             #send_bufs[b] = []
             #if force: print ("send forced on rank "+str(rank)+" to "+str(r))
+            return req
         #sent_msgs = [ rqt for rqt in sent_msgs if not rqt[0].Test() ]
     def read_wrap(f):
         return f.readline()
@@ -301,6 +387,7 @@ def sw_thr( outpipe, comm, comm2 ):
         else:
             seq_start['*'] = -1
 
+        #print(f"[{rank}] done part 1 ")            
         #print(seq_start)
         calculate_bins(nranks)
         binstarts = [ b[0] for b in bins ]
@@ -316,16 +403,15 @@ def sw_thr( outpipe, comm, comm2 ):
             offset = int(x[3])
             #print (i, seq, offset)
             if keep:
-            	key = seq_start[seq] + offset
+                key = seq_start[seq] + offset
             	#b = bisect.bisect(binstarts, key) - 1
-            	bn = bisect_wrap(binstarts, key) - 1
+                bn = bisect_wrap(binstarts, key) - 1
             	#if bn==0 and not (seq=='chr1' or seq=='chr2'):
             	#    print("BAD BIN", seq, seq_start[seq], offset, key, bn)
-            	_, r, b = bins[bn]
+                _, r, b = bins[bn]
             	#print (seq, offset, key, bn, r, b)
             	#comm.send( (key, b, l), r )
-
-            	send_wrap( l, r, b=bn )
+                send_wrap( l, r, b=bn )
             else :
                 if seq_start[seq]!= -1:
                     key = seq_start[seq] + offset
@@ -336,17 +422,29 @@ def sw_thr( outpipe, comm, comm2 ):
 		    #print (seq, offset, key, bn, r, b)
 		    #comm.send( (key, b, l), r )
                     send_wrap( l, r, b=bn )
+                    
             l = read_wrap(f1)
             i+=1
+                
     # send done signal
     for r in range(nranks):
         for b in range(bins_per_rank):
             send_wrap("", r, force=True, b=b*nranks+r)
-        #comm.send("done", r)
-        if r!=rank: send_wrap("done", r, force=True)
+        if r!=rank:
+            send_wrap("done", r, force=True)
+            #print(f"[{rank}] sending done to rank: ", r)
     send_wrap("done", rank, force=True)  # send to self last to avoid race condition with allreduce
     t1 = time.time()
-    total = comm2.allreduce(i)
+    #cnt=0
+    #while cnt<4:
+    #    for rq in rt:
+    #        flag, status = rq.test()
+    #        if flag:
+    #            cnt+=1
+    #            print(status, cnt, flush=True)
+    #print(f"{rank} check", flush=True)
+    #total = comm2.allreduce(i)  ## put it after confirming that all the send and recv done
+    #total = comm.allreduce(i)
     #print("sw_thr "+str(rank)+" time: "+str(t1-t0)+" "+str(i)+" "+str(total))
 
 # used for mode 2 and above
@@ -371,10 +469,10 @@ def sam_writer( comm, fname ):
 def main(argv):
     parser=ArgumentParser()
     parser.add_argument('--input',help="Input data directory")
-    parser.add_argument('--temp',default="",help="Intermediate data directory")
+    parser.add_argument('--tempdir',default="",help="Intermediate data directory")
     parser.add_argument('--refdir',default="",help="Reference genome directory")
-    parser.add_argument('--read1',default="", nargs='+',help="name of r1 files (for fqprocess) seperated by spaces")
-    parser.add_argument('--read2',default="", nargs='+',help="name of r2 files (for fqprocess) seperated by spaces")
+    parser.add_argument('--read1',default="", nargs='+',help="name of r1 files")
+    parser.add_argument('--read2',default="", nargs='+',help="name of r2 files")
     parser.add_argument('--read3',default="", nargs='+',help="name of r3 files (for fqprocess) seperated by spaces")
     parser.add_argument('--readi1',default="", nargs='+',help="name of i1 files (for fqprocess) seperated by spaces")
     
@@ -391,58 +489,50 @@ def main(argv):
     parser.add_argument('--params', default='', help="parameter string to bwa-mem2 barring threads paramter")
     parser.add_argument("-i", "--index", help="name of index file")
     parser.add_argument("-p", "--outfile", help="prefix for read files")
-    parser.add_argument("-r", "--preads", nargs='+',help="name of reads file seperated by space")
+    #parser.add_argument("-r", "--preads", nargs='+',help="name of reads file seperated by space")
     parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
     parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
     parser.add_argument("-b", "--bam_size",default=9, help="bam file size in GB")
-    parser.add_argument('-in', '--istart',action='store_true',help="It will index reference genome for bwa-mem2. If it is already done offline then don't use this flag.")
-    parser.add_argument('-sindex',action='store_true',help="It will create .fai index. If it is done offline then disable this.")
+    parser.add_argument('-in', '--rindex',action='store_true',help="It will index reference genome for bwa-mem2. If it is already done offline then don't use this flag.")
+    parser.add_argument('-dindex',action='store_true',help="It will create .fai index. If it is done offline then disable this.")
     #parser.add_argument('--container_tool',default="docker",help="Container tool used in pipeline : Docker/Podman")
     #parser.add_argument('--shards',default=1,help="Number of shards for deepvariant")
     parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
     parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
-    parser.add_argument('--se_mode',action='store_true',help="Single End (SE) reads only. Paired End (PE) mode is default")
+    #parser.add_argument('--se_mode',action='store_true',help="Single End (SE) reads only. Paired End (PE) mode is default")
     parser.add_argument('--read_type',default="short", help="(short/long): bwa-mem2 with short reads, mm2-fast with long reads")
+    parser.add_argument('-y', "--config", default="", help="config yaml file for args")
+    ## Arg values in the provided yaml file override any command-line or default args values
     args = vars(parser.parse_args())
 
+    #print('args: ', args)
+    if args["config"] != "":
+        args = populate_yaml(args)
+
+    #print('args: ', args)
     global chromo_dict
     #ncpus = int(cpus)
     #start0 = time.time()
     
-    se_mode=args["se_mode"]
+    #se_mode=args["se_mode"]
     read_type=args["read_type"]
-    if read_type == "long":
-        assert se_mode == True, "for long reads se_mode should be enabled by the code"
         
     ifile=args["index"]
     params=args["params"]
-    #print("PARAMS")
-    #if rank == 0:
-    #    print(params)
-    params=params.replace("+","-")    
-    if args["preads"] != None:
-        ## for flatmode and pragzip mode
-        try:
-            rfile1=args["preads"][0]
-        except:            
-            print('Error: Please provide read1 file name')
-            exit()
-        if not se_mode:
-            try:
-                rfile2=args["preads"][1]
-            except:
-                print('Error: Please provide read2 file name')
-                exit()
-                
-    else:
-        ## for fqprocss
-        read1 = args["read1"]
-        read2 = args["read2"]
-        read3 = args["read3"]
-        readi1 = args["readi1"]
-        #print(read1)
-        #print(read2)
-        #print(read3)
+
+    params=params.replace("+","-")
+    read1 = rfile1 = args["read1"]
+    read2 = rfile2 = args["read2"]
+    read3 = args["read3"]
+    readi1 = args["readi1"]
+    se_mode = False
+    if read2 == "" or read2 == "None":
+        se_mode = True
+        
+    if read_type == "long":
+        #assert se_mode == True, "for long reads se_mode should be enabled by the code"
+        se_mode = True   ## for long reads, se_mode=True always
+    
     whitelist=args["whitelist"]
     read_structure=args["read_structure"]
     barcode_orientation=args["barcode_orientation"]
@@ -451,17 +541,17 @@ def main(argv):
     mode=args["mode"]
     cpus=args["cpus"]
     threads=args["threads"]    ## read prefix for R1, I1, R2 files
-    istart=args["istart"]
+    rindex=args["rindex"]
     folder=args["input"] + "/"
     output=args["output"] + "/"
-    tempdir=args["temp"]
+    tempdir=args["tempdir"]
     if tempdir=="": tempdir=output
     refdir=args["refdir"]
-    if refdir=="": refdir=folder
+    #if refdir=="": refdir=folder
     prof=args["profile"]
     global keep
     keep=args["keep_unmapped"]
-    sindex=args["sindex"]
+    dindex=args["dindex"]
     
     sample_id=args['sample_id']
     if sample_id == "": sample_id = output
@@ -474,6 +564,7 @@ def main(argv):
     rank = comm.Get_rank()
     nranks = comm.Get_size()
 
+    #print(refdir + ifile)
     #global bins_per_rank
     #bins_per_rank = max(4,bins_per_rank//nranks)
     global ncpus
@@ -484,21 +575,23 @@ def main(argv):
         if se_mode:
             print("[Info] Running in SE reads only mode!!!")
         else: print("[Info] Running in PE reads mode!!!")
-
-        print("[Info] BWA-MEM2 parameters: ", params)
+        if read_type == "short":
+            print("[Info] BWA-MEM2 parameters: ", params)
+        if read_type == "long":
+            print("[Info] mm2-fast parameters: ", params)
     
 
     def faidx(refdir, ifile):
         tic=time.time()
-        a=run(f'{BINDIR}/applications/samtools/samtools faidx '+os.path.join(refdir,ifile), capture_output=True, shell=True)
+        a=run(f'{SAMTOOLS} faidx '+os.path.join(refdir,ifile), capture_output=True, shell=True)
         assert a.returncode==0,"samtools reference index creation failed"
         end=time.time()
-        print("\nReference to .fai index creation time",end-tic)
+        print("\n[Info] Reference to .fai index creation time",end-tic)
         
     #start0 = time.time()
-    # Generate index file(s)
+    # Generate data (reads) index file(s)
     if rank==0:
-        if sindex==True:
+        if dindex==True:
             faidx(refdir, ifile)
     comm.barrier()
     
@@ -508,14 +601,14 @@ def main(argv):
          #file_size = os.path.getsize(folder+rfile1)
          #print("\nSize of FASTQ file:",file_size)
 
-         if istart==True :
-             print("Indexing Starts")
+         if rindex == True :
+             print("[Info] Indexing Starts")
              begin = time.time()
-             a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 index '+refdir+ifile,capture_output=True,shell=True)
+             a=run(f'{BWA} index '+refdir+ifile,capture_output=True,shell=True)
              end=time.time()
              #file_size = os.path.getsize(folder+rfile1)
-             print("\nIndex time:",end-begin)
-             print("\nSize of FASTQ file:",file_size)
+             print("\n[Info] Index time:",end-begin)
+             print("\n[Info] Size of FASTQ file:",file_size)
              
     #################################################################
     if mode in ['flatmode', 'pragzip', 'multifq']:
@@ -532,15 +625,27 @@ def main(argv):
         
         #print("Genome: ", refdir + ifile)
         assert os.path.exists(refdir + ifile) == True, "missing bwa-mem2 genome"
-        assert os.path.exists(refdir + ifile + ".bwt.2bit.64") == True, "missing bwa-mem2 index files"
-        assert os.path.exists(refdir + ifile + ".0123") == True, "missing bwa-mem2 index files"
-        assert os.path.exists(refdir + ifile + ".amb") == True, "missing bwa-mem2 index files"
-        assert os.path.exists(refdir + ifile + ".ann") == True, "missing bwa-mem2 index files"
-        assert os.path.exists(refdir + ifile + ".pac") == True, "missing bwa-mem2 index files"
+        if not read_type == "long":
+            flg = 0
+            #assert os.path.exists(refdir + ifile + ".bwt.2bit.64") == True, "missing bwa-mem2 index files"
+            #assert os.path.exists(refdir + ifile + ".0123") == True, "missing bwa-mem2 index files"
+            #assert os.path.exists(refdir + ifile + ".amb") == True, "missing bwa-mem2 index files"
+            #assert os.path.exists(refdir + ifile + ".ann") == True, "missing bwa-mem2 index files"
+            #assert os.path.exists(refdir + ifile + ".pac") == True, "missing bwa-mem2 index files"
+            if os.path.exists(refdir + ifile + ".bwt.2bit.64") == False: flg=1
+            if os.path.exists(refdir + ifile + ".0123") == False: flg = 1
+            if os.path.exists(refdir + ifile + ".amb") == False: flg=1
+            if os.path.exists(refdir + ifile + ".ann") == False: flg=1
+            if os.path.exists(refdir + ifile + ".pac") == False: flg=1
+            if flg:
+                print("Error: Some BWA reference index files missing...Exiting")
+                print("Error: You can enable rindex option in the config file to create index while running the pipeline")
+                print("Error: Or, you can build create and place the index in ", refdir)
+            
 
     if mode in ['flatmode', 'pragzip']:
         #print("Read1: ", folder + rfile1)
-        assert os.path.exists(folder+rfile1) == True, "missing input read2 files"
+        assert os.path.exists(folder+rfile1) == True, "missing input read1 files"
         if not se_mode:
             #print("Read2: ", folder + rfile2)
             assert os.path.exists(folder+rfile2) == True, "missing input read2 files"
@@ -548,7 +653,7 @@ def main(argv):
         #print("Output dir: ", folder)
         assert os.path.exists(output) == True, "output path does not exist"
 
-    if mode in ['pragzip']:
+    if mode in ['pragzip', 'flatmode']:
         ## bwa-mem2 index path check, every ranks checks the access.
         g = rfile1
         if g.split(".")[-1] != "gz":
@@ -577,7 +682,17 @@ def main(argv):
     #    chromo=line.split("\t")[0]
     #    chromo_dict[chromo]= 1
         
-        
+    if rank == 0:
+        fo = os.path.join(output, "logs")
+        if not os.path.exists(fo):
+            try:
+                os.mkdir(fol)
+            except:
+                print("Error: unable to create logs folder inside the ouptut folder")
+                os.sys.exit(1)
+        else:
+            print('[Info] output logs folder exits, will override the log files')
+            
     if mode == 'flatmode':
         '''
         Goal: Takes the reads (gzip) SE file or PE files as input and 
@@ -599,9 +714,9 @@ def main(argv):
         #if rank == 0:
         #    print("dist bwa-mem2 starts in flatmode")
         if rank == 0 and read_type == "short":
-            print("bwa-mem2 starts in flatmode")
+            print("[Info] bwa-mem2 starts in flatmode")
         if rank == 0 and read_type == "long":
-            print("mm2-fast starts in flatmode")
+            print("[Info] mm2-fast starts in flatmode")
             
         # Execute bwamem2 -- may include sort, merge depending on mode
         begin0 = time.time()
@@ -615,12 +730,14 @@ def main(argv):
         #print(bwastr)
         if se_mode:
             if read_type == "long":
-                a=run(f'{BINDIR}/applications/mm2-fast/minimap2 -ax map-hifi ' + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' + str(rank) + '.txt',capture_output=True, shell=True)
+                #s='minimap2 ' + params  + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' >     '+fn3 + '  2> ' + output +'logs/mm2log' + str(rank) + '.txt'
+                #print('mm2 cmd: ', s, flush=True)
+                a=run(f'{MINIMAP2} ' + params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' + str(rank) + '.txt',capture_output=True, shell=True)
             else:
-                a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+                a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
 
         else:                
-            a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+            a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
         assert a.returncode == 0
         end1b=time.time()
         #thr.join()
@@ -628,9 +745,9 @@ def main(argv):
         end1=time.time()
 
         if rank==0:
-            print("\nFASTQ to SAM time (flatmode):",end1-begin1)
+            print("\n[Info] FASTQ to SAM time (flatmode):",end1-begin1)
             print("   (includes wait time:",end1-end1b,")")
-            print("Note: SAM files are present in the ouptut folder")
+            print("[Info] Output SAM files are present in the ouptut folder")
             #print("\nsam to sort-bam starts")
             #begin2=time.time()
 
@@ -640,14 +757,14 @@ def main(argv):
         ## fastq preprocess and split
         if rank == 0:
             print("#############################################")
-            print("Whitelist: ", whitelist)
-            print("read_structure: ", read_structure)
-            print("barcode_orientation: ", barcode_orientation)
-            print("bam_size: ", bam_size)
-            print("sample_id: ", sample_id)
-            print("output_format: ", output_format)
+            print("[Info] Whitelist: ", whitelist)
+            print("[Info] read_structure: ", read_structure)
+            print("[Info] barcode_orientation: ", barcode_orientation)
+            print("[Info] bam_size: ", bam_size)
+            print("[Info] sample_id: ", sample_id)
+            print("[Info] output_format: ", output_format)
             print("#############################################")
-            print("Starting fqprocess....", flush=True)
+            print("[Info] Starting fqprocess....", flush=True)
 
             tic = time.time()
             #rl1, rl2, rl3 = read1.split(), read2.split(), read3.split()
@@ -666,7 +783,7 @@ def main(argv):
                 a = run(cmd, shell=True, check=True, executable='/bin/bash')
                 assert a.returncode == 0
             except:
-                print("Exception in dynamic-barcode-orientation!!")
+                print("[Info] Exception in dynamic-barcode-orientation!!")
 
             # Read the contents of the file into a variable
             with open('best_match.txt', 'r') as file:
@@ -691,13 +808,13 @@ def main(argv):
                 ' --output-format ' + output_format +  '  --barcode-orientation ' + barcode_choice + \
                 ' --read-structure ' + read_structure + '  --white-list ' + whitelist
 
-            print('fastqprocess cmd: ', cmd)
+            print('[Info] fastqprocess cmd: ', cmd)
             a=run(cmd, shell=True, check=True, executable='/bin/bash')
             assert a.returncode == 0
             ## Create #output files equal to the number of ranks
             ## create output file names as rprefix + str(rank) + '_1/2.fastq.gz'
             toc = time.time()
-            print("Time for fq processing: ", toc - tic)
+            print("[Info] Time for fq processing: ", toc - tic)
 
         # Preindex reference genome if requested
         comm.barrier()
@@ -705,7 +822,7 @@ def main(argv):
 
     elif mode == "multifq":
         if rank==0:
-            print("\nbwa-mem2 starts..")
+            print("\n[Info] bwa-mem2 starts..")
 
         # Execute bwamem2 -- may include sort, merge depending on mode
         begin0 = time.time()
@@ -718,7 +835,7 @@ def main(argv):
                 fn2 =  os.path.join(folder, prefix + "_" + str(r) + ".R3." + suffix)
 
                 if os.path.isfile(fn1) == False or os.path.isfile(fn2) == False:
-                    print(f"Error: Number of files fastq files ({r}) < number of ranks ({nranks})")
+                    print(f"[Info] Error: Number of files fastq files ({r}) < number of ranks ({nranks})")
                     print(f"!!! Fastq file(s) are not available for processing by rank {r} aborting..\n\n")
                     #sys.exit(1)
                     error_code = 1
@@ -733,7 +850,7 @@ def main(argv):
         #fn1 = folder + "/fastq_R1_" + str(rank) + ".fastq.gz"
         #fn2 = folder + "/fastq_R3_" + str(rank) + ".fastq.gz"
         if rank == 0:
-            print("Input files: ")
+            print("[Info] Input files: ")
             print(fn1)
             print(fn2)
         #assert os.path.isfile(fn1) == True
@@ -744,10 +861,10 @@ def main(argv):
         #bwastr = '{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'/bwalog' + str(rank) + '.txt'
         #print(bwastr)
         if os.path.isfile(fn1) == True:
-            a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+            a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
             assert a.returncode == 0
         else:
-            print(f"{rank} No input file for me")
+            print(f"[Info] {rank} No input file for me")
         end1b=time.time()
 
         thr.join()
@@ -755,19 +872,19 @@ def main(argv):
         end1=time.time()
 
         if rank==0:
-            print("\nFASTQ to SAM time (fqprocess):",end1-begin1)
+            print("[Info] \nFASTQ to SAM time (fqprocess):",end1-begin1)
             print("   (includes wait time:",end1 - end1b,")")
 
-            print("\nsam to sort-bam starts")
-            begin2=time.time()
+            print("\n[Info] sam to sort-bam starts")
+            gin2=time.time()
 
     elif mode == 'pragzip':
         # Preindex refernce genome if requested
 
         if rank == 0 and read_type == "short":
-            print("bwa-mem2 starts")
+            print("[Info] bwa-mem2 starts")
         if rank == 0 and read_type == "long":
-            print("mm2-fast starts")
+            print("[Info] mm2-fast starts")
         # Execute bwamem2 -- may include sort, merge depending on mode
         begin0 = time.time()
         try:
@@ -775,19 +892,22 @@ def main(argv):
             if not se_mode:
                 fn2 = pragzip_reader( comm, int(cpus), folder+rfile2, output, last=True )
             fn3, thr = sam_writer( comm, output+'/aln' )
+            #fn3 = output + "/aln" + str(rank) + ".sam"
             begin1 = time.time()
             if se_mode:
                 if read_type == "long":
-                    a=run(f'{BINDIR}/applications/mm2-fast/minimap2 -ax map-hifi ' + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' + str(rank) + '.txt',capture_output=True, shell=True)
+                    a=run(f'{MINIMAP2} ' + params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' + str(rank) + '.txt',capture_output=True, shell=True)
                 else:                
-                    a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+                    a=run(f'{BWA} mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
             else:
-                a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+                a=run(f'{BWA} mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+                
             assert a.returncode == 0
             end1b=time.time()
             thr.join()
             comm.barrier()
             end1=time.time()
+            #print('end: ', end, flush=True)
         except Exception as e:
             print(f"An error occurred: {e}")
             print("Exiting...")
@@ -795,21 +915,21 @@ def main(argv):
             os.sys.exit(1)
 
         if rank==0:
-            print("\nFASTQ to SAM time:",end1-begin1)
+            print("\n[Info] FASTQ to SAM time:",end1-begin1)
             print("   (includes wait time:",end1-end1b,")")
 
-            print("\nsam to sort-bam starts")
+            print("\n[Info] sam to sort-bam starts")
             begin2=time.time()
 
     else:
-        print("Incorrect mode specified!")
+        print("Error: Incorrect mode specified!")
         os.sys.exit(1)
 
     # Finish sort, merge, convert to bam depending on mode
     cmd=""
     for i in range(bins_per_rank):
         binstr = '%05d'%(nranks*i+rank)
-        cmd+=f'{BINDIR}/applications/samtools/samtools sort --threads '+threads+' -T '+tempdir+'/aln'+binstr+'.sorted -o '+ output +'/aln'+binstr+'.bam '+ output+'/aln'+binstr+'.sam;'
+        cmd+=f'{SAMTOOLS} sort --threads '+threads+' -T '+tempdir+'/aln'+binstr+'.sorted -o '+ output +'/aln'+binstr+'.bam '+ output+'/aln'+binstr+'.sam;'
         if i%20==0:
             a=run(cmd,capture_output=True,shell=True)
             cmd=""
@@ -818,14 +938,14 @@ def main(argv):
 
     if rank==0:
         end2=time.time()
-        print("SAM to sort-BAM time:",end2-begin2)
+        print("[Info] SAM to sort-BAM time:",end2-begin2)
 
 
     ## concat bams
     if rank == 0:
         tic = time.time()
         bf = []
-        print('Concating the bam files...')
+        print('[Info] Concating the bam files...')
         for b in range(bins_per_rank):
             for r in range(nranks):
                 binstr = '%05d'%(nranks*b + r)
@@ -837,21 +957,22 @@ def main(argv):
         if outfile == None:
             outfile = "final"
 
-        cmd+=f'{BINDIR}/applications/samtools/samtools cat -o ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr
+        cmd+=f'{SAMTOOLS} cat -o ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr
         #print("merge cmd: ", cmd, flush=True)
         a=run(cmd,capture_output=True,shell=True)
         assert a.returncode == 0
-        print("Concat done.\nTime for cat: ", time.time() - tic)
+        print("[Info] Concat done, time taken: ", time.time() - tic)
 
     if rank == 0:
-        print("Cleaning up...")
+        print("[Info] Cleaning up...")
         tic = time.time()
         os.system('rm ' + output + "*.sam")
         os.system('rm ' + output + "aln*.bam")
         os.system('rm ' + output + "*.idx")
         toc = time.time()        
-        print("Clean up done, time taken: ", toc -tic)
-         
+        print("[Info] Clean up done, time taken: ", toc -tic)
+
+        
 def concatenate_files(input_files, output_file):
     try:
         with open(output_file, 'wb') as output:

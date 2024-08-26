@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 #SCRIPT_PATH="${BASH_SOURCE:-$0}"
 #ABS_SCRIPT_PATH="$(realpath "${SCRIPT_PATH}")"
@@ -6,9 +7,9 @@
 #ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"
 ##echo "Value of ABS_DIRECTORY: ${ABS_DIRECTORY}"
 
-if [ "$#" == "1" ]
+if [ "$#" -ne "1" ]
 then
-    echo "pls. provide args: cloud/on-prem"
+    echo "pls. provide args: cloud/onprem"
 fi
 
 if [ "$1" == "cloud" ]
@@ -17,6 +18,17 @@ echo "Installing pre-requisite tools.."
 bash basic_setup_ubuntu.sh
 echo "Done"
 fi
+
+echo "Downloading and setting up miniconda..."
+[[ ! -e "Miniforge3-24.3.0-0-Linux-x86_64.sh" ]] && wget https://github.com/conda-forge/miniforge/releases/download/24.3.0-0/Miniforge3-24.3.0-0-Linux-x86_64.sh
+bash ./Miniforge3-24.3.0-0-Linux-x86_64.sh -b -p ./miniforge3
+
+echo "Setting up conda env named with given argument"
+./miniforge3/bin/conda env create --name fq2bam -f environment.yml
+echo "Setting up conda env named new_env...DONE"
+
+echo "Activating conda env..."
+source ./miniforge3/bin/activate fq2bam
 
 #echo "Downloading and setting up miniconda..."
 #if [ ! -e "Miniconda3-py39_23.3.1-0-Linux-x86_64.sh" ]
@@ -33,7 +45,7 @@ fi
 #
 #echo "Activating conda env..."
 #source miniconda3/bin/activate distbwa
-echo "localhost" > hostfile
+#echo "localhost" > hostfile
 
 ## build tools
 WDIR=../../
@@ -106,7 +118,7 @@ fi
 
 cd $EXEDIR
 
-git clone --recursive https://github.com/broadinstitute/warp-tools.git -b develop
+[[ ! -d warp-tools ]] && git clone --recursive https://github.com/broadinstitute/warp-tools.git -b develop
 cd warp-tools/tools/fastqpreprocessing/
 ./fetch_and_make_dep_libs.sh && make
 ## make -j
