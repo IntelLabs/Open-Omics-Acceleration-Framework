@@ -1,5 +1,26 @@
 # OpenOmics RF*diffusion*
 
+## Description
+
+RFdiffusion is an open source method for structure generation, with or without conditional information (a motif, target etc). It can perform a whole range of protein design challenges as we have outlined in [the RFdiffusion paper](https://www.biorxiv.org/content/10.1101/2022.12.09.519842v1).
+This repository includes several modifications to enhance its functionality and performance, particularly focusing on integrating Intel's IPEX for bfloat16 precision and adapting the code to run on CPU.
+
+**Things Diffusion can do**
+- Motif Scaffolding
+- Unconditional protein generation
+- Symmetric unconditional generation (cyclic, dihedral and tetrahedral symmetries currently implemented, more coming!)
+- Symmetric motif scaffolding
+- Binder design
+- Design diversification ("partial diffusion", sampling around a design)
+
+## Modifications
+```bash
+SE3nv.yml Added specific packages along with their versions.
+model_runners.py Integrated Intel's IPEX to convert the model to bfloat16
+run_inference.py Removed the CUDA device configuration and added support for CPU.
+base.yml Added precision settings.
+```
+
 # Table of contents
 
 - [RF*diffusion*](#rfdiffusion)
@@ -58,7 +79,7 @@ docker run -v $OUTPUT_FOLDER:/app/RFdiffusion/example_outputs rfdiffusion:latest
     inference.num_designs=1 inference.precision=bfloat16/float32
 ```
 
-# RF*diffusion*
+# Original RF*diffusion*
 
 <!--
 <img width="1115" alt="Screen Shot 2023-01-19 at 5 56 33 PM" src="https://user-images.githubusercontent.com/56419265/213588200-f8f44dba-276e-4dd2-b844-15acc441458d.png">
