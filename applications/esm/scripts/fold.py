@@ -168,7 +168,7 @@ def run(args):
 
     num_completed = 0
     num_sequences = len(all_sequences)
-    device_type ="cpu" if args.nogpu else "cuda"
+    device_type ="cpu" if args.cpu_only else "cuda"
     for headers, sequences in batched_sequences:
         start = timer()
         try:

@@ -1,0 +1,35 @@
+ARG FROM_IMAGE=ubuntu:24.04
+
+# Stage 2: Set up the main build environment
+FROM ${FROM_IMAGE} as builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install necessary build tools and clean up
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git build-essential wget vim ca-certificates && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get autoremove -y && \
+    apt-get clean
+ENV SERVICE_NAME="esm-base-service"
+RUN groupadd --gid 1001 $SERVICE_NAME && \
+	useradd -m -g $SERVICE_NAME --shell /bin/false --uid 1001 $SERVICE_NAME
+
+COPY . /app
+WORKDIR /app
+
+RUN    chown -R $SERVICE_NAME:$SERVICE_NAME /app
+USER $SERVICE_NAME
+
+RUN wget "https://github.com/conda-forge/miniforge/releases/download/24.3.0-0/Miniforge3-$(uname)-$(uname -m).sh"
+RUN bash Miniforge3-$(uname)-$(uname -m).sh -b -p "${HOME}/conda"
+
+RUN git clone --recursive https://github.com/facebookresearch/esm.git
+COPY esm_change_all.patch /app/esm/esm_change_all.patch
+WORKDIR /app/esm
+RUN git apply esm_change_all.patch
+
+HEALTHCHECK NONE
+
+
+
