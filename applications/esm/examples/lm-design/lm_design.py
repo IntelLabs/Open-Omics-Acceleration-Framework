@@ -113,9 +113,9 @@ class Designer:
             model.eval()
             if not self.cfg.noipex:
                 import intel_extension_for_pytorch as ipex
-                dtype = torch.bfloat16 if self.cfg.bfloat16 else torch.float32
+                dtype = torch.bfloat16 if self.cfg.bf16 else torch.float32
                 model = ipex.optimize(model, dtype=dtype)
-            if self.cfg.noipex and self.cfg.bfloat16:
+            if self.cfg.noipex and self.cfg.bf16:
                 model.bfloat16()
             # No grads for models
             for p in model.parameters():
@@ -348,7 +348,7 @@ class Designer:
         logger.info(f'Designing sequence for task: {self.cfg.task}')
         
         design_cfg = self.cfg.tasks[self.cfg.task]
-        enable_autocast = self.cfg.bfloat16
+        enable_autocast = self.cfg.bf16
         device_type ="cpu" if self.cfg.disable_cuda else "cuda"
         if self.cfg.timing:
             import time

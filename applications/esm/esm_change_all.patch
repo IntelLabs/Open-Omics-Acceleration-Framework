@@ -141,7 +141,7 @@ index cd81951..fb57caa 100644
  
  
 diff --git a/examples/lm-design/conf/config.yaml b/examples/lm-design/conf/config.yaml
-index f065473..d675bd3 100644
+index f065473..cbdd160 100644
 --- a/examples/lm-design/conf/config.yaml
 +++ b/examples/lm-design/conf/config.yaml
 @@ -13,7 +13,9 @@ cuda_device_idx:  # Set to numberic value to override default GPU device used.
@@ -150,13 +150,13 @@ index f065473..d675bd3 100644
  free_generation_length: 100
 -
 +noipex: False
-+bfloat16: False
++bf16: False
 +timing: False
  tasks:
    free_generation:
        num_iter: 170000
 diff --git a/examples/lm-design/lm_design.py b/examples/lm-design/lm_design.py
-index b578ad9..2285406 100644
+index b578ad9..a0dbd5f 100644
 --- a/examples/lm-design/lm_design.py
 +++ b/examples/lm-design/lm_design.py
 @@ -111,6 +111,12 @@ class Designer:
@@ -165,14 +165,14 @@ index b578ad9..2285406 100644
              model.eval()
 +            if not self.cfg.noipex:
 +                import intel_extension_for_pytorch as ipex
-+                dtype = torch.bfloat16 if self.cfg.bfloat16 else torch.float32
++                dtype = torch.bfloat16 if self.cfg.bf16 else torch.float32
 +                model = ipex.optimize(model, dtype=dtype)
-+            if self.cfg.noipex and self.cfg.bfloat16:
++            if self.cfg.noipex and self.cfg.bf16:
 +                model.bfloat16()
              # No grads for models
              for p in model.parameters():
                  p.requires_grad = False
-@@ -342,12 +348,20 @@ class Designer:
+@@ -342,12 +348,14 @@ class Designer:
          logger.info(f'Designing sequence for task: {self.cfg.task}')
          
          design_cfg = self.cfg.tasks[self.cfg.task]
@@ -182,7 +182,7 @@ index b578ad9..2285406 100644
 -            stage_free_generation(self, **design_cfg)
 -        else:
 -            raise ValueError(f'Invalid task: {self.cfg.task}')
-+        enable_autocast = self.cfg.bfloat16
++        enable_autocast = self.cfg.bf16
 +        device_type ="cpu" if self.cfg.disable_cuda else "cuda"
 +        if self.cfg.timing:
 +            import time

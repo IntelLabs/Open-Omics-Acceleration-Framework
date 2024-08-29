@@ -1,3 +1,103 @@
+# Open-Omics-ESM
+
+Open-Omics-ESM is an optimized version of the Evolutionary Scale Modeling (ESM) toolkit, tailored for modern CPUs. It improves the performance of key ESM modules—such as ESM-embeddings, LM-Design, InverseFolding, and ESMFold—by leveraging Intel Extension for PyTorch (IPEX) and performing computations in lower precision (bf16).
+
+## Installation
+### Step 1: Run the build container script
+Execute the build script to create the Docker container
+
+```bash
+ ./build_docker_images.sh
+```
+### Step 2: Choose the container runtime available on your system
+Select the container runtime (Docker or Podman) that is installed on your system.
+```bash
+ Choose your preferred container runtime: Docker or Podman #type Docker or Podman 
+```
+### Step 3: Choose the ESM image to install
+Select the ESM image you want to build based on your specific needs
+
+#### Given the options, here's how you might decide:
+
+*  esm - `Dockerfile.esm` is configured to set up ESM-Embeddings, LM-Designs, and InverseFolding with optimizations for Python 3.11 and PyTorch 2.4.0, providing enhanced performance and speed compared to the original open-sourced ESM.
+*  esm_fold - `Dockerfile.esmfold` is configured to set up ESMFold with optimizations for Python 3.7 and PyTorch 1.12.1, including Intel extensions (IPEX) to provide enhanced performance and speed. Unlike OpenFold, which also relies on PyTorch 1.12.1, ESMFold includes additional optimizations specific to Intel architectures, offering improved efficiency compared to the original open-sourced ESMFold.
+*  Both esm and esm_fold - build both images to incorporate both basic ESM functions and advanced folding capabilities, covering all use cases. This option will require additional build time and disk space
+
+```bash
+Which images do you want to build? #type task number
+1 esm
+2 esm_fold
+3 Both esm and esm_fold
+```
+## Running
+### Information on flags
+Performance optimization with bfloat16 and Intel Extension for PyTorch
+
+ `--bf16` flag accelerates performance by utilizing bfloat16 precision, which enhances computational efficiency without compromising accuracy.
+
+`--noipex` flag disables the use of Intel Extension for PyTorch (IPEX), ensuring that the computation runs without leveraging these Intel-specific optimizations
+### Run Commands
+#### ESM-Embeddings 
+<details>
+<summary>Compute embeddings in bulk from FASTA</summary>
+
+```bash
+docker run -it esm_image:latest /bin/bash -c "/home/esm-base-service/conda/envs/esm_py11/bin/python /app/esm/scripts/extract.py esm2_t33_650M_UR50D examples/data/some_proteins.fasta examples/data/some_proteins_emb_esm2 --repr_layers 0 32 33 --include mean per_tok --nogpu --noipex --b16"
+```
+</details>
+<br />
+
+#### LM-Design 
+<details>
+<summary>Fixed backbone design</summary>
+
+```bash
+docker run -it esm_image:latest /bin/bash -c "cd /app/esm/examples/lm-design && /home/esm-base-service/conda/envs/esm_py11/bin/python -m lm_design task=fixedbb pdb_fn=/app/esm/examples/lm-design/2N2U.pdb  disable_cuda=True noipex=True bf16=True"
+```
+</details>
+<br />
+<details>
+<summary>Free generation design</summary>
+
+```bash
+docker run -it esm_image:latest /bin/bash -c "cd /app/esm/examples/lm-design && /home/esm-base-service/conda/envs/esm_py11/bin/python -m lm_design task=free_generation disable_cuda=True noipex=True bf16=True"
+```
+</details>
+<br />
+
+#### Inverse_Folding
+<details>
+<summary>Sample sequence designs for a given structure</summary>
+
+```bash
+docker run -it esm_image:latest /bin/bash -c "cd /app/esm/examples/inverse_folding && /home/esm-base-service/conda/envs/esm_py11/bin/python sample_sequences.py data/5YH2.pdb     --chain C --temperature 1 --num-samples 3  --outpath output/sampled_sequences.fasta --nogpu --noipex --bf16"
+```
+</details>
+<br />
+<details>
+<summary>Scoring sequences</summary>
+
+```bash
+docker run -it esm_image:latest /bin/bash -c "cd /app/esm/examples/inverse_folding && /home/esm-base-service/conda/envs/esm_py11/bin/python score_log_likelihoods.py data/5YH2.pdb  data/5YH2_mutated_seqs.fasta --chain C  --outpath output/5YH2_mutated_seqs_scores.csv --nogpu --noipex --bf16"
+```
+</details>
+<br />
+
+#### ESMFold
+
+<br />
+<details>
+<summary>ESMFold Structure Prediction</summary>
+
+```bash
+docker run -it esmfold_image:latest /bin/bash -c "/home/esm-base-service/conda/envs/esmfold/bin/python /app/esm/scripts/fold.py -i /app/esm/examples/data/few_proteins.fasta -o PDB --cpu-only --bf16"
+```
+</details>
+<br />
+
+
+---
+The original README content of ESM follows.
 # Evolutionary Scale Modeling
 
 [![atlas](https://user-images.githubusercontent.com/3605224/199301187-a9e38b3f-71a7-44be-94f4-db0d66143c53.png)](https://esmatlas.com)
@@ -109,72 +209,6 @@ For transformer protein language models:
 For a complete list of available models, with details and release notes, see [Pre-trained Models](#available-models).
 
 
-## Docker <a name="docker"></a>
-
-To build a Docker image for a project focused on "TransOmics.OpenOmicsInternal" you'll typically need to consider the following steps. This includes setting up the necessary environment (e.g., installing required software, dependencies, and tools) and ensuring the correct data files or models are included. Below is a guide for creating a Dockerfile for a TransOmics.OpenOmicsInternal project:
-
-### Building the Docker Image for ESM <a name="building_the_image_for_esm"></a>
-
-```bash
- ./build_docker_images.sh
-```
-choose between Docker and Podman as your container
-
-```bash
- Select container runtime (docker or podman): #type docker or podman 
-```
-
-### Given the options, here's how you might decide: <a name="giventheoptions"></a>
-
-## 1. esm <a name="esm"></a>
-Build Only the esm Image: Choose this if you only need the basic ESM functionality without the folding capability. This might be quicker and use less disk space.Ensure your `Dockerfile.esm` includes all the necessary instructions to set up the environment for ESM functionalities. This might involve installing specific packages and dependencies for ESM-Embeddings, LM-Designs, and InverseFolding.
-
-## 2. esm_fold <a name="esm_fold"></a>
-Build Only the esm_fold Image: Choose this if you specifically need the folding functionality provided by esm_fold. This image will include additional dependencies for protein folding tasks.Ensure your `Dockerfile.esmfold` includes all the necessary instructions to set up the environment for ESMFold functionalities.
-
-## 3. Both esm and esm_fold <a name="both"></a>
-Build Both Images: Choose this if you need the full suite of features, including both the basic ESM functions and the advanced folding capabilities. This will cover all use cases but will take the longest to build and use the most disk space.
-
-```bash
-Which images do you want to build? #type task number
-1 esm
-2 esm_fold
-3 Both esm and esm_fold
-```
-### Run the Docker Container <a name="rundocker"></a>
-
-## 1. `Dockerfile.esm` <a name="dockeresm"></a>
-
-### ESM-Embeddings <a name="esmembedding"></a>
-`Compute embeddings in bulk from FASTA`
-```bash
-docker run -it esm_image:latest /bin/bash -c "/home/esm-base-service/conda/envs/esm_py11/bin/python /app/esm/scripts/extract.py esm2_t33_650M_UR50D examples/data/some_proteins.fasta examples/data/some_proteins_emb_esm2 --repr_layers 0 32 33 --include mean per_tok --noipex --nogpu"
-```
-### LM-Design <a name="lmdesign"></a>
-`Fixed backbone design`
-```bash
-docker run -it esm_image:latest /bin/bash -c "cd /app/esm/examples/lm-design && /home/esm-base-service/conda/envs/esm_py11/bin/python -m lm_design task=fixedbb pdb_fn=/app/esm/examples/lm-design/2N2U.pdb noipex=True bfloat16=True disable_cuda=True"
-```
-`Free generation design`
-```bash
-docker run -it esm_image:latest /bin/bash -c "cd /app/esm/examples/lm-design && /home/esm-base-service/conda/envs/esm_py11/bin/python -m lm_design task=free_generation noipex=True bfloat16=True disable_cuda=True"
-```
-### Inverse_Folding <a name="inversefolding"></a>
-`Sample sequence designs for a given structure`
-```bash
-docker run -it esm_image:latest /bin/bash -c "cd /app/esm/examples/inverse_folding && /home/esm-base-service/conda/envs/esm_py11/bin/python sample_sequences.py data/5YH2.pdb     --chain C --temperature 1 --num-samples 3  --outpath output/sampled_sequences.fasta --noipex --bf16 --nogpu"
-```
-`Scoring sequences`
-```bash
-docker run -it esm_image:latest /bin/bash -c "cd /app/esm/examples/inverse_folding && /home/esm-base-service/conda/envs/esm_py11/bin/python score_log_likelihoods.py data/5YH2.pdb  data/5YH2_mutated_seqs.fasta --chain C  --outpath output/5YH2_mutated_seqs_scores.csv --bf16 --noipex --nogpu"
-```
-
-## 2. `Dockerfile.esmfold` <a name="dockeresmfold"></a>
-### ESMFold <a name="esmfold"></a>
-`ESMFold Structure Prediction`
-```bash
-docker run -it esmfold_image:latest /bin/bash -c "/home/esm-base-service/conda/envs/esmfold/bin/python /app/esm/scripts/fold.py -i /app/esm/examples/data/few_proteins.fasta -o PDB --cpu-only --noipex"
-```
 ## Usage <a name="usage"></a>
 
 ### Quick start <a name="quickstart"></a>
