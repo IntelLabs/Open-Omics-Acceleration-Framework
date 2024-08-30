@@ -156,7 +156,7 @@ index f065473..cbdd160 100644
    free_generation:
        num_iter: 170000
 diff --git a/examples/lm-design/lm_design.py b/examples/lm-design/lm_design.py
-index b578ad9..a0dbd5f 100644
+index b578ad9..51bcab4 100644
 --- a/examples/lm-design/lm_design.py
 +++ b/examples/lm-design/lm_design.py
 @@ -111,6 +111,12 @@ class Designer:
@@ -172,9 +172,11 @@ index b578ad9..a0dbd5f 100644
              # No grads for models
              for p in model.parameters():
                  p.requires_grad = False
-@@ -342,12 +348,14 @@ class Designer:
+@@ -340,14 +346,19 @@ class Designer:
+         Main run-loop for the Designer. Runs a relevant design procedure from the config.
+         """
          logger.info(f'Designing sequence for task: {self.cfg.task}')
-         
+-        
          design_cfg = self.cfg.tasks[self.cfg.task]
 -        if self.cfg.task == 'fixedbb':
 -            stage_fixedbb(self, design_cfg)
@@ -187,15 +189,13 @@ index b578ad9..a0dbd5f 100644
 +        if self.cfg.timing:
 +            import time
 +            start_time = time.time()
-+        with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
++        with torch.amp.autocast("cpu", enabled=enable_autocast):
 +            if self.cfg.task == 'fixedbb':
 +                stage_fixedbb(self, design_cfg)
 +            elif self.cfg.task == 'free_generation':
 +                stage_free_generation(self, **design_cfg)
 +            else:
 +                raise ValueError(f'Invalid task: {self.cfg.task}')
-+        if self.cfg.timing:
-+            print(f"Total Inference Time = {time.time() - start_time} seconds")
  
          logger.info(f'Final designed sequences:')
          for seq in self.decode(self.x_seqs):
