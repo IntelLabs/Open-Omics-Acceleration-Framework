@@ -486,7 +486,7 @@ def main(argv):
     parser.add_argument('--sample_id',default="",help="sample id")
     parser.add_argument('--output_format',default="",help="output_format")
     parser.add_argument('--output',help="Output data directory")
-    parser.add_argument('--mode', default='pragzip', help="flatmode/fqprocessonly/multifq/pragzip. flatmode is just bwa w/o sort.")
+    parser.add_argument('--mode', default='sortedbam', help="flatmode/fqprocessonly/multifq/sortedbam. flatmode is just bwa w/o sort.")
     parser.add_argument('--params', default='', help="parameter string to bwa-mem2 barring threads paramter")
     parser.add_argument("-i", "--index", help="name of index file")
     parser.add_argument("-p", "--outfile", help="prefix for read files")
@@ -628,7 +628,7 @@ def main(argv):
 
     comm.barrier()             
     #################################################################
-    if mode in ['flatmode', 'pragzip', 'multifq']:
+    if mode in ['flatmode', 'sortedbam', 'multifq']:
         ## bwa-mem2 index path check, every ranks checks the access.
         #g = refdir + ifile
         #print(g.split(".")[-1])
@@ -662,7 +662,7 @@ def main(argv):
                 os.sys.exit(1)
             
 
-    if mode in ['flatmode', 'pragzip']:
+    if mode in ['flatmode', 'sortedbam']:
         #print("Read1: ", folder + rfile1)
         assert os.path.exists(folder+rfile1) == True, "missing input read1 files"
         if not se_mode:
@@ -672,7 +672,7 @@ def main(argv):
         #print("Output dir: ", folder)
         assert os.path.exists(output) == True, "output path does not exist"
 
-    if mode in ['pragzip', 'flatmode']:
+    if mode in ['sortedbam', 'flatmode']:
         ## bwa-mem2 index path check, every ranks checks the access.
         g = rfile1
         if g.split(".")[-1] != "gz":
@@ -713,7 +713,7 @@ def main(argv):
             print('[Info] output logs folder exits, will override the log files')
             
     if mode == 'flatmode':
-        '''
+        r'''
         Goal: Takes the reads (gzip) SE file or PE files as input and 
               produces unsorted SAM files as output
         Input: 
@@ -900,9 +900,9 @@ def main(argv):
             gin2=time.time()
 
             
-    elif mode == 'pragzip':
+    elif mode == 'sortedbam':
         # Preindex refernce genome if requested
-        '''
+        r'''
         Goal: Takes the reads (gzip) SE file or PE files as input and 
               produces sorted BAM files as output
         Input: 
@@ -960,7 +960,8 @@ def main(argv):
             begin2 = time.time()
 
     else:
-        print("Error: Incorrect mode specified!\n   please specify: pragzip/flatmode/multifq/fqprocessonly")
+        print("Error: Incorrect mode specified!")
+        print("please specify mode: sortedbam/flatmode/multifq/fqprocessonly")
         os.sys.exit(1)
 
     # Finish sort, merge, convert to bam depending on mode

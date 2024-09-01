@@ -1,30 +1,59 @@
+#*************************************************************************************
+#                           The MIT License
+#
+#   Intel OpenOmics - fq2sortedbam pipeline
+#   Copyright (C) 2023  Intel Corporation.
+#
+#   Permission is hereby granted, free of charge, to any person obtaining
+#   a copy of this software and associated documentation files (the
+#   "Software"), to deal in the Software without restriction, including
+#   without limitation the rights to use, copy, modify, merge, publish,
+#   distribute, sublicense, and/or sell copies of the Software, and to
+#   permit persons to whom the Software is furnished to do so, subject to
+#   the following conditions:
+#
+#   The above copyright notice and this permission notice shall be
+#   included in all copies or substantial portions of the Software.
+#
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+#   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+#   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+#   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+#   BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+#   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+#   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#   SOFTWARE.
+#
+#Authors:  Vasimuddin Md <vasimuddin.md@intel.com>; Babu Pillai <padmanabhan.s.pillai@intel.com>;
+#*****************************************************************************************/
+
 #!/usr/bin/bash
 set -e
 
 trap 'echo "Error occurred"' ERR
 
 source ./miniforge3/bin/activate fq2bam
-echo "conda_prefix: "$CONDA_PREFIX
+echo "Your conda env @: "$CONDA_PREFIX
 
 config=""
 sso="None"
 if [ "$#" == "2" ] || [ "$#" == "3" ]
     then
         mode=$1
-        #se_mode=$2
         config=$2
         [[ "$#" == "3" ]] && sso=$3
 else
-    echo "<exec> <pragzip/flatmode/fqprocessonly/multifq> <config_file> [sso (for single socket only execution)]"
+    echo "<exec> <sortedbam/flatmode/fqprocessonly/multifq> <config_file> [sso (for single socket only execution)]"
     exit
 fi
-echo "##### Note: Currently, this code only supports single node. "
-echo "##### I've deliberately disabled distributed runs for now. "
-echo "##### Contact: <vasimuddin.md@intel.com>"
-echo ""
+
+#Note: "##### Note: Currently, this code only supports single node. "
+#Note: "##### I've deliberately disabled distributed runs for now. "
+#Note: "##### Contact: <vasimuddin.md@intel.com>"
+#echo ""
 
 num_nodes=1
-echo "mode: "$mode
+echo "run mode: "$mode
 echo "config: "$config
 #echo "se/pe: $se_mode"
 [[ "$sso" == "sso" ]] && echo "single socket only"
@@ -60,22 +89,4 @@ exec=dist_bwa.py
 #echo $exec
 #echo $CONFIG
 mpiexec -bootstrap ssh -n $N -ppn $PPN -bind-to $BINDING -map-by $BINDING  --hostfile hostfile  python -u $exec --cpus $CPUS --threads $THREADS --keep_unmapped ${runmode} ${CONFIG} --keep_unmapped 2>&1 | tee logs/log.txt
-echo "The output log file is at logs/log.txt"
-
-##if [ "$mode" == "fqprocess" ]
-##then
-##    mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --cpus $CPUS --threads $THREADS --keep_unmapped ${runmode} ${semode}   2>&1 | tee ${OUTDIR}/logs/log.txt
-##
-##    #--input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --read1 $READ1 --read2 $READ2 --read3 $READ3 --cpus $CPUS --threads $THREADS --keep_unmapped --params "${PARAMS}" --mode $mode ${semode} ${outfile} ${read_type}  2>&1 | tee ${OUTDIR}/logs/log.txt
-##    
-##elif [ "$mode" == "pragzip" ] || [ "$mode" == "flatmode" ]
-##then
-##    #/data/swtools/intel/mpi/2021.12/bin/
-##    #mpiexec  --hostfile hostfile -n $N -ppn $PPN $envs python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --preads $READ1 $READ2 --cpus $CPUS --threads $THREADS --keep_unmapped --params "${PARAMS}" --mode  $mode ${semode} ${outfile} ${read_type} 2>&1 | tee ${OUTDIR}/logs/log.txt
-##    N=4
-##    mpiexec  -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --preads $READ1 $READ2 --cpus $CPUS --threads $THREADS --keep_unmapped --mode $mode ${semode} ${read_type}  2>&1 | tee ${OUTDIR}/logs/log.txt
-##
-##else
-##    mpiexec -bootstrap ssh -bind-to $BINDING -map-by $BINDING --hostfile hostfile -n $N -ppn $PPN python -u $exec --input $INDIR --output  $OUTDIR $TEMPDIR $REFDIR --index $REF --preads $READ1 $READ2 --cpus $CPUS --threads $THREADS --keep_unmapped ${whitelist} ${read_structure} ${barcode_orientation} ${bam_size} ${outfile} ${istart} ${sample_id} ${output_format} --prefix $PREFIX --suffix $SUFFIX --params "${PARAMS}" --mode $mode ${semode} ${read_type} 2>&1 | tee ${OUTDIR}/logs/log.txt
-##    
-##fi
+echo "[Info] The output log file is at logs/log.txt"
