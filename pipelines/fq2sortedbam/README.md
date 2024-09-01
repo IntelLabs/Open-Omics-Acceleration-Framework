@@ -1,4 +1,84 @@
-## fq2sortedBAM: OpenOmics' Distributed BWA-MEM2 pipeline for getting sorted BAM output using mpi4py (distributed message passing library) Python package
+## fq2SortedBAM: OpenOmics' Secondary Analysis Pipeline
+### Overview:
+The pipeline takes input fastq files and produces sorted BAM file through the following stages:
+1. Sequence Alignment: bwa-mem2 for short reads, mm2-fast (Minimap2) for long reads (PacBio, ONT)
+2. SAMSort (Using SAMTools)
+
+### Modes:
+fq2SortedBAM supports 4 different modes:  
+1. sortedbam: It takes fastq reads files as input and outputs sorted BAM file  
+2. flatmode: It takes fastq reads files as input and outputs multiple (equal to the number of ranks) unsorted SAM files  
+3. fqprocessonly: Invokes Broad's fastqprocess tool on raw input files  - **This mode is specifically designed for Broad's requirements. More details are in README.md.old**  
+4. multifq: Invokes bwa-mem2 on the processed (e.g by fastqprocess) fastq files - **This mode is specifically designed for Broad's requirements. More details are in README.md.old**  
+
+
+## Use Docker
+### Docker build:  
+```
+wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/pipelines/fq2sortedbam/Dockerfile
+wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/pipelines/fq2sortedbam/config.yaml  
+cp config.yaml <inputdir>
+docker build -t fq2bam .
+docker save fq2bam:latest > fq2bam.tar  
+```
+### 
+Docker run:
+```
+docker load -i fq2bam.tar
+Setup <input>/config.yaml keys with appropriate values  
+docker run -v <inputdir>:/input <outdir>:/out <refdir>:/refdir <tempdir>:/tempdir fq2bam:latest /app/Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/run_bwa.sh sortedbam /input/config.yaml
+```
+
+## Use Source Code  
+### Installation:
+```
+git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+cd Open-Omics-Acceleration-Framework/blob/main/pipelines/fq2sortedbam/
+bash install.sh <onprem/cloud>  
+```
+
+### Run:
+```
+Setup ./config.yaml keys with appropriate values  
+bash run_bwa.sh sortedbam ./config.yaml
+```
+### Notes:  
+1. Individual pipeline tools are present Open-Omics-Acceleration-Framework/blob/main/applications    
+2. To understand various parameters to these tools, you can access their ```man``` page at this location
+3. You can setup the parameters to these tools using ```params``` parameters in config.yaml  
+
+### Runtime setup (config.yaml):  
+bwa:
+  dindex: True/False WIP HERE
+  params: +R "@RG\tID:RG1\tSM:RGSN1"
+  rindex: 'True'
+dataset:
+  index: GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
+  input: ./data/
+  outfile: short.se.sam
+  output: ./out/
+  read1: HG001.novaseq.pcr-free.30x.R1_10M.fastq.gz
+  read2: ''
+  read_type:  short
+  refdir: ./data/
+  tempdir: ''
+fqprocess:
+  bam_size: '5'
+  barcode_orientation: FIRST_BP_RC
+  output_format: FASTQ
+  prefix: multiome-practice-may15_arcgtf
+  read3: ''
+  read_structure: 16C
+  readi1: ''
+  sample_id: ''
+  suffix: trimmed_adapters.fastq.gz
+  whitelist: whitelist.txt
+mm2:
+  params: ' -ax map-hifi '
+
+
+
+## [OLD README] fq2sortedBAM: OpenOmics' Distributed BWA-MEM2 pipeline for getting sorted BAM output using mpi4py (distributed message passing library) Python package
 ### Overview:
 The pipeline takes input fastq files and produces sorted BAM file using the following four stages:
 1. fastqprocessing (from Broad's warptools)
