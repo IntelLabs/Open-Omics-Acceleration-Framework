@@ -54,11 +54,12 @@ mkdir -p logs
 exec=dist_bwa.py
 #echo $I_MPI_PIN_DOMAIN
 #-genv I_MPI_PIN_DOMAIN=$I_MPI_PIN_DOMAIN
-echo $N
-echo $PPN
-echo $exec
-echo $CONFIG
-mpiexec -bootstrap ssh -n $N -ppn $PPN -bind-to $BINDING -map-by $BINDING  --hostfile hostfile  python -u $exec --cpus $CPUS --threads $THREADS --keep_unmapped ${runmode} ${CONFIG}  2>&1 | tee logs/log.txt
+
+#echo $N
+#echo $PPN
+#echo $exec
+#echo $CONFIG
+mpiexec -bootstrap ssh -n $N -ppn $PPN -bind-to $BINDING -map-by $BINDING  --hostfile hostfile  python -u $exec --cpus $CPUS --threads $THREADS --keep_unmapped ${runmode} ${CONFIG} --keep_unmapped 2>&1 | tee logs/log.txt
 echo "The output log file is at logs/log.txt"
 
 ##if [ "$mode" == "fqprocess" ]

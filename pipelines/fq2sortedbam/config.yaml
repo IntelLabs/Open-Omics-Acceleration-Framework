@@ -1,30 +1,27 @@
+bwa:
+  dindex: 'False'
+  params: +R "@RG\tID:RG1\tSM:RGSN1"
+  rindex: 'True'
 dataset:
-    input: "./data/"       ## contains input reads
-    output: "./out/"       ## output SAM/BAM files
-    tempdir: ""            ## location for intermediate data, if tempdir="" then output dir is used
-    refdir: "./data/"             ## contains ref & index
-    read1: "HG002_35x_PacBio_14kb-15kb-100K-reads.fastq.gz"   #"HG003_35x_PacBio_14kb-15kb.fastq.gz" #R1:"HG001.novaseq.pcr-free.30x.R1_10M.fastq.gz"
-    read2: "HG001.novaseq.pcr-free.30x.R2_10M.fastq.gz"
-    index: GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
-    outfile: "broadfinal"    ##name prefix of the output bam file: broadfinal.sorted.bam  
-    read_type: "long"  ## "long"    "this selects bwa-mem2 for short reads or mm2-fast" for long reads
-    
-fqprocess:   ## fqprocess mode only
-    read3: "" 
-    readi1: ""
-    prefix: "multiome-practice-may15_arcgtf"    ## prefix for R1 and R3 as input to bwamem2 in multifq
-    suffix: "trimmed_adapters.fastq.gz"    ## suffix for R1 and R3 as input to bwamem2 in multifq
-    whitelist: "whitelist.txt"
-    read_structure: "16C"
-    barcode_orientation: "FIRST_BP_RC"
-    bam_size: "5"   # in GB by default
-    sample_id: ""
-    output_format: "FASTQ"
-
-bwa:    # Short reads bwa alignment paramrters
-     params: '+R "@RG\tID:RG1\tSM:RGSN1"'
-     rstart: "False"    ## flag for bwa-mem2 index creation. mm2-fast creates index on-fly
-     dindex: 'False'    ## create ref file index (.fai file) if True
-
-mm2:    # Long reads bwa alignment paramrters
-    params: ' -ax map-hifi '
+  index: GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
+  input: ./data/
+  outfile: short.se.sam
+  output: ./out/
+  read1: HG001.novaseq.pcr-free.30x.R1_10M.fastq.gz
+  read2: ''
+  read_type: short
+  refdir: ./data2/
+  tempdir: ''
+fqprocess:
+  bam_size: '5'
+  barcode_orientation: FIRST_BP_RC
+  output_format: FASTQ
+  prefix: multiome-practice-may15_arcgtf
+  read3: ''
+  read_structure: 16C
+  readi1: ''
+  sample_id: ''
+  suffix: trimmed_adapters.fastq.gz
+  whitelist: whitelist.txt
+mm2:
+  params: ' -ax map-hifi '
