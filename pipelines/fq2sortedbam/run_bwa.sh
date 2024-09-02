@@ -74,6 +74,7 @@ python hwconfig.py $sso $num_nodes > hwconfig
 #python hwconfig.py "sso"   > hwconfig
 
 source hwconfig
+echo "[Info] Running $N ranks, each with $THREADS threads ..."
 #rm lscpu.txt
 rm hwconfig
 
@@ -88,5 +89,5 @@ exec=dist_bwa.py
 #echo $PPN
 #echo $exec
 #echo $CONFIG
-mpiexec -bootstrap ssh -n $N -ppn $PPN -bind-to $BINDING -map-by $BINDING  --hostfile hostfile  python -u $exec --cpus $CPUS --threads $THREADS --keep_unmapped ${runmode} ${CONFIG} --keep_unmapped 2>&1 | tee logs/log.txt
+mpiexec -bootstrap ssh -n $N -ppn $PPN -bind-to $BINDING -map-by $BINDING  --hostfile hostfile  python -u $exec --cpus $CPUS --threads $THREADS ${runmode} ${CONFIG} --keep_unmapped  2>&1 | tee logs/log.txt
 echo "[Info] The output log file is at logs/log.txt"
