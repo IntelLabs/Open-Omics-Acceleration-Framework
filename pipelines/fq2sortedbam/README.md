@@ -36,7 +36,7 @@ docker run -v <inputdir>:/input <outdir>:/out <refdir>:/refdir <tempdir>:/tempdi
 ```
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 cd Open-Omics-Acceleration-Framework/blob/main/pipelines/fq2sortedbam/
-bash install.sh <onprem/cloud>  
+bash install.sh <onprem/cloud>  ## onprem mode: Manually install the depenendies present in basic_setup_ubuntu.sh as it needs sudo access
 ```
 
 ### Setup Input Parameters:
@@ -52,7 +52,7 @@ bash run_bwa.sh sortedbam ./config.yaml
 2. To understand various parameters to these tools, you can access their ```man``` page  
 3. You can setup the parameters of these tools using ```params``` variable in ```config.yaml```    
 
-## Setup config.yaml:  
+## Setup config.yaml<sup>1<sup>:  
 1. bwa: bwa-mem2 related parameters     
    - dindex: dtype=bool, values="True/False", if "True" it creates bwa-mem2 index for the reference genome  
    - params: dtype=string, the command line paramteres to bwa-mem2 mapping run e.g. '+R "@RG\tID:RG1\tSM:RGSN1"'  
@@ -64,7 +64,7 @@ bash run_bwa.sh sortedbam ./config.yaml
    - outfile: dtype=string, output SAM/BAM file name(s) e.g. short.se.sam. Default value: "final_fq2bam"    
    - **output**: dtype=string, folder location of output SAM/BAM files e.g. "./out/"  
    - **read1**: dtype=string, input reads file1 name e.g. "HG001.novaseq.pcr-free.30x.R1.fastq.gz"  
-   - read2: dtype=string, input reads file1 name e.g. "HG001.novaseq.pcr-free.30x.R2.fastq.gz"  
+   - read2: dtype=string, input reads file2 name e.g. "HG001.novaseq.pcr-free.30x.R2.fastq.gz"  
    - **read_type**: dtype:string, values=short/long, short read mapping using bwa-mem2, long read mapping using mm2-fast  
    - **refdir**: dtype=string, folder location of reference genome and its index files e.g. "./data/"
    - tempdir: dtype=string, folder location for storing intermedaite files e.g. "./out/". In case of none, output folder is used  
@@ -84,3 +84,4 @@ bash run_bwa.sh sortedbam ./config.yaml
 4. mm2: mm2-fast related parameters  
    - params: dtype=string, the command line paramteres to mm2-fast mapping run e.g.' -ax map-hifi '    
 
+<sup>**1**</sup> **Parameters in bold are mandatory ones**
