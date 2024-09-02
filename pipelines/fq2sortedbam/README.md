@@ -21,10 +21,13 @@ cp config.yaml <inputdir>
 docker build -t fq2bam .
 docker save fq2bam:latest > fq2bam.tar  
 ```
+
+### Setup Input Parameters:
+Setup [config.yaml](README.md#setup-configyaml)  with appropriate values
+
 ### Docker run:
 ```
 docker load -i fq2bam.tar
-Setup <input>/config.yaml keys with appropriate values  
 docker run -v <inputdir>:/input <outdir>:/out <refdir>:/refdir <tempdir>:/tempdir fq2bam:latest /app/Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/run_bwa.sh sortedbam /input/config.yaml
 ```
 
@@ -36,9 +39,11 @@ cd Open-Omics-Acceleration-Framework/blob/main/pipelines/fq2sortedbam/
 bash install.sh <onprem/cloud>  
 ```
 
+### Setup Input Parameters:
+Setup [config.yaml](https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/edit/main/pipelines/fq2sortedbam/README.md#setup-configyaml)  with appropriate values
+
 ### Run:
 ```
-Setup ./config.yaml keys with appropriate values      
 bash run_bwa.sh sortedbam ./config.yaml
 ```
 
@@ -47,7 +52,7 @@ bash run_bwa.sh sortedbam ./config.yaml
 2. To understand various parameters to these tools, you can access their ```man``` page  
 3. You can setup the parameters of these tools using ```params``` variable in ```config.yaml```    
 
-## Runtime setup (config.yaml):  
+## Setup config.yaml:  
 1. bwa: bwa-mem2 related parameters     
    - dindex: dtype=bool, values="True/False", if "True" it creates bwa-mem2 index for the reference genome  
    - params: dtype=string, the command line paramteres to bwa-mem2 mapping run e.g. '+R "@RG\tID:RG1\tSM:RGSN1"'  
