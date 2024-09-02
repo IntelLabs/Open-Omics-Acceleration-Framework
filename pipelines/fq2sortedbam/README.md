@@ -40,7 +40,7 @@ bash install.sh <onprem/cloud>
 ```
 
 ### Setup Input Parameters:
-Setup [config.yaml](https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/edit/main/pipelines/fq2sortedbam/README.md#setup-configyaml)  with appropriate values
+Setup [config.yaml](README.md#setup-configyaml)  with appropriate values
 
 ### Run:
 ```
