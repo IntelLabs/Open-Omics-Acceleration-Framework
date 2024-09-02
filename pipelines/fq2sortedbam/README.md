@@ -15,10 +15,8 @@ fq2SortedBAM supports 4 different modes:
 ## Use Docker
 ### Docker build:  
 ```
-#wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/pipelines/fq2sortedbam/Dockerfile
-#wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/pipelines/fq2sortedbam/config.yaml
 git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-cp Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam Dockerfile .
+cp Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/Dockerfile .
 cp Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/config.yaml <inputdir>
 docker build -t fq2bam .
 docker save fq2bam:latest > fq2bam.tar     ## this step is optional  
@@ -29,7 +27,7 @@ Setup [config.yaml](README.md#setup-configyaml)  with appropriate values
 
 ### Docker run:
 ```
-docker load -i fq2bam.tar      ## optional if the image is build on the same machine or is already loaded  
+docker load -i fq2bam.tar      ## optional, if the image is build on the same machine or is already loaded  
 docker run -v <inputdir>:/input <outdir>:/out <refdir>:/refdir <tempdir>:/tempdir fq2bam:latest /app/Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/run_bwa.sh sortedbam /input/config.yaml
 ```
 
