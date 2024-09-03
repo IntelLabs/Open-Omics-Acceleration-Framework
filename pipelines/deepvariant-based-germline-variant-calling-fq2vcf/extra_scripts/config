@@ -1,0 +1,4 @@
+export INPUT_DIR=/output_dir/ 
+export OUTPUT_DIR=/output_dir/
+export REF_DIR=/data/
+REF=GCA_000001405.15_GRCh38_no_alt_analysis_set.fna

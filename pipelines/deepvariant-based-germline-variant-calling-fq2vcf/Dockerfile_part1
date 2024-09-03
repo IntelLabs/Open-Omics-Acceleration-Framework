@@ -1,0 +1,55 @@
+# Install Base miniconda image
+ARG FROM_IMAGE=amazonlinux:2023
+ARG BASE_IMAGE=continuumio/miniconda3
+FROM ${BASE_IMAGE} as conda_setup
+
+WORKDIR /
+RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
+RUN conda env create --name dv_env -f environment.yml
+
+
+
+FROM ${FROM_IMAGE} as builder
+RUN yum update -y && \
+    yum install --allowerasing -y git gcc make cmake3 tar gnupg2 autoconf numactl time vim && \
+    yum clean all && \
+    rm -rf /var/cache/yum
+RUN yum install -y procps
+RUN yum groupinstall -y 'Development Tools'
+RUN yum -y update
+RUN yum -y install make zlib-devel ncurses-devel
+RUN yum -y install bzip2-devel xz-devel
+RUN yum -y install yum-utils
+
+COPY --from=conda_setup /opt/conda /opt/conda
+ENV PATH "/opt/conda/envs/dv_env/bin:/opt/conda/bin:$PATH"
+RUN echo "source activate dv_env" >> ~/.bashrc
+RUN source ~/.bashrc
+
+WORKDIR /
+RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
+# compile bwa-mem2
+RUN echo "Build bwa-mem2"
+WORKDIR  /Open-Omics-Acceleration-Framework/applications/bwa-mem2
+RUN make multi
+
+
+# compile htslib
+WORKDIR  /Open-Omics-Acceleration-Framework/applications/htslib
+RUN autoreconf -i  # Build the configure script and install files it uses
+RUN ./configure    # Optional but recommended, for choosing extra functionality
+RUN make
+#make install   #uncomment this for installation
+
+# compile samtools
+WORKDIR  /Open-Omics-Acceleration-Framework/applications/samtools
+RUN autoheader
+RUN autoconf -Wno-syntax
+RUN chmod 775 configure
+RUN ./configure           # Needed for choosing optional functionality
+RUN make
+
+
+WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws/

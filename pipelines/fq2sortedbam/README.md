@@ -23,7 +23,7 @@ docker save fq2bam:latest > fq2bam.tar     ## this step is optional
 ```
 
 ### Setup Input Parameters:
-Setup [config.yaml](README.md#setup-configyaml)  with appropriate values
+Setup [\<inputdir\>/config.yaml](README.md#setup-configyaml)  with appropriate values
 
 ### Docker run:
 ```
