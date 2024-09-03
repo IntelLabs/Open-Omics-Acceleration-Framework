@@ -57,20 +57,16 @@ MINIMAP2=os.path.join(APPSDIR + "/mm2-fast/minimap2")
 def populate_yaml(args):
     with open(args['config'], 'r') as f:
         data = yaml.safe_load(f)
-    #print(data)
+
     for keys in ['dataset', 'fqprocess', 'bwa', 'mm2']:
         arg = data[keys]  #['arguments']
         for k,v in arg.items():
-            #print('k: ', k, args[k], ' keys: ', keys)
             if v != "None" and v != "":
-                #print(k,v)
                 if k == "params":
                     if keys == 'bwa' and args['read_type'] == 'short':
                         args[k] = v
                     if keys == 'mm2' and args['read_type'] == 'long':
                         args[k] = v
-                    #else:
-                    #    assert True, 'Error: Incorrect parameter settings in config: read_type/params'
                 else:
                     args[k] = v
 
@@ -115,7 +111,7 @@ def pr_t1( f, start, end, bufs, sems ):  # thread to read from fastq.gz file
         bufs[buf_i] = d
         buf_i = 1-buf_i
         sems[1].release()
-    #print('k: ', k, " d: ", d)
+
         
 def pr_t2( outpipe, bufs, sems ):   # thread to output data to pipe
     fifo = open(outpipe, 'wb')
@@ -145,7 +141,7 @@ def fastq_reader_real( comm, cpus, fname, outpipe, outdir, last=False ):
         if d[0] == 64:  # @ symbol, begin new record
             break
         startpos = f.tell()
-    #print (rank, startpos, d[0:32])
+
     st_vec = comm.allgather(startpos)  # get all ranks start positions
     if rank==nranks-1:
         endpos = total_len
@@ -557,7 +553,8 @@ def main(argv):
     output=args["output"] + "/"
     tempdir=args["tempdir"]
     if tempdir=="": tempdir=output
-    refdir=args["refdir"]
+    else: tempdir=tempdir + "/"
+    refdir=args["refdir"] + "/"
     #if refdir=="": refdir=folder
     prof=args["profile"]
     global keep
@@ -644,7 +641,7 @@ def main(argv):
         if rindex == 'True' :
             print("[Info] Indexing Starts", flush=True)
             begin = time.time()
-            a=run(f'{BWA} index '+ refdir + ifile + ' > ' + output +
+            a=run(f'{BWA} index '+ refdir + ifile + ' > ' + output + \
                   '/logs/bwaindexlog.txt', capture_output=True,shell=True)
             
             end=time.time()
@@ -968,7 +965,8 @@ def main(argv):
         if se_mode:
             if read_type == "long":
                 a=run(f'{MINIMAP2} ' + params + ' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' + str(rank) + '.txt',capture_output=True, shell=True)
-            else:                
+            else:
+                ##print(f'{BWA} mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt')                
                 a=run(f'{BWA} mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
         else:
             a=run(f'{BWA} mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
@@ -1001,7 +999,8 @@ def main(argv):
     cmd=""
     for i in range(bins_per_rank):
         binstr = '%05d'%(nranks*i+rank)
-        cmd+=f'{SAMTOOLS} sort --threads '+threads+' -T '+tempdir+'/aln'+binstr+'.sorted -o '+ output +'/aln'+binstr+'.bam '+ output+'/aln'+binstr+'.sam;'
+        cmd+=f'{SAMTOOLS} sort --threads '+threads+' -T '+tempdir+ '/aln'+binstr+ \
+            '.sorted -o '+ output +'/aln'+binstr+'.bam '+ output+'/aln'+binstr+'.sam;'
         if i%20==0:
             a=run(cmd,capture_output=True,shell=True)
             cmd=""
@@ -1036,10 +1035,10 @@ def main(argv):
         print("[Info] Concat done, time taken: ", time.time() - tic)
 
         if rank == 0:
-            clean_all(output)
+            clean_all(output, tempdir)
 
             
-def clean_all(output):
+def clean_all(output, tempdir):
     print("[Info] Cleaning up...")
     tic = time.time()
     os.system('rm ' + output + "/*.sam")
