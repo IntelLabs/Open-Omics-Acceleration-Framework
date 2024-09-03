@@ -28,7 +28,7 @@ Setup [config.yaml](README.md#setup-configyaml)  with appropriate values
 ### Docker run:
 ```
 docker load -i fq2bam.tar      ## optional, if the image is build on the same machine or is already loaded  
-docker run -v <inputdir>:/input <outdir>:/out <refdir>:/refdir <tempdir>:/tempdir fq2bam:latest /app/Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/run_bwa.sh sortedbam /input/config.yaml
+docker run -v <inputdir>:/input <outdir>:/out <refdir>:/refdir <tempdir>:/tempdir fq2bam:latest bash run_bwa.sh sortedbam /input/config.yaml
 ```
 
 ## Use Source Code  
