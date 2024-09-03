@@ -1,9 +1,11 @@
-ARG FROM_IMAGE=ubuntu:20.04
+#ARG FROM_IMAGE=ubuntu:20.04
 # PYTHON_VERSION is also set in settings.sh.
-ARG PYTHON_VERSION=3.10
+#ARG PYTHON_VERSION=3.10
 
+#FROM ${FROM_IMAGE} as builder
+FROM ubuntu:20.04
+FROM python:3.10
 
-FROM ${FROM_IMAGE} as builder
 #RUN echo "Acquire::http::proxy \"$http_proxy\";\n" \
 #         "Acquire::https::proxy \"$https_proxy\";" > "/etc/apt/apt.conf"
 RUN apt-get update 

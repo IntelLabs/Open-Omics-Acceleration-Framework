@@ -366,7 +366,9 @@ def sw_thr( outpipe, comm, comm2 ):
             headerlen += len(l)
             l = l.split()
             if l[0] == '@SQ':   # @SQ lines describe sequences in reference genome
-                sn = l[1].split(':')[1]
+                #sn = l[1].split(':')[1]
+                a = len(l[1].split(':')[0])
+                sn = l[1][a+1:]
                 ln = int(l[2].split(':')[1])
                 if keep:
                     seq_start[sn] = cumlen
@@ -465,6 +467,13 @@ def sam_writer( comm, fname ):
     thr = threading.Thread(target=sort_thr5, args=(fname,comm1))
     thr.start()
     return outpipe, thr
+
+
+def allexit(flg):
+    comm.barrier()        
+    flg = comm.bcast(flg, root=0)
+    if flg:
+        os.sys.exit(1)
 
 
 def main(argv):
@@ -605,12 +614,27 @@ def main(argv):
         if dindex == 'True':
             flg = faidx(refdir, ifile)
 
-    comm.barrier()
-    flg = comm.bcast(flg, root=0)
-    if flg:
-        os.sys.exit(1)
+    allexit(flg)
+    #comm.barrier()
+    #flg = comm.bcast(flg, root=0)
+    #if flg:
+    #    os.sys.exit(1)
         #comm.MPI_Finalize()
-        
+
+    flg = 0
+    if rank == 0:
+        fo = os.path.join(output, "logs")
+        if not os.path.exists(fo):
+            try:
+                os.mkdir(fo)
+            except:
+                print("Error: Unable to create logs folder inside the ouptut folder")
+                #os.sys.exit(1)
+                flg = 1
+        else:
+            print('[Info] output logs folder exits, will override the log files')
+
+    allexit(flg)        
 
     if rank==0:
         #yappi.set_clock_type("wall")
@@ -620,7 +644,9 @@ def main(argv):
         if rindex == 'True' :
             print("[Info] Indexing Starts", flush=True)
             begin = time.time()
-            a=run(f'{BWA} index '+ refdir + ifile + ' > ' + output + '/logs/bwaindexlog.txt', capture_output=True,shell=True)
+            a=run(f'{BWA} index '+ refdir + ifile + ' > ' + output +
+                  '/logs/bwaindexlog.txt', capture_output=True,shell=True)
+            
             end=time.time()
             #file_size = os.path.getsize(folder+rfile1)
             print("\n[Info] Bwa Index creation time:",end-begin)
@@ -709,17 +735,7 @@ def main(argv):
         keep = comm.bcast(keep, root=0)
         #print('####### keep: ', keep, flush=True)
         
-    if rank == 0:
-        fo = os.path.join(output, "logs")
-        if not os.path.exists(fo):
-            try:
-                os.mkdir(fo)
-            except:
-                print("Error: Unable to create logs folder inside the ouptut folder")
-                os.sys.exit(1)
-        else:
-            print('[Info] output logs folder exits, will override the log files')
-            
+    
     if mode == 'flatmode':
         r'''
         Goal: Takes the reads (gzip) SE file or PE files as input and 
@@ -1026,8 +1042,8 @@ def main(argv):
 def clean_all(output):
     print("[Info] Cleaning up...")
     tic = time.time()
-    os.system('rm ' + output + "*.sam")
-    os.system('rm ' + output + "aln*.bam")
+    os.system('rm ' + output + "/*.sam")
+    os.system('rm ' + output + "/aln*.bam")
     os.system('rm ' + output + "*.idx")
     toc = time.time()        
     print("[Info] Clean up done, time taken: ", toc -tic)

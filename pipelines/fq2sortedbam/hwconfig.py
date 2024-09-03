@@ -46,6 +46,7 @@ def main():
 
     num_physical_cores_per_rank = int(num_physical_cores_per_rank)
     assert num_physical_cores_per_rank > 8, 'cores per rank should be > 8'
+    
     N = int(num_physical_cores_all_nodes / num_physical_cores_per_rank)
     PPN = int(num_physical_cores_per_node / num_physical_cores_per_rank)
     CPUS = int(ncores * nthreads * nsocks / PPN - 2*nthreads)
