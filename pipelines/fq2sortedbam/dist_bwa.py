@@ -469,7 +469,7 @@ def sam_writer( comm, fname ):
     return outpipe, thr
 
 
-def allexit(flg):
+def allexit(comm, flg):
     comm.barrier()        
     flg = comm.bcast(flg, root=0)
     if flg:
@@ -614,7 +614,7 @@ def main(argv):
         if dindex == 'True':
             flg = faidx(refdir, ifile)
 
-    allexit(flg)
+    allexit(comm, flg)
     #comm.barrier()
     #flg = comm.bcast(flg, root=0)
     #if flg:
@@ -634,7 +634,7 @@ def main(argv):
         else:
             print('[Info] output logs folder exits, will override the log files')
 
-    allexit(flg)        
+    allexit(comm, flg)        
 
     if rank==0:
         #yappi.set_clock_type("wall")

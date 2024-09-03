@@ -1,16 +1,16 @@
 bwa:
   dindex: 'False'
   params: +R "@RG\tID:RG1\tSM:RGSN1"
-  rindex: 'True'
+  rindex: 'False'
 dataset:
   index: GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz #Homo_sapiens_assembly38.fasta      ##GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
-  input: /input
+  input: ./data/
   outfile: short.se.sam
-  output: /out/
+  output: ./data/
   read1: HG001.novaseq.pcr-free.30x.R1_10M.fastq.gz
   read2: ''    ##HG001.novaseq.pcr-free.30x.R2_10M.fastq.gz
   read_type: short
-  refdir: /refdir/
+  refdir: ./data2/
   tempdir: ''
 fqprocess:
   bam_size: '5'
