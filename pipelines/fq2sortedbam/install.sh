@@ -118,17 +118,17 @@ fi
 
 cd $EXEDIR
 
-[[ ! -d warp-tools ]] && git clone --recursive https://github.com/broadinstitute/warp-tools.git -b develop
-cd warp-tools/tools/fastqpreprocessing/
-./fetch_and_make_dep_libs.sh && make
+#[[ ! -d warp-tools ]] && git clone --recursive https://github.com/broadinstitute/warp-tools.git -b develop
+#cd warp-tools/tools/fastqpreprocessing/
+#./fetch_and_make_dep_libs.sh && make
 ## make -j
 
-if [ "$?" == "0" ]
-then
-    echo "fqprocess installed successfully"
-else
-    echo "fqprocess installation failed"
-fi
+#if [ "$?" == "0" ]
+#then
+#    echo "fqprocess installed successfully"
+#else
+#    echo "fqprocess installation failed"
+#fi
 
 echo "bwa compilation is "$bwainstall
 echo "mm2-fast compilation is "$mm2install
