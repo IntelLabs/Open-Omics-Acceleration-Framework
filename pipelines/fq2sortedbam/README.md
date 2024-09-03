@@ -35,7 +35,7 @@ docker run -v <inputdir>:/input <outdir>:/out <refdir>:/refdir <tempdir>:/tempdi
 ### Installation:
 ```
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-cd Open-Omics-Acceleration-Framework/blob/main/pipelines/fq2sortedbam/
+cd Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/
 bash install.sh <onprem/cloud>  ## onprem mode: Manually install the depenendies present in basic_setup_ubuntu.sh as it needs sudo access
 ```
 
