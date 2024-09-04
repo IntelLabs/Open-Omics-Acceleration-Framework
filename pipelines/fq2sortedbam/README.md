@@ -23,7 +23,7 @@ docker save fq2bam:latest > fq2bam.tar     ## this step is optional
 ```
 
 ### Setup Input Parameters:
-Setup [\<inputdir\>/config.yaml](README.md#setup-configyaml)  with appropriate values
+Setup \<inputdir\>/config.yaml (described below) with appropriate values
 
 ### Docker run:
 ```
@@ -40,7 +40,7 @@ bash install.sh <onprem/cloud>  ## onprem mode: Manually install the depenendies
 ```
 
 ### Setup Input Parameters:
-Setup [config.yaml](README.md#setup-configyaml)  with appropriate values
+Setup ./config.yaml (described below)  with appropriate values
 
 ### Run:
 ```
@@ -54,22 +54,22 @@ bash run_bwa.sh sortedbam ./config.yaml
 
 ## Setup config.yaml<sup>1<sup>:  
 1. bwa: bwa-mem2 related parameters     
-   - dindex: dtype=bool, values="True/False", if "True" it creates bwa-mem2 index for the reference genome  
+   - dindex: dtype=bool, values="True/False", if True it creates .fai index files for input reads files    
    - params: dtype=string, the command line paramteres to bwa-mem2 mapping run e.g. '+R "@RG\tID:RG1\tSM:RGSN1"'  
-   - rindex: dtype=bool, 'values=True/False', if True it creates .fai index files for input reads files  
+   - rindex: dtype=bool, 'values=True/False', if "True" it creates bwa-mem2 index for the reference genome    
   
 2. dataset:  data details  
    - __index__: dtype:string, Input reference genome file name e.g. "GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz"  
-   - **input**: dtype=string, folder location of input reads files e.g. "./data/"  
+   - **input**: dtype=string, folder location of input reads files e.g. "**/input**"  
    - outfile: dtype=string, output SAM/BAM file name(s) e.g. short.se.sam. Default value: "final_fq2bam"    
-   - **output**: dtype=string, folder location of output SAM/BAM files e.g. "./out/"  
+   - **output**: dtype=string, folder location of output SAM/BAM files e.g. "**/out**"  
    - **read1**: dtype=string, input reads file1 name e.g. "HG001.novaseq.pcr-free.30x.R1.fastq.gz"  
    - read2: dtype=string, input reads file2 name e.g. "HG001.novaseq.pcr-free.30x.R2.fastq.gz"  
-   - **read_type**: dtype:string, values=short/long, short read mapping using bwa-mem2, long read mapping using mm2-fast  
-   - **refdir**: dtype=string, folder location of reference genome and its index files e.g. "./data/"
-   - tempdir: dtype=string, folder location for storing intermedaite files e.g. "./out/". In case of none, output folder is used  
+   - **read_type**: dtype:string, values=**short/long**, short read mapping using bwa-mem2, long read mapping using mm2-fast  
+   - **refdir**: dtype=string, folder location of reference genome and its index files e.g. "**/refdir**"
+   - tempdir: dtype=string, folder location for storing intermedaite files e.g. "/out/". In case of none, output folder is used  
  
-3. fqprocess: custum mode variables  
+3. fqprocess: custom mode variables  
     - bam_size: dtype=int,, value=5  
     - barcode_orientation: dtype=string, values=FIRST_BP_RC  
     - output_format: dtype=string, value=FASTQ  
