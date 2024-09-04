@@ -30,6 +30,12 @@ Setup \<inputdir\>/config.yaml (described below) with appropriate values
 docker load -i fq2bam.tar      ## optional, if the image is build on the same machine or is already loaded  
 docker run -v <inputdir>:/input <outdir>:/out <refdir>:/refdir <tempdir>:/tempdir fq2bam:latest bash run_bwa.sh sortedbam /input/config.yaml
 ```
+Note:  
+\<inputdir\>: Location of the local directory containing read files read1 & read2  
+\<refdir\>: Location of the local directory containing reference sequence file ref  
+\<outdir\>: Location of the local directory for output files SAM/BAM  
+\<tempdir\>: Location of the local directory for temporary files (defaults to \<outdir\>)  
+
 
 ## Use Source Code  
 ### Installation:
