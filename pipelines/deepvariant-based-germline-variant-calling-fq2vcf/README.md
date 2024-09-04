@@ -26,9 +26,9 @@ docker build -f Dockerfile_part2 -t deepvariant:part2 .      ## Part II: bam2vcf
 ```
 
 ### 3. Setup Input Paramters through ```Config``` file<sup>1</sup>  
-INPUT_DIR=\<readdir\>       ## Location of input reads files (default location /reads in docker)    
-OUTPUT_DIR=\<outdir\>       ## Location of output files (default location /output in docker)  
-REF_DIR=\<refdir\>          ## Location of reference sequence (default location /ref in docker)  
+INPUT_DIR=/input       ## Location of input reads files (default location /reads in docker)    
+OUTPUT_DIR=/out       ## Location of output files (default location /output in docker)  
+REF_DIR=/ref          ## Location of reference sequence (default location /ref in docker)  
 R1=HG001_1.fastq.gz         ## name of input reads file1  
 R2=HG001_2.fastq.gz         ## name of input reads file2  
 REF=GCA_000001405.15_GRCh38_no_alt_analysis_set.fna   ## name of reference sequence  
