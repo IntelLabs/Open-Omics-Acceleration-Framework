@@ -1,0 +1,7 @@
+export LD_PRELOAD=/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
+export INPUT_DIR=/reads/
+export OUTPUT_DIR=/output/
+export REF_DIR=/ref/
+REF=GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
+R1=HG001_R1.fastq.gz
+R2=HG001_R2.fastq.gz
