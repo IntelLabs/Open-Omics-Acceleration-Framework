@@ -59,9 +59,7 @@ RUN groupadd --gid 1001 $SERVICE_NAME && \
 
 RUN pip uninstall -y umap-learn
 WORKDIR /
-RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/2.1/Source_code_with_submodules.tar.gz
-RUN tar -xzf Source_code_with_submodules.tar.gz
-#RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 
 #SHELL ["/bin/bash", "-c", "source activate single_cell"]
 WORKDIR /Open-Omics-Acceleration-Framework/lib/tal/applications/UMAP_fast/umap_extend/
