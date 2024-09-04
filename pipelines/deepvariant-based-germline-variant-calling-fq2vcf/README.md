@@ -23,6 +23,30 @@
         * libbz2-dev  
         * liblzma-dev  
 
+# Instructions to run pipeline using Dockerfile on single node
+### 1. Download the code :  
+
+```bash
+git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+cd Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
+```
+### 2. Build Docker images
+```bash
+docker build -f Dockerfile_part1 -t deepvariant:part1 .
+docker build -f Dockerfile_part2 -t deepvariant:part2 .
+```
+### 3. Edit config file
+Update the variables R1,R2 and REF in config file in current repository  \
+Update the REF variable in extra_scripts/config file.
+
+### 4. Run Docker images
+```
+docker run -v $PWD/config:/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws/config -v <path to read dataset directory>:/reads -v <path to reference dataset directory>:/ref -v <path to output directory>:/output -it deepvariant:part1 bash run_pipeline_ec2_part1.sh
+
+docker run -v $PWD/extra_scripts/config:/opt/deepvariant/config  -v <path to reference dataset directory>:/ref -v <path to output directory>:/output -it deepvariant:part2 bash run_pipeline_ec2_part2.sh
+```
+
+
 # Instructions to run the pipeline on on-prem
 ### 1. Download the latest release:  
 ```bash
