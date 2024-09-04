@@ -9,9 +9,8 @@ Given a cell by gene matrix, this [scanpy](https://github.com/scverse/scanpy) ba
 
 # Download entire repository
 ```bash
-
-wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/2.1/Source_code_with_submodules.tar.gz
-tar -xzf Source_code_with_submodules.tar.gz
+cd ~
+git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 cd ~/Open-Omics-Acceleration-Framework/pipelines/single-cell-RNA-seq-analysis
 ```
 
@@ -46,8 +45,7 @@ docker build -f Dockerfile.python -t scanpy_python . # Create a docker image nam
 # Download dataset
 wget -P  $DATA_DIR https://rapids-single-cell-examples.s3.us-east-2.amazonaws.com/1M_brain_cells_10X.sparse.h5ad
 
-docker run -v $OUTPUT_DIR:/workspace/figures -v $DATA_DIR:/data scanpy_python 
-
+docker run -v $OUTPUT_DIR:/Open-Omics-Acceleration-Framework/pipelines/single-cell-RNA-seq-analysis/notebooks/figures  -v $DATA_DIR:/data  -it scanpy_python
 ```
 
 
