@@ -5,6 +5,8 @@ channels:
   - katanagraph/label/dev
 dependencies:
   - defaults::python=3.8.0
+  - conda-forge::gcc_linux-64==12.1.0
+  - conda-forge::gxx_linux-64==12.1.0
   - defaults::seaborn=0.12.2
   - defaults::scikit-learn=1.0.2
   - defaults::statsmodels=0.13.2
