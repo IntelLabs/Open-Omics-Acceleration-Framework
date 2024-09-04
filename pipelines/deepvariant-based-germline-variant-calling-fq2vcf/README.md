@@ -26,21 +26,26 @@ docker build -f Dockerfile_part2 -t deepvariant:part2 .      ## Part II: bam2vcf
 ```
 
 ### 3. Setup Input Paramters through ```Config``` file<sup>1</sup>  
-INPUT_DIR=/input       ## Location of input reads files (default location /reads in docker)    
-OUTPUT_DIR=/out       ## Location of output files (default location /output in docker)  
-REF_DIR=/ref          ## Location of reference sequence (default location /ref in docker)  
 R1=HG001_1.fastq.gz         ## name of input reads file1  
 R2=HG001_2.fastq.gz         ## name of input reads file2  
 REF=GCA_000001405.15_GRCh38_no_alt_analysis_set.fna   ## name of reference sequence  
 
-Update the above fields in ./config file and in extra_scripts/config file    
+Update the above relevant fields in _**./config**_ file and in _**extra_scripts/config**_ file and keep remaining parameters to defaults. \
 <sup>**1**</sup>  **All fields are mandatory**  
 
 ### 4. Run Docker images
+\<readdir\>: It is full path of local directory containing read files \
+\<refdir\>: It is full path of local directory containing  reference file \
+\<outdir\>: It is full path of local directory for output files
+#### 4.1 create index files from reference file for bwa-mem2 and deepvariant (one-time step)
 ```
-docker run -v ./config:/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws/config -v <readdir>:/reads -v <refdir>:/ref -v <refdir>:/output -it deepvariant:part1 bash run_pipeline_ec2_part1.sh
+docker run -v $PWD/config:/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws/config  -v <readdir>:/ref  -it deepvariant:part1 bash create_reference_index.sh
+```
+#### 4.2 Run the pipeline
+```
+docker run -v ./config:/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws/config -v <readdir>:/reads -v <refdir>:/ref -v <outdir>:/output -it deepvariant:part1 bash run_pipeline_ec2_part1.sh
 
-docker run -v ./extra_scripts/config:/opt/deepvariant/config  -v <redir>:/ref -v <outdir>:/output -it deepvariant:part2 bash run_pipeline_ec2_part2.sh
+docker run -v ./extra_scripts/config:/opt/deepvariant/config  -v <refdir>:/ref -v <outdir>:/output -it deepvariant:part2 bash run_pipeline_ec2_part2.sh
 ```
 
 # General Notes:
