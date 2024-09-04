@@ -12,8 +12,6 @@ RUN apt-get update
 ##&& DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 RUN apt-get install -y build-essential
 RUN apt-get install -y git
-#--reinstall ca-certificates
-#RUN apt -y install build-essential
 RUN apt -y install autoconf
 RUN apt -y install numactl
 RUN apt -y install zlib1g-dev
@@ -28,8 +26,8 @@ RUN apt-get -qq -y install wget
     
 WORKDIR /app
 RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-
 WORKDIR Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam
+RUN git checkout e4cae79
 
 RUN bash install.sh onprem
 
