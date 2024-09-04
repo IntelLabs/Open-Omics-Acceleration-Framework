@@ -4,8 +4,8 @@ OpenOmics's fq2vcf is a highly optimized, distributed, deep learning-based short
 The pipeline comprises of:   
 1. bwa-mem2 (a highly optimized version of bwa-mem) for sequence mapping  
 2. SortSAM using samtools  
-3. An optimized version of DeepVariant tools for variant calling.
-The following figure illustrates the pipeline.
+3. An optimized version of DeepVariant tool for Variant Calling   
+The following figure illustrates the pipeline:
 
 <p align="center">
 <img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/deepvariant-fq2vcf.jpg"/a></br>
@@ -28,20 +28,22 @@ docker build -f Dockerfile_part2 -t deepvariant:part2 .      ## Part II: bam2vcf
 ### 3. Setup Input Paramters through ```Config``` file<sup>1</sup>  
 R1=HG001_1.fastq.gz         ## name of input reads file1  
 R2=HG001_2.fastq.gz         ## name of input reads file2  
-REF=GCA_000001405.15_GRCh38_no_alt_analysis_set.fna   ## name of reference sequence  
+REF=GCA_000001405.15_GRCh38_no_alt_analysis_set.fna   ## name of reference sequence (**should not be in .gz format**) 
 
-Update the above relevant fields in _**./config**_ file and in _**extra_scripts/config**_ file and keep remaining parameters to defaults. \
+Update only the above fields in _**./config**_ file and in _**./extra_scripts/config**_ file. \
 <sup>**1**</sup>  **All fields are mandatory**  
 
-### 4. Run Docker images
-\<readdir\>: It is full path of local directory containing read files \
-\<refdir\>: It is full path of local directory containing  reference file \
-\<outdir\>: It is full path of local directory for output files
-#### 4.1 create index files from reference file for bwa-mem2 and deepvariant (one-time step)
+### 4. Execution  
+#### Note:  
+\<readdir\>: Location of the local directory containing read files R1 & R2 \
+\<refdir\>: Location of the local directory containing  reference sequence file REF \
+\<outdir\>: Location of the local directory for output files  
+
+#### 4.1 Create bwa-mem2 & reference sequence file index (one-time step)
 ```
-docker run -v $PWD/config:/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws/config  -v <readdir>:/ref  -it deepvariant:part1 bash create_reference_index.sh
+docker run -v ./config:/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws/config  -v <refdir>:/ref  -it deepvariant:part1 bash create_reference_index.sh
 ```
-#### 4.2 Run the pipeline
+#### 4.2 Run the pipeline (Part I \& Part II)
 ```
 docker run -v ./config:/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws/config -v <readdir>:/reads -v <refdir>:/ref -v <outdir>:/output -it deepvariant:part1 bash run_pipeline_ec2_part1.sh
 
