@@ -28,7 +28,7 @@ Setup \<inputdir\>/config.yaml (described below) with appropriate values
 ### Docker run:
 ```
 docker load -i fq2bam.tar      ## optional, if the image is build on the same machine or is already loaded  
-docker run -v <inputdir>:/input <outdir>:/out <refdir>:/refdir <tempdir>:/tempdir fq2bam:latest bash run_bwa.sh sortedbam /input/config.yaml
+docker run -v <inputdir>:/input -v <outdir>:/out -v <refdir>:/refdir -v <tempdir>:/tempdir fq2bam:latest bash run_bwa.sh sortedbam /input/config.yaml
 ```
 Note:  
 \<inputdir\>: Location of the local directory containing read files read1 & read2  
