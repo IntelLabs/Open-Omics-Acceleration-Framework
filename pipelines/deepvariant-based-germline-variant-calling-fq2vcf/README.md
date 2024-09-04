@@ -43,7 +43,7 @@ docker run -v ./config:/Open-Omics-Acceleration-Framework/pipelines/deepvariant-
 docker run -v ./extra_scripts/config:/opt/deepvariant/config  -v <redir>:/ref -v <outdir>:/output -it deepvariant:part2 bash run_pipeline_ec2_part2.sh
 ```
 
-### General Notes:
+# General Notes:
 * The source code of bwa-mem2, samtools, and DeepVariant are residing in:
 ```Open-Omics-Acceleration-Framework/applications/ ```.
 * We build bwa-mem2 and samtools from source; while for DeepVariant, we build a docker image and then use the built image while running the pipeline. Note that, the pre-built image is not available on dockerhub and the image needs to be built from source.
