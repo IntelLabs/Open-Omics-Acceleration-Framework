@@ -10,6 +10,8 @@ ProtGPT2 was trained in a self-supervised fashion, i.e., the raw sequence data w
 
 ## Downloading the Model
 ```bash
+git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
+cd TransOmics.OpenOmicsInternal/applications/protgpt2
 bash model_script.sh
 ```
 ## Run a Protgpt2 Standalone 
@@ -20,25 +22,35 @@ conda env create -f env.yml
 conda activate protgpt2
 ```
 
+Note: Precision is optional for optimization. By default, we use bfloat16. If you want to run with float32 or bfloat16, set precision=bfloat16 or precision=float32 accordingly.
+
 ```bash
-python protgpt2.py --model_dir ./model_dir --max_length 150 --do_sample True --top_k 950 --repetition_penalty 1.5 --num_return_sequences 5 --eos_token_id 1  --dtype float32/bfloat16 --iterations 5
+python protgpt2.py --model_dir ./model_dir --max_length 150 --do_sample True --top_k 950 --repetition_penalty 1.5 --num_return_sequences 5 --eos_token_id 1  --dtype bfloat16 --iterations 5
 ```
 
 ## How to use Docker
 
 ```bash
-cd ~/TransOmics.OpenOmicsInternal/applications/protgpt2
+git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
+cd TransOmics.OpenOmicsInternal/applications/protgpt2
+```
+## Downloadig the model
+```bash
+bash model_script.sh
+```
+## build the docker image
+```bash
 docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t protgpt2 . 
 ```
 ## Run a docker container
 
+Note: Precision is optional for optimization. By default, we use bfloat16. If you want to run with float32 or bfloat16, set precision=bfloat16 or precision=float32 accordingly.
+
 ```bash
-docker run -it protgpt2:latest 
-     python protgpt2.py  --model_dir ./model_dir --max_length 150 --do_sample False 
-     --top_k 900 --repetition_penalty 1.5 --num_return_sequences 5 
-     --eos_token_id 1  --dtype float32/bfloat16 --iterations 5
-
-
+docker run -it protgpt2:latest
+	python protgpt2.py  --model_dir ./model_dir --max_length 150 --do_sample False 
+	--top_k 900 --repetition_penalty 1.5 --num_return_sequences 5 
+	--eos_token_id 1  --dtype bfloat16 --iterations 5
 ```
 
 ## Example 1: Generating de novo proteins in a zero-shot fashion
