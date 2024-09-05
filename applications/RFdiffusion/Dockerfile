@@ -28,7 +28,11 @@ COPY --from=conda_setup /opt/conda /opt/conda
 COPY . /app
 
 WORKDIR /app
-RUN git clone https://github.com/RosettaCommons/RFdiffusion.git
+RUN git clone https://github.com/RosettaCommons/RFdiffusion.git 
+
+WORKDIR /app/RFdiffusion
+# adding the git commit id
+RUN git checkout 820bfdfaded8c260b962dc40a3171eae316b6ce0
 
 WORKDIR /app/RFdiffusion/models
 RUN  wget https://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063dc4/Base_ckpt.pt && \
@@ -43,8 +47,8 @@ RUN  wget https://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063
 
 WORKDIR /app/RFdiffusion
 # Apply the patch file
-COPY new_changes.patch /app/RFdiffusion/new_changes.patch
-RUN git apply new_changes.patch
+COPY rfdiffusion.patch /app/RFdiffusion/rfdiffusion.patch
+RUN git apply rfdiffusion.patch
 
 RUN /opt/conda/bin/conda env create -f env/SE3nv.yml
 # Set up environment activation and PATH

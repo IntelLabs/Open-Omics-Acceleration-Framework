@@ -37,7 +37,8 @@ fi
 echo "$CONDA_INSTALL_DIR"
 # Apply patch (assuming patch file is new_changed.patch and it should be applied in RFdiffusion directory)
 cd RFdiffusion
-
+git checkout 820bfdfaded8c260b962dc40a3171eae316b6ce0
+git log -1
 mkdir -p models
 cd models
 wget https://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063dc4/Base_ckpt.pt
