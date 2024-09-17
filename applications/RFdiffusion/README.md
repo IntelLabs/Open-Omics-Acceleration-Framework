@@ -70,14 +70,26 @@ docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_p
 
 ## Run a docker container
 Note: Precision is optional for optimization. By default, we use bfloat16. If you want to run with float32 or bfloat16, set precision=bfloat16 or precision=float32 accordingly.
-```bash
-mkdir outputs
-export OUTPUT_DIR=<path-to-output-directory>
 
-docker run -v $OUTPUT_DIR:/app/RFdiffusion/example_outputs rfdiffusion:latest
-    ./scripts/run_inference.py inference.output_prefix=example_outputs/design_motifscaffolding
-    inference.input_pdb=examples/input_pdbs/5TPN.pdb 'contigmap.contigs=[10-40/A163-181/10-40]'
-    inference.num_designs=1 inference.precision=bfloat16
+```bash
+cd ~/TransOmics.OpenOmicsInternal/applications/RFdiffusion
+mkdir -p output
+export OUTPUT_DIR=$PWD/output
+
+export INPUT_FILE=<full-path of input pdb file>
+
+docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion:latest ./scripts/run_inference.py inference.output_prefix=/output/<prefix> inference.input_pdb=/data 'contigmap.contigs=<contigs>' inference.num_designs=<Integer> inference.precision=<float32/bfloat16>
+```
+
+```bash
+#example
+cd ~/TransOmics.OpenOmicsInternal/applications/RFdiffusion
+
+mkdir -p output
+export OUTPUT_DIR=$PWD/output
+export INPUT_FILE=$PWD/examples/input_pdbs/5TPN.pdb
+
+docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion:latest ./scripts/run_inference.py inference.output_prefix=/output/design_motifscaffolding inference.input_pdb=/data 'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=1 inference.precision=bfloat16
 ```
 
 # Original RF*diffusion*
