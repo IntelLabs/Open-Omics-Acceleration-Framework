@@ -21,13 +21,6 @@ RUN echo "mamba activate esm_py11" >> ~/.bashrc
 WORKDIR /app/esm/examples/lm-design/
 RUN wget https://dl.fbaipublicfiles.com/fair-esm/examples/lm_design/linear_projection_model.pt
 
-USER root
-WORKDIR /home/esm-base-service/.cache/torch/hub/checkpoints/ 
-
-RUN wget https://dl.fbaipublicfiles.com/fair-esm/models/esm2_t33_650M_UR50D.pt && \
-    wget https://dl.fbaipublicfiles.com/fair-esm/regression/esm2_t33_650M_UR50D-contact-regression.pt && \
-    wget https://dl.fbaipublicfiles.com/fair-esm/models/esm_if1_gvp4_t16_142M_UR50.pt 
-USER $SERVICE_NAME
 
 WORKDIR /app/esm
 HEALTHCHECK NONE

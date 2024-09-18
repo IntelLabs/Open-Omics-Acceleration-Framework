@@ -32,14 +32,6 @@ RUN echo "source ${HOME}/conda/etc/profile.d/conda.sh" >> ~/.bashrc
 RUN echo "source ${HOME}/conda/etc/profile.d/mamba.sh" >> ~/.bashrc
 RUN echo "mamba activate esmfold" >> ~/.bashrc
 
-USER root
-
-WORKDIR /home/esm-base-service/.cache/torch/hub/checkpoints/
-
-RUN wget https://dl.fbaipublicfiles.com/fair-esm/models/esmfold_3B_v1.pt && \ 
-    wget https://dl.fbaipublicfiles.com/fair-esm/models/esm2_t36_3B_UR50D.pt && \
-    wget https://dl.fbaipublicfiles.com/fair-esm/regression/esm2_t36_3B_UR50D-contact-regression.pt
-USER $SERVICE_NAME
 WORKDIR /app/esm
 HEALTHCHECK NONE
 
