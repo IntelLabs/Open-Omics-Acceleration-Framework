@@ -26,14 +26,27 @@ source ${HOME}/conda/etc/profile.d/mamba.sh && \
 mamba activate esmfold && \
 python setup.py install "
 
-
-WORKDIR /app/esm
-RUN echo "source ${HOME}/conda/etc/profile.d/conda.sh" >> ~/.bashrc
-RUN echo "source ${HOME}/conda/etc/profile.d/mamba.sh" >> ~/.bashrc
-RUN echo "mamba activate esmfold" >> ~/.bashrc
+RUN echo "#!/bin/bash" >> /app/init.sh && \
+echo "source ${HOME}/conda/etc/profile.d/conda.sh" >> /app/init.sh && \
+echo "source ${HOME}/conda/etc/profile.d/mamba.sh" >> /app/init.sh && \
+echo "mamba activate esmfold" >> /app/init.sh && \
+echo "echo 'Running init.sh' " >> /app/init.sh && \
+chmod +x /app/init.sh && \
+echo "source /app/init.sh" >> ~/.bashrc
 
 WORKDIR /app/esm
 HEALTHCHECK NONE
 
 CMD LD_PRELOAD=/opt/conda/lib/libiomp5.so:/opt/conda/lib/libjemalloc.so:$LD_PRELOAD \
     MALLOC_CONF="oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms:-1,muzzy_decay_ms:-1"
+
+RUN echo '#!/bin/bash' > /app/entrypoint.sh && \
+    echo 'if [ -z "$1" ]; then' >> /app/entrypoint.sh && \
+    echo '    exec /bin/bash' >> /app/entrypoint.sh && \
+    echo 'else' >> /app/entrypoint.sh && \
+    echo '    source /app/init.sh' >> /app/entrypoint.sh && \
+    echo '    exec "$@"' >> /app/entrypoint.sh && \
+    echo 'fi' >> /app/entrypoint.sh && \
+    chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]

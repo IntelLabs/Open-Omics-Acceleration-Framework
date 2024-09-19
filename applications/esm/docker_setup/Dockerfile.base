@@ -29,6 +29,10 @@ COPY esm_change_all.patch /app/esm/esm_change_all.patch
 WORKDIR /app/esm
 RUN git apply esm_change_all.patch
 
+RUN mkdir -p /home/esm-base-service/.cache/torch/hub/ && \
+    rm -rf /home/esm-base-service/.cache/torch/hub/checkpoints && \
+    ln -s /checkpoints /home/esm-base-service/.cache/torch/hub/checkpoints
+
 HEALTHCHECK NONE
 
 
