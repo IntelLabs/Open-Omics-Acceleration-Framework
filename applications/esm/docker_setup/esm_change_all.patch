@@ -61,7 +61,7 @@ index 76b8e74..5c37d82 100644
      final_atom_mask = output["atom37_atom_exists"]
      pdbs = []
 diff --git a/examples/inverse_folding/sample_sequences.py b/examples/inverse_folding/sample_sequences.py
-index 3a12693..ac6c6fb 100644
+index 3a12693..90e8269 100644
 --- a/examples/inverse_folding/sample_sequences.py
 +++ b/examples/inverse_folding/sample_sequences.py
 @@ -31,7 +31,7 @@ def sample_seq_singlechain(model, alphabet, args):
@@ -73,7 +73,7 @@ index 3a12693..ac6c6fb 100644
              print('Sampled sequence:')
              print(sampled_seq)
              f.write(f'>sampled_seq_{i+1}\n')
-@@ -107,17 +107,37 @@ def main():
+@@ -107,17 +107,33 @@ def main():
              action='store_false',
              help='use the backbone of only target chain in the input for conditioning'
      )
@@ -92,10 +92,6 @@ index 3a12693..ac6c6fb 100644
 -        sample_seq_multichain(model, alphabet, args)
 -    else:
 -        sample_seq_singlechain(model, alphabet, args)
-+    disable_gpu_and_ipex = True
-+    if disable_gpu_and_ipex:
-+        args.nogpu = True
-+        args.noipex = True
 +    if not args.noipex:
 +        dtype = torch.bfloat16 if args.bf16 else torch.float32
 +        import intel_extension_for_pytorch as ipex
@@ -119,10 +115,10 @@ index 3a12693..ac6c6fb 100644
  
  if __name__ == '__main__':
 diff --git a/examples/inverse_folding/score_log_likelihoods.py b/examples/inverse_folding/score_log_likelihoods.py
-index cd81951..b2fc7c9 100644
+index cd81951..ff329c5 100644
 --- a/examples/inverse_folding/score_log_likelihoods.py
 +++ b/examples/inverse_folding/score_log_likelihoods.py
-@@ -113,18 +113,37 @@ def main():
+@@ -113,18 +113,33 @@ def main():
              help='use the backbone of only target chain in the input for conditioning'
      )
      
@@ -142,10 +138,6 @@ index cd81951..b2fc7c9 100644
 -    else:
 -        score_singlechain_backbone(model, alphabet, args)
 -
-+    disable_gpu_and_ipex = True
-+    if disable_gpu_and_ipex:
-+        args.nogpu = True
-+        args.noipex = True
 +    if not args.noipex:
 +        dtype = torch.bfloat16 if args.bf16 else torch.float32
 +        import intel_extension_for_pytorch as ipex
@@ -190,17 +182,13 @@ index f065473..977fcdf 100644
    free_generation:
        num_iter: 170000
 diff --git a/examples/lm-design/lm_design.py b/examples/lm-design/lm_design.py
-index b578ad9..76d7902 100644
+index b578ad9..42e4fa1 100644
 --- a/examples/lm-design/lm_design.py
 +++ b/examples/lm-design/lm_design.py
-@@ -111,6 +111,16 @@ class Designer:
+@@ -111,6 +111,12 @@ class Designer:
          def apply_common_settings(model):
              model.to(self.device)
              model.eval()
-+            disable_gpu_and_ipex = True
-+            if disable_gpu_and_ipex:
-+                self.cfg.noipex = True
-+                self.cfg.disable_cuda = True
 +            if not self.cfg.noipex:
 +                import intel_extension_for_pytorch as ipex
 +                dtype = torch.bfloat16 if self.cfg.bf16 else torch.float32
@@ -210,7 +198,7 @@ index b578ad9..76d7902 100644
              # No grads for models
              for p in model.parameters():
                  p.requires_grad = False
-@@ -340,14 +350,19 @@ class Designer:
+@@ -340,14 +346,19 @@ class Designer:
          Main run-loop for the Designer. Runs a relevant design procedure from the config.
          """
          logger.info(f'Designing sequence for task: {self.cfg.task}')
