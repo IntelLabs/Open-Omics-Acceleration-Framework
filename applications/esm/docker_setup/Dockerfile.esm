@@ -19,7 +19,6 @@ RUN echo "#!/bin/bash" >> /app/init.sh && \
 echo "source ${HOME}/conda/etc/profile.d/conda.sh" >> /app/init.sh && \
 echo "source ${HOME}/conda/etc/profile.d/mamba.sh" >> /app/init.sh && \
 echo "mamba activate esm_py11" >> /app/init.sh && \
-echo "echo 'Running init.sh' " >> /app/init.sh && \
 chmod +x /app/init.sh && \
 echo "source /app/init.sh" >> ~/.bashrc
 

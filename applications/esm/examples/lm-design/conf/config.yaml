@@ -8,12 +8,12 @@ num_seqs: 1
 test_mode: False
 allow_missing_residue_coords: True
 suppress_AA: 'C'
-disable_cuda: False
+disable_cuda: True
 cuda_device_idx:  # Set to numberic value to override default GPU device used.
 task: free_generation  # fixedbb or free_generation
 pdb_fn:  # set as empty string when using free_generation
 free_generation_length: 100
-noipex: False
+noipex: True
 bf16: False
 timing: False
 tasks:

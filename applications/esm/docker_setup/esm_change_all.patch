@@ -44,8 +44,24 @@ index 2d1b70d..160ed5d 100644
 +      - biotite==0.39.0
 +      - intel-extension-for-pytorch==1.12.100
        - git+https://github.com/NVIDIA/dllogger.git
+diff --git a/esm/esmfold/v1/misc.py b/esm/esmfold/v1/misc.py
+index 76b8e74..5c37d82 100644
+--- a/esm/esmfold/v1/misc.py
++++ b/esm/esmfold/v1/misc.py
+@@ -95,7 +95,10 @@ def output_to_pdb(output: T.Dict) -> T.List[str]:
+     # atom14_to_atom37 must be called first, as it fails on latest numpy if the
+     # input is a numpy array. It will work if the input is a torch tensor.
+     final_atom_positions = atom14_to_atom37(output["positions"][-1], output)
+-    output = {k: v.to("cpu").numpy() for k, v in output.items()}
++    output ={
++            k: v.to("cpu").float().numpy() if v.to("cpu").dtype == torch.bfloat16 else v.to("cpu").numpy()
++            for k, v in output.items()
++            }
+     final_atom_positions = final_atom_positions.cpu().numpy()
+     final_atom_mask = output["atom37_atom_exists"]
+     pdbs = []
 diff --git a/examples/inverse_folding/sample_sequences.py b/examples/inverse_folding/sample_sequences.py
-index 3a12693..691c2d7 100644
+index 3a12693..ac6c6fb 100644
 --- a/examples/inverse_folding/sample_sequences.py
 +++ b/examples/inverse_folding/sample_sequences.py
 @@ -31,7 +31,7 @@ def sample_seq_singlechain(model, alphabet, args):
@@ -57,12 +73,14 @@ index 3a12693..691c2d7 100644
              print('Sampled sequence:')
              print(sampled_seq)
              f.write(f'>sampled_seq_{i+1}\n')
-@@ -108,16 +108,31 @@ def main():
+@@ -107,17 +107,37 @@ def main():
+             action='store_false',
              help='use the backbone of only target chain in the input for conditioning'
      )
-     parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
+-    parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
 -  
-+    parser.add_argument("--noipex", action="store_true", help="Do not use intel_extension_for_pytorch")
++    parser.add_argument("--nogpu", action="store_false", help="Do not use GPU even if available")
++    parser.add_argument("--noipex", action="store_false", help="Do not use intel_extension_for_pytorch")
 +    parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
 +    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
      args = parser.parse_args()
@@ -74,6 +92,10 @@ index 3a12693..691c2d7 100644
 -        sample_seq_multichain(model, alphabet, args)
 -    else:
 -        sample_seq_singlechain(model, alphabet, args)
++    disable_gpu_and_ipex = True
++    if disable_gpu_and_ipex:
++        args.nogpu = True
++        args.noipex = True
 +    if not args.noipex:
 +        dtype = torch.bfloat16 if args.bf16 else torch.float32
 +        import intel_extension_for_pytorch as ipex
@@ -85,39 +107,45 @@ index 3a12693..691c2d7 100644
 +        import time
 +        start_time = time.time()
 +    device_type ="cpu" if args.nogpu else "cuda"
-+    with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
-+        if args.multichain_backbone:
-+            sample_seq_multichain(model, alphabet, args)
-+        else:
-+            sample_seq_singlechain(model, alphabet, args)
++    with torch.no_grad():
++        with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
++            if args.multichain_backbone:
++                sample_seq_multichain(model, alphabet, args)
++            else:
++                sample_seq_singlechain(model, alphabet, args)
 +    if args.timing:
 +        print(f"Total Inference Time = {time.time() - start_time} seconds")
  
  
  if __name__ == '__main__':
 diff --git a/examples/inverse_folding/score_log_likelihoods.py b/examples/inverse_folding/score_log_likelihoods.py
-index cd81951..fb57caa 100644
+index cd81951..b2fc7c9 100644
 --- a/examples/inverse_folding/score_log_likelihoods.py
 +++ b/examples/inverse_folding/score_log_likelihoods.py
-@@ -112,18 +112,35 @@ def main():
-             action='store_false',
+@@ -113,18 +113,37 @@ def main():
              help='use the backbone of only target chain in the input for conditioning'
      )
+     
+-    parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
 -    
-     parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
-+    parser.add_argument("--noipex", action="store_true", help="Do not use intel_extension_for_pytorch")
++    parser.add_argument("--nogpu", action="store_false", help="Do not use GPU even if available")
++    parser.add_argument("--noipex", action="store_false", help="Do not use intel_extension_for_pytorch")
 +    parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
 +    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
-     
      args = parser.parse_args()
  
      model, alphabet = esm.pretrained.esm_if1_gvp4_t16_142M_UR50()
      model = model.eval()
- 
+-
 -    if args.multichain_backbone:
 -        score_multichain_backbone(model, alphabet, args)
 -    else:
 -        score_singlechain_backbone(model, alphabet, args)
+-
++    disable_gpu_and_ipex = True
++    if disable_gpu_and_ipex:
++        args.nogpu = True
++        args.noipex = True
 +    if not args.noipex:
 +        dtype = torch.bfloat16 if args.bf16 else torch.float32
 +        import intel_extension_for_pytorch as ipex
@@ -125,44 +153,54 @@ index cd81951..fb57caa 100644
 +    if args.noipex and args.bf16:
 +        model=model.bfloat16()
 +    enable_autocast = args.bf16
-+    device_type ="cpu" if args.nogpu else "cuda"
 +    if args.timing:
 +        import time
 +        start_time = time.time()
-+    with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
-+        if args.multichain_backbone:
-+            score_multichain_backbone(model, alphabet, args)
-+        else:
-+            score_singlechain_backbone(model, alphabet, args)
++    device_type ="cpu" if args.nogpu else "cuda"
++    with torch.no_grad():
++        with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
++            if args.multichain_backbone:
++                score_multichain_backbone(model, alphabet, args)
++            else:
++                score_singlechain_backbone(model, alphabet, args)
 +    if args.timing:
 +        print(f"Total Inference Time = {time.time() - start_time} seconds")
-+
  
  
- 
+ if __name__ == '__main__':
 diff --git a/examples/lm-design/conf/config.yaml b/examples/lm-design/conf/config.yaml
-index f065473..cbdd160 100644
+index f065473..977fcdf 100644
 --- a/examples/lm-design/conf/config.yaml
 +++ b/examples/lm-design/conf/config.yaml
-@@ -13,7 +13,9 @@ cuda_device_idx:  # Set to numberic value to override default GPU device used.
+@@ -8,12 +8,14 @@ num_seqs: 1
+ test_mode: False
+ allow_missing_residue_coords: True
+ suppress_AA: 'C'
+-disable_cuda: False
++disable_cuda: True
+ cuda_device_idx:  # Set to numberic value to override default GPU device used.
  task: free_generation  # fixedbb or free_generation
  pdb_fn:  # set as empty string when using free_generation
  free_generation_length: 100
 -
-+noipex: False
++noipex: True
 +bf16: False
 +timing: False
  tasks:
    free_generation:
        num_iter: 170000
 diff --git a/examples/lm-design/lm_design.py b/examples/lm-design/lm_design.py
-index b578ad9..51bcab4 100644
+index b578ad9..76d7902 100644
 --- a/examples/lm-design/lm_design.py
 +++ b/examples/lm-design/lm_design.py
-@@ -111,6 +111,12 @@ class Designer:
+@@ -111,6 +111,16 @@ class Designer:
          def apply_common_settings(model):
              model.to(self.device)
              model.eval()
++            disable_gpu_and_ipex = True
++            if disable_gpu_and_ipex:
++                self.cfg.noipex = True
++                self.cfg.disable_cuda = True
 +            if not self.cfg.noipex:
 +                import intel_extension_for_pytorch as ipex
 +                dtype = torch.bfloat16 if self.cfg.bf16 else torch.float32
@@ -172,7 +210,7 @@ index b578ad9..51bcab4 100644
              # No grads for models
              for p in model.parameters():
                  p.requires_grad = False
-@@ -340,14 +346,19 @@ class Designer:
+@@ -340,14 +350,19 @@ class Designer:
          Main run-loop for the Designer. Runs a relevant design procedure from the config.
          """
          logger.info(f'Designing sequence for task: {self.cfg.task}')
@@ -189,7 +227,7 @@ index b578ad9..51bcab4 100644
 +        if self.cfg.timing:
 +            import time
 +            start_time = time.time()
-+        with torch.amp.autocast("cpu", enabled=enable_autocast):
++        with torch.amp.autocast(device_type=device_type, enabled=enable_autocast):
 +            if self.cfg.task == 'fixedbb':
 +                stage_fixedbb(self, design_cfg)
 +            elif self.cfg.task == 'free_generation':
@@ -200,14 +238,16 @@ index b578ad9..51bcab4 100644
          logger.info(f'Final designed sequences:')
          for seq in self.decode(self.x_seqs):
 diff --git a/scripts/extract.py b/scripts/extract.py
-index 9e5bcb3..e788147 100644
+index 9e5bcb3..6f18c63 100644
 --- a/scripts/extract.py
 +++ b/scripts/extract.py
-@@ -57,12 +57,22 @@ def create_parser():
+@@ -56,13 +56,23 @@ def create_parser():
+         help="truncate sequences longer than the given value",
      )
  
-     parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
-+    parser.add_argument("--noipex", action="store_true", help="Do not use intel_extension_for_pytorch")
+-    parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
++    parser.add_argument("--nogpu", action="store_false", help="Do not use GPU even if available")
++    parser.add_argument("--noipex", action="store_false", help="Do not use intel_extension_for_pytorch")
 +    parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
 +    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
      return parser

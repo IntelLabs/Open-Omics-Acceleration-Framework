@@ -36,7 +36,6 @@ Performance optimization with bfloat16 and Intel Extension for PyTorch
 
  `--bf16` flag accelerates performance by utilizing bfloat16 precision, which enhances computational efficiency without compromising accuracy.
 
-`--noipex` flag disables the use of Intel Extension for PyTorch (IPEX), ensuring that the computation runs without leveraging these Intel-specific optimizations
 ### ESM Models
 Run bash `models.sh` to download all the required ESM models inside the bash script
 ```bash
@@ -47,21 +46,20 @@ You can create both `input` and `output` directories in a single command like th
 ```bash
 mkdir -p input output
 ```
-The `input` directory must contain both `FASTA_FILE` and `PDB_FILE` for the tool to process sequence and structural data
+The `input` directory must contain both FASTA_FILE and PDB_FILE for the tool to process sequence and structural data
 ### Run Commands
-before using the below commands Please set `FASTA_FILE` and `PDB_FILE` to appropriate input data file name. 
+In this ESM setup, the `input` directory contains files like FASTA (protein sequences) and PDB (protein structures) for different tasks such as sequence extraction and protein folding. Each file type has a specific use. For testing, follow the provided instructions or refer to the research papers for more details. 
 #### ESM-Embeddings 
 <details>
 <summary>Compute embeddings in bulk from FASTA</summary>
 
 ```bash
-FASTA_FILE=few_proteins.fasta
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $PWD/input:/input \
   -v $PWD/output:/output \
   esm_image:latest /bin/bash -c \
-  "python scripts/extract.py esm2_t33_650M_UR50D /input/$FASTA_FILE /output --repr_layers 0 32 33 --include mean per_tok --nogpu --noipex --bf16"
+  "python scripts/extract.py esm2_t33_650M_UR50D /input/some_proteins.fasta /output --repr_layers 0 32 33 --include mean per_tok --bf16"
 ```
 </details>
 <br />
@@ -71,14 +69,12 @@ docker run -it \
 <summary>Fixed backbone design</summary>
 
 ```bash
-PDB_FILE=2N2U.pdb
-OUTPUT_FILE=$(basename $PDB_FILE .pdb)_fixed_backbone_log
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $PWD/input:/input \
   -v $PWD/output:/output \
 	esm_image:latest /bin/bash -c "cd examples/lm-design && \
-	python -m lm_design task=fixedbb pdb_fn=/input/$PDB_FILE  disable_cuda=True noipex=True bf16=True &> /output/$OUTPUT_FILE"
+	python -m lm_design task=fixedbb pdb_fn=/input/2N2U.pdb bf16=True &> /output/fixed_backbone_log"
 
 ```
 </details>
@@ -91,7 +87,7 @@ docker run -it \
   -v $PWD/models:/checkpoints \
   -v $PWD/output:/output \
 	esm_image:latest /bin/bash -c "cd examples/lm-design && \
-	python -m lm_design task=free_generation disable_cuda=True noipex=True bf16=True &> /output/free_generation_log"
+	python -m lm_design task=free_generation bf16=True &> /output/free_generation_log"
 
 ```
 </details>
@@ -102,14 +98,12 @@ docker run -it \
 <summary>Sample sequence designs for a given structure</summary>
 
 ```bash
-PDB_FILE=5YH2.pdb
-OUTPUT_FILE=$(basename $PDB_FILE .pdb)_sampled_sequences.fasta
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $PWD/input:/input \
   -v $PWD/output:/output \
   esm_image:latest /bin/bash -c "cd examples/inverse_folding && \
-  python sample_sequences.py /input/$PDB_FILE     --chain C --temperature 1 --num-samples 3  --outpath /output/$OUTPUT_FILE --nogpu --noipex --bf16"
+  python sample_sequences.py /input/5YH2.pdb     --chain C --temperature 1 --num-samples 3  --outpath /output/sampled_sequences.fasta --bf16"
 ```
 </details>
 <br />
@@ -117,16 +111,13 @@ docker run -it \
 <summary>Scoring sequences</summary>
 
 ```bash
-PDB_FILE=5YH2.pdb
-FASTA_FILE=5YH2_mutated_seqs.fasta
-OUTPUT_FILE=$(basename $FASTA_FILE .fasta)_scores.csv
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $PWD/input:/input \
   -v $PWD/output:/output \
   esm_image:latest  /bin/bash -c "cd examples/inverse_folding && \
-  python score_log_likelihoods.py /input/$PDB_FILE /input/$FASTA_FILE \
-  --chain C --outpath /output/$OUTPUT_FILE --nogpu --noipex --bf16"
+  python score_log_likelihoods.py /input/5YH2.pdb /input/5YH2_mutated_seqs.fasta \
+  --chain C --outpath /output/scores.csv --bf16"
 ```
 </details>
 <br />
@@ -134,14 +125,12 @@ docker run -it \
 <summary>Sample sequence designs for a given structure - Multichain backbone</summary>
 
 ```bash
-PDB_FILE=5YH2.pdb
-OUTPUT_FILE=$(basename $PDB_FILE .pdb)_mb_sampled_sequences.fasta
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $PWD/input:/input \
   -v $PWD/output:/output \
   esm_image:latest /bin/bash -c "cd examples/inverse_folding && \
-  python sample_sequences.py /input/$PDB_FILE     --chain C --temperature 1 --num-samples 3  --outpath /output/$OUTPUT_FILE --nogpu --multichain-backbone --noipex --bf16"
+  python sample_sequences.py /input/5YH2.pdb     --chain C --temperature 1 --num-samples 3  --outpath /output/mb_sampled_sequences.fasta --multichain-backbone --bf16"
 ```
 </details>
 <br />
@@ -149,16 +138,13 @@ docker run -it \
 <summary>Scoring sequences - Multichain backbone</summary>
 
 ```bash
-PDB_FILE=5YH2.pdb
-FASTA_FILE=5YH2_mutated_seqs.fasta
-OUTPUT_FILE=$(basename $FASTA_FILE .fasta)_mp_scores.csv
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $PWD/input:/input \
   -v $PWD/output:/output \
   esm_image:latest /bin/bash -c "cd examples/inverse_folding && \
-  python score_log_likelihoods.py /input/$PDB_FILE /input/$FASTA_FILE \
-  --chain C --outpath /output/$OUTPUT_FILE --nogpu --multichain-backbone --noipex --bf16"
+  python score_log_likelihoods.py /input/5YH2.pdb /input/5YH2_mutated_seqs.fasta \
+  --chain C --outpath /output/mb_scores.csv --multichain-backbone --bf16"
 ```
 </details>
 <br />
@@ -170,13 +156,12 @@ docker run -it \
 <summary>ESMFold Structure Prediction</summary>
 
 ```bash
-FASTA_FILE=few_proteins.fasta
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $PWD/input:/input \
   -v $PWD/output:/output \
   esmfold_image:latest /bin/bash -c \
-  "python scripts/fold.py -i /input/$FASTA_FILE -o /output --cpu-only --bf16"
+  "python scripts/fold.py -i /input/few_proteins.fasta -o /output --cpu-only --bf16"
 ```
 </details>
 <br />

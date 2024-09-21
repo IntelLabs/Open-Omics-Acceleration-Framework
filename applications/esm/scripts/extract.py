@@ -56,8 +56,8 @@ def create_parser():
         help="truncate sequences longer than the given value",
     )
 
-    parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
-    parser.add_argument("--noipex", action="store_true", help="Do not use intel_extension_for_pytorch")
+    parser.add_argument("--nogpu", action="store_false", help="Do not use GPU even if available")
+    parser.add_argument("--noipex", action="store_false", help="Do not use intel_extension_for_pytorch")
     parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
     parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
     return parser

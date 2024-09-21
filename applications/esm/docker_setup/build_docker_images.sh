@@ -1,7 +1,6 @@
-
 #!/bin/bash
 
-#constants
+# Constants
 BASE_IMAGE=esm_base_image
 ESM_IMAGE=esm_image
 ESMFOLD_IMAGE=esmfold_image
@@ -16,7 +15,6 @@ image_exists() {
   local image_name="$1"
   $runtime images -q "$image_name" | grep -q .
 }
-
 
 # Prompt for container runtime
 echo "Select container runtime (docker or podman):"
@@ -45,7 +43,6 @@ read -r task_option
 
 case $task_option in
     1)
-
         build_esm=true
         ;;
     2)
@@ -64,21 +61,46 @@ esac
 echo "build_esm = ${build_esm}"
 echo "build_esmfold = ${build_esmfold}"
 
+# Function to build a Docker image with optional proxy arguments
+build_image() {
+    local image_name="$1"
+    local dockerfile="$2"
+    local args=()
+
+    # Add proxy arguments if set
+    if [[ -n "$http_proxy" ]]; then
+        args+=(--build-arg http_proxy=$http_proxy)
+    fi
+    if [[ -n "$https_proxy" ]]; then
+        args+=(--build-arg https_proxy=$https_proxy)
+    fi
+    if [[ -n "$no_proxy" ]]; then
+        args+=(--build-arg no_proxy=$no_proxy)
+    fi
+
+    # Add the BASE_IMAGE argument
+    args+=(--build-arg BASE_IMAGE=$BASE_IMAGE)
+
+    # Execute the build command
+    $runtime build "${args[@]}" -f "$dockerfile" -t "$image_name" .
+}
+
+# Build base image with optional proxy arguments
 if ! image_exists "$BASE_IMAGE"; then
     echo "Building base image..."
-    $runtime build -f Dockerfile.base -t $BASE_IMAGE .
+    build_image "$BASE_IMAGE" "Dockerfile.base"
 fi
 
 # Build image for esm
 if $build_esm && ! image_exists "$ESM_IMAGE"; then
     echo "Building image for esm..."
-    $runtime build --build-arg BASE_IMAGE=$BASE_IMAGE -f Dockerfile.esm -t $ESM_IMAGE .
+    build_image "$ESM_IMAGE" "Dockerfile.esm"
 fi
 
 # Build image for esm_fold
 if $build_esmfold && ! image_exists "$ESMFOLD_IMAGE"; then
     echo "Building image for esm_fold..."
-    $runtime build --build-arg BASE_IMAGE=$BASE_IMAGE -f Dockerfile.esmfold -t $ESMFOLD_IMAGE .
+    build_image "$ESMFOLD_IMAGE" "Dockerfile.esmfold"
 fi
 
 echo "Build process completed."
