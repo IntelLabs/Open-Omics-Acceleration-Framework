@@ -12,7 +12,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install necessary build tools and clean up
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git build-essential wget vim ca-certificates && \
+    git build-essential wget vim ca-certificates numactl autoconf automake make && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get autoremove -y && \
     apt-get clean
@@ -46,12 +46,18 @@ RUN  wget https://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063
      wget https://files.ipd.uw.edu/pub/RFdiffusion/1befcb9b28e2f778f53d47f18b7597fa/RF_structure_prediction_weights.pt
 
 WORKDIR /app/RFdiffusion
+
 # Apply the patch file
 COPY rfdiffusion.patch /app/RFdiffusion/rfdiffusion.patch
-RUN git apply rfdiffusion.patch
+RUN git apply RFdiffusion.patch
 
 RUN /opt/conda/bin/conda env create -f env/SE3nv.yml
+
 # Set up environment activation and PATH
+RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
+RUN cd jemalloc && bash autogen.sh --prefix=/opt/conda/envs/SE3nv/ && make install
+RUN cd .. && rm -rf jemalloc
+
 RUN echo "source /opt/conda/bin/activate SE3nv" >> ~/.bashrc
 ENV PATH="/opt/conda/envs/SE3nv/bin:/opt/conda/bin:$PATH"
 	
@@ -66,12 +72,13 @@ RUN pip install -e .
 WORKDIR /app/RFdiffusion
 RUN tar -xvf examples/ppi_scaffolds_subset.tar.gz -C examples/
 
+WORKDIR /app/RFdiffusion/scripts
 RUN chown -R $SERVICE_NAME:$SERVICE_NAME /app
+
 # Switch to non-root user
 USER $SERVICE_NAME
 HEALTHCHECK NONE
-# Set the default command to run the application
-#CMD ["python"]
-CMD LD_PRELOAD=/opt/conda/lib/libiomp5.so:/opt/conda/lib/libjemalloc.so:$LD_PRELOAD \
-    MALLOC_CONF="oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms:-1,muzzy_decay_ms:-1" \
-    python \ scripts/run_inference.py
+
+ENV LD_PRELOAD "/opt/conda/envs/SE3nv/lib/libjemalloc.so:$LD_PRELOAD"
+ENV MALLOC_CONF "oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms:-1,muzzy_decay_ms:-1" 
+CMD python 
