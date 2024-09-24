@@ -61,10 +61,20 @@ index 76b8e74..5c37d82 100644
      final_atom_mask = output["atom37_atom_exists"]
      pdbs = []
 diff --git a/examples/inverse_folding/sample_sequences.py b/examples/inverse_folding/sample_sequences.py
-index 3a12693..90e8269 100644
+index 3a12693..4e53b28 100644
 --- a/examples/inverse_folding/sample_sequences.py
 +++ b/examples/inverse_folding/sample_sequences.py
-@@ -31,7 +31,7 @@ def sample_seq_singlechain(model, alphabet, args):
+@@ -18,7 +18,8 @@ import esm.inverse_folding
+ 
+ 
+ def sample_seq_singlechain(model, alphabet, args):
+-    if torch.cuda.is_available() and not args.nogpu:
++    nogpu = True
++    if torch.cuda.is_available() and not nogpu:
+         model = model.cuda()
+         print("Transferred model to GPU")
+     coords, native_seq = esm.inverse_folding.util.load_coords(args.pdbfile, args.chain)
+@@ -31,7 +32,7 @@ def sample_seq_singlechain(model, alphabet, args):
      with open(args.outpath, 'w') as f:
          for i in range(args.num_samples):
              print(f'\nSampling.. ({i+1} of {args.num_samples})')
@@ -73,14 +83,21 @@ index 3a12693..90e8269 100644
              print('Sampled sequence:')
              print(sampled_seq)
              f.write(f'>sampled_seq_{i+1}\n')
-@@ -107,17 +107,33 @@ def main():
+@@ -42,7 +43,7 @@ def sample_seq_singlechain(model, alphabet, args):
+ 
+ 
+ def sample_seq_multichain(model, alphabet, args):
+-    if torch.cuda.is_available() and not args.nogpu:
++    if torch.cuda.is_available() and not nogpu:
+         model = model.cuda()
+         print("Transferred model to GPU")
+     structure = esm.inverse_folding.util.load_structure(args.pdbfile)
+@@ -107,17 +108,33 @@ def main():
              action='store_false',
              help='use the backbone of only target chain in the input for conditioning'
      )
 -    parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
 -  
-+    parser.add_argument("--nogpu", action="store_false", help="Do not use GPU even if available")
-+    parser.add_argument("--noipex", action="store_false", help="Do not use intel_extension_for_pytorch")
 +    parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
 +    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
      args = parser.parse_args()
@@ -92,17 +109,19 @@ index 3a12693..90e8269 100644
 -        sample_seq_multichain(model, alphabet, args)
 -    else:
 -        sample_seq_singlechain(model, alphabet, args)
-+    if not args.noipex:
++    nogpu = True
++    noipex = True
++    if not noipex:
 +        dtype = torch.bfloat16 if args.bf16 else torch.float32
 +        import intel_extension_for_pytorch as ipex
 +        model = ipex.optimize(model, dtype=dtype)
-+    if args.noipex and args.bf16:
++    if noipex and args.bf16:
 +        model=model.bfloat16()
 +    enable_autocast = args.bf16
 +    if args.timing:
 +        import time
 +        start_time = time.time()
-+    device_type ="cpu" if args.nogpu else "cuda"
++    device_type ="cpu" if nogpu else "cuda"
 +    with torch.no_grad():
 +        with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
 +            if args.multichain_backbone:
@@ -115,17 +134,34 @@ index 3a12693..90e8269 100644
  
  if __name__ == '__main__':
 diff --git a/examples/inverse_folding/score_log_likelihoods.py b/examples/inverse_folding/score_log_likelihoods.py
-index cd81951..ff329c5 100644
+index cd81951..9c0064c 100644
 --- a/examples/inverse_folding/score_log_likelihoods.py
 +++ b/examples/inverse_folding/score_log_likelihoods.py
-@@ -113,18 +113,33 @@ def main():
+@@ -21,7 +21,8 @@ import esm.inverse_folding
+ 
+ 
+ def score_singlechain_backbone(model, alphabet, args):
+-    if torch.cuda.is_available() and not args.nogpu:
++    nogpu = True
++    if torch.cuda.is_available() and not nogpu:
+         model = model.cuda()
+         print("Transferred model to GPU")
+     coords, native_seq = esm.inverse_folding.util.load_coords(args.pdbfile, args.chain)
+@@ -50,7 +51,7 @@ def score_singlechain_backbone(model, alphabet, args):
+ 
+ 
+ def score_multichain_backbone(model, alphabet, args):
+-    if torch.cuda.is_available() and not args.nogpu:
++    if torch.cuda.is_available() and not nogpu:
+         model = model.cuda()
+         print("Transferred model to GPU")
+     structure = esm.inverse_folding.util.load_structure(args.pdbfile)
+@@ -113,18 +114,33 @@ def main():
              help='use the backbone of only target chain in the input for conditioning'
      )
      
 -    parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
 -    
-+    parser.add_argument("--nogpu", action="store_false", help="Do not use GPU even if available")
-+    parser.add_argument("--noipex", action="store_false", help="Do not use intel_extension_for_pytorch")
 +    parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
 +    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
      args = parser.parse_args()
@@ -138,17 +174,19 @@ index cd81951..ff329c5 100644
 -    else:
 -        score_singlechain_backbone(model, alphabet, args)
 -
-+    if not args.noipex:
++    nogpu = True
++    noipex = True
++    if not noipex:
 +        dtype = torch.bfloat16 if args.bf16 else torch.float32
 +        import intel_extension_for_pytorch as ipex
 +        model = ipex.optimize(model, dtype=dtype)
-+    if args.noipex and args.bf16:
++    if noipex and args.bf16:
 +        model=model.bfloat16()
 +    enable_autocast = args.bf16
 +    if args.timing:
 +        import time
 +        start_time = time.time()
-+    device_type ="cpu" if args.nogpu else "cuda"
++    device_type ="cpu" if nogpu else "cuda"
 +    with torch.no_grad():
 +        with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
 +            if args.multichain_backbone:
@@ -226,16 +264,14 @@ index b578ad9..42e4fa1 100644
          logger.info(f'Final designed sequences:')
          for seq in self.decode(self.x_seqs):
 diff --git a/scripts/extract.py b/scripts/extract.py
-index 9e5bcb3..6f18c63 100644
+index 9e5bcb3..4f3115b 100644
 --- a/scripts/extract.py
 +++ b/scripts/extract.py
-@@ -56,13 +56,23 @@ def create_parser():
+@@ -56,18 +56,28 @@ def create_parser():
          help="truncate sequences longer than the given value",
      )
  
 -    parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
-+    parser.add_argument("--nogpu", action="store_false", help="Do not use GPU even if available")
-+    parser.add_argument("--noipex", action="store_false", help="Do not use intel_extension_for_pytorch")
 +    parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
 +    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
      return parser
@@ -244,29 +280,38 @@ index 9e5bcb3..6f18c63 100644
  def run(args):
      model, alphabet = pretrained.load_model_and_alphabet(args.model_location)
      model.eval()
-+    if not args.noipex:
++    nogpu = True
++    noipex = True
++    if not noipex:
 +        dtype = torch.bfloat16 if args.bf16 else torch.float32
 +        import intel_extension_for_pytorch as ipex
 +        model = ipex.optimize(model, dtype=dtype)
-+    if args.noipex and args.bf16:
++    if noipex and args.bf16:
 +        model.bfloat16()
 +
      if isinstance(model, MSATransformer):
          raise ValueError(
              "This script currently does not handle models with MSA input (MSA Transformer)."
-@@ -83,7 +93,8 @@ def run(args):
+         )
+-    if torch.cuda.is_available() and not args.nogpu:
++    if torch.cuda.is_available() and not nogpu:
+         model = model.cuda()
+         print("Transferred model to GPU")
+ 
+@@ -83,17 +93,26 @@ def run(args):
  
      assert all(-(model.num_layers + 1) <= i <= model.num_layers for i in args.repr_layers)
      repr_layers = [(i + model.num_layers + 1) % (model.num_layers + 1) for i in args.repr_layers]
 -
 +    enable_autocast = args.bf16
-+    device_type ="cpu" if args.nogpu else "cuda"
++    device_type ="cpu" if nogpu else "cuda"
      with torch.no_grad():
          for batch_idx, (labels, strs, toks) in enumerate(data_loader):
              print(
-@@ -91,9 +102,17 @@ def run(args):
+                 f"Processing {batch_idx + 1} of {len(batches)} batches ({toks.size(0)} sequences)"
              )
-             if torch.cuda.is_available() and not args.nogpu:
+-            if torch.cuda.is_available() and not args.nogpu:
++            if torch.cuda.is_available() and not nogpu:
                  toks = toks.to(device="cuda", non_blocking=True)
 +            if args.timing:
 +                import time
@@ -309,28 +354,40 @@ index 9e5bcb3..6f18c63 100644
  if __name__ == "__main__":
      main()
 diff --git a/scripts/fold.py b/scripts/fold.py
-index 482cdc9..8c9e778 100644
+index 482cdc9..2b73a98 100644
 --- a/scripts/fold.py
 +++ b/scripts/fold.py
-@@ -119,6 +119,9 @@ def create_parser():
+@@ -117,8 +117,9 @@ def create_parser():
+         "result in lower memory usage at the cost of speed. Recommended values: 128, 64, 32. "
+         "Default: None.",
      )
-     parser.add_argument("--cpu-only", help="CPU only", action="store_true")
+-    parser.add_argument("--cpu-only", help="CPU only", action="store_true")
      parser.add_argument("--cpu-offload", help="Enable CPU offloading", action="store_true")
-+    parser.add_argument("--noipex", action="store_true", help="Do not use ipex even if available")
 +    parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
 +    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
      return parser
  
  
-@@ -153,15 +156,29 @@ def run(args):
+@@ -145,23 +146,38 @@ def run(args):
+ 
+     model = model.eval()
+     model.set_chunk_size(args.chunk_size)
+-
+-    if args.cpu_only:
++    noipex = True
++    cpu_only =True
++    if cpu_only:
+         model.esm.float()  # convert to fp32 as ESM-2 in fp16 is not supported on CPU
+         model.cpu()
+     elif args.cpu_offload:
          model = init_model_on_gpu_with_cpu_offloading(model)
      else:
          model.cuda()
-+    if not args.noipex:
++    if not noipex:
 +        dtype = torch.bfloat16 if args.bf16 else torch.float32
 +        import intel_extension_for_pytorch as ipex
 +        model = ipex.optimize(model, dtype=dtype)
-+    if args.noipex and args.bf16:
++    if noipex and args.bf16:
 +        model=model.bfloat16()
 +    enable_autocast = args.bf16
      logger.info("Starting Predictions")
@@ -338,7 +395,7 @@ index 482cdc9..8c9e778 100644
  
      num_completed = 0
      num_sequences = len(all_sequences)
-+    device_type ="cpu" if args.cpu_only else "cuda"
++    device_type ="cpu" if cpu_only else "cuda"
      for headers, sequences in batched_sequences:
          start = timer()
          try:

@@ -21,7 +21,7 @@ import esm.inverse_folding
 
 
 def score_singlechain_backbone(model, alphabet, args):
-    if torch.cuda.is_available() and not args.nogpu:
+    if torch.cuda.is_available() and not nogpu:
         model = model.cuda()
         print("Transferred model to GPU")
     coords, native_seq = esm.inverse_folding.util.load_coords(args.pdbfile, args.chain)
@@ -50,7 +50,7 @@ def score_singlechain_backbone(model, alphabet, args):
 
 
 def score_multichain_backbone(model, alphabet, args):
-    if torch.cuda.is_available() and not args.nogpu:
+    if torch.cuda.is_available() and not nogpu:
         model = model.cuda()
         print("Transferred model to GPU")
     structure = esm.inverse_folding.util.load_structure(args.pdbfile)
@@ -121,15 +121,16 @@ def main():
 
     model, alphabet = esm.pretrained.esm_if1_gvp4_t16_142M_UR50()
     model = model.eval()
-
-    if not args.noipex:
+    nogpu = True
+    noipex = True
+    if not noipex:
         dtype = torch.bfloat16 if args.bf16 else torch.float32
         import intel_extension_for_pytorch as ipex
         model = ipex.optimize(model, dtype=dtype)
-    if args.noipex and args.bf16:
+    if noipex and args.bf16:
         model=model.bfloat16()
     enable_autocast = args.bf16
-    device_type ="cpu" if args.nogpu else "cuda"
+    device_type ="cpu" if nogpu else "cuda"
     if args.timing:
         import time
         start_time = time.time()

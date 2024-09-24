@@ -29,6 +29,21 @@ COPY esm_change_all.patch /app/esm/esm_change_all.patch
 WORKDIR /app/esm
 RUN git apply esm_change_all.patch
 
+
+USER root
+RUN mkdir -p /executables && \
+    ln -s /app/esm/scripts/extract.py /executables/ && \
+    ln -s /app/esm/examples/lm-design/lm_design.py /executables/ && \
+    ln -s /app/esm/examples/inverse_folding/sample_sequences.py /executables/ && \
+    ln -s /app/esm/examples/inverse_folding/score_log_likelihoods.py /executables/ && \
+    ln -s /app/esm/scripts/fold.py /executables/
+RUN echo '#!/bin/bash\ncd /app/esm/examples/lm-design\npython lm_design.py "$@"' > /executables/lm_design.sh && \
+    chmod +x /executables/lm_design.sh
+
+
+USER $SERVICE_NAME
+
+
 RUN mkdir -p /home/esm-base-service/.cache/torch/hub/ && \
     rm -rf /home/esm-base-service/.cache/torch/hub/checkpoints && \
     ln -s /checkpoints /home/esm-base-service/.cache/torch/hub/checkpoints

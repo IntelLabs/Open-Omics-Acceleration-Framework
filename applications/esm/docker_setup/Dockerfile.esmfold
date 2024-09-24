@@ -38,7 +38,7 @@ echo "mamba activate esmfold" >> /app/init.sh && \
 chmod +x /app/init.sh && \
 echo "source /app/init.sh" >> ~/.bashrc
 
-WORKDIR /app/esm
+WORKDIR /executables
 HEALTHCHECK NONE
 
 ENV LD_PRELOAD "/home/esm-base-service/conda/envs/esmfold/lib/libjemalloc.so:$LD_PRELOAD"
@@ -53,4 +53,7 @@ RUN echo '#!/bin/bash' > /app/entrypoint.sh && \
     echo 'fi' >> /app/entrypoint.sh && \
     chmod +x /app/entrypoint.sh
 
+    
 ENTRYPOINT ["/app/entrypoint.sh"]
+CMD []
+

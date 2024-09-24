@@ -56,8 +56,6 @@ def create_parser():
         help="truncate sequences longer than the given value",
     )
 
-    parser.add_argument("--nogpu", action="store_false", help="Do not use GPU even if available")
-    parser.add_argument("--noipex", action="store_false", help="Do not use intel_extension_for_pytorch")
     parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
     parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
     return parser
@@ -66,18 +64,20 @@ def create_parser():
 def run(args):
     model, alphabet = pretrained.load_model_and_alphabet(args.model_location)
     model.eval()
-    if not args.noipex:
+    nogpu = True
+    noipex = True
+    if not noipex:
         dtype = torch.bfloat16 if args.bf16 else torch.float32
         import intel_extension_for_pytorch as ipex
         model = ipex.optimize(model, dtype=dtype)
-    if args.noipex and args.bf16:
+    if noipex and args.bf16:
         model.bfloat16()
 
     if isinstance(model, MSATransformer):
         raise ValueError(
             "This script currently does not handle models with MSA input (MSA Transformer)."
         )
-    if torch.cuda.is_available() and not args.nogpu:
+    if torch.cuda.is_available() and not nogpu:
         model = model.cuda()
         print("Transferred model to GPU")
 
@@ -94,13 +94,13 @@ def run(args):
     assert all(-(model.num_layers + 1) <= i <= model.num_layers for i in args.repr_layers)
     repr_layers = [(i + model.num_layers + 1) % (model.num_layers + 1) for i in args.repr_layers]
     enable_autocast = args.bf16
-    device_type ="cpu" if args.nogpu else "cuda"
+    device_type ="cpu" if nogpu else "cuda"
     with torch.no_grad():
         for batch_idx, (labels, strs, toks) in enumerate(data_loader):
             print(
                 f"Processing {batch_idx + 1} of {len(batches)} batches ({toks.size(0)} sequences)"
             )
-            if torch.cuda.is_available() and not args.nogpu:
+            if torch.cuda.is_available() and not nogpu:
                 toks = toks.to(device="cuda", non_blocking=True)
             if args.timing:
                 import time

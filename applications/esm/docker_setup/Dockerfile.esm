@@ -26,7 +26,7 @@ WORKDIR /app/esm/examples/lm-design/
 RUN wget https://dl.fbaipublicfiles.com/fair-esm/examples/lm_design/linear_projection_model.pt
 
 
-WORKDIR /app/esm
+WORKDIR /executables
 HEALTHCHECK NONE
 
 RUN echo '#!/bin/bash' > /app/entrypoint.sh && \
@@ -39,5 +39,4 @@ RUN echo '#!/bin/bash' > /app/entrypoint.sh && \
     chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["/app/entrypoint.sh"]
-
-
+CMD []

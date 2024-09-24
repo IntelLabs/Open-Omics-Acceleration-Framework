@@ -117,9 +117,7 @@ def create_parser():
         "result in lower memory usage at the cost of speed. Recommended values: 128, 64, 32. "
         "Default: None.",
     )
-    parser.add_argument("--cpu-only", help="CPU only", action="store_true")
     parser.add_argument("--cpu-offload", help="Enable CPU offloading", action="store_true")
-    parser.add_argument("--noipex", action="store_true", help="Do not use ipex even if available")
     parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
     parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
     return parser
@@ -144,23 +142,22 @@ def run(args):
         torch.hub.set_dir(args.model_dir)
 
     model = esm.pretrained.esmfold_v1()
-
-
     model = model.eval()
     model.set_chunk_size(args.chunk_size)
-
-    if args.cpu_only:
+    cpu_only = True
+    noipex = True
+    if cpu_only:
         model.esm.float()  # convert to fp32 as ESM-2 in fp16 is not supported on CPU
         model.cpu()
     elif args.cpu_offload:
         model = init_model_on_gpu_with_cpu_offloading(model)
     else:
         model.cuda()
-    if not args.noipex:
+    if not noipex:
         dtype = torch.bfloat16 if args.bf16 else torch.float32
         import intel_extension_for_pytorch as ipex
         model = ipex.optimize(model, dtype=dtype)
-    if args.noipex and args.bf16:
+    if noipex and args.bf16:
         model=model.bfloat16()
     enable_autocast = args.bf16
     logger.info("Starting Predictions")
@@ -168,7 +165,7 @@ def run(args):
 
     num_completed = 0
     num_sequences = len(all_sequences)
-    device_type ="cpu" if args.cpu_only else "cuda"
+    device_type ="cpu" if cpu_only else "cuda"
     for headers, sequences in batched_sequences:
         start = timer()
         try:
