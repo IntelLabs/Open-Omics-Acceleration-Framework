@@ -48,7 +48,7 @@ RUN  wget https://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063
 WORKDIR /app/RFdiffusion
 
 # Apply the patch file
-COPY rfdiffusion.patch /app/RFdiffusion/rfdiffusion.patch
+COPY RFdiffusion.patch /app/RFdiffusion/RFdiffusion.patch
 RUN git apply RFdiffusion.patch
 
 RUN /opt/conda/bin/conda env create -f env/SE3nv.yml
