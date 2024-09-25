@@ -26,7 +26,7 @@ WORKDIR /app/esm/examples/lm-design/
 RUN wget https://dl.fbaipublicfiles.com/fair-esm/examples/lm_design/linear_projection_model.pt
 
 
-WORKDIR /executables
+WORKDIR /app/esm/
 HEALTHCHECK NONE
 
 RUN echo '#!/bin/bash' > /app/entrypoint.sh && \

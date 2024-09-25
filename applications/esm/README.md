@@ -52,7 +52,7 @@ The `input` directory must contain both FASTA_FILE and PDB_FILE for the tool to 
 ### Run Commands
 In this ESM setup, the `input` directory contains files like FASTA (protein sequences) and PDB (protein structures) for different tasks such as sequence extraction and protein folding. Each file type has a specific use. For testing, follow the provided instructions or refer to the research papers for more details. 
 #### ESM-Embeddings 
-Compute embeddings for multiple protein sequences from a FASTA file in a single batch process using ESM.See [Compute embeddings in bulk from FASTA](#compute-embeddings-in-bulk-from-fasta) for detailed user guid
+Compute embeddings for multiple protein sequences from a FASTA file in a single batch process using ESM.See [Compute embeddings in bulk from FASTA](#compute-embeddings-in-bulk-from-fasta) for detailed user guide.
 
 ```bash
 docker run -it \
@@ -60,12 +60,12 @@ docker run -it \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
   esm_image:latest \
-  python extract.py esm2_t33_650M_UR50D /input/some_proteins.fasta /output --repr_layers 0 32 33 --include mean per_tok --bf16
+  python scripts/extract.py esm2_t33_650M_UR50D /input/some_proteins.fasta /output --repr_layers 0 32 33 --include mean per_tok --bf16
 ```
 <br />
 
 #### LM-Design 
-LM-Design supports fixed backbone sequence generation for known structures and random sequence generation for exploratory protein design.See "[examples/lm-design/](examples/lm-design/)" for detailed user guide. 
+LM-Design supports fixed backbone sequence generation for known structures and random sequence generation for exploratory protein design.See [examples/lm-design/](https://github.com/facebookresearch/esm/tree/main/examples/lm-design#lm-design-examples) for detailed user guide. 
 <summary>Fixed backbone design</summary>
 
 ```bash
@@ -73,8 +73,8 @@ docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
-	esm_image:latest \
-	bash lm_design.sh task=fixedbb pdb_fn=/input/2N2U.pdb bf16=True &> $OUTPUT/fixed_backbone_log
+	esm_image:latest  bash -c \
+	"cd examples/lm-design && python -m lm_design task=fixedbb task=fixedbb pdb_fn=/input/2N2U.pdb bf16=True &> /output/fixed_backbone_log"
 
 ```
 <summary>Free generation design</summary>
@@ -83,14 +83,14 @@ docker run -it \
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $PWD/output:/output \
-	esm_image:latest \
-	bash lm_design.sh task=free_generation bf16=True &> $OUTPUT/free_generation_log
+	esm_image:latest  bash -c \
+	"cd examples/lm-design && python -m lm_design task=free_generation bf16=True &> /output/free_generation_log"
 
 ```
 <br />
 
 #### Inverse_Folding
-Inverse Folding involves generating sample protein sequences that are designed to match a specified structure and scoring these sequences based on their folding compatibility.See [Inverse folding](#inverse-folding) for detailed user guide. 
+Inverse Folding involves generating sample protein sequences that are designed to match a specified structure and scoring these sequences based on their folding compatibility.See [examples/inverse_folding/](https://github.com/facebookresearch/esm/tree/main/examples/inverse_folding#inverse-folding-with-esm-if1) for detailed user guide. 
 <summary>Sample sequence designs for a given structure</summary>
 
 ```bash
@@ -98,8 +98,8 @@ docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
-  esm_image:latest \
-  python sample_sequences.py /input/5YH2.pdb --chain C --temperature 1 --num-samples 3  --outpath /output/sampled_sequences.fasta --bf16
+  esm_image:latest bash -c \
+  "cd examples/inverse_folding && python sample_sequences.py /input/5YH2.pdb --chain C --temperature 1 --num-samples 3  --outpath /output/sampled_sequences.fasta --bf16"
 ```
 
 <summary>Scoring sequences</summary>
@@ -109,8 +109,8 @@ docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
-  esm_image:latest \
-  python score_log_likelihoods.py /input/5YH2.pdb /input/5YH2_mutated_seqs.fasta --chain C --outpath /output/scores.csv --bf16
+  esm_image:latest bash -c \
+  "cd examples/inverse_folding && python score_log_likelihoods.py /input/5YH2.pdb /input/5YH2_mutated_seqs.fasta --chain C --outpath /output/scores.csv --bf16"
 ```
 
 <summary>Sample sequence designs for a given structure - Multichain backbone</summary>
@@ -120,8 +120,8 @@ docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
-  esm_image:latest \
-  python sample_sequences.py /input/5YH2.pdb --chain C --temperature 1 --num-samples 3  --outpath /output/mb_sampled_sequences.fasta --multichain-backbone --bf16
+  esm_image:latest bash -c \
+  "cd examples/inverse_folding && python sample_sequences.py /input/5YH2.pdb --chain C --temperature 1 --num-samples 3  --outpath /output/mb_sampled_sequences.fasta --multichain-backbone --bf16"
 ```
 
 <summary>Scoring sequences - Multichain backbone</summary>
@@ -131,8 +131,8 @@ docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
-  esm_image:latest \
-  python score_log_likelihoods.py /input/5YH2.pdb /input/5YH2_mutated_seqs.fasta --chain C --outpath /output/mb_scores.csv --multichain-backbone --bf16
+  esm_image:latest bash -c \
+  "cd examples/inverse_folding && python score_log_likelihoods.py /input/5YH2.pdb /input/5YH2_mutated_seqs.fasta --chain C --outpath /output/mb_scores.csv --multichain-backbone --bf16"
 ```
 <br />
 
@@ -145,7 +145,7 @@ docker run -it \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
   esmfold_image:latest \
-  python fold.py -i /input/few_proteins.fasta -o /output --bf16
+  python scripts/fold.py -i /input/few_proteins.fasta -o /output --bf16
 ```
 
 
