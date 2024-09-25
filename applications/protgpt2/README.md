@@ -22,10 +22,14 @@ conda env create -f env.yml
 conda activate protgpt2
 ```
 
-Note: Precision is optional for optimization. By default, we use bfloat16. If you want to run with float32 or bfloat16, set precision=bfloat16 or precision=float32 accordingly.
+Note: Precision is optional for optimization. By default, we use float32. If you want to run with float32 or bfloat16, set precision=bfloat16 or precision=float32 accordingly.
 
 ```bash
-python protgpt2.py --model_dir ./model_dir --max_length 150 --do_sample True --top_k 950 --repetition_penalty 1.5 --num_return_sequences 5 --eos_token_id 1  --dtype bfloat16 --iterations 5
+python protgpt2.py --model_dir ./model_dir --max_length <Integer> --do_sample True --top_k 950 --repetition_penalty 1.2 --num_return_sequences <Integer> --eos_token_id 0  --dtype <float32/bfloat16> --iterations <Integer> --output_file <output_seq.txt>
+```
+
+```bash
+python protgpt2.py --model_dir ./model_dir --max_length 100 --do_sample True --top_k 950 --repetition_penalty 1.2 --num_return_sequences 10 --eos_token_id 0  --dtype float32 --iterations 5 --output_file output_seq.txt
 ```
 
 ## How to use Docker
@@ -34,7 +38,7 @@ python protgpt2.py --model_dir ./model_dir --max_length 150 --do_sample True --t
 git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
 cd TransOmics.OpenOmicsInternal/applications/protgpt2
 ```
-## Downloadig the model
+## Downloading the model
 ```bash
 bash model_script.sh
 ```
@@ -47,10 +51,15 @@ docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_p
 Note: Precision is optional for optimization. By default, we use bfloat16. If you want to run with float32 or bfloat16, set precision=bfloat16 or precision=float32 accordingly.
 
 ```bash
-docker run -it protgpt2:latest
-	python protgpt2.py  --model_dir ./model_dir --max_length 150 --do_sample False 
-	--top_k 900 --repetition_penalty 1.5 --num_return_sequences 5 
-	--eos_token_id 1  --dtype bfloat16 --iterations 5
+export OUTPUT_FOLDER=$PWD
+
+docker run -it -v $OUTPUT_FOLDER:/app protgpt2:latest python protgpt2.py  --model_dir ./model_dir --max_length <Integer> --do_sample <True> --top_k <950> --repetition_penalty <1.2> --num_return_sequences <Integer> --eos_token_id <0>  --dtype <float32/bfloat16> --iterations <Integer> --output_file <output_seq.txt>
+```
+
+```bash
+export OUTPUT_FOLDER=$PWD
+
+docker run -it -v $OUTPUT_FOLDER:/data protgpt2:latest python protgpt2.py  --model_dir ./model_dir --max_length 100 --do_sample True --top_k 950 --repetition_penalty 1.2 --num_return_sequences 10 --eos_token_id 0  --dtype float32 --iterations 5 --output_file /data/output_seq.txt
 ```
 
 ## Example 1: Generating de novo proteins in a zero-shot fashion

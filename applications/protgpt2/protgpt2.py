@@ -26,6 +26,7 @@ def main():
     parser.add_argument('--dtype', type=str, choices=['float32', 'bfloat16'], default='float32', help='Data type for model optimization')
     parser.add_argument('--iterations', type=int, default=5, help='Number of iterations to run')
     parser.add_argument('--model_dir', type=str, required=True, help='Directory to save or load the model')
+    parser.add_argument('--output_file', type=str, default='output_sequences.txt', help='File to save the generated sequences')
     args = parser.parse_args()
 
     make_deterministic()
@@ -55,8 +56,10 @@ def main():
     print('Average time per iteration:', (toc - tic) / args.iterations, 'seconds')
 
     # Printing the first two sequences after all iterations
-    for seq in sequences:
-        print(seq)
+    with open(args.output_file, 'w') as f:
+        for seq in sequences:
+            f.write(seq['generated_text'] + "\n")
+    print(f'Output saved to {args.output_file}')
 
 if __name__ == "__main__":
     main()
