@@ -16,16 +16,7 @@ image_exists() {
   $runtime images -q "$image_name" | grep -q .
 }
 
-# Prompt for container runtime
-echo "Select container runtime (docker or podman):"
-read -r runtime
-
-# Check if the selected runtime is available
-if [[ "$runtime" != "docker" && "$runtime" != "podman" ]]; then
-  echo "Invalid container runtime selected. Please choose either 'docker' or 'podman'."
-  exit 1
-fi
-
+runtime=docker
 if ! command_exists "$runtime"; then
   echo "$runtime is not installed on your system. Please install it first."
   exit 1

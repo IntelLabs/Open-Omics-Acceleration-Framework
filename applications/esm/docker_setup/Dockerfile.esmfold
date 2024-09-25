@@ -27,10 +27,11 @@ mamba activate esmfold && \
 python setup.py install "
 
 WORKDIR /app/esm
-RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git && \
-    cd jemalloc && bash autogen.sh --prefix=${HOME}/conda/envs/esmfold/ && make install && \
-    cd .. && rm -rf jemalloc
-
+RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
+WORKDIR /app/esm/jemalloc
+RUN bash autogen.sh --prefix=${HOME}/conda/envs/esmfold/ && make install && \
+    rm -rf /app/esm/jemalloc
+    
 RUN echo "#!/bin/bash" >> /app/init.sh && \
 echo "source ${HOME}/conda/etc/profile.d/conda.sh" >> /app/init.sh && \
 echo "source ${HOME}/conda/etc/profile.d/mamba.sh" >> /app/init.sh && \

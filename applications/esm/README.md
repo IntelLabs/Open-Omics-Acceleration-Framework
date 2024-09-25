@@ -11,12 +11,7 @@ Execute the build script to create the Docker container
  cd docker_setup
  ./build_docker_images.sh
 ```
-### Step 2: Choose the container runtime available on your system
-Select the container runtime (Docker or Podman) that is installed on your system.
-```bash
- Choose your preferred container runtime: Docker or Podman #type Docker or Podman 
-```
-### Step 3: Choose the ESM image to install
+### Step 2: Choose the ESM image to install
 Select the ESM image you want to build based on your specific needs
 
 #### Given the options, here's how you might decide:
@@ -44,15 +39,15 @@ bash models.sh
 ```
 ### Export Directories  
 ```bash
-export INPUT=<your input folder>                
-export OUTPUT=<your output folder>     
+export INPUT=$PWD/<your input folder>                
+export OUTPUT=$PWD/<your output folder>     
 
 ```
 The `input` directory must contain both FASTA_FILE and PDB_FILE for the tool to process sequence and structural data
 ### Run Commands
 In this ESM setup, the `input` directory contains files like FASTA (protein sequences) and PDB (protein structures) for different tasks such as sequence extraction and protein folding. Each file type has a specific use. For testing, follow the provided instructions or refer to the research papers for more details. 
 #### ESM-Embeddings 
-Compute embeddings for multiple protein sequences from a FASTA file in a single batch process using ESM.See [Compute embeddings in bulk from FASTA](#compute-embeddings-in-bulk-from-fasta) for detailed user guide.
+Compute embeddings for multiple protein sequences from a FASTA file in a single batch process using ESM.See [Compute embeddings in bulk from FASTA](#bulk_fasta) for detailed user guide.
 
 ```bash
 docker run -it \
@@ -98,8 +93,8 @@ docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
-  esm_image:latest bash -c \
-  "cd examples/inverse_folding && python sample_sequences.py /input/5YH2.pdb --chain C --temperature 1 --num-samples 3  --outpath /output/sampled_sequences.fasta --bf16"
+  esm_image:latest \
+  python examples/inverse_folding/sample_sequences.py /input/5YH2.pdb --chain C --temperature 1 --num-samples 3  --outpath /output/sampled_sequences.fasta --bf16
 ```
 
 <summary>Scoring sequences</summary>
@@ -109,8 +104,8 @@ docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
-  esm_image:latest bash -c \
-  "cd examples/inverse_folding && python score_log_likelihoods.py /input/5YH2.pdb /input/5YH2_mutated_seqs.fasta --chain C --outpath /output/scores.csv --bf16"
+  esm_image:latest \
+  python examples/inverse_folding/score_log_likelihoods.py /input/5YH2.pdb /input/5YH2_mutated_seqs.fasta --chain C --outpath /output/scores.csv --bf16
 ```
 
 <summary>Sample sequence designs for a given structure - Multichain backbone</summary>
@@ -120,8 +115,8 @@ docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
-  esm_image:latest bash -c \
-  "cd examples/inverse_folding && python sample_sequences.py /input/5YH2.pdb --chain C --temperature 1 --num-samples 3  --outpath /output/mb_sampled_sequences.fasta --multichain-backbone --bf16"
+  esm_image:latest \
+  python examples/inverse_folding/sample_sequences.py /input/5YH2.pdb --chain C --temperature 1 --num-samples 3  --outpath /output/mb_sampled_sequences.fasta --multichain-backbone --bf16
 ```
 
 <summary>Scoring sequences - Multichain backbone</summary>
@@ -131,13 +126,13 @@ docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
-  esm_image:latest bash -c \
-  "cd examples/inverse_folding && python score_log_likelihoods.py /input/5YH2.pdb /input/5YH2_mutated_seqs.fasta --chain C --outpath /output/mb_scores.csv --multichain-backbone --bf16"
+  esm_image:latest \
+  python examples/inverse_folding/score_log_likelihoods.py /input/5YH2.pdb /input/5YH2_mutated_seqs.fasta --chain C --outpath /output/mb_scores.csv --multichain-backbone --bf16
 ```
 <br />
 
-#### ESMFold <a name="esmfold"></a>
-ESMFold predicts protein structures from amino acid sequences using advanced machine learning techniques, facilitating rapid structural insights in protein design.See [ESMFold Structure Prediction](#esmfold-structure-prediction) for detailed user guide. 
+#### ESMFold
+ESMFold predicts protein structures from amino acid sequences using advanced machine learning techniques, facilitating rapid structural insights in protein design.See [ESMFold Structure Prediction](#esmfold) for detailed user guide. 
 
 ```bash
 docker run -it \
