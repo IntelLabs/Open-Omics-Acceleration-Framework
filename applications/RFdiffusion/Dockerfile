@@ -53,11 +53,14 @@ RUN git apply RFdiffusion.patch
 
 RUN /opt/conda/bin/conda env create -f env/SE3nv.yml
 
-# Set up environment activation and PATH
+WORKDIR /app/RFdiffusion/
 RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
-RUN cd jemalloc && bash autogen.sh --prefix=/opt/conda/envs/SE3nv/ && make install
-RUN cd .. && rm -rf jemalloc
+WORKDIR /app/RFdiffusion/jemalloc
+RUN bash autogen.sh --prefix=/opt/conda/envs/SE3nv/ && make install
+WORKDIR /app/RFdiffusion
+RUN rm -rf jemalloc
 
+# Set up environment activation and PATH
 RUN echo "source /opt/conda/bin/activate SE3nv" >> ~/.bashrc
 ENV PATH="/opt/conda/envs/SE3nv/bin:/opt/conda/bin:$PATH"
 	
