@@ -1,0 +1,16 @@
+npts 40 40 40                        # num.grid points in xyz
+gridfld 1pgp_rigid.maps.fld          # grid_data_file
+spacing 0.375                        # spacing(A)
+receptor_types A C HD N NA OA P S SA # receptor atom types
+ligand_types P C OA HD N             # ligand atom types
+receptor 1pgp_rigid.pdbqt            # macromolecule
+gridcenter 23.429 29.822 39.602      # xyz-coordinates or auto
+smooth 0.5                           # store minimum energy w/in rad(A)
+map 1pgp_rigid.P.map                 # atom-specific affinity map
+map 1pgp_rigid.C.map                 # atom-specific affinity map
+map 1pgp_rigid.OA.map                # atom-specific affinity map
+map 1pgp_rigid.HD.map                # atom-specific affinity map
+map 1pgp_rigid.N.map                 # atom-specific affinity map
+elecmap 1pgp_rigid.e.map             # electrostatic potential map
+dsolvmap 1pgp_rigid.d.map              # desolvation potential map
+dielectric -0.1465                   # <0, AD4 distance-dep.diel;>0, constant

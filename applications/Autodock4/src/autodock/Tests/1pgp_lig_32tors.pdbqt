@@ -1,0 +1,142 @@
+REMARK  32 active torsions:
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK    1  A    between atoms: C1_7317  and  C2_7318 
+REMARK    2  A    between atoms: C4_7322  and  O5_7335 
+REMARK    3  A    between atoms: O7_7339  and  P1_7340 
+REMARK    4  A    between atoms: C4_7322  and  C5_7324 
+REMARK    5  A    between atoms: C3_7320  and  C4_7322 
+REMARK    6  A    between atoms: C2_7318  and  C3_7320 
+REMARK    7  A    between atoms: C5_7324  and  C6_7326 
+REMARK    8  A    between atoms: C2_7318  and  O3_7331 
+REMARK    9  A    between atoms: C3_7320  and  O4_7333 
+REMARK   10  A    between atoms: C5_7324  and  O6_7337 
+REMARK   11  A    between atoms: C6_7326  and  O7_7339 
+REMARK RMS_REF  0.6600
+ROOT
+ATOM      1  C4  PGP     1      22.894  28.598  40.259  1.00 30.80     0.180 C 
+ENDROOT
+BRANCH   1   2
+ATOM      2  C3  PGP     1      21.922  27.809  39.260  1.00 30.93     0.188 C 
+BRANCH   2   3
+ATOM      3  C2  PGP     1      20.328  27.813  39.443  1.00 35.22     0.250 C 
+BRANCH   3   4
+ATOM      4  O3  PGP     1      19.999  27.345  40.750  1.00 40.31    -0.382 OA
+ATOM      5  HO3 PGP     1      19.598  28.087  41.193  1.00  0.00     0.210 HD
+ENDBRANCH   3   4
+BRANCH   3   6
+ATOM      6  C1  PGP     1      19.701  29.203  39.198  1.00 35.87     0.205 C 
+ATOM      7  O2  PGP     1      18.498  29.386  39.417  1.00 37.45    -0.646 OA
+ATOM      8  O1  PGP     1      20.399  30.200  38.707  1.00 36.75    -0.646 OA
+ENDBRANCH   3   6
+ENDBRANCH   2   3
+BRANCH   2   9
+ATOM      9  O4  PGP     1      22.087  28.265  37.936  1.00 33.78    -0.390 OA
+ATOM     10  HO4 PGP     1      22.065  29.222  38.002  1.00  0.00     0.210 HD
+ENDBRANCH   2   9
+ENDBRANCH   1   2
+BRANCH   1  11
+ATOM     11  O5  PGP     1      22.804  30.023  40.224  1.00 30.90    -0.390 OA
+ATOM     12  HO5 PGP     1      23.534  30.396  40.714  1.00  0.00     0.210 HD
+ENDBRANCH   1  11
+BRANCH   1  13
+ATOM     13  C5  PGP     1      24.464  28.252  40.029  1.00 29.83     0.173 C 
+BRANCH  13  14
+ATOM     14  O6  PGP     1      25.163  28.259  41.267  1.00 26.30    -0.391 OA
+ATOM     15  H6  PGP     1      25.947  28.806  41.185  1.00  0.00     0.210 HD
+ENDBRANCH  13  14
+BRANCH  13  16
+ATOM     16  C6  PGP     1      25.350  29.132  39.061  1.00 33.11     0.217 C 
+BRANCH  16  17
+ATOM     17  O7  PGP     1      25.797  30.509  39.509  1.00 32.60    -0.405 OA
+BRANCH  17  18
+ATOM     18  P1  PGP     1      27.362  30.851  39.818  1.00 28.88     0.422 P 
+ATOM     19  O8  PGP     1      27.636  30.201  41.167  1.00 30.33    -0.742 OA
+ATOM     20  O9  PGP     1      27.639  32.300  40.093  1.00 26.26    -0.742 OA
+ATOM     21  O10 PGP     1      28.360  30.259  38.733  1.00 30.04    -0.742 OA
+ENDBRANCH  17  18
+ENDBRANCH  16  17
+ENDBRANCH  13  16
+ENDBRANCH   1  13
+BRANCH   1   2
+ATOM      2  C3  PGP     1      21.922  27.809  39.260  1.00 30.93     0.188 C 
+BRANCH   2   3
+ATOM      3  C2  PGP     1      20.328  27.813  39.443  1.00 35.22     0.250 C 
+BRANCH   3   4
+ATOM      4  O3  PGP     1      19.999  27.345  40.750  1.00 40.31    -0.382 OA
+ATOM      5  HO3 PGP     1      19.598  28.087  41.193  1.00  0.00     0.210 HD
+ENDBRANCH   3   4
+BRANCH   3   6
+ATOM      6  C1  PGP     1      19.701  29.203  39.198  1.00 35.87     0.205 C 
+ATOM      7  O2  PGP     1      18.498  29.386  39.417  1.00 37.45    -0.646 OA
+ATOM      8  O1  PGP     1      20.399  30.200  38.707  1.00 36.75    -0.646 OA
+ENDBRANCH   3   6
+ENDBRANCH   2   3
+BRANCH   2   9
+ATOM      9  O4  PGP     1      22.087  28.265  37.936  1.00 33.78    -0.390 OA
+ATOM     10  HO4 PGP     1      22.065  29.222  38.002  1.00  0.00     0.210 HD
+ENDBRANCH   2   9
+ENDBRANCH   1   2
+BRANCH   1  11
+ATOM     11  O5  PGP     1      22.804  30.023  40.224  1.00 30.90    -0.390 OA
+ATOM     12  HO5 PGP     1      23.534  30.396  40.714  1.00  0.00     0.210 HD
+ENDBRANCH   1  11
+BRANCH   1  13
+ATOM     13  C5  PGP     1      24.464  28.252  40.029  1.00 29.83     0.173 C 
+BRANCH  13  14
+ATOM     14  O6  PGP     1      25.163  28.259  41.267  1.00 26.30    -0.391 OA
+ATOM     15  H6  PGP     1      25.947  28.806  41.185  1.00  0.00     0.210 HD
+ENDBRANCH  13  14
+BRANCH  13  16
+ATOM     16  C6  PGP     1      25.350  29.132  39.061  1.00 33.11     0.217 C 
+BRANCH  16  17
+ATOM     17  O7  PGP     1      25.797  30.509  39.509  1.00 32.60    -0.405 OA
+BRANCH  17  18
+ATOM     18  P1  PGP     1      27.362  30.851  39.818  1.00 28.88     0.422 P 
+ATOM     19  O8  PGP     1      27.636  30.201  41.167  1.00 30.33    -0.742 OA
+ATOM     20  O9  PGP     1      27.639  32.300  40.093  1.00 26.26    -0.742 OA
+ATOM     21  O10 PGP     1      28.360  30.259  38.733  1.00 30.04    -0.742 OA
+ENDBRANCH  17  18
+ENDBRANCH  16  17
+ENDBRANCH  13  16
+ENDBRANCH   1  13
+BRANCH   1   2
+ATOM      2  C3  PGP     1      21.922  27.809  39.260  1.00 30.93     0.188 C 
+BRANCH   2   3
+ATOM      3  C2  PGP     1      20.328  27.813  39.443  1.00 35.22     0.250 C 
+BRANCH   3   4
+ATOM      4  O3  PGP     1      19.999  27.345  40.750  1.00 40.31    -0.382 OA
+ATOM      5  HO3 PGP     1      19.598  28.087  41.193  1.00  0.00     0.210 HD
+ENDBRANCH   3   4
+BRANCH   3   6
+ATOM      6  C1  PGP     1      19.701  29.203  39.198  1.00 35.87     0.205 C 
+ATOM      7  O2  PGP     1      18.498  29.386  39.417  1.00 37.45    -0.646 OA
+ATOM      8  O1  PGP     1      20.399  30.200  38.707  1.00 36.75    -0.646 OA
+ENDBRANCH   3   6
+ENDBRANCH   2   3
+BRANCH   2   9
+ATOM      9  O4  PGP     1      22.087  28.265  37.936  1.00 33.78    -0.390 OA
+ATOM     10  HO4 PGP     1      22.065  29.222  38.002  1.00  0.00     0.210 HD
+ENDBRANCH   2   9
+ENDBRANCH   1   2
+BRANCH   1  11
+ATOM     11  O5  PGP     1      22.804  30.023  40.224  1.00 30.90    -0.390 OA
+ATOM     12  HO5 PGP     1      23.534  30.396  40.714  1.00  0.00     0.210 HD
+ENDBRANCH   1  11
+BRANCH   1  13
+ATOM     13  C5  PGP     1      24.464  28.252  40.029  1.00 29.83     0.173 C 
+ATOM     14  O6  PGP     1      25.163  28.259  41.267  1.00 26.30    -0.391 OA
+ATOM     15  H6  PGP     1      25.947  28.806  41.185  1.00  0.00     0.210 HD
+BRANCH  13  16
+ATOM     16  C6  PGP     1      25.350  29.132  39.061  1.00 33.11     0.217 C 
+BRANCH  16  17
+ATOM     17  O7  PGP     1      25.797  30.509  39.509  1.00 32.60    -0.405 OA
+BRANCH  17  18
+ATOM     18  P1  PGP     1      27.362  30.851  39.818  1.00 28.88     0.422 P 
+ATOM     19  O8  PGP     1      27.636  30.201  41.167  1.00 30.33    -0.742 OA
+ATOM     20  O9  PGP     1      27.639  32.300  40.093  1.00 26.26    -0.742 OA
+ATOM     21  O10 PGP     1      28.360  30.259  38.733  1.00 30.04    -0.742 OA
+ENDBRANCH  17  18
+ENDBRANCH  16  17
+ENDBRANCH  13  16
+ENDBRANCH   1  13
+TORSDOF 7

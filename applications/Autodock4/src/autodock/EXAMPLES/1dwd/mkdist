@@ -1,0 +1,27 @@
+#! /bin/bash
+# modify EXAMPLES directory for autodock distribution
+# note this is run after a clean CVS checkout 
+# see also autodock/mkdisttars (MP+RH)
+# $Id: mkdist,v 1.2 2012/11/01 20:40:29 rhuey Exp $
+
+# remove the big evals directories
+ /bin/rm -rf *_25M
+
+# link "rec" maps to non-flexres example dirs
+# link "rigid" maps to flexres example dirs
+
+for d in \
+    dock_flexlig \
+    dock_rigidlig \
+    eval_lig \
+    local_search_lig \
+    simulated_annealing \
+    ; do
+        ln 1dwd_rec_maps/*.{map,xyz,fld} $d
+     done
+
+for d in \
+    dock_flexlig_flexres \
+    ; do
+        ln 1dwd_rigid_maps/*.{map,xyz,fld} $d
+     done

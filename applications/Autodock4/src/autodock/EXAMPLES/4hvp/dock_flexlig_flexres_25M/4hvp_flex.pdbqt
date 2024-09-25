@@ -1,0 +1,68 @@
+BEGIN_RES ARG  8 1
+REMARK  4 active torsions:
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK    1  A    between atoms: CA   and  CB  
+REMARK    2  A    between atoms: CB   and  CG  
+REMARK    3  A    between atoms: CG   and  CD  
+REMARK    4  A    between atoms: CD   and  NE  
+REMARK       I    between atoms: NE   and  CZ  
+REMARK       I    between atoms: CZ   and  NH1 
+REMARK       I    between atoms: CZ   and  NH2 
+ROOT
+ATOM      1  CA  ARG 1   8       3.205  -4.558  27.316  1.00 12.11     0.176 C 
+ENDROOT
+BRANCH   1   2
+ATOM      2  CB  ARG 1   8       2.525  -5.692  26.542  1.00 15.94     0.036 C 
+BRANCH   2   3
+ATOM      3  CG  ARG 1   8       3.524  -6.214  25.505  1.00 16.09     0.023 C 
+BRANCH   3   4
+ATOM      4  CD  ARG 1   8       2.802  -6.589  24.295  1.00 23.94     0.138 C 
+BRANCH   4   5
+ATOM      5  NE  ARG 1   8       2.381  -7.943  24.144  1.00 34.47    -0.227 N 
+ATOM      6  CZ  ARG 1   8       1.509  -8.434  23.247  1.00 36.07     0.665 C 
+ATOM      7  NH1 ARG 1   8       0.795  -7.719  22.399  1.00 36.81    -0.235 N 
+ATOM      8  NH2 ARG 1   8       1.463  -9.769  23.149  1.00 37.67    -0.235 N 
+ATOM      9 1HH1 ARG 1   8       0.169  -8.173  21.765  1.00  0.00     0.174 HD
+ATOM     10 2HH1 ARG 1   8       0.880  -6.723  22.390  1.00  0.00     0.174 HD
+ATOM     11 1HH2 ARG 1   8       0.836 -10.201  22.501  1.00  0.00     0.174 HD
+ATOM     12 2HH2 ARG 1   8       2.056 -10.333  23.724  1.00  0.00     0.174 HD
+ATOM     13  HE  ARG 1   8       2.747  -8.648  24.751  1.00  0.00     0.177 HD
+ENDBRANCH   4   5
+ENDBRANCH   3   4
+ENDBRANCH   2   3
+ENDBRANCH   1   2
+END_RES  ARG  8 1
+BEGIN_RES ARG  8 2
+REMARK  4 active torsions:
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK    5  A    between atoms: CA   and  CB  
+REMARK    6  A    between atoms: CB   and  CG  
+REMARK    7  A    between atoms: CG   and  CD  
+REMARK    8  A    between atoms: CD   and  NE  
+REMARK       I    between atoms: NE   and  CZ  
+REMARK       I    between atoms: CZ   and  NH1 
+REMARK       I    between atoms: CZ   and  NH2 
+ROOT
+ATOM     14  CA  ARG 2   8       6.572  10.829  15.642  1.00  6.57     0.176 C 
+ENDROOT
+BRANCH  14  15
+ATOM     15  CB  ARG 2   8       7.285  10.402  14.352  1.00  2.72     0.036 C 
+BRANCH  15  16
+ATOM     16  CG  ARG 2   8       6.228   9.801  13.463  1.00  3.24     0.023 C 
+BRANCH  16  17
+ATOM     17  CD  ARG 2   8       6.903   9.626  12.110  1.00  6.47     0.138 C 
+BRANCH  17  18
+ATOM     18  NE  ARG 2   8       5.996   8.942  11.206  1.00 11.97    -0.227 N 
+ATOM     19  CZ  ARG 2   8       6.307   8.579   9.972  1.00 17.05     0.665 C 
+ATOM     20  NH1 ARG 2   8       5.383   7.954   9.264  1.00 17.98    -0.235 N 
+ATOM     21  NH2 ARG 2   8       7.542   8.837   9.524  1.00 20.26    -0.235 N 
+ATOM     22 1HH1 ARG 2   8       5.581   7.664   8.328  1.00  0.00     0.174 HD
+ATOM     23 2HH1 ARG 2   8       4.485   7.771   9.664  1.00  0.00     0.174 HD
+ATOM     24 1HH2 ARG 2   8       7.802   8.573   8.595  1.00  0.00     0.174 HD
+ATOM     25 2HH2 ARG 2   8       8.204   9.294  10.118  1.00  0.00     0.174 HD
+ATOM     26  HE  ARG 2   8       5.069   8.717  11.508  1.00  0.00     0.177 HD
+ENDBRANCH  17  18
+ENDBRANCH  16  17
+ENDBRANCH  15  16
+ENDBRANCH  14  15
+END_RES  ARG  8 2

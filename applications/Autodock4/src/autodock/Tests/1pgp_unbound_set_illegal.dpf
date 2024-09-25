@@ -1,0 +1,52 @@
+outlev 0
+intelec                              # calculate internal electrostatic energy
+
+seed 28641 1106107140                # seeds for random generator
+
+ligand_types C HD OA P               # ligand atom type names
+fld 1pgp_rec.maps.fld                # grid_data_file
+map 1pgp_rec.C.map                   # atom-specific affinity map
+map 1pgp_rec.HD.map                  # atom-specific affinity map
+map 1pgp_rec.OA.map                  # atom-specific affinity map
+map 1pgp_rec.P.map                   # atom-specific affinity map
+elecmap 1pgp_rec.e.map               # electrostatics map
+desolvmap 1pgp_rec.d.map             # desolvation map
+
+move 1pgp_lig.pdbqt                  # small molecule
+about 22.894 28.598 40.259           # small molecule center
+tran0 22.894 28.598 40.259           # small molecule center
+quaternion0 0 0 0 1                  # initial quaternion
+dihe0 0 0 0 0 0 0 0 0 0 0 0          # initial dihedrals (relative) or random
+tstep 0.0                            # translation step/A
+qstep 0.0                            # quaternion step/deg
+dstep 0.0                            # torsion step/deg
+unbound foo                          # free energy of the unbound state
+
+rmstol 2.0                           # cluster_tolerance/A
+epdb                                 # compute energy of PDBQT specified by 'move' 
+
+extnrg 1000.0                        # external grid energy
+e0max 0.0 10000                      # max initial ernergy; max number of retries
+
+ga_pop_size 150                      # number of individuals in population
+ga_num_evals 250                     # maximum number of energy evaluations
+ga_num_generations 4                 # maximum number of generations
+ga_elitism 1                         # number of top individuals to survive to next generation
+ga_mutation_rate 0.02                # rate of gene mutation
+ga_crossover_rate 0.8                # rate of crossover
+ga_window_size 10                    # 
+ga_cauchy_alpha 0.0                  # Alpha parameter of Cauchy distribution
+ga_cauchy_beta 1.0                   # Beta parameter Cauchy distribution
+set_ga                               # set the above parameters for GA or LGA
+
+sw_max_its 30                        # iterations of Solis & Wets local search
+sw_max_succ 2                        # consecutive successes before changing rho
+sw_max_fail 2                        # consecutive failures before changing rho
+sw_rho 1.0                           # size of local search space to sample
+sw_lb_rho 0.01                       # lower bound on rho
+ls_search_freq 0.06                  # probability of performing local search on individual
+set_psw1                             # set the above pseudo-Solis & Wets parameters
+
+ga_run 1                             # do this many hybrid GA-LS runs
+
+analysis

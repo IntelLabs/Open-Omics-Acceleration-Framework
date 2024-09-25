@@ -1,0 +1,29 @@
+#! /bin/sh
+# $Id: update_copyright,v 1.1 2009/05/29 21:01:58 rhuey Exp $
+# modifies an existing copyright line by updating text
+for i in "$@"
+do
+ awk '/\(C\)/ { 
+        if(index($0, "fprint")) { print; next}
+        startcom= substr($0,1,2)=="/*"
+        endcom= 0!=index($0, "*/")
+        endcomma= $0 ~ /, *$/
+
+		new= "Copyright (C) 2009 The Scripps Research Institute. All rights reserved."
+        if(substr($0,1,2)!=" C") new=substr($0,1,2) new
+        if(endcom) new=new " */"
+        #print FILENAME
+        #print $0
+        print new 
+
+        if(endcomma) {
+            getline
+            if($0!~" *All Rights Reserved. *")print 
+            }
+
+        next
+		}
+	{ print }
+	' $i    > t   &&  \cp t $i && \rm t
+    echo $i
+    done

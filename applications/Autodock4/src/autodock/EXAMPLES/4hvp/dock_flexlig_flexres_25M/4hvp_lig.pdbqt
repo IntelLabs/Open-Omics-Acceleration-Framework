@@ -1,0 +1,149 @@
+REMARK  17 active torsions:
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK    1  A    between atoms: C19_1  and  C21_36 
+REMARK       I    between atoms: C19_1  and  N4_40 
+REMARK       I    between atoms: C19_1  and  C20_2 
+REMARK       I    between atoms: C20_2  and  N5_4 
+REMARK       I    between atoms: N5_4  and  C25_6 
+REMARK    2  A    between atoms: C25_6  and  C27_7 
+REMARK       I    between atoms: C25_6  and  C26_14 
+REMARK    3  A    between atoms: C27_7  and  C28_8 
+REMARK    4  A    between atoms: C28_8  and  C29_9 
+REMARK       I    between atoms: C29_9  and  N6_10 
+REMARK       I    between atoms: C26_14  and  N7_15 
+REMARK       I    between atoms: N7_15  and  C30_18 
+REMARK    5  A    between atoms: C30_18  and  C32_19 
+REMARK       I    between atoms: C30_18  and  C31_31 
+REMARK    6  A    between atoms: C32_19  and  C33_20 
+REMARK    7  A    between atoms: C33_20  and  C34_21 
+REMARK    8  A    between atoms: C34_21  and  N8_22 
+REMARK       I    between atoms: N8_22  and  C35_23 
+REMARK       I    between atoms: C35_23  and  N10_25 
+REMARK       I    between atoms: C31_31  and  N11_33 
+REMARK    9  A    between atoms: C21_36  and  C22_37 
+REMARK   10  A    between atoms: C22_37  and  C23_38 
+REMARK       I    between atoms: N4_40  and  C14_43 
+REMARK       I    between atoms: C14_43  and  C13_44 
+REMARK   11  A    between atoms: C13_44  and  C15_68 
+REMARK       I    between atoms: C13_44  and  N3_45 
+REMARK       I    between atoms: N3_45  and  C8_46 
+REMARK       I    between atoms: C8_46  and  C7_49 
+REMARK       I    between atoms: C7_49  and  N2_50 
+REMARK   12  A    between atoms: C7_49  and  C9_64 
+REMARK       I    between atoms: N2_50  and  C4_52 
+REMARK       I    between atoms: C4_52  and  C3_54 
+REMARK       I    between atoms: C3_54  and  N1_55 
+REMARK   13  A    between atoms: C3_54  and  C5_60 
+REMARK       I    between atoms: N1_55  and  C1_57 
+REMARK   14  A    between atoms: C5_60  and  O3_62 
+REMARK   15  A    between atoms: C9_64  and  C10_66 
+REMARK   16  A    between atoms: C15_68  and  C16_69 
+REMARK   17  A    between atoms: C16_69  and  C17_70 
+ROOT
+ATOM      1  C19 HVP     1       5.024  -1.805  16.231  1.00  9.67     0.277 C 
+ATOM      2  C20 HVP     1       5.910  -2.945  15.769  1.00  7.72     0.249 C 
+ATOM      3  O5  HVP     1       6.172  -3.466  14.680  1.00  7.54    -0.271 OA
+ATOM      4  N5  HVP     1       6.524  -3.488  16.778  1.00  8.85    -0.346 N 
+ATOM      5  H45 HVP     1       6.346  -3.134  17.698  1.00  0.00     0.163 HD
+ATOM      6  C25 HVP     1       7.493  -4.639  16.613  1.00  9.73     0.177 C 
+ATOM      7  C26 HVP     1       7.065  -5.528  17.761  1.00 12.57     0.241 C 
+ATOM      8  N7  HVP     1       6.707  -6.679  17.183  1.00 14.57    -0.346 N 
+ATOM      9  O6  HVP     1       6.878  -5.334  18.991  1.00  9.49    -0.271 OA
+ATOM     10  H53 HVP     1       6.736  -6.756  16.186  1.00  0.00     0.163 HD
+ATOM     11  C30 HVP     1       6.250  -7.838  18.022  1.00 17.16     0.176 C 
+ATOM     12  C31 HVP     1       7.538  -8.574  18.382  1.00 17.68     0.238 C 
+ATOM     13  O8  HVP     1       8.387  -8.939  17.516  1.00 20.08    -0.271 OA
+ATOM     14  N11 HVP     1       7.924  -8.921  19.485  1.00 19.20    -0.368 N 
+ATOM     15  H64 HVP     1       8.821  -9.350  19.591  1.00  0.00     0.159 HD
+ATOM     16  H65 HVP     1       7.399  -8.727  20.315  1.00  0.00     0.159 HD
+ATOM     17  N4  HVP     1       4.903  -0.742  15.242  1.00 10.44    -0.060 N 
+ATOM     18  H   HVP     1       4.087  -0.255  15.576  1.00  0.00     0.278 HD
+ATOM     19  H34 HVP     1       4.544  -0.973  14.330  1.00  0.00     0.278 HD
+ATOM     20  C14 HVP     1       5.796   0.361  15.335  1.00 10.81     0.258 C 
+ATOM     21  C13 HVP     1       6.016   0.756  13.876  1.00 12.08     0.110 C 
+ATOM     22  N3  HVP     1       4.762   1.467  13.400  1.00 12.02    -0.353 N 
+ATOM     23  C8  HVP     1       3.807   0.813  12.760  1.00 11.01     0.241 C 
+ATOM     24  H21 HVP     1       4.650   2.450  13.555  1.00  0.00     0.163 HD
+ATOM     25  O4  HVP     1       4.053  -0.402  12.617  1.00 12.40    -0.271 OA
+ATOM     26  C7  HVP     1       2.700   1.714  12.348  1.00 12.38     0.180 C 
+ATOM     27  N2  HVP     1       3.065   2.193  10.960  1.00 12.36    -0.346 N 
+ATOM     28  H11 HVP     1       3.019   1.582  10.169  1.00  0.00     0.163 HD
+ATOM     29  C4  HVP     1       3.268   3.493  10.796  1.00 12.56     0.243 C 
+ATOM     30  O2  HVP     1       3.228   4.257  11.790  1.00 11.02    -0.271 OA
+ATOM     31  C3  HVP     1       3.535   3.914   9.363  1.00 13.83     0.205 C 
+ATOM     32  N1  HVP     1       2.401   4.782   9.022  1.00 15.09    -0.346 N 
+ATOM     33  H4  HVP     1       2.397   5.672   9.482  1.00  0.00     0.163 HD
+ATOM     34  C1  HVP     1       1.555   4.535   8.043  1.00 11.46     0.214 C 
+ATOM     35  O1  HVP     1       1.523   3.437   7.509  1.00 17.92    -0.274 OA
+ATOM     36  C2  HVP     1       0.639   5.674   7.808  1.00 20.43     0.117 C 
+ENDROOT
+BRANCH   1  37
+ATOM     37  C21 HVP     1       3.618  -2.269  16.542  1.00  9.80     0.043 C 
+BRANCH  37  38
+ATOM     38  C22 HVP     1       3.034  -3.275  17.473  1.00  8.61     0.002 C 
+BRANCH  38  39
+ATOM     39  C23 HVP     1       2.959  -4.705  16.974  1.00  8.74    -0.004 C 
+ATOM     40  C24 HVP     1       2.325  -4.828  15.615  1.00  5.59     0.005 C 
+ENDBRANCH  38  39
+ENDBRANCH  37  38
+ENDBRANCH   1  37
+BRANCH  21  41
+ATOM     41  C15 HVP     1       7.313   1.418  13.547  1.00 16.12     0.027 C 
+BRANCH  41  42
+ATOM     42  C16 HVP     1       7.650   1.908  12.142  1.00 17.02     0.002 C 
+BRANCH  42  43
+ATOM     43  C17 HVP     1       7.943   0.788  11.165  1.00 19.57    -0.004 C 
+ATOM     44  C18 HVP     1       8.565   1.400   9.902  1.00 21.03     0.005 C 
+ENDBRANCH  42  43
+ENDBRANCH  41  42
+ENDBRANCH  21  41
+BRANCH   6  45
+ATOM     45  C27 HVP     1       8.774  -4.021  16.319  1.00 15.19     0.044 C 
+BRANCH  45  46
+ATOM     46  C28 HVP     1      10.206  -4.306  16.163  1.00 22.73     0.105 C 
+BRANCH  46  47
+ATOM     47  C29 HVP     1      10.374  -5.334  17.278  1.00 24.00     0.215 C 
+ATOM     48  N6  HVP     1      10.086  -6.503  16.710  1.00 30.18    -0.370 N 
+ATOM     49  H52 HVP     1       9.862  -6.575  15.738  1.00  0.00     0.159 HD
+ATOM     50  H51 HVP     1      10.175  -7.350  17.241  1.00  0.00     0.159 HD
+ATOM     51  O7  HVP     1      10.617  -5.056  18.405  1.00 24.95    -0.274 OA
+ENDBRANCH  46  47
+ENDBRANCH  45  46
+ENDBRANCH   6  45
+BRANCH  26  52
+ATOM     52  C9  HVP     1       1.124   1.667  12.161  1.00 11.86     0.013 C 
+ATOM     53  C11 HVP     1       0.322   3.052  12.375  1.00 10.98     0.012 C 
+BRANCH  52  54
+ATOM     54  C10 HVP     1       0.657   1.320  10.769  1.00 16.23     0.002 C 
+ATOM     55  C12 HVP     1      -0.829   1.779  10.473  1.00 21.77     0.005 C 
+ENDBRANCH  52  54
+ENDBRANCH  26  52
+BRANCH  11  56
+ATOM     56  C32 HVP     1       5.270  -8.575  17.087  1.00 17.84     0.036 C 
+BRANCH  56  57
+ATOM     57  C33 HVP     1       3.880  -8.038  17.080  1.00 18.74     0.023 C 
+BRANCH  57  58
+ATOM     58  C34 HVP     1       3.234  -8.251  18.429  1.00 29.37     0.138 C 
+BRANCH  58  59
+ATOM     59  N8  HVP     1       3.462  -7.361  19.543  1.00 30.20    -0.227 N 
+ATOM     60  C35 HVP     1       4.150  -7.375  20.675  1.00 33.20     0.665 C 
+ATOM     61  N10 HVP     1       4.715  -8.554  21.035  1.00 34.66    -0.235 N 
+ATOM     62  N9  HVP     1       4.340  -6.308  21.500  1.00 28.99    -0.235 N 
+ATOM     63  H63 HVP     1       4.601  -9.368  20.469  1.00  0.00     0.174 HD
+ATOM     64  H62 HVP     1       5.333  -8.595  21.828  1.00  0.00     0.174 HD
+ATOM     65  H61 HVP     1       4.072  -5.380  21.217  1.00  0.00     0.174 HD
+ATOM     66  H60 HVP     1       4.966  -6.391  22.282  1.00  0.00     0.174 HD
+ATOM     67  H59 HVP     1       3.160  -6.413  19.436  1.00  0.00     0.177 HD
+ENDBRANCH  58  59
+ENDBRANCH  57  58
+ENDBRANCH  56  57
+ENDBRANCH  11  56
+BRANCH  31  68
+ATOM     68  C5  HVP     1       4.691   4.872   8.936  1.00 24.09     0.146 C 
+ATOM     69  C6  HVP     1       5.963   4.983   9.801  1.00 30.52     0.042 C 
+BRANCH  68  70
+ATOM     70  O3  HVP     1       4.947   4.547   7.515  1.00 28.97    -0.393 OA
+ATOM     71  H7  HVP     1       4.785   3.621   7.378  1.00  0.00     0.210 HD
+ENDBRANCH  68  70
+ENDBRANCH  31  68
+TORSDOF 30

@@ -1,0 +1,42 @@
+autodock_parameter_version 4.1       # used by autodock to validate parameter set
+outlev 0
+parameter_file AD4.1_bound.dat       # New parameter library
+#include_1_4_interactions 1.0        # test
+intelec                              # calculate internal electrostatic energy
+
+seed 28641 1106107140                # seeds for random generator
+
+ligand_types C HD OA P               # ligand atom type names
+fld 1pgp_rec.maps.fld                # grid_data_file
+map 1pgp_rec.C.map                   # atom-specific affinity map
+map 1pgp_rec.HD.map                  # atom-specific affinity map
+map 1pgp_rec.OA.map                  # atom-specific affinity map
+map 1pgp_rec.P.map                   # atom-specific affinity map
+elecmap 1pgp_rec.e.map               # electrostatics map
+desolvmap 1pgp_rec.d.map             # desolvation map
+
+move 1pgp_lig.pdbqt                  # small molecule
+about 22.894 28.598 40.259           # small molecule center
+tran0 random
+quaternion0 random
+dihe0 random
+
+rmstol 2.0                           # cluster_tolerance/A
+
+extnrg 1000.0                        # external grid energy
+e0max 0.0 10000                      # max initial ernergy; max number of retries
+
+ga_pop_size 150                      # number of individuals in population
+ga_num_evals 250                     # maximum number of energy evaluations
+ga_num_generations 4                 # maximum number of generations
+ga_elitism 1                         # number of top individuals to survive to next generation
+ga_mutation_rate 0.02                # rate of gene mutation
+ga_crossover_rate 0.8                # rate of crossover
+ga_window_size 10                    # 
+ga_cauchy_alpha 0.0                  # Alpha parameter of Cauchy distribution
+ga_cauchy_beta 1.0                   # Beta parameter Cauchy distribution
+set_ga                               # set the above parameters for GA or LGA
+
+ga_only_run 1                        # do this many GA runs
+
+analysis

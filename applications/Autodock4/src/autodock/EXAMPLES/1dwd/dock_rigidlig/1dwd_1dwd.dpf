@@ -1,0 +1,32 @@
+## GENERIC SECTION
+autodock_parameter_version 4.2       # used by autodock to validate parameter set
+outlev ADT                             # diagnostic output level
+
+## LIGAND-SPECIFIC SECTION
+ligand_types A C  HD  N  OA  S       # atoms types in ligand
+fld 1dwd_rec.maps.fld     # grid_data_file
+map 1dwd_rec.A.map        # atom-specific affinity map
+map 1dwd_rec.C.map        # atom-specific affinity map
+map 1dwd_rec.HD.map       # atom-specific affinity map
+map 1dwd_rec.N.map        # atom-specific affinity map
+map 1dwd_rec.OA.map       # atom-specific affinity map
+map 1dwd_rec.S.map        # atom-specific affinity map
+elecmap 1dwd_rec.e.map    # electrostatics map
+desolvmap 1dwd_rec.d.map  # desolvation map
+move 1dwd_0.pdbqt                    # small molecule
+
+## SEARCH-SPECIFIC SECTION
+ga_pop_size 150                      # number of individuals in population
+ga_num_evals 2500000                 # maximum number of energy evaluations  
+ga_num_generations 27000             # maximum number of generations
+set_ga                               # set the above parameters for GA or LGA
+
+## LOCAL SEARCH PARAMETERS SECTION
+set_psw1                             # set the above pseudo Solis & Wets parameters
+
+## PERFORM SEARCH SECTION
+ga_run 10                            # do this many hybrid GA-LS runs
+
+## ANALYSIS SECTION
+rmstol 0.5                           # cluster_tolerance/A
+analysis                             # perform a ranked cluster analysis

@@ -1,0 +1,13 @@
+## GENERIC SECTION
+outlev ADT
+
+## LIGAND-SPECIFIC SECTION
+ligand_types A C HD N OA S           # atoms types in ligand
+
+## ANALYSIS SECTION
+
+rmstol 2.0
+rmsref 1dwd_lig_xray.pdbqt
+rmsmode unique_pair
+write_all
+cluster ligand.pdbqt   # input extracted from 1dwd_1dwd_1.dlg, ... 1dwd_1dwd_4.dlg

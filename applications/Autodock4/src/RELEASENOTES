@@ -1,0 +1,1018 @@
+AutoDock RELEASENOTES $Id: RELEASENOTES,v 1.20 2014/07/17 18:09:14 mp Exp $
+
+=============================================================================
+                   AutoDock Release Notes
+                  Release 4.2.6 (July 2014)
+=============================================================================
+
+Supported computer platforms in 4.2.6:
+
+Linux2 on Intel i86 (32-bit) and on Intel x86_64 (64-bit).
+Linux3 on Intel x86_64 (64-bit).
+Macintosh OS X 10.5 (Leopard) on PowerPC (32- and 64-bit),
+  OS X 10.5-10.9 (Leopard, Snow Leopard, Lion, Mountain Lion,
+ and Mavericks) on Intel i86 (32-bit) and Intel x86_64 (64-bit).
+Solaris 8 (SunOS 5.8) on SPARC.
+Windows 5-8.1 on Intel i86.
+
+The executable binaries (autogrid4, autodock4) for Macintosh OS X 
+are built on Mac OS X 10.5 and tested on up to Mac OS X 10.9.
+Each of the two binaries is "universal" and will run on any of
+the supported Macs.
+
+The executable binaries for Windows on Intel i86 are built on
+Windows 5 (XP) and have been tested on Windows 6, Windows 7, and Windows 8.1.  
+Windows users do not need to install the CygWin environment,
+but they may if they like.
+
+To increase consistency across platforms, all executable programs (both
+autogrid and autodock) are compiled using double-precision arithmetic.
+The grid maps, as read by AutoDock, are stored internally in single-precision.
+
+Multiple search methods are now possible in a single AutoDock job:
+such as 20 runs using Simulated Annealing, 20 runs using the Genetic
+Algorithm, and 20 runs using local-search-only.  The runs are
+done serially and no results "carry over" from one method to another.
+However, all results are ranked and clustered together in the
+analysis step at the end of the entire job.
+
+You can now use ADT (AutoDock Tools) to visualize results from AutoDock
+jobs that use simulated annealing or local-search-only. You must download the
+latest build of ADT from http://mgltools.scripps.edu/downloads/latest
+
+Note a limitation in the 4.2.6 release: the "do_local_only" command
+runs the pseudo-solis-wets algorithm, even if the solis-wets has been
+specified using "set_local sw1".  This applies only to "do_local_only":
+the "ga_run" command will use whichever local search has been specified.
+(We recommend the pseudo-solis-wets for all local searches: "set psw1").
+
+AutoDock calculations are performed as a series of independent
+runs.  Users will occasionally need to repeat a run. For example,
+they might want to repeat a particular run to examine the search space
+and convergence of that run.  AutoDock now reports the specific random
+number seeds used for each run. Any specific run can be repeated
+exactly by using the random number seeds reported in the prior calculation. 
+
+The docking log file (.dlg) contents have been further standardized:
+Regardless of 'outlev' setting, the host name, run date, working directory,
+and names of input PDBQT files are reported at the beginning of the AutoDock
+job.  Each 'run' (GA, LGA, local search, simulated annealing) reports its
+initial random number seeds and its ending total energy and state
+in a uniform format suitable for automated analysis.  At outlev setting
+"BASIC" (0) or above, the initial PDBQT ligand (and flexres, if present)
+coordinates are reported.  At outlev setting "ADT" (1) or above, the
+final docked coordinates of each run are reported.
+
+Some advanced autodock users customize the program for
+their own specific needs.  We've improved and simplified building
+AutoDock and AutoGrid from source files.  We have documented the
+process of compiling new atomic parameter tables into AutoDock and
+AutoGrid in the README file included in this distribution.
+
+We continue to improve AutoDock's robustness and stability.  AutoDock
+now verifies that all its input grid maps are the same size.  
+If AutoDock's standard input has not been redirected to come from a file 
+or from a pipe, you must specify a docking parameter file using 
+"-p <docking parameter file.dpf>".  When the docking parameters are
+read from standard input (e.g., "autodock4 -l mol.dlg < mol.dpf"),
+the docking parameter file now appears in output PDBQT files as "stdin".
+Reading and parsing the input PDBQT coordinate files has been made more robust.
+
+Other changes since the 4.2.5.1 release (12/13/2012):
+Improved error checking of command-line arguments.
+Better checking of the atom numbers that define internal and "flexres" torsions.
+Better cross-platform compatibility of the internal random number generator.
+Running "autodock4 (or autogrid4) --version" reports compile-time configuration options.
+
+=============================================================================
+                   AutoDock Release Notes
+                  Release 4.2.5.1 (December 13, 2012)
+=============================================================================
+The changes since the 4.2.5 release (11/02/2012):
+#bug fix
+4.2.5 incorrectly calculated part of the intermolecular desolvation
+energy term; 4.2.5.1 corrects this.  All 4.2.5 users should upgrade
+to 4.2.5.1 and re-do any runs.
+
+=============================================================================
+                   AutoDock Release Notes
+                  Release 4.2.5 (November 2, 2012)
+=============================================================================
+Please note that the previous general release was 4.2.3, 29 January 2010. 
+The 4.2.4 release (7 July 2010) was a specialized release for 
+"Fight Aids at Home" and other IBM World Community Grid projects.  
+
+Supported computer platforms in 4.2.5:
+
+Linux2 on Intel x86  remains supported, as does Solaris 8 on SPARC.
+Supported Macintosh platforms are OS X 10.4-10.5 (Tiger and Leopard) on
+Intel x86 and PowerPC, and OS X 10.6-10.8 (Snow Leopard, Lion, and
+Mountain Lion) on Intel x86.  The executable binaries for Windows on
+Intel x86 have been built on Windows 5 (XP) and have been tested on Windows 6
+but they may if they like.
+
+The changes since the 4.2.3 release (1/29/2010):
+
+#new features
+-: new support for specifying output verbosity ranging from low (-2) up to high (8)
+   with symbolic settings for "outlev" defined in constants.h and used in main.cc
+-: new automatic calculation of 'about' as the center of the ligand root group
+-: new WIN32 MinGW portability - replacements for times() and getrusage()
+-: new desolvation term separate from vdW+Hbond term in epdb 
+     "Per-atom Intermolecular Energy Analysis" table 
+-: now intelec is on by default; off if "intelec off" in DPF
+-: Almost all AutoDock defaults now match defaults supplied by ADT, simplifying PDF files
+
+#code inspection and internal interface self-documentation
+-: We thank Steffen Moeller (steffen_moeller@gmx.de) for his enthusiastic
+   and expert detailed inspection of all function and method calls,
+   in particular identifying "constant" arguments and verifying
+   data type compatibiliy.
+
+#improvements
+-: improved detailed output of Intermolecular Energy Analysis
+-: increased MAX_RUNS from 256 to 2000
+-: improved error detection and termination: 
+      replaced exit() by EXIT_SUCCESS/EXIT_FAILURE(win32) or stop(msg)
+-: increased precision of energy table
+-: implemented EnergyComponent structures
+-: integrated call_gs into call_glss
+-: improved input checking with ga_run/gals_run
+[Added checks to "ga_run/gals_run" for missing "set_ga" and missing "set_psw1" errors]
+-: simplified logic so more of the FATAL errors are simply handed to "stop()"
+-: now set random number seeds at beginning of simanneal execution; output reduced
+-: new compile-time option to print energy terms for each atom [for debugging]
+-: AutoDock intramolecular energy smoothing now matches that in AutoGrid
+-: Consolidated the "side effects" of trilinterp that record per-atom energy components
+   and total energy components into two sets of "EnergyComponent" structures instead
+   of two Real arrays and two pointers to Real.
+-: developed substitutes for WIN32 MinGW "times()" and "getpid()"
+-: modified mkTorTree.cc to fill in the root atom information
+-: Changed 'tlist' declaration to allow space for root atoms at end 
+
+#bug fixes
+-: corrected energy breakdown report when using flexible residues
+-: desolvation energy term is included even for distant pairs (r>nbc)
+-: corrected eintcal side effects of "outlev" setting
+-: removed support for unused DPF tokens
+
+#autogrid
+AutoGrid 4.2.5 has no functional changes from AutoGrid 4.2.3. 
+The only significant code changes were those required for porting to Windows.o
+We added 'copyfilesfromAD', a maintenance script that copies key shared source files 
+from AutoDock to AutoGrid.
+
+=============================================================================
+                   AutoDock Release Notes
+                  Release 4.2.3 (January 29 2010)
+=============================================================================
+The changes since the 4.2.2.1 release (9/16/2009):
+
+Corrected printing of atom records whose element names are two characters 
+long (such as Br).  Our thanks to David Lancia for reporting this problem 
+and working with us on the correction.
+
+Corrected genetic algorithm gene crossover flaw that slowed search progress 
+for ligands with many torsions. Our thanks to Garrett Morris and Sarnath for 
+reporting this problem and working with us on the correction.
+
+AutoGrid 4.2.3 differs from AutoGrid 4.2.2 only in the version number.
+
+=============================================================================
+                   AutoDock Release Notes
+                  Release 4.2.2.1 (September 16 2009)
+=============================================================================
+Please note that the current distribution's executable programs, autogrid and 
+autodock, were compiled for single precision arithmetic.  We believe 
+compiling with double-precision would increase consistency across platforms. 
+(See -DUSE_DOUBLE option in Makefile.am)
+
+The changes since the 4.2.2 release (9/9/2009):
+
+Updated printout of unbound system's energy when using "epdb" option
+to correctly set unbound internal energy same_as_bound if appropriate.
+
+=============================================================================
+                   AutoDock Release Notes
+                  Release 4.2.2 (September 9 2009)
+=============================================================================
+The changes since the 4.2.1 release (6/2009):
+
+Makefile.am
+-in response to bug 1137 reported by Steffen Moeller@gmx.de added 
+Wno-write-strings to Makefile.am and strncpy to setflags.cc
+
+calculateEnergies.cc
+-added setting the flexible residues internal energies to same_as_bound 
+(lines 262-265) after conversations with David, Mike and Garrett
+
+eintcal.cc
+-replaced missing backslash for newlines
+
+readPDBQT.cc
+-fixed bug in flexible residues overcounting number of pieces by changing 
+code so that ROOTs of all flexible residues are in the same rigid piece
+-changed cut-off for nrigid_piece from MAX_TORS to MAX_TORS + nres 
+to compensate for (unfortunate) fact that each flexible residue has a ROOT
+
+setflags.cc
+-repaired copying argv[2] in param_file_fn
+-modified lines 183-188 to check for filename length
+-in response to bug 1137 reported by Steffen Moeller@gmx.de added 
+Wno-write-strings to Makefile.am and strncpy to setflags.cc
+
+support.cc
+-replaced missing backslash for newlines
+
+
+=============================================================================
+                   AutoDock Release Notes
+                  Release 4.2.1 (June 9 2009)
+=============================================================================
+The key changes since the 4.0.1 release (5/2007):
+    1. Improved overall reliability and detection of input file errors. 
+    2. Improved local search.
+
+
+----------------------------
+AD4.1_bound.dat
+AD4_parameters.dat
+----------------------------
+
+NEW FEATURE:
+    -added parameters for G,GA,J and Q atom types used for ring-closure
+    -added parameters for the covalent atom type, "Z".
+
+CHANGE:
+    -introduced new "parameter_file" .dat files for AutoDock 4.1 that 
+    have the appropriate coefficients for the bound, compact and extended 
+    models.  The previous default parameter file for AutoDock 4.0 was 
+    "AD4_parameters.dat"; the default parameter file for AutoDock 4.2 
+    is "AD4.1_bound.dat".
+
+----------------------------
+AUTHORS
+----------------------------
+
+CHANGE:
+    -updated the authors list
+
+----------------------------
+INSTALL
+----------------------------
+
+CHANGE:
+    -copied current version from gnu
+
+----------------------------
+ Makefile.am
+----------------------------
+
+CHANGE:
+    -removed superfluous VERSION_NUM line
+    -set cygwin stacksize and added possible extension for cygwin... 
+    we don't really understand why the python-driven tests are not 
+    working on cygwin although autodock appears to run ok
+    -changed version to 4.2.1
+    -removed command mode
+    -changed VERSION_NUM strings from 4.0 to 4.02 and from 4.l to 4.1.1
+    -removed summarizegrids[c,h]  
+    -added check for too many atom types in dpf 'ligand_types' command in 
+    parsetypes.  
+    -added map_declare.h so type of map (float or double) is 
+    independent of 'Real' and not affected by 'USE_DOUBLE' in Makefiles.
+    -changed the target "check" to "test", since "make check" causes an 
+    error.  This means to test, the developer should use "make test", _not_ 
+    "make check".  Also changed the "-o" argument to "test_autodock4.py", 
+    from "$$outputdir" to "$$outputdir/Tests".
+    -Added the argument "AD4.1_bound.dat" to the new version of 
+    "paramdat2h.csh" to compile the "default_parameters.h".  Also added 
+    two new target, "BUILT_SOURCES", and "CLEANFILES", which depend on 
+    "default_parameters.h".
+    -Added stack.{cc,h} to the dependencies required to make AutoDock.
+    -Removed the -DDO_NOT_CROSSOVER_IN_QUAT flags and added -DASSERTQUATOK to "DBUG".
+    -Changed default parameter file from AD4_parameters.dat to AD4.1_bound.dat, 
+    and added the new AD4.1 parameter files to EXTRA_DIST.
+    -Rework of Coliny files to use the COLIN 3.0 code.
+    -Fixed bug reported by Qing Zhong, so that "gs.cc" now uses the same 
+    compiler and flags as everything else except main.cc, i.e. $(CXXCOMPILE).  
+    This means that the option DO_NOT_CROSSOVER_IN_QUAT is now used in gs.cc, 
+    and thus ensures distorted geometries cannot be produced by wayward 
+    quaternions...  Now compiles without the spurious "-g -O2" generated by configure.
+
+
+----------------------------
+ NEWS
+----------------------------
+
+NEW FEATURE:
+    -added DSG comment on new features
+
+
+----------------------------
+ analysis.cc
+ analysis.h
+----------------------------
+
+CHANGE:
+    -installed Debian compiler-compatibility patches from Stefan Moeller
+    -Uses calculateBindingEnergies so that if AD4.1_Bound.dat is used, 
+    the internal energy of the unbound state can be set to that of the 
+    docked state.  No longer prints the "NEWDPF ndihe" line, since 
+    "ndihe" is deprecated in AutoDock 4.
+
+
+----------------------------
+ atom_parameter_manager.cc
+----------------------------
+
+CHANGE:
+    -credit Michael Pique for helping to create this code which
+    consist of changes to make it more readable.
+
+
+----------------------------
+ autocomm.h
+----------------------------
+
+CHANGE:
+    -added a macro-version of assertQuatOK, so that when the assertion 
+    fails, the line number and file of where it failed is output, 
+    not the assertQuatOK function as it was before.
+
+
+----------------------------
+autoglobal.h
+----------------------------
+
+CHANGE:
+    -moved AutoGridHelp into autogrid where it belongs
+    - introduced initial "Unbound_Default" to detect multiple, inconsistent 
+    settings of ad4_unbound_model
+    -updated command line arguments including --version
+    -added a new global, ad4_unbound_model, which can take any of the 
+    enumerated values of Unbound_Model, namely, 
+    { Unbound_Same_As_Bound=0, Extended=1, Compact=2 }.
+
+
+----------------------------
+ banner.cc
+----------------------------
+
+CHANGE:
+    -replaced version number in banner for ADT1.5.2 compatibility with 3 digits
+    -added -C for copyright notice
+    -changed format string for version_num, increasing it from 4s to 8s
+    -updated banner output in the DLG such that the earlier copyright years 
+    matches the header comments (1989 instead of 1991), and the later year 
+    matches the current year (2008 instead of 2007).
+    -installed Debian compiler-compatibility patches from Stefan Moeller
+
+
+----------------------------
+ calculateEnergies.cc
+ calculateEnergies.h
+----------------------------
+
+CHANGE:
+    -added Unbound_Default case
+    -Added calculateBindingEnergies() and related functions, to support 
+    the ability to set the internal energy of the unbound state to that 
+    of the docked state.
+
+
+----------------------------
+ call_glss.cc
+ call_gs.cc
+ gs.cc
+ mapping.cc
+----------------------------
+
+CHANGE:
+    -correction of when genotype to phenotype mappings are done
+    -changed so now Individual does mapping of its genotype into its 
+    phenotype and inverse_mapping of its phenotype into its genotype
+    -changed argument to msort from 3 to 1
+    -added an argument to the calling signature, "end_of_branch[]", 
+    which can be used to pass in the corresponding branch points for 
+    the new Branch Crossover Mode.  Added a call to 
+    "set_eob( end_of_branch )", a method of thisPop, which is a Population.
+    -added a new integer, "max_numTries", set to 1000, that is used 
+    to prevent the generation of the initial population from getting 
+    stuck in an infinite loop.  The code prints a warning if this 
+    maximum number of tries is reached, while trying to create a 
+    population which does not have all energies equal.
+
+
+----------------------------
+ cmdmode.cc
+ cmdmode.h
+ cmdtokens.h
+----------------------------
+
+CHANGE:
+    -removed command mode
+
+
+----------------------------
+ coliny.cc
+ coliny.h
+----------------------------
+
+CHANGE:
+    -rework of Coliny files to use the COLIN 3.0 code.
+    -misc change to enable conditional compile of AutoDock with the
+    new COLIN 3.0 mechanism.
+
+
+----------------------------
+ configure.ac
+----------------------------
+
+CHANGE:
+    -changed version to 4.2.1
+    -pass version_num to setflags
+    -updated version to 4.1.0.
+    -fixed bug reported by Qing Zhong, so that "gs.cc" now uses 
+    the same compiler and flags as everything else except main.cc, 
+    i.e. $(CXXCOMPILE).  This means that the option 
+    DO_NOT_CROSSOVER_IN_QUAT is now used in gs.cc, and thus ensures 
+    distorted geometries cannot be produced by wayward quaternions...  
+    Now compiles without the spurious "-g -O2" generated by configure.
+
+
+----------------------------
+ configure_universal_Darwin8
+ configure_universal_Darwin9
+----------------------------
+
+NEW FEATURE:
+    -new maintenance and distribution tools
+
+
+----------------------------
+ conformation_sampler.cc
+----------------------------
+
+CHANGE:
+    -changed so now Individual does mapping of its genotype 
+    into its phenotype and inverse_mapping of its phenotype 
+    into its genotype
+
+
+----------------------------
+ constants.h
+----------------------------
+
+CHANGE:
+    -introduced initial 'Unbound_Default' to be used to detect 
+    multiple, inconsistent settings of ad4_unbound_model 
+    -added a guard, using "#ifndef _UNBOUND_MODEL", around the 
+    definition of the enum "Unbound_Model", to prevent re-definition 
+    errors.
+    -added "Unbound_Model", an enumerated variable, which can have 
+    the values { Unbound_Same_As_Bound=0, Extended=1, Compact=2 }
+
+
+----------------------------
+ dpftoken.h
+----------------------------
+
+CHANGE:
+    -added psw rot scale and tor scale for rho values
+    -added parsing of autodock_parameter_file version and unbound_model
+    -made new token for obsolete token quat0 to give better error messages
+
+
+----------------------------
+ getInitialState.cc
+ getInitialState.h
+----------------------------
+
+CHANGE:
+    -Uses calculateBindingEnergies so that if AD4.1_Bound.dat is used, 
+    the internal energy of the unbound state can be set to that of the 
+    docked state.
+
+
+----------------------------
+ get_atom_type.cc
+----------------------------
+
+CHANGE:
+    -now allocate storage for message variable
+
+
+----------------------------
+ gs.cc
+ gs.h
+----------------------------
+
+NEW FEATURE:
+    -added a new enum to "Xover_Mode", namely "Branch", and added new 
+    code in the crossover method, to support the new "Branch Crossover 
+    Mode", where only torsion genes (if any) are recombined, and 
+    only those genes that lie within the sub-tree of the torsion 
+    tree affected by the first crossover point.  The Global Search 
+    Genetic Algorithm accesses the end_of_branch[] array using the 
+    accessor method get_eob() of the Population object, 
+    "original_population".
+    -added slerp and alerp to arithmetic crossover to handle 
+    interpolation of rotations and torsion angles gracefully, 
+    and to preserve quaternion-magnitudes of 1.
+    -added code to handle uniform crossover of the four genes 
+    describing the orientation.
+
+CHANGE:
+    -changed so now Individual does mapping of its genotype into its 
+    phenotype and inverse_mapping of its phenotype into its genotype
+    -changed line 1091: now if avg==worst, alloc[i] is set to 
+    1/pop_size; added @@ to debug statements lines 1428,1440
+    -added <stdlib.h> since MP & GMM added an exit(-1) as a bug check, 
+    to catch genes whose indices are not translation, rotation or 
+    conformation values.
+    -added several debug statements; made change in translation 
+    alpha value, to make it consistent with slerp and alerp.  
+    -Modified 2-pt and 1-pt crossover to ensure every call does 
+    indeed perform some crossover.  
+    -Fixed uniform crossover such that it will not begin to crossover 
+    within the rotation genes.
+    -added a "bug check" suggested by MP to catch invalid gene types.
+    -removed the DO_NOT_CROSSOVER_IN_QUAT blocks.
+    -added lines to uniform and arithmetic crossover to set the 
+    age of the crossed individuals to 0.
+
+
+----------------------------
+ hybrids.h
+----------------------------
+
+CHANGE:
+    -added the argument, "int end_of_branch[MAX_TORS]", to the 
+    prototypes, call_glss() and call_gs().
+
+
+----------------------------
+ ls.cc
+----------------------------
+
+NEW FEATURE:
+    -added psw rot scale and tor scale for rho values
+
+CHANGE:
+    -Changed so now Individual does mapping of its genotype 
+    into its phenotype and inverse_mapping of its phenotype 
+    into its genotype; added use of Boole modified to track 
+    whether mapping needs to be done
+
+
+----------------------------
+ ls.h
+----------------------------
+
+CHANGE:
+    -changed return type of SW from void to Boole
+
+
+----------------------------
+ main.cc
+ main.h
+----------------------------
+
+NEW FEATURE:
+    -added psw rot scale and tor scale for rho values
+    -added code provided by Stefano Forli which improves the warning 
+    message printed to the log file lines ~2108. The new code detects 
+    whether the custom rij+epsij values provided for DPF_INTNBP_REQM_EPS 
+    command are RING CLOSURE values or not
+    -added named atom pairs to intnb_r_eps and intnb_coeffs to support 
+    ring-closing atom types
+    -added exit early if number of maps is not equal to the number of 
+    ligand_atom_types plus 2 AND resetting num_maps when fld keyword is 
+    read so two sets of maps can be used
+    -Added the "int end_of_branch[MAX_TORS]" array, and the parsing code to 
+    detect the new option, "branch", for the "ga_crossover_mode" keyword 
+    (in addition to "onept", "twopt", "uniform", and "arithmetic".  This 
+    is to support the new "Branch" crossover mode, which is designed to 
+    exchange only those torsion genes in the sub-tree descending from 
+    the first randomly-chosen torsion gene.
+    -Modified the function that reads the ligand and flexible residue PDBQT 
+    files, "readPDBQT()", to count the number of non-hydrogen atoms, and 
+    return this value.  (Previously, the same argument position that this 
+    count of heavy atoms now occupies, was used to pass in "Htype", but 
+    Htype is no longer used inside "readPDBQT()".)
+
+CHANGE:
+    -installed Debian compiler-compatibility patches from Stefan Moeller
+    -updated command line arguments including --version
+    -updated syntax for unbound options following discussion with DSG
+    -added reporting of which unbound model is used for each kind of search
+    -changed interface to setup_parameter_library by adding ad4_unbound_model
+    -added parsing of autodock_parameter_file version and unbound_model
+    -pass version_num to setflags
+    -removed command mode
+    -added 'exit_if_missing_elecmap_desolvmap_about' method to check that 
+    these keywords have been found and exit if they are not all there
+    -all filenames are dimensioned to PATH_MAX long, all strings read using 
+    sscanf are dimensioned to LINE_LEN
+    -made new token for obsolete token quat0 to give better error messages
+    -Updated the summations for the econf[] array that is used in the 
+    analysis() function, and which is reported in the clustering histogram.  
+    These summations needed to be updated to be able to handle the 
+    "ad4_unbound_model" properly; in this model, the unbound energy must be 
+    updated after each docking has finished, to match the internal energy 
+    at the end of the docking.
+    -The "epdb" command now uses calculateBindingEnergies so that if 
+    AD4.1_Bound.dat is used, the internal energy of the unbound state can 
+    be set to that of the docked state.  * Also, added a check to see if 
+    the number of values specified by the "dihe0" command matches the 
+    number of torsions found in the ligand PDBQT (ntor), and prints a 
+    warning if they do not match.
+    -Added extra variables and the function call to 
+    "initialise_energy_breakdown()" to the DPF_MOVE-case to re-initialise
+    key variables before reading in a new ligand.  ALSO: changed 
+    version_num to 4.10 (from 4.00) and changed the comment from 4.0 to 4.1 beta.
+    -Changed sscanf from using %1s to %c, thanks to an email from Alexandre
+    Lebedev (alexmlebedev@mail.ru); this solves a bug in the simulated 
+    annealing that appeared if the number of rejections, rejs<=255.
+    -Rework of Coliny files to use the COLIN 3.0 code.
+
+
+----------------------------
+ mdist.h
+----------------------------
+
+NEW FEATURE:
+    -Introduced the "set_minmax(a1, a2, min, max)" macro, to set both 
+    the [a1][a2] and [a2][a1] entries in the mindist[][] and maxdist[][] 
+    arrays at the same time.  Introduced the constant, "BOND_LENGTH_TOLERANCE", 
+    with a default value of 0.1 Angstrom, to expand the allowed bond length 
+    ranges.  Entered an extensive list of values from the "Handbook of 
+    Chemistry and Physics" specifying the lower and upper bounds for 
+    acceptable bond lengths given the atom types of the two potentially-bonding 
+    atoms.  This new code is less permissive in creating bonds than the old 
+    AutoDock 3 values, which consisted of 0.9 and 2.1 for most atom type 
+    pairs.  This modification was prompted by a compound with a C-bridged 
+    cyclobutane, ZINC01557511, which caused "nonbonds.cc" to try to 
+    access bonded[-1][]...
+
+CHANGE:
+    -cleaned-up macro; corrected previous incorrect setting of diagonal values; removed 10% of code
+    -explicitly set values of enum
+
+
+----------------------------
+ mkNewState.cc
+----------------------------
+TODO:
+    -TODO 5/1/2009: should call slerp to scale down by qtwStep"
+
+
+----------------------------
+ mkTorTree.cc
+----------------------------
+
+CHANGE:
+    -moved error message for too many torsions earlier
+
+
+----------------------------
+ mkdisttars
+----------------------------
+
+NEW FEATURE:
+    -new maintenance and distribution tools
+
+
+----------------------------
+ nonbonds.cc
+----------------------------
+
+NEW FEATURE:
+    -Several changes have been made to improve the bond 
+    and nonbond detection algorithm.  Now, atoms that 
+    can potentially form bonds are sorted by distance 
+    first, so that the shortest candidate bonds are added 
+    first.  There is now a check to stop adding bonds when 
+    the maximum number of bonds is reached.  The bonded[][] 
+    array values are now validated before they are used in 
+    the for-l loop, to make sure they are not less than 0.  
+    There are new debugging print statements that can be 
+    triggered with the "-d" flag.  The new algorithm, in 
+    conjunction with the new bond length values in the file 
+    "mdist.h", now correctly handles ZINC01557511, a compound 
+    with a C-bridged cyclobutane that was previously causing 
+    the code to attempt to access bonded[-1][].
+
+
+
+----------------------------
+ paramdat2h.csh
+----------------------------
+
+NEW FEATURE:
+    -compiles and builds both autodock4 and autodock4_0 with 
+    appropriate default parameter libraries. Reports which one is being 
+    used in dlg file.
+    -changed paramdat2h.csh to now take one argument, the name of the 
+    parameter library.
+    -changed the default parameter library file from "AD4_parameters.dat" 
+    to "AD4.1_bound.dat".
+
+----------------------------
+ parameters.h
+----------------------------
+
+NEW FEATURE:
+    -Introduced a new macro, "is_hydrogen_type(t)", that takes a 
+    found_parm->autogrid_type and returns true if the type is a 
+    hydrogen atom type, namely "H", "HD" or "HS".
+
+
+----------------------------
+ parse_PDBQT_line.cc
+----------------------------
+
+NEW FEATURE:
+    -added detection of USER records, mapping to PDBQ_NULL.
+    -now returns PDBQ_UNRECOGNIZED instead of PDBQ_NULL, when 
+    it cannot identify the token.
+
+
+----------------------------
+ parse_com_line.cc
+ parse_com_line.h
+----------------------------
+
+DEPRECATED:
+    -removed command mode
+
+
+----------------------------
+ parse_dpf_line.cc
+----------------------------
+
+CHANGE:
+    -removed unnecessary numbering
+    -added unbound_energy token; removed reminder about NUM_LEXEMES
+    -added parsing of autodock_parameter_file version and unbound_model
+    -made new token for obsolete token quat0 to give better error messages
+
+
+----------------------------
+ parse_param_line.cc
+----------------------------
+
+CHANGE:
+    -added the new keyword/token pair, {"FE_unbound_model", PAR_UNBOUND}, 
+    to the parser.
+
+
+----------------------------
+ parsetypes.cc
+----------------------------
+
+CHANGE:
+    -Added check for too many atom types in dpf 'ligand_types' command in 
+    parsetypes.  Added map_declare.h so type of map (float or double) is 
+    independent of 'Real' and not affected by 'USE_DOUBLE' in Makefiles.
+
+
+----------------------------
+ partokens.h
+----------------------------
+
+CHANGE:
+    -added a new token, PAR_UNBOUND.
+
+
+----------------------------
+ printEnergies.cc
+----------------------------
+
+CHANGE:
+    -installed Debian compiler-compatibility patches from Stefan Moeller
+    -changed printout of receptor internal energy: previously only the 
+    total was reported. Now the moving-fixed and moving-moving components 
+    of the internal energy of the receptor are printed
+
+
+----------------------------
+ qmultiply.cc
+----------------------------
+
+NEW FEATURE:
+    -added quatDifferenceToAngle and quatDifferenceToAngleDeg methods; 
+    modified assert line 203 increasing 1 to 1.001
+    -Introduced a new slerp function adapted from an implementation 
+    by John Ratcliff to replace the previous slerp by Martin Baker; 
+    the previous slerp caused problems with arithmetic-crossover-based 
+    dockings that used typical numbers of energy evaluations, but not 
+    with our "unit" tests which are extremely short dockings.  The 
+    slerp based on the implementation from Martin Baker has been renamed 
+    "slerp1".
+    -Added two new functions, alerp(a,b,fract) and a_range_reduction(a),
+    which are used to interpolate (torsion) angles, such that the 
+    interpolation gives a if fract=0, b if fract=1, and some fraction 
+    of the smaller difference between a and b (note that the difference 
+    between two range-reduced angles can be either greater than 180 or 
+    less than 180 degrees, and we want to interpolate along the delta 
+    that is smaller than 180 degrees.  E.g. the average, i.e. fract=0.5, 
+    of 1 and 359 degrees should be 0 deg, not 180 deg.)  There is a test 
+    in one of the added comments, note, of alerp for a wide range of a 
+    and b values.
+
+CHANGE:
+    -commented out the assertQuatOK function, since the macro version 
+    was introduced in autocomm.h, to permit better reporting of where 
+    the assertion failed.  Added a warning for the DEBUG_MUTATION 
+    directive in slerp(), to alert if theta is 180 degrees when the 
+    two quaternions are opposite.  Added a comment to clarify that 
+    when fract==0, alerp returns a.
+
+----------------------------
+ qmultiply.h
+----------------------------
+
+NEW FEATURE:
+    -added quatDifferenceToAngle and quatDifferenceToAngleDeg declarations
+    -Introduced a new slerp function adapted from an implementation by John 
+    Ratcliff to replace the previous slerp by Martin Baker; the previous 
+    slerp caused problems with arithmetic-crossover-based dockings that 
+    used typical numbers of energy evaluations, but not with our "unit" 
+    tests which are extremely short dockings.  The slerp based on the 
+    implementation from Martin Baker has been renamed "slerp1".
+
+CHANGE:
+    -commented out the prototype for assertQuatOK().  Better to use the 
+    macro version in autocomm.h.
+    -added prototypes for alerp(a,b,fract) and a_range_reduction(a), 
+    which are for interpolating angles and "mod"-ing angles.
+
+
+----------------------------
+ readPDBQT.cc
+----------------------------
+
+NEW FEATURE:
+    -added new code that uses stacks, in particular stack_push(int) 
+    and stack_pop(), to build up the "end_of_branch[]" array, which 
+    is used in the new "Branch Crossover Mode" offered in the GA and 
+    Lamarckian GA search methods.  The intention of the branch crossover 
+    mode is to exchange only those torsion genes in the sub-tree 
+    descending from the first crossover point.
+    -modified the function that reads the ligand and flexible residue PDBQT
+    files, "readPDBQT()", to count the number of non-hydrogen atoms, and 
+    return this value.  (Previously, the same argument position that this 
+    count of heavy atoms now occupies, was used to pass in "Htype", but 
+    Htype is no longer used inside "readPDBQT()".)
+    other PDBQT_ tokens.
+
+CHANGE:
+    -increased QTOL from .005 to .05; softened warning message
+    -corrected ROOT logic for flexible residues
+    -repaired and clarified detection of end_of_branch entries by 
+    adding a separate array 'branch_last_piece': now the root is 
+    numbered piece one and the rigid pieces moved by torsions are 
+    numbered starting at two; removed 'stack_size' (which should 
+    have been stack_depth anyway) and 'top' from debug statements;
+    updated DEBUG: indicies; added code to catch error and exit if 
+    parent <0
+    -added code to check that each of the fields is read correctly in 
+    readPDBQLine.  Now checks that each ATOM/HETATM line in the PDBQT 
+    file is at least 78 characters long; if not, the parser now exits 
+    with a fatal error.   The warning if an atom type is not found is now 
+    much more informative, now advising the user to check the 
+    "ligand_types" line and to add a "map" line to the DPF.  The parser 
+    now explicitly handles all the tokens that can be returned by the 
+    parse_PDBQT_line function.  There is now a warning if an unrecognised 
+    token is found in the PDBQT file.  The code that handled BEGIN_RES 
+    records has now been mostly moved into a case block, alongside the 
+
+
+----------------------------
+ read_parameter_library.cc
+ read_parameter_library.h
+----------------------------
+CHANGE:
+    -installed Debian compiler-compatibility patches from Stefan Moeller
+    -removed unused extern variable
+    -added warning to PAR_UNBOUND in setup_parameter_library
+    -added reporting of which unbound model is used for each kind of search
+    -changed interface to setup_parameter_library by adding ad4_unbound_model
+    -replaced determining version number using 'strcmp' with 
+    'string_begins_with' to support the new longer version number format: #.#.3
+    -added a print statement to record the error message in the logFile, 
+    if the FN_parameter_library cannot be opened.
+
+
+----------------------------
+ rep.cc
+----------------------------
+
+CHANGE:
+    -added lines to set low and high from init_low and init_high, 
+    supplied in the constructor form ConstrainedRealVector::
+    ConstrainedRealVector(int num_els, double init_low, double init_high).
+
+
+----------------------------
+ rep_constants.h
+----------------------------
+
+CHANGE:
+    -added definitions for Y_TRANSLATION_INDEX, is_first_rotation_index(i)
+    and is_within_rotation_index(i).
+    -added a macro to determine if the index of a gene is part of the 
+    conformation, i.e. a torsion gene.  (is_conformation_index(i))
+
+
+----------------------------
+ setflags.cc
+ setflags.h
+----------------------------
+
+CHANGE:
+    -added include banner to get to show_warranty and show_copyright
+    -added -C for copyright notice
+    -updated command line arguments including --version
+    -pass version_num to setflags
+    -removed command mode
+    -added setlinebuf to ensure output even if program crashes
+
+
+----------------------------
+ simanneal.cc
+----------------------------
+
+CHANGE:
+    -updated the summations for the econf[] array that is used in the 
+    analysis() function, and which is reported in the clustering 
+    histogram.  These summations needed to be updated to be able to 
+    handle the "ad4_unbound_model" properly; in this model, the 
+    unbound energy must be updated after each docking has finished, 
+    to match the internal energy at the end of the docking.
+
+
+----------------------------
+ stack.cc
+----------------------------
+
+NEW FEATURE:
+    -Added new code to handle integer stacks, kindly contributed by 
+    Mike Pique.  Added new code to test the stack code.
+
+
+----------------------------
+ support.cc
+ support.h
+----------------------------
+
+NEW FEATURE:
+    -changed so now Individual does mapping of its genotype into 
+    its phenotype and inverse_mapping of its phenotype into its 
+    genotype; in both cases returns a reference to itself; 
+    added a check for self-assignment
+    -improved bounds checking in heap sort (Population::msort)
+    -added <stdlib.h> for exit(), which needs to be included on some(?) 
+    systems.
+    -added "end_of_branch[MAX_TORS]" to the Population class, the 
+    logic being that every Individual in the Population is the same, 
+    so rather than add the overhead to all the Individuals, we added 
+    it to the Population.  Also introducted two new methods, set_eob() 
+    and get_eob(), to set the end_of_branch[] array, and get values 
+    given a key torsion number.  These changes are to support the 
+    new "Branch Crossover mode".
+
+
+----------------------------
+ usage.cc
+----------------------------
+
+CHANGE:
+    -updated command line arguments including --version
+
+
+----------------------------
+ version.h
+----------------------------
+
+CHANGE:
+    -pass version_num to setflags
+    -version numbers changed to match autoconf version numbers.
+
+
+----------------------------
+ writePDBQT.cc
+----------------------------
+
+CHANGE:
+    -correction to handling of 2 letter atom names provided by Stefano Forli 
+    -uses calculateBindingEnergies so that if AD4.1_Bound.dat is 
+    used, the internal energy of the unbound state can be set to 
+    that of the docked state.
+    -to accommodate writing names of atoms with 2 character elements 
+    correctly, increased by one indicies on lines 114: 14->15, 
+    9->10; 132 and 133: 14->15, 9->10;280 and 281:13->14;lines 
+    288 and 289:13->12, 8->9; line 326:14->15; lines 328 and 329:13->14
+

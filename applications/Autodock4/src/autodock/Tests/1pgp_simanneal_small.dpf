@@ -1,0 +1,22 @@
+autodock_parameter_version 4.2       # used by autodock to validate parameter set
+outlev 1
+intelec                              # calculate internal electrostatics
+seed 28641 1106107140                         # seeds for random generator
+ligand_types P C HD OA              # atoms types in ligand
+fld 1pgp_rec.maps.fld              # grid_data_file
+map 1pgp_rec.P.map                 # atom-specific affinity map
+map 1pgp_rec.C.map                 # atom-specific affinity map
+map 1pgp_rec.HD.map                # atom-specific affinity map
+map 1pgp_rec.OA.map                # atom-specific affinity map
+elecmap 1pgp_rec.e.map             # electrostatics map
+desolvmap 1pgp_rec.d.map           # desolvation map
+move 1pgp_lig.pdbqt                  # small molecule
+about 23.407 29.2817 39.8079         # small molecule center
+rmstol 2.0                           # cluster_tolerance/A
+
+extnrg 1000.0                        # external grid energy
+e0max 10.0 1000                      # max initial energy; max number of retries
+
+cycles 2
+simanneal 2
+analysis                             # perform a ranked cluster analysis

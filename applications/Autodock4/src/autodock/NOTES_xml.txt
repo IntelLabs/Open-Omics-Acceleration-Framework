@@ -1,0 +1,43 @@
+/*
+** Copyright (C) The Scripps Research Institute 2005
+**
+** Authors: Alexandre Gillet <gillet@scripps.edu>
+**  
+** $Header: /opt/cvs/autodock/dist305/src/autodock/NOTES_xml.txt,v 1.1 2005/03/15 23:55:19 gillet Exp $
+** $Id: NOTES_xml.txt,v 1.1 2005/03/15 23:55:19 gillet Exp $
+**  
+*/
+
+How to get the state variable output in xml document?
+
+	run autodock with option -s filename
+
+	./autodock -p file.dpf -l file.dlg -s file.xml
+
+The xml doc structure is the following:
+
+<? xml version="1.0" ?>
+<autodock>
+	<version>%5.2f</version>
+	<autogrid_version>%5.2f</autogrid_version>
+	<output_xml__version>%5.2f</output_xml_version>
+        <runs>
+        <run id="%4d">
+                <seed>%ld %ld</seed>
+                <dpf>%s</dpf>
+                <free_NRG_binding></free_NRG_binding>
+                <Ki></Ki>
+                <Temp>%.2f</Temp>
+                <final_dock_NRG>%+7.2f or %+11.2e</final_dock_NRG>
+                <final_intermol_NRG>%+7.2f or %+11.2e</final_intermol_NRG>
+                <internal_ligand_NRG>%+7.2f or %+11.2e</internal_ligand_NRG>
+                <torsonial_free_NRG>%+7.2f or %+11.2e</torsonial_free_NRG>
+                <move>%s</move>
+                <about>>%f %f %f</about>
+                <tran0>%f %f %f</tran0>
+                <quat0>%f %f %f %f</quat0>
+                <ndihe>%d</ndihe>
+                <dihe0>%.2f</dihe0>
+        </run>
+        </runs>
+</autodock>

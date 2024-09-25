@@ -1,0 +1,19 @@
+## GENERIC SECTION
+autodock_parameter_version 4.2       # used by autodock to validate parameter set
+outlev ADT                           # diagnostic output level
+
+## LIGAND-SPECIFIC SECTION
+ligand_types A C HD N OA S           # atoms types in ligand
+fld 1dwd_rec.maps.fld  # grid_data_file
+map 1dwd_rec.A.map     # atom-specific affinity map
+map 1dwd_rec.C.map     # atom-specific affinity map
+map 1dwd_rec.HD.map    # atom-specific affinity map
+map 1dwd_rec.N.map     # atom-specific affinity map
+map 1dwd_rec.OA.map    # atom-specific affinity map
+map 1dwd_rec.S.map     # atom-specific affinity map
+elecmap 1dwd_rec.e.map # electrostatics map
+desolvmap 1dwd_rec.d.map # desolvation map
+move 1dwd_lig.pdbqt                  # small molecule
+
+## EVALUATE LIGAND ENERGY in RECEPTOR SECTION
+epdb                                 # small molecule to be evaluated

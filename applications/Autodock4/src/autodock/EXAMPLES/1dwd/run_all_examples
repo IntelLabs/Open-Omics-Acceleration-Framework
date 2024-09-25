@@ -1,0 +1,31 @@
+#! /bin/bash
+
+# run_all_examples - includes the long "25M" examples
+# that request up to 25,000,000 energy evaluations.
+#
+# These are not included in the distribution but
+# are available from the CVS checkout or by request.
+#
+
+( cd dock_rigidlig; bash make_rec_maps)
+( cd dock_flexlig_flexres; bash make_rigid_maps)
+
+
+for d in \
+	eval_lig  \
+	local_search_lig  \
+	simulated_annealing \
+	recluster \
+	dock_rigidlig  \
+	dock_flexlig  \
+	dock_flexlig_flexres  \
+	dock_flexlig_25M  \
+	dock_flexlig_flexres_25M  \
+	dock_rigidlig_25M  \
+	; do
+
+	if [ -d $d ]; then
+	  echo "$(date)  running examples in $d"
+	  ( cd $d && bash run_examples )
+	fi
+done

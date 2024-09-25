@@ -1,0 +1,43 @@
+autodock_parameter_version 4.1       # used by autodock to validate parameter set
+outlev -2                            # outlev min
+parameter_file AD4.1_bound.dat       # New parameter library
+#include_1_4_interactions 1.0        # test
+intelec                              # calculate internal electrostatic energy
+
+seed 28641 1106107140                # seeds for random generator
+
+ligand_types C HD OA P               # ligand atom type names
+fld 1pgp_rec.maps.fld                # grid_data_file
+map 1pgp_rec.C.map                   # atom-specific affinity map
+map 1pgp_rec.HD.map                  # atom-specific affinity map
+map 1pgp_rec.OA.map                  # atom-specific affinity map
+map 1pgp_rec.P.map                   # atom-specific affinity map
+elecmap 1pgp_rec.e.map               # electrostatics map
+desolvmap 1pgp_rec.d.map             # desolvation map
+
+move 1pgp_lig.pdbqt                  # small molecule
+about 22.894 28.598 40.259           # small molecule center
+tran0 22.894 28.598 40.259           # small molecule center
+
+rmstol 2.0                           # cluster_tolerance/A
+
+
+ga_pop_size 15                      # number of individuals in population
+ga_num_evals 25                     # maximum number of energy evaluations
+ga_num_generations 2                 # maximum number of generations
+ga_elitism 1                         # number of top individuals to survive to next generation
+set_ga                               # set the above parameters for GA or LGA
+
+sw_max_its 3                        # iterations of Solis & Wets local search
+ls_search_freq 0.01                  # probability of performing local search on individual
+set_psw1                             # set the above pseudo-Solis & Wets parameters
+
+accs 10
+rejs  5
+cycles 10
+simanneal 500
+ga_run 1000                             # do this many hybrid GA-LS runs
+sw_max_its 16                        # iterations of Solis & Wets local search
+do_local_only  500                             # do this many hybrid GA-LS runs
+
+analysis

@@ -1,0 +1,12 @@
+#! /bin/bash
+
+if [ ! -e 1dwd_rigid.maps.fld ]; then
+        bash ../dock_flexlig_flexres/make_rigid_maps
+fi
+
+autodock4 -p 1dwd_lig_1dwd_flexres_1dwd_rigid.dpf \
+  -l 1dwd_lig_1dwd_flexres_25M.dlg
+
+# autodock4 -p 1dwd_lig_1dwd_flexres_1dwd_rigid_long.dpf -l 1dwd_lig_1dwd_flexres_25M_long.dlg
+
+

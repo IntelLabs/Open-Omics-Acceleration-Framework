@@ -1,0 +1,18 @@
+#! /bin/bash
+# script to run AutoDock automated tests (if "make" is not available)
+# usage: (from source directory):  cd $ARCHOSV; ../makecheck
+#
+# $Id: makecheck,v 1.2 2012/10/25 16:55:21 mp Exp $
+#
+echo "Running the Python test_autodock4.py unit-tests on ../autodock4"
+outputdir=`pwd` ;\
+	umask 0 ;\
+	test -d $outputdir/Tests || mkdir $outputdir/Tests ;\
+    rm -f $outputdir/Tests/test_autodock4.py;\
+    cp ../AD4.1_bound.dat  $outputdir/Tests;\
+    cp ../AD4_parameters.dat  $outputdir/Tests;\
+    cp ../Tests/*.py   $outputdir/Tests;\
+    cp ../Tests/*.dpf  $outputdir/Tests;\
+    cp ../Tests/*.pdbqt  $outputdir/Tests;\
+    cp ../Tests/*.map*  $outputdir/Tests;\
+	cd Tests ;  python ./test_autodock4.py -d . -e ../autodock4 -o .

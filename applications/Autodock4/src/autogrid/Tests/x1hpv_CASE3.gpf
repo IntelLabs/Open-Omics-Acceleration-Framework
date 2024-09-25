@@ -1,0 +1,22 @@
+npts 6 6 6                           # num.grid points in xyz
+gridfld x1hpv.maps.fld               # grid_data_file
+spacing 0.375                        # spacing(A)
+receptor_types A C HD N OA SA        # receptor atom types
+ligand_types A C HD N NA OA SA CL F S BR # ligand atom types
+receptor x1hpv.pdbqt                 # macromolecule
+gridcenter -0.114 -1.692 0.058       # xyz-coordinates or auto
+smooth 0.5                           # store minimum energy w/in rad(A)
+map x1hpv.A.map                      # atom-specific affinity map
+map x1hpv.C.map                      # atom-specific affinity map
+map x1hpv.HD.map                     # atom-specific affinity map
+map x1hpv.N.map                      # atom-specific affinity map
+map x1hpv.NA.map                     # atom-specific affinity map
+map x1hpv.OA.map                     # atom-specific affinity map
+map x1hpv.SA.map                     # atom-specific affinity map
+map x1hpv.CL.map                     # atom-specific affinity map
+map x1hpv.F.map                      # atom-specific affinity map
+map x1hpv.S.map                      # atom-specific affinity map
+map x1hpv.BR.map                     # atom-specific affinity map
+elecmap x1hpv.e.map                  # electrostatic potential map      #  SEGFAULT IF COMMENTED
+#dsolvmap x1hpv.d.map                 # desolvation potential map         #  SEGFAULT IF COMMENTED
+dielectric -0.1465                   # <0, AD4 distance-dep.diel;>0, constant

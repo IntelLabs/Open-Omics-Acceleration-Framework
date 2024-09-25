@@ -1,0 +1,34 @@
+# "real world" test of simulated annealing (SA) to verify ADT compatibility
+autodock_parameter_version 4.1       # used by autodock to validate parameter set
+outlev 1                             # outlev adt
+parameter_file AD4.1_bound.dat       # New parameter library
+#include_1_4_interactions 1.0        # test
+intelec                              # calculate internal electrostatic energy
+
+seed 28641 1106107140                # seeds for random generator
+
+ligand_types C HD OA P               # ligand atom type names
+fld 1pgp_rec.maps.fld                # grid_data_file
+map 1pgp_rec.C.map                   # atom-specific affinity map
+map 1pgp_rec.HD.map                  # atom-specific affinity map
+map 1pgp_rec.OA.map                  # atom-specific affinity map
+map 1pgp_rec.P.map                   # atom-specific affinity map
+elecmap 1pgp_rec.e.map               # electrostatics map
+desolvmap 1pgp_rec.d.map             # desolvation map
+
+move 1pgp_lig.pdbqt                  # small molecule
+about 22.894 28.598 40.259           # small molecule center
+tran0 22.894 28.598 40.259           # small molecule center
+
+rmstol 2.0                           # cluster_tolerance/A
+
+
+ga_pop_size 50                      # number of individuals in population
+accs 10
+rejs  5
+cycles 10
+
+simanneal 5
+simanneal 5
+
+analysis

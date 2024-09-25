@@ -1,0 +1,84 @@
+#! /bin/bash
+# $Id: configure-universalDarwin,v 1.5 2014/06/11 03:44:21 mp Exp $
+
+# run configure (or ../configure) for universalDarwinNN
+# NN=8  Mac OS X 10.4 Tiger
+# NN=9  Mac OS X 10.5 Leopard
+# NN=10 Mac OS X 10.6 Snow Leopard
+# NN=11 Mac OS X 10.7 Lion
+# NN=12 OS X 10.8 Mountain Lion
+# NN=13 OS X 10.9 Mavericks
+# NN=14 OS X 10.10 Yosemite
+
+
+osrev=$(uname -r)  # example 9.8.0 is Darwin 9.8 or Mac OS 10.9.8
+ver=${osrev%%.*}  # example 9 is Darwin 9
+
+if [ -x configure ]; then
+	config=configure
+elif [ -x ../configure ]; then
+	config=../configure
+else
+	echo $0 cannot find configure script
+	exit 1
+fi
+
+# note that 10,11,12,... are Intel only
+
+case $ver in
+  *8) 
+	# Tiger (Intel/PPC; only 32-bit is supported here)
+	archlist="-arch i386 -arch ppc"
+	sdkver=4u
+	;;
+  *9) 
+	# Leopard (Intel/PPC; 32/64-bit)
+	archlist="-arch i386 -arch x86_64 -arch ppc -arch ppc64"
+	sdkver=5
+	;;
+  *10) 
+	# Snow Leopard (Intel 32/64-bit)
+	archlist="-arch i386 -arch x86_64"
+	sdkver=6
+	;;
+  *11) 
+	# Lion (Intel 32/64-bit)
+	archlist="-arch i386 -arch x86_64"
+	sdkver=7
+	sdkver=0 # hack for TSRI since our only 10.7 machine has no SDK dir
+	;;
+  *1[2-9]) 
+	# Mountain Lion and beyond (Intel 64-bit)
+	archlist="-arch x86_64"
+	sdkver=0 # hack for TSRI since our only 10.8 machine has no SDK dir
+	;;
+  *)
+  	echo $0 unrecogized Darwin version $ver \( osrev = $osrev \)
+	exit 1
+	;;
+esac
+
+configopts="--disable-dependency-tracking"
+
+if [ $sdkver != 0 ]; then
+	rootdir=/Developer/SDKs/MacOSX10.$sdkver.sdk
+	isysroot="-isysroot $rootdir"
+else
+	rootdir=/usr
+	isysroot=""
+fi
+
+if [ ! -d $rootdir ]; then
+	echo Cannot find developer tool directory $rootdir
+	echo "Please download \"Developer Tools\" from apple.com."
+	exit 1
+fi
+
+echo running env CXXFLAGS="-O3 $isysroot $archlist" \
+    LDFLAGS="$archlist" \
+    $config $configopts
+
+env CXXFLAGS="-O3 $isysroot $archlist" \
+    LDFLAGS="$archlist" \
+    $config $configopts
+

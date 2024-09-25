@@ -1,0 +1,15 @@
+#! /bin/bash
+# link maps if available, otherwise run AutoGrid to make them
+
+if [ -e 1dwd_rigid.maps.fld ]; then
+    exit 0 # OK
+fi
+
+if [ -e ../1dwd_rigid_maps/1dwd_rigid.maps.fld ]; then
+	ln ../1dwd_rigid_maps/*.{fld,map,xyz} .
+else
+	echo "$(date)  making 1dwd_rigid_maps"
+	autogrid4 -p 1dwd_rigid.gpf -l 1dwd_rigid.glg
+	cp *.fld *.map *.xyz ../1dwd_rigid_maps
+
+fi

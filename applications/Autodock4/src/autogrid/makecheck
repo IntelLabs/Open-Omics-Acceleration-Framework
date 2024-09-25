@@ -1,0 +1,19 @@
+#! /bin/bash
+# script to run AutoGrid automated tests (if "make" is not available)
+# usage: (from source directory):  cd $ARCHOSV; ../makecheck
+#
+# $Id: makecheck,v 1.2 2012/10/24 23:40:27 mp Exp $
+#
+echo "Running the Python test_autogrid4.py unit-tests on ../autogrid4"
+outputdir=`pwd` ;\
+	umask 0 ;\
+	test -d $outputdir/Tests || mkdir $outputdir/Tests ;\
+	chmod a+w $outputdir/Tests/*;\
+	cp ../Tests/*.py   $outputdir/Tests;\
+	cp ../Tests/*.gpf  $outputdir/Tests;\
+	cp ../Tests/*.dat  $outputdir/Tests;\
+	cp ../Tests/*.pdbqt  $outputdir/Tests;\
+	cp ../Tests/*.map*  $outputdir/Tests;\
+	chmod a+w $outputdir/Tests/*;\
+	cd $outputdir/Tests;\
+	python ./test_autogrid4.py -d . -e ../autogrid4 -o .

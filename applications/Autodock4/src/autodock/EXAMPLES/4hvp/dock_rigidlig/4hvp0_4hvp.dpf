@@ -1,0 +1,44 @@
+autodock_parameter_version 4.2       # used by autodock to validate parameter set
+outlev 1                             # diagnostic output level
+intelec                              # calculate internal electrostatics
+seed pid time                        # seeds for random generator
+ligand_types C HD N OA               # atoms types in ligand
+fld 4hvp_rec.maps.fld                # grid_data_file
+map 4hvp_rec.C.map                   # atom-specific affinity map
+map 4hvp_rec.HD.map                  # atom-specific affinity map
+map 4hvp_rec.N.map                   # atom-specific affinity map
+map 4hvp_rec.OA.map                  # atom-specific affinity map
+elecmap 4hvp_rec.e.map               # electrostatics map
+desolvmap 4hvp_rec.d.map             # desolvation map
+move 4hvp_0.pdbqt                    # small molecule
+about 5.1756 -2.3221 15.0195         # small molecule center
+tran0 random                         # initial coordinates/A or random
+quat0 random                         # initial quaternion
+ndihe 0                              # number of active torsions
+dihe0 random                         # initial dihedrals (relative) or random
+tstep 2.0                            # translation step/A
+qstep 50.0                           # quaternion step/deg
+dstep 50.0                           # torsion step/deg
+torsdof 34                           # torsional degrees of freedom and coefficient
+rmstol 0.5                           # cluster_tolerance/A
+extnrg 1000.0                        # external grid energy
+e0max 0.0 10000                      # max initial energy; max number of retries
+ga_pop_size 150                      # number of individuals in population
+ga_num_evals 2500000                 # maximum number of energy evaluations 
+ga_num_generations 27000             # maximum number of generations
+ga_elitism 1                         # number of top individuals to survive to next generation
+ga_mutation_rate 0.02                # rate of gene mutation
+ga_crossover_rate 0.8                # rate of crossover
+ga_window_size 10                    # 
+ga_cauchy_alpha 0.0                  # Alpha parameter of Cauchy distribution
+ga_cauchy_beta 1.0                   # Beta parameter Cauchy distribution
+set_ga                               # set the above parameters for GA or LGA
+sw_max_its 300                       # iterations of Solis & Wets local search
+sw_max_succ 4                        # consecutive successes before changing rho
+sw_max_fail 4                        # consecutive failures before changing rho
+sw_rho 1.0                           # size of local search space to sample
+sw_lb_rho 0.01                       # lower bound on rho
+ls_search_freq 0.06                  # probability of performing local search on individual
+set_psw1                             # set the above psw Solis & Wets parameters
+ga_run 10                            # do this many hybrid GA-LS runs
+analysis                             # perform a ranked cluster analysis

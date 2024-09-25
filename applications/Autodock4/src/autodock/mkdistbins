@@ -1,0 +1,50 @@
+#! /bin/bash
+# $Id: mkdistbins,v 1.5 2014/07/17 18:29:16 mp Exp $
+distdir=/mgl/works/rhuey/autodocksuite-4.2.6
+#archlist="sun4SunOS5 ia64Linux2 universalDarwin8 universalDarwin9"
+archlist="i86Windows i86Linux2 x86_64Linux2 x86_64Linux3 sun4SunOS5 MacOSX"
+proglist="autodock autogrid"
+umask 0
+
+run=echo # debugging
+
+for arch in $archlist; do
+   archok=y
+
+   case $arch in 
+    i86Cygwin|*Windows) exeext=.exe ;;
+    *) exeext="";;
+    esac
+    
+    case $arch in
+    i86Windows|i86Cygwin) host=hao;; # dummy
+    i86Linux2) host=enos;;   # 32-bit Intel Linux
+    x86_64Linux2) host=saul;;   # 64-bit Intel Linux 2
+    x86_64Linux3) host=xtal;;   # 64-bit Intel Linux 3
+    sun4SunOS5) host=riscfs2;;
+    #ia64Linux2) host=abraham;;
+    MacOSX|universalDarwin9) host=esau;;   # 10.5 Leopard
+    universalDarwin10) host=rapa;;  # 10.6 Snow Leopard
+    universalDarwin11) host=ubl;;    # 10.7 Lion
+    universalDarwin12) host=luna;;    # 10.9 Mavericks
+    *) host=dummy;;
+    esac
+
+    for prog in autodock autogrid; do
+       case $arch in
+       MacOSX|*Darwin*) 
+           case $prog in
+              autodock) config_cmd="../configure-universalDarwin" ;;
+              autogrid) config_cmd="../../autodock/configure-universalDarwin" ;;
+           esac
+           ;;
+       *) config_cmd="../configure";;
+       esac
+
+        $run "umask 0; mkdir $distdir/$prog/$arch"
+        # wish list:
+        rcmd="umask 0;cd $distdir/$prog/$arch; $config_cmd; make; make test"
+        $run ssh $host \"$rcmd\"
+   done
+done
+

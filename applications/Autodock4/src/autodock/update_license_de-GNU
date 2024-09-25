@@ -1,0 +1,48 @@
+#! /bin/sh
+# $Id: update_license_de-GNU,v 1.1 2010/06/09 04:08:24 mp Exp $
+# modifies existing license and warranty by updating source files in place
+#
+# de-GNU mode - 
+#   1. replaces License block with a license placeholder, see below
+#    License block begins with "This program is free software"
+#    and ends with "Foundation, Inc...."
+#   2. removes code between lines "// GNU BEGIN" and "// GNU END"
+#      Used in AutoDock:
+#      	banner.cc: printing of warranty and license,
+#      	setflags.cc: printing of version information.
+#      Used in AutoGrid:
+#      	setflags.cpp: printing of version information.
+     
+#    
+#
+#    
+for i in "$@"
+do
+ awk 'BEGIN {
+ 	count=0
+	placeholder = " License: email autodock@scripps.edu for information."
+	}
+/^ *This program is free software/, /^ *Foundation, Inc/ { 
+	if(count==0) print placeholder
+	count++
+        next
+	}
+/^\/\/ GNU BEGIN/, /^\/\/ GNU END/ {
+	next
+	}
+{ print 
+  count=0
+	}
+' $i    > t   
+    cmp -s $i t
+    status=$?
+    if [ $status = 1 ] ; then
+	# different
+    	\cp t $i 
+	echo replaced $i
+    else
+	# same
+    	echo "       kept (unchanged) $i"
+    fi
+    \rm t
+    done

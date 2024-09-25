@@ -1,0 +1,54 @@
+#! /bin/sh
+#
+# copyfilesfromAD
+#
+# remove local AutoGrid versions of key source files shared with AutoDock,
+#  replacing them with copies from ../autodock
+# 
+# option -r   : removes these files, does not copy 
+#
+# $Id: copyfilesfromAD,v 1.4 2013/02/26 23:58:01 mp Exp $
+#
+# M Pique
+
+
+copy=y
+if [ test$1 = test-r ]; then
+  copy=n
+else
+  #
+  # determine where 'autodock' source files are: 
+  # in ../autodock or ../../autodock
+  # by searching for stop.cc source file there
+  #
+  if [ -r ../autodock/stop.cc ]; then
+    srcdir=".."  # where 'autodock' dir is from build dir
+  elif [ -r ../../autodock/stop.cc ]; then
+    srcdir="../.."  # where 'autodock' dir is from build dir
+  else
+    echo "cannot locate autodock source directory"
+    exit 1
+  fi
+fi
+
+DO="cp -p"
+
+# .cpp and .h if present in ../autodock
+for c in  \
+	mingw_getrusage \
+	mingw_sysconf \
+	mingw_sys_times \
+	parse_param_line \
+	printhms \
+	printdate \
+	read_parameter_library \
+	stop \
+	timesys \
+	timesyshms \
+  ; do
+   rm -f $c.cpp $c.h
+   test $copy = y && test -r ${srcdir}/autodock/$c.cc && $DO  ${srcdir}/autodock/$c.cc $c.cpp
+   test $copy = y && test -r ${srcdir}/autodock/$c.h && $DO  ${srcdir}/autodock/$c.h  $c.h
+done
+exit 0
+

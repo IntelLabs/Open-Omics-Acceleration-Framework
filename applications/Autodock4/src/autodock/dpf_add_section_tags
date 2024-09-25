@@ -1,0 +1,44 @@
+#! /bin/bash
+# add explanatory section tags to a DPF (in place)
+
+# $Id: dpf_add_section_tags,v 1.1 2012/10/31 19:27:23 mp Exp $
+AWK='/usr/bin/nawk'; test -x $AWK || AWK='awk'
+
+
+for dpf in "$@"; do
+
+ tmp=/tmp/dpf_add_section_tags$$
+ chmod +w $dpf
+
+$AWK 'BEGIN {
+	r["ligand_types"] = "LIGAND-SPECIFIC"
+	r["tstep"] = "SA-SPECIFIC"
+	r["rmstol"] = "ANALYSIS"
+	r["tran0"] = "INITIAL SEARCH STATE"
+	r["ga_pop_size"] = r["ga_num_evals"] = "SEARCH-SPECIFIC"
+	r["e0max"] = r["cycles"] = r["tstep"] = "SIMULATED ANNEALING SEARCH PARAMETERS"
+	r["unbound_model"] = "ENERGY MODEL"
+	r["sw_max_its"] = r["set_psw1"] = r["ls_search_freq"] = "LOCAL SEARCH PARAMETERS"
+	r["ga_run"] = r["simanneal"] = r["do_local_only"]  = "PERFORM SEARCH"
+	r["torsdof"] = "FREE ENERGY ENTROPY ADJUSTMENT"
+	r["epdb"] = "EVALUATE LIGAND ENERGY in RECEPTOR"
+	}
+NF>0 && $1=="##" && NR>1 {
+	# remove existing tag (hack)
+	# however, the blank line inserted before it will remain
+	next
+	}
+NR==1 {
+	print "## GENERIC SECTION"
+	}
+NF>0	{if (($1 in r) && ! (r[$1] in reported) ) {
+		if(prev!="") print ""
+		print "## " r[$1]  " SECTION"
+		reported[r[$1]] = 1
+		}
+	}
+
+{ prev=$0; print }' $dpf \
+ > $tmp && cp $tmp $dpf && rm -f $tmp
+
+done

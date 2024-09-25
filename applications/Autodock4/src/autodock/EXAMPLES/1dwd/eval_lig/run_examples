@@ -1,0 +1,10 @@
+#! /bin/bash
+
+if [ ! -e 1dwd_rec.maps.fld ]; then
+	bash ../dock_rigidlig/make_rec_maps
+fi
+
+autodock4 -p 1dwd_epdb.dpf -l 1dwd_epdb.dlg
+
+
+autodock4 -p 1dwd_epdb_best.dpf -l 1dwd_epdb_best.dlg

@@ -1,0 +1,734 @@
+          AutoDock 4.2 Release 4.2.6   
+         (C) 1989-2012 The Scripps Research Institute
+        AutoDock comes with ABSOLUTELY NO WARRANTY.
+        AutoDock is free software, and you are welcome
+        to redistribute it under certain conditions;
+        for details type 'autodock4 -C'
+
+                     main.cc  $Revision: 1.2 $
+
+                   Compiled on Jul 17 2014 at 12:49:25
+
+
+This file was created at:			3:52 36" p.m., 07/17/2014
+                   on host:		"xtal.scripps.edu"
+Current Working Directory = "/home/mp/facil/autodock/20140717cvs/autodock/EXAMPLES/1dwd/local_search_lig"
+Random number generator was seeded with values 18097, 1405637556.
+Docking parameter file (DPF) used for this docking:		1dwd_local_only_best.dpf
+DPF> ## GENERIC SECTION
+
+DPF> outlev basic			# less verbose output than with "ADT"
+
+Output Level = 0  BASIC OUTPUT DURING DOCKING (LOGBASIC).
+DPF> 
+
+DPF> ## LIGAND-SPECIFIC SECTION
+
+DPF> ligand_types A C HD N OA  S          # atoms types in ligand
+
+DPF> fld 1dwd_rec.maps.fld # grid_data_file
+
+Macromolecule file used to create Grid Maps =	1dwd_rec.pdbqt
+DPF> map 1dwd_rec.A.map    # atom-specific affinity map
+
+DPF> map 1dwd_rec.C.map    # atom-specific affinity map
+
+DPF> map 1dwd_rec.HD.map   # atom-specific affinity map
+
+DPF> map 1dwd_rec.N.map    # atom-specific affinity map
+
+DPF> map 1dwd_rec.OA.map   # atom-specific affinity map
+
+DPF> map 1dwd_rec.S.map    # atom-specific affinity map
+
+DPF> elecmap 1dwd_rec.e.map # electrostatics map
+
+DPF> desolvmap 1dwd_rec.d.map # desolvation map
+
+DPF> move best.pdbqt                      # small molecule
+
+1,4-interactions will be _ignored_ in the non-bonded internal energy calculation.
+
+Ligand PDBQT file = "best.pdbqt"
+
+INPUT LIGAND PDBQT FILE:
+________________________
+
+INPUT-LIGAND-PDBQT: MODEL        8
+INPUT-LIGAND-PDBQT: USER    Run = 8
+INPUT-LIGAND-PDBQT: USER    DPF = 1dwd_1dwd.dpf
+INPUT-LIGAND-PDBQT: USER  
+INPUT-LIGAND-PDBQT: USER    Estimated Free Energy of Binding    =  -11.11 kcal/mol  [=(1)+(2)+(3)-(4)]
+INPUT-LIGAND-PDBQT: USER    Estimated Inhibition Constant, Ki   =    7.15 nM (nanomolar)  [Temperature = 298.15 K]
+INPUT-LIGAND-PDBQT: USER    
+INPUT-LIGAND-PDBQT: USER    (1) Final Intermolecular Energy     =  -14.10 kcal/mol
+INPUT-LIGAND-PDBQT: USER        vdW + Hbond + desolv Energy     =  -12.68 kcal/mol
+INPUT-LIGAND-PDBQT: USER        Electrostatic Energy            =   -1.42 kcal/mol
+INPUT-LIGAND-PDBQT: USER    (2) Final Total Internal Energy     =   -2.07 kcal/mol
+INPUT-LIGAND-PDBQT: USER    (3) Torsional Free Energy           =   +2.98 kcal/mol
+INPUT-LIGAND-PDBQT: USER    (4) Unbound System's Energy  [=(2)] =   -2.07 kcal/mol
+INPUT-LIGAND-PDBQT: USER    
+INPUT-LIGAND-PDBQT: USER    
+INPUT-LIGAND-PDBQT: USER    NEWDPF move 1dwd_lig.pdbqt
+INPUT-LIGAND-PDBQT: USER    NEWDPF about 32.340000 14.050000 24.920000
+INPUT-LIGAND-PDBQT: USER    NEWDPF tran0 32.561188 14.175975 25.087352
+INPUT-LIGAND-PDBQT: USER    NEWDPF quaternion0 -0.009953 -0.043213 -0.005848 0.998999
+INPUT-LIGAND-PDBQT: USER    NEWDPF axisangle0 -0.222530 -0.966119 -0.130747 5.127202
+INPUT-LIGAND-PDBQT: USER    NEWDPF quat0 -0.222530 -0.966119 -0.130747 5.127202 # deprecated
+INPUT-LIGAND-PDBQT: USER    NEWDPF dihe0 3.13 -130.72 149.20 -174.17 -6.62 -125.50 -77.41 2.38 
+INPUT-LIGAND-PDBQT: USER  
+INPUT-LIGAND-PDBQT: REMARK  8 active torsions:
+INPUT-LIGAND-PDBQT: REMARK  status: ('A' for Active; 'I' for Inactive)
+INPUT-LIGAND-PDBQT: REMARK    1  A    between atoms: C11_4828  and  A12_4831 
+INPUT-LIGAND-PDBQT: REMARK       I    between atoms: N1_4806  and  C9_4826 
+INPUT-LIGAND-PDBQT: REMARK    2  A    between atoms: C8_4824  and  C9_4826 
+INPUT-LIGAND-PDBQT: REMARK       I    between atoms: C35_4868  and  N36_4869 
+INPUT-LIGAND-PDBQT: REMARK    3  A    between atoms: N18_4841  and  S22_4848 
+INPUT-LIGAND-PDBQT: REMARK    4  A    between atoms: C8_4824  and  C11_4828 
+INPUT-LIGAND-PDBQT: REMARK       I    between atoms: N7_4822  and  C20_4846 
+INPUT-LIGAND-PDBQT: REMARK       I    between atoms: A17_4840  and  C35_4868 
+INPUT-LIGAND-PDBQT: REMARK    5  A    between atoms: N7_4822  and  C8_4824 
+INPUT-LIGAND-PDBQT: REMARK    6  A    between atoms: N18_4841  and  C19_4843 
+INPUT-LIGAND-PDBQT: REMARK    7  A    between atoms: S22_4848  and  A26_4853 
+INPUT-LIGAND-PDBQT: REMARK    8  A    between atoms: C19_4843  and  C20_4846 
+INPUT-LIGAND-PDBQT: USER                              x       y       z     vdW  Elec       q    Type
+INPUT-LIGAND-PDBQT: USER                           _______ _______ _______ _____ _____    ______ ____
+INPUT-LIGAND-PDBQT: ROOT
+INPUT-LIGAND-PDBQT: ATOM      1  C8  MID            32.702  14.523  22.479 -0.24 -0.04    +0.164 C 
+INPUT-LIGAND-PDBQT: ENDROOT
+INPUT-LIGAND-PDBQT: BRANCH   1   2
+INPUT-LIGAND-PDBQT: ATOM      2  N7  MID            31.491  14.228  23.261 -0.04 +0.07    -0.337 N 
+INPUT-LIGAND-PDBQT: ATOM      3  H11 MID            30.616  14.113  22.793 +0.07 -0.04    +0.164 HD
+INPUT-LIGAND-PDBQT: ATOM      4  C20 MID            31.527  14.049  24.604 -0.19 -0.05    +0.254 C 
+INPUT-LIGAND-PDBQT: ATOM      5  O21 MID            32.565  14.172  25.265 -0.72 -0.02    -0.270 OA
+INPUT-LIGAND-PDBQT: BRANCH   4   6
+INPUT-LIGAND-PDBQT: ATOM      6  C19 MID            30.218  13.744  25.152 -0.11 -0.06    +0.196 C 
+INPUT-LIGAND-PDBQT: BRANCH   6   7
+INPUT-LIGAND-PDBQT: ATOM      7  N18 MID            30.151  12.348  25.429 -0.06 +0.05    -0.290 N 
+INPUT-LIGAND-PDBQT: ATOM      8  H19 MID            29.694  11.767  24.752 +0.05 -0.02    +0.174 HD
+INPUT-LIGAND-PDBQT: BRANCH   7   9
+INPUT-LIGAND-PDBQT: ATOM      9  S22 MID            30.062  11.865  26.989 -0.15 -0.04    +0.261 S 
+INPUT-LIGAND-PDBQT: ATOM     10  O23 MID            29.013  10.881  27.106 -0.04 +0.02    -0.200 OA
+INPUT-LIGAND-PDBQT: ATOM     11  O24 MID            30.149  13.047  27.829 -0.27 +0.05    -0.200 OA
+INPUT-LIGAND-PDBQT: BRANCH   9  12
+INPUT-LIGAND-PDBQT: ATOM     12  A26 MID            31.540  10.967  27.276 -0.17 -0.01    +0.103 A 
+INPUT-LIGAND-PDBQT: ATOM     13  A25 MID            32.507  11.606  28.044 -0.38 -0.00    +0.013 A 
+INPUT-LIGAND-PDBQT: ATOM     14  A27 MID            31.726   9.707  26.791 -0.16 -0.00    +0.013 A 
+INPUT-LIGAND-PDBQT: ATOM     15  A30 MID            33.696  10.993  28.327 -0.46 -0.00    +0.001 A 
+INPUT-LIGAND-PDBQT: ATOM     16  A29 MID            33.952   9.714  27.820 -0.43 -0.00    +0.000 A 
+INPUT-LIGAND-PDBQT: ATOM     17  A34 MID            35.188   9.085  28.110 -0.51 -0.00    +0.000 A 
+INPUT-LIGAND-PDBQT: ATOM     18  A28 MID            32.938   9.045  27.090 -0.26 -0.00    +0.001 A 
+INPUT-LIGAND-PDBQT: ATOM     19  A33 MID            35.406   7.812  27.676 -0.53 -0.00    +0.000 A 
+INPUT-LIGAND-PDBQT: ATOM     20  A32 MID            34.394   7.135  26.931 -0.55 -0.00    +0.000 A 
+INPUT-LIGAND-PDBQT: ATOM     21  A31 MID            33.175   7.740  26.642 -0.32 -0.00    +0.000 A 
+INPUT-LIGAND-PDBQT: ENDBRANCH   9  12
+INPUT-LIGAND-PDBQT: ENDBRANCH   7   9
+INPUT-LIGAND-PDBQT: ENDBRANCH   6   7
+INPUT-LIGAND-PDBQT: ENDBRANCH   4   6
+INPUT-LIGAND-PDBQT: ENDBRANCH   1   2
+INPUT-LIGAND-PDBQT: BRANCH   1  22
+INPUT-LIGAND-PDBQT: ATOM     22  C9  MID            32.794  13.444  21.453 -0.18 -0.03    +0.254 C 
+INPUT-LIGAND-PDBQT: ATOM     23  N1  MID            33.520  12.339  21.905 -0.15 +0.03    -0.319 N 
+INPUT-LIGAND-PDBQT: ATOM     24  O10 MID            32.308  13.498  20.318 -0.17 +0.00    -0.270 OA
+INPUT-LIGAND-PDBQT: ATOM     25  C6  MID            34.098  12.335  23.262 -0.39 -0.03    +0.104 C 
+INPUT-LIGAND-PDBQT: ATOM     26  C2  MID            33.691  11.169  21.050 -0.36 +0.01    +0.104 C 
+INPUT-LIGAND-PDBQT: ATOM     27  C5  MID            33.675  11.083  24.040 -0.33 -0.00    +0.024 C 
+INPUT-LIGAND-PDBQT: ATOM     28  C4  MID            33.924   9.815  23.196 -0.53 -0.00    +0.004 C 
+INPUT-LIGAND-PDBQT: ATOM     29  C3  MID            33.217   9.923  21.812 -0.56 +0.00    +0.024 C 
+INPUT-LIGAND-PDBQT: ENDBRANCH   1  22
+INPUT-LIGAND-PDBQT: BRANCH   1  30
+INPUT-LIGAND-PDBQT: ATOM     30  C11 MID            32.547  15.865  21.778 -0.33 -0.02    +0.058 C 
+INPUT-LIGAND-PDBQT: BRANCH  30  31
+INPUT-LIGAND-PDBQT: ATOM     31  A12 MID            32.464  16.922  22.791 -0.37 +0.01    -0.020 A 
+INPUT-LIGAND-PDBQT: ATOM     32  A14 MID            33.604  17.590  23.155 -0.49 +0.00    -0.004 A 
+INPUT-LIGAND-PDBQT: ATOM     33  A13 MID            31.251  17.282  23.313 -0.37 +0.00    -0.004 A 
+INPUT-LIGAND-PDBQT: ATOM     34  A16 MID            33.563  18.601  24.120 -0.50 -0.01    +0.019 A 
+INPUT-LIGAND-PDBQT: ATOM     35  A17 MID            32.352  18.947  24.687 -0.35 -0.12    +0.198 A 
+INPUT-LIGAND-PDBQT: ATOM     36  A15 MID            31.188  18.295  24.288 -0.47 -0.01    +0.019 A 
+INPUT-LIGAND-PDBQT: ATOM     37  C35 MID            32.290  20.030  25.680 -0.12 -0.63    +0.582 C 
+INPUT-LIGAND-PDBQT: ATOM     38  N36 MID            33.402  20.659  26.102 -0.37 +0.31    -0.254 N 
+INPUT-LIGAND-PDBQT: ATOM     39  N37 MID            31.219  20.174  26.471 -0.27 +0.40    -0.254 N 
+INPUT-LIGAND-PDBQT: ATOM     40  H29 MID            33.310  21.381  26.784 -0.22 -0.36    +0.172 HD
+INPUT-LIGAND-PDBQT: ATOM     41  H30 MID            34.270  20.641  25.607 +0.16 -0.14    +0.172 HD
+INPUT-LIGAND-PDBQT: ATOM     42  H31 MID            31.202  20.883  27.181 -0.42 -0.48    +0.172 HD
+INPUT-LIGAND-PDBQT: ATOM     43  H32 MID            30.337  19.758  26.252 -0.42 -0.28    +0.172 HD
+INPUT-LIGAND-PDBQT: ENDBRANCH  30  31
+INPUT-LIGAND-PDBQT: ENDBRANCH   1  30
+INPUT-LIGAND-PDBQT: TORSDOF 10
+INPUT-LIGAND-PDBQT: TER
+INPUT-LIGAND-PDBQT: ENDMDL
+INPUT-LIGAND-PDBQT: 
+________________________________________________________________________________
+
+autodock4: WARNING: Unrecognized PDBQT record type in line:
+autodock4: WARNING: MODEL        8
+
+autodock4: WARNING: Unrecognized PDBQT record type in line:
+autodock4: WARNING: TER
+
+autodock4: WARNING: Unrecognized PDBQT record type in line:
+autodock4: WARNING: ENDMDL
+
+Total charge on ligand                               =	+1.000 e
+autodock4: Unrecognized keyword found while parsing PDBQT file, line:
+|MODEL        8
+|
+autodock4: Unrecognized keyword found while parsing PDBQT file, line:
+|TER
+|
+autodock4: Unrecognized keyword found while parsing PDBQT file, line:
+|ENDMDL
+|
+
+
+Number of Rotatable Bonds in Small Molecule =	8 torsions
+Number of atoms in ligand:  43
+
+Number of non-hydrogen atoms in ligand:  37
+
+Number of vibrational degrees of freedom of ligand:  123
+
+
+Number of torsional degrees of freedom = 10
+Estimated loss of torsional free energy upon binding = +2.9830 kcal/mol
+
+
+DPF> 
+
+DPF> ## LOCAL SEARCH PARAMETERS SECTION
+
+DPF> ls_search_freq 1.00                  # probability of performing local search on individual
+
+Local search will be performed with frequency 1.000000.
+DPF> set_psw1                             # set the above psw Solis & Wets parameters
+
+Creating a new Local Search object using the pseudo-Solis-Wets algorithm (pSW1) with the current settings.
+
+DPF> 
+
+DPF> ## PERFORM SEARCH SECTION
+
+DPF> do_local_only 50                     # do this many hybrid GA-LS runs
+
+auto-centering ligand on root atoms: 32.702 14.523 22.479
+Furthest true ligand atom from "about" center is 8.908 Angstroms (maxrad).
+Setting 'tran0' value to same as 'about' value: 32.702 14.523 22.479
+Number of Local Search (LS) only dockings = 50 runs
+Unbound model to be used is 'same as bound' [AutoDock 4.2 default].
+Run: 1 Seed: 18097 1405637556  [ Run 1 of 50 LS ]
+Date:	Thu Jul 17 15:52:37 2014
+Final-Value: -17.009
+There were 8568 Energy Evaluations.
+Detailed state:  trans 32.700 14.531 22.498 quatxyzw -0.001039 -0.000242 0.000442 0.999999 center 32.702 14.523 22.479 ntor 8 0.2951 0.0028 -0.0596 -0.0768 -0.0979 -0.0822 0.0640 -0.0277
+
+Run: 2 Seed: 741037134 123604133  [ Run 2 of 50 LS ]
+Date:	Thu Jul 17 15:52:37 2014
+Final-Value: -17.009
+There were 8555 Energy Evaluations.
+Detailed state:  trans 32.702 14.513 22.489 quatxyzw 0.001790 0.000047 -0.000613 0.999998 center 32.702 14.523 22.479 ntor 8 0.1011 0.0495 0.1259 0.0995 -0.0744 -0.0439 -0.0090 -0.1616
+
+Run: 3 Seed: 905780104 970482952  [ Run 3 of 50 LS ]
+Date:	Thu Jul 17 15:52:37 2014
+Final-Value: -17.010
+There were 8553 Energy Evaluations.
+Detailed state:  trans 32.705 14.524 22.479 quatxyzw 0.000164 0.000609 0.000485 1.000000 center 32.702 14.523 22.479 ntor 8 0.1191 -0.0407 0.1588 0.0676 -0.2030 -0.1012 -0.0615 0.0317
+
+Run: 4 Seed: 830688539 930013673  [ Run 4 of 50 LS ]
+Date:	Thu Jul 17 15:52:37 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 5 Seed: 409965287 1167698021  [ Run 5 of 50 LS ]
+Date:	Thu Jul 17 15:52:38 2014
+Final-Value: -17.009
+There were 8555 Energy Evaluations.
+Detailed state:  trans 32.698 14.528 22.506 quatxyzw 0.000231 0.000457 0.000005 1.000000 center 32.702 14.523 22.479 ntor 8 0.2076 -0.0391 0.1817 0.1389 -0.0041 -0.0792 0.0043 -0.0941
+
+Run: 6 Seed: 1092223300 166963686  [ Run 6 of 50 LS ]
+Date:	Thu Jul 17 15:52:38 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 7 Seed: 1983261140 1423814784  [ Run 7 of 50 LS ]
+Date:	Thu Jul 17 15:52:38 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 8 Seed: 1421752073 377334111  [ Run 8 of 50 LS ]
+Date:	Thu Jul 17 15:52:39 2014
+Final-Value: -17.008
+There were 8555 Energy Evaluations.
+Detailed state:  trans 32.698 14.521 22.510 quatxyzw 0.000842 0.000585 -0.000170 0.999999 center 32.702 14.523 22.479 ntor 8 -0.0657 -0.0064 0.1095 0.1356 0.0072 -0.1600 -0.0148 -0.0361
+
+Run: 9 Seed: 1260728124 1710568090  [ Run 9 of 50 LS ]
+Date:	Thu Jul 17 15:52:39 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 10 Seed: 137455616 264199930  [ Run 10 of 50 LS ]
+Date:	Thu Jul 17 15:52:39 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 11 Seed: 1892282233 876959794  [ Run 11 of 50 LS ]
+Date:	Thu Jul 17 15:52:39 2014
+Final-Value: -17.010
+There were 8554 Energy Evaluations.
+Detailed state:  trans 32.704 14.522 22.489 quatxyzw 0.000655 0.000064 -0.000597 1.000000 center 32.702 14.523 22.479 ntor 8 0.1504 0.0652 -0.1531 0.1459 -0.0116 -0.0135 -0.1095 0.0552
+
+Run: 12 Seed: 26749843 1205864807  [ Run 12 of 50 LS ]
+Date:	Thu Jul 17 15:52:40 2014
+Final-Value: -17.008
+There were 8555 Energy Evaluations.
+Detailed state:  trans 32.699 14.521 22.480 quatxyzw 0.000566 -0.000418 -0.000470 1.000000 center 32.702 14.523 22.479 ntor 8 0.0582 -0.0034 -0.0042 -0.0578 -0.1279 0.0198 -0.0257 -0.0388
+
+Run: 13 Seed: 2076813729 1810685154  [ Run 13 of 50 LS ]
+Date:	Thu Jul 17 15:52:40 2014
+Final-Value: -17.009
+There were 8561 Energy Evaluations.
+Detailed state:  trans 32.705 14.524 22.485 quatxyzw -0.000021 0.000693 0.000093 1.000000 center 32.702 14.523 22.479 ntor 8 0.1508 0.1035 -0.0061 0.0565 -0.0495 0.0283 0.0823 0.0429
+
+Run: 14 Seed: 460620140 2048283955  [ Run 14 of 50 LS ]
+Date:	Thu Jul 17 15:52:40 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 15 Seed: 1707135451 52166721  [ Run 15 of 50 LS ]
+Date:	Thu Jul 17 15:52:40 2014
+Final-Value: -17.011
+There were 8560 Energy Evaluations.
+Detailed state:  trans 32.701 14.527 22.489 quatxyzw 0.000124 -0.000094 0.000098 1.000000 center 32.702 14.523 22.479 ntor 8 -0.0673 0.1170 -0.0575 0.1434 -0.1569 -0.0589 0.0079 -0.0543
+
+Run: 16 Seed: 350563232 824646689  [ Run 16 of 50 LS ]
+Date:	Thu Jul 17 15:52:41 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 17 Seed: 2034230096 954432416  [ Run 17 of 50 LS ]
+Date:	Thu Jul 17 15:52:41 2014
+Final-Value: -17.008
+There were 8561 Energy Evaluations.
+Detailed state:  trans 32.700 14.529 22.501 quatxyzw -0.000807 0.000277 -0.000053 1.000000 center 32.702 14.523 22.479 ntor 8 0.0110 0.0213 -0.0190 -0.0198 -0.0925 -0.1631 -0.0523 0.0002
+
+Run: 18 Seed: 1003260989 2125266581  [ Run 18 of 50 LS ]
+Date:	Thu Jul 17 15:52:41 2014
+Final-Value: -17.008
+There were 8563 Energy Evaluations.
+Detailed state:  trans 32.706 14.526 22.490 quatxyzw -0.000356 0.000477 0.000489 1.000000 center 32.702 14.523 22.479 ntor 8 0.0088 0.0499 0.0203 0.0890 0.0366 -0.0044 0.1297 -0.0055
+
+Run: 19 Seed: 1359171452 764480291  [ Run 19 of 50 LS ]
+Date:	Thu Jul 17 15:52:41 2014
+Final-Value: -17.008
+There were 8556 Energy Evaluations.
+Detailed state:  trans 32.698 14.521 22.527 quatxyzw 0.000707 0.000712 -0.000690 0.999999 center 32.702 14.523 22.479 ntor 8 0.0361 0.1028 -0.0195 0.0721 0.0283 -0.1290 -0.1613 -0.0145
+
+Run: 20 Seed: 1443027130 1569114874  [ Run 20 of 50 LS ]
+Date:	Thu Jul 17 15:52:42 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 21 Seed: 1112087298 70002864  [ Run 21 of 50 LS ]
+Date:	Thu Jul 17 15:52:42 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 22 Seed: 401547479 1195389507  [ Run 22 of 50 LS ]
+Date:	Thu Jul 17 15:52:42 2014
+Final-Value: -17.009
+There were 8552 Energy Evaluations.
+Detailed state:  trans 32.703 14.520 22.498 quatxyzw 0.000542 0.000645 -0.000489 1.000000 center 32.702 14.523 22.479 ntor 8 0.2070 -0.0597 0.0617 -0.0196 -0.1043 -0.1787 -0.0364 0.1044
+
+Run: 23 Seed: 901658458 1759726067  [ Run 23 of 50 LS ]
+Date:	Thu Jul 17 15:52:42 2014
+Final-Value: -17.008
+There were 8551 Energy Evaluations.
+Detailed state:  trans 32.705 14.528 22.493 quatxyzw 0.000072 0.000117 0.000378 1.000000 center 32.702 14.523 22.479 ntor 8 -0.0239 -0.1220 0.1664 0.0121 -0.0530 -0.1077 -0.1751 -0.0757
+
+Run: 24 Seed: 32907716 840641395  [ Run 24 of 50 LS ]
+Date:	Thu Jul 17 15:52:43 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 25 Seed: 1703912914 1562693110  [ Run 25 of 50 LS ]
+Date:	Thu Jul 17 15:52:43 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 26 Seed: 406009201 88405344  [ Run 26 of 50 LS ]
+Date:	Thu Jul 17 15:52:43 2014
+Final-Value: -17.010
+There were 8555 Energy Evaluations.
+Detailed state:  trans 32.701 14.520 22.505 quatxyzw 0.000400 -0.000182 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0926 -0.0334 -0.1041 -0.0388 -0.0320 -0.0477 -0.0752 0.0390
+
+Run: 27 Seed: 1356701168 1663871521  [ Run 27 of 50 LS ]
+Date:	Thu Jul 17 15:52:43 2014
+Final-Value: -17.009
+There were 8557 Energy Evaluations.
+Detailed state:  trans 32.705 14.527 22.484 quatxyzw -0.000557 0.000352 0.000034 1.000000 center 32.702 14.523 22.479 ntor 8 0.0953 -0.1791 0.0567 0.0679 0.0139 -0.1522 0.0080 -0.0699
+
+Run: 28 Seed: 605279900 290261773  [ Run 28 of 50 LS ]
+Date:	Thu Jul 17 15:52:44 2014
+Final-Value: -17.008
+There were 8558 Energy Evaluations.
+Detailed state:  trans 32.693 14.528 22.502 quatxyzw 0.000285 -0.001744 0.000897 0.999998 center 32.702 14.523 22.479 ntor 8 0.3091 0.3475 -0.2425 0.2978 -0.3660 -0.1819 0.3106 -0.0639
+
+Run: 29 Seed: 560832051 277674163  [ Run 29 of 50 LS ]
+Date:	Thu Jul 17 15:52:44 2014
+Final-Value: -17.011
+There were 8556 Energy Evaluations.
+Detailed state:  trans 32.697 14.526 22.498 quatxyzw 0.000038 0.000164 -0.000490 1.000000 center 32.702 14.523 22.479 ntor 8 0.0345 -0.1125 -0.0420 0.0901 0.0526 -0.1861 0.0560 -0.0265
+
+Run: 30 Seed: 280097783 1060991289  [ Run 30 of 50 LS ]
+Date:	Thu Jul 17 15:52:44 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 31 Seed: 5425555 999713465  [ Run 31 of 50 LS ]
+Date:	Thu Jul 17 15:52:44 2014
+Final-Value: -17.009
+There were 8554 Energy Evaluations.
+Detailed state:  trans 32.704 14.524 22.487 quatxyzw 0.000824 -0.000137 -0.000170 1.000000 center 32.702 14.523 22.479 ntor 8 0.0881 -0.0230 0.0403 0.0460 -0.0522 -0.0154 -0.1449 -0.0817
+
+Run: 32 Seed: 33266101 1823883627  [ Run 32 of 50 LS ]
+Date:	Thu Jul 17 15:52:45 2014
+Final-Value: -17.008
+There were 8557 Energy Evaluations.
+Detailed state:  trans 32.706 14.518 22.485 quatxyzw 0.000557 0.000160 0.000538 1.000000 center 32.702 14.523 22.479 ntor 8 0.0031 0.0128 0.1342 -0.0231 -0.0343 -0.0345 0.0536 -0.0167
+
+Run: 33 Seed: 667246160 1593345037  [ Run 33 of 50 LS ]
+Date:	Thu Jul 17 15:52:45 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 34 Seed: 1249944551 48073537  [ Run 34 of 50 LS ]
+Date:	Thu Jul 17 15:52:45 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 35 Seed: 420447301 495277561  [ Run 35 of 50 LS ]
+Date:	Thu Jul 17 15:52:45 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 36 Seed: 1745238653 111966330  [ Run 36 of 50 LS ]
+Date:	Thu Jul 17 15:52:46 2014
+Final-Value: -17.008
+There were 8556 Energy Evaluations.
+Detailed state:  trans 32.698 14.529 22.491 quatxyzw -0.000467 -0.000186 -0.000516 1.000000 center 32.702 14.523 22.479 ntor 8 -0.0106 0.0762 -0.0490 0.0177 -0.0039 -0.0751 -0.0651 0.0087
+
+Run: 37 Seed: 894098546 1900039561  [ Run 37 of 50 LS ]
+Date:	Thu Jul 17 15:52:46 2014
+Final-Value: -17.009
+There were 8564 Energy Evaluations.
+Detailed state:  trans 32.699 14.526 22.495 quatxyzw -0.000202 0.000057 0.000034 1.000000 center 32.702 14.523 22.479 ntor 8 0.1690 -0.0537 -0.0015 0.0366 0.0228 -0.1262 -0.0193 0.0146
+
+Run: 38 Seed: 458064989 1402339917  [ Run 38 of 50 LS ]
+Date:	Thu Jul 17 15:52:46 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 39 Seed: 575788321 1695885205  [ Run 39 of 50 LS ]
+Date:	Thu Jul 17 15:52:46 2014
+Final-Value: -17.008
+There were 8553 Energy Evaluations.
+Detailed state:  trans 32.705 14.535 22.502 quatxyzw -0.001013 0.000325 -0.000309 0.999999 center 32.702 14.523 22.479 ntor 8 0.0943 0.0282 -0.1371 0.0716 -0.1208 -0.0651 -0.0103 -0.0421
+
+Run: 40 Seed: 1519765479 1199872509  [ Run 40 of 50 LS ]
+Date:	Thu Jul 17 15:52:47 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 41 Seed: 1595146803 1643882057  [ Run 41 of 50 LS ]
+Date:	Thu Jul 17 15:52:47 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 42 Seed: 375714398 1056149612  [ Run 42 of 50 LS ]
+Date:	Thu Jul 17 15:52:47 2014
+Final-Value: -17.009
+There were 8551 Energy Evaluations.
+Detailed state:  trans 32.700 14.521 22.470 quatxyzw 0.001138 -0.000005 -0.000683 0.999999 center 32.702 14.523 22.479 ntor 8 0.1416 0.0133 -0.1956 0.0911 0.0646 -0.1245 0.0864 -0.0543
+
+Run: 43 Seed: 1128410650 23531756  [ Run 43 of 50 LS ]
+Date:	Thu Jul 17 15:52:47 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 44 Seed: 1088579299 2039901617  [ Run 44 of 50 LS ]
+Date:	Thu Jul 17 15:52:48 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 45 Seed: 1162901346 490802607  [ Run 45 of 50 LS ]
+Date:	Thu Jul 17 15:52:48 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 46 Seed: 1602355575 585443572  [ Run 46 of 50 LS ]
+Date:	Thu Jul 17 15:52:48 2014
+Final-Value: -17.009
+There were 8555 Energy Evaluations.
+Detailed state:  trans 32.699 14.528 22.478 quatxyzw -0.000012 0.000379 -0.000771 1.000000 center 32.702 14.523 22.479 ntor 8 0.0573 0.1127 0.0908 0.0895 -0.0477 0.0609 0.1198 -0.0435
+
+Run: 47 Seed: 644653536 1796899616  [ Run 47 of 50 LS ]
+Date:	Thu Jul 17 15:52:48 2014
+Final-Value: -17.008
+There were 8556 Energy Evaluations.
+Detailed state:  trans 32.706 14.507 22.509 quatxyzw 0.003614 0.001011 0.000829 0.999993 center 32.702 14.523 22.479 ntor 8 0.0707 -0.0378 0.0478 0.2956 -0.0115 -0.3210 -0.1992 -0.1882
+
+Run: 48 Seed: 2126821575 405882085  [ Run 48 of 50 LS ]
+Date:	Thu Jul 17 15:52:49 2014
+Final-Value: -17.008
+There were 8550 Energy Evaluations.
+Detailed state:  trans 32.702 14.523 22.479 quatxyzw 0.000000 0.000000 0.000000 1.000000 center 32.702 14.523 22.479 ntor 8 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+Run: 49 Seed: 1533703884 1264128816  [ Run 49 of 50 LS ]
+Date:	Thu Jul 17 15:52:49 2014
+Final-Value: -17.009
+There were 8557 Energy Evaluations.
+Detailed state:  trans 32.703 14.524 22.485 quatxyzw 0.000528 -0.000525 0.000132 1.000000 center 32.702 14.523 22.479 ntor 8 -0.0768 0.1693 0.0062 -0.0055 -0.1564 -0.1509 -0.0765 -0.0645
+
+Run: 50 Seed: 598624584 733622619  [ Run 50 of 50 LS ]
+Date:	Thu Jul 17 15:52:49 2014
+Final-Value: -17.009
+There were 8567 Energy Evaluations.
+Detailed state:  trans 32.703 14.523 22.489 quatxyzw 0.000254 0.000092 0.000168 1.000000 center 32.702 14.523 22.479 ntor 8 0.0024 0.0904 -0.0766 0.0788 0.0042 -0.0218 0.0557 0.0032
+
+DPF> 
+
+DPF> ## ANALYSIS SECTION
+
+DPF> rmstol 0.5                           # cluster_tolerance/A
+
+Maximum RMS tolerance for conformational cluster analysis = 0.50 Angstroms
+DPF> analysis                             # perform a ranked cluster analysis
+
+
+		CLUSTER ANALYSIS OF CONFORMATIONS
+		_________________________________
+
+Number of conformations = 50
+
+RMSD cluster analysis will be performed using the ligand atoms only (43 / 43 total atoms).
+
+Outputting structurally similar clusters, ranked in order of increasing energy.
+
+
+________________________________________________________________________________
+
+Number of distinct conformational clusters found = 1,  out of 50 runs,
+Using an rmsd-tolerance of 0.5 A
+
+
+	CLUSTERING HISTOGRAM
+	____________________
+
+________________________________________________________________________________
+     |           |     |           |     |                                    
+Clus | Lowest    | Run | Mean      | Num | Histogram                          
+-ter | Binding   |     | Binding   | in  |                                    
+Rank | Energy    |     | Energy    | Clus|    5    10   15   20   25   30   35
+_____|___________|_____|___________|_____|____:____|____:____|____:____|____:___
+   1 |    -11.12 |  13 |    -11.11 |  50 |##################################################
+_____|___________|_____|___________|_____|______________________________________
+
+
+Number of multi-member conformational clusters found = 1, out of 50 runs.
+
+	RMSD TABLE
+	__________
+
+_____________________________________________________________________
+     |      |      |           |         |                 |
+Rank | Sub- | Run  | Binding   | Cluster | Reference       | Grep
+     | Rank |      | Energy    | RMSD    | RMSD            | Pattern
+_____|______|______|___________|_________|_________________|___________
+   1      1     13      -11.12      0.00      0.01           RANKING
+   1      2     46      -11.12      0.01      0.01           RANKING
+   1      3     28      -11.12      0.03      0.03           RANKING
+   1      4     11      -11.12      0.01      0.01           RANKING
+   1      5     18      -11.12      0.01      0.01           RANKING
+   1      6     15      -11.12      0.01      0.01           RANKING
+   1      7     50      -11.12      0.01      0.01           RANKING
+   1      8     26      -11.11      0.02      0.03           RANKING
+   1      9     42      -11.11      0.02      0.01           RANKING
+   1     10     12      -11.11      0.01      0.01           RANKING
+   1     11     29      -11.11      0.02      0.02           RANKING
+   1     12     32      -11.11      0.01      0.01           RANKING
+   1     13     25      -11.11      0.01      0.00           RANKING
+   1     14     10      -11.11      0.01      0.00           RANKING
+   1     15     14      -11.11      0.01      0.00           RANKING
+   1     16     33      -11.11      0.01      0.00           RANKING
+   1     17     16      -11.11      0.01      0.00           RANKING
+   1     18     34      -11.11      0.01      0.00           RANKING
+   1     19      6      -11.11      0.01      0.00           RANKING
+   1     20     35      -11.11      0.01      0.00           RANKING
+   1     21     20      -11.11      0.01      0.00           RANKING
+   1     22     38      -11.11      0.01      0.00           RANKING
+   1     23     48      -11.11      0.01      0.00           RANKING
+   1     24      4      -11.11      0.01      0.00           RANKING
+   1     25     24      -11.11      0.01      0.00           RANKING
+   1     26      7      -11.11      0.01      0.00           RANKING
+   1     27      9      -11.11      0.01      0.00           RANKING
+   1     28     30      -11.11      0.01      0.00           RANKING
+   1     29     21      -11.11      0.01      0.00           RANKING
+   1     30     40      -11.11      0.01      0.00           RANKING
+   1     31     44      -11.11      0.01      0.00           RANKING
+   1     32     41      -11.11      0.01      0.00           RANKING
+   1     33     45      -11.11      0.01      0.00           RANKING
+   1     34     43      -11.11      0.01      0.00           RANKING
+   1     35      1      -11.11      0.02      0.02           RANKING
+   1     36     39      -11.11      0.02      0.03           RANKING
+   1     37      3      -11.11      0.01      0.01           RANKING
+   1     38      2      -11.11      0.02      0.02           RANKING
+   1     39     37      -11.11      0.01      0.02           RANKING
+   1     40      5      -11.11      0.02      0.03           RANKING
+   1     41     27      -11.11      0.02      0.01           RANKING
+   1     42     36      -11.11      0.02      0.01           RANKING
+   1     43     22      -11.11      0.02      0.02           RANKING
+   1     44     31      -11.11      0.01      0.01           RANKING
+   1     45      8      -11.11      0.02      0.03           RANKING
+   1     46     49      -11.11      0.02      0.01           RANKING
+   1     47     17      -11.11      0.02      0.02           RANKING
+   1     48     19      -11.11      0.04      0.04           RANKING
+   1     49     23      -11.11      0.02      0.01           RANKING
+   1     50     47      -11.10      0.03      0.04           RANKING
+_______________________________________________________________________
+
+
+
+	INFORMATION ENTROPY ANALYSIS FOR THIS CLUSTERING
+	________________________________________________
+
+
+Information entropy for this clustering = 0.00  (rmstol = 0.50 Angstrom)
+
+_______________________________________________________________________
+
+
+	STATISTICAL MECHANICAL ANALYSIS
+	_______________________________
+
+
+Partition function, Q =    50.95            at Temperature, T = 298.15 K
+Free energy,        A ~ -2328.91 kcal/mol   at Temperature, T = 298.15 K
+Internal energy,    U =   -11.11 kcal/mol   at Temperature, T = 298.15 K
+Entropy,            S =     7.77 kcal/mol/K at Temperature, T = 298.15 K
+
+_______________________________________________________________________
+
+
+	LOWEST ENERGY DOCKED CONFORMATION from EACH CLUSTER
+	___________________________________________________
+
+
+
+Keeping original residue number (specified in the input PDBQ file) for outputting.
+
+MODEL       13
+USER    Run = 13
+USER    Cluster Rank = 1
+USER    Number of conformations in this cluster = 50
+USER  
+USER    RMSD from reference structure       = 0.012 A
+USER  
+USER    Estimated Free Energy of Binding    =  -11.12 kcal/mol  [=(1)+(2)+(3)-(4)]
+USER    Estimated Inhibition Constant, Ki   =    7.08 nM (nanomolar)  [Temperature = 298.15 K]
+USER    
+USER    (1) Final Intermolecular Energy     =  -14.10 kcal/mol
+USER        vdW + Hbond + desolv Energy     =  -12.68 kcal/mol
+USER        Electrostatic Energy            =   -1.42 kcal/mol
+USER    (2) Final Total Internal Energy     =   -2.91 kcal/mol
+USER    (3) Torsional Free Energy           =   +2.98 kcal/mol
+USER    (4) Unbound System's Energy  [=(2)] =   -2.91 kcal/mol
+USER    
+USER    
+USER  
+USER    DPF = 1dwd_local_only_best.dpf
+USER    NEWDPF move	best.pdbqt
+USER    NEWDPF about	32.702000 14.523000 22.479000
+USER    NEWDPF tran0	32.705354 14.523647 22.484538
+USER    NEWDPF axisangle0	-0.029329 0.990712 0.132778 0.080199
+USER    NEWDPF quaternion0	-0.000021 0.000693 0.000093 1.000000
+USER    NEWDPF dihe0	0.15 0.10 -0.01 0.06 -0.05 0.03 0.08 0.04 
+USER  
+USER                              x       y       z    vdW   Elec        q     RMS 
+ATOM      1  C8  MID            32.705  14.524  22.485 -0.24 -0.04    +0.164     0.012
+ATOM      2  N7  MID            31.493  14.229  23.265 -0.04 +0.07    -0.337     0.012
+ATOM      3  H11 MID            30.619  14.113  22.796 +0.07 -0.04    +0.164     0.012
+ATOM      4  C20 MID            31.527  14.051  24.608 -0.19 -0.05    +0.254     0.012
+ATOM      5  O21 MID            32.564  14.174  25.271 -0.72 -0.02    -0.270     0.012
+ATOM      6  C19 MID            30.217  13.746  25.154 -0.11 -0.06    +0.196     0.012
+ATOM      7  N18 MID            30.151  12.350  25.434 -0.06 +0.05    -0.290     0.012
+ATOM      8  H19 MID            29.696  11.767  24.757 +0.05 -0.02    +0.174     0.012
+ATOM      9  S22 MID            30.059  11.870  26.994 -0.15 -0.04    +0.261     0.012
+ATOM     10  O23 MID            29.010  10.885  27.111 -0.04 +0.02    -0.200     0.012
+ATOM     11  O24 MID            30.143  13.054  27.832 -0.26 +0.05    -0.200     0.012
+ATOM     12  A26 MID            31.537  10.974  27.286 -0.17 -0.01    +0.103     0.012
+ATOM     13  A25 MID            32.501  11.614  28.057 -0.38 -0.00    +0.013     0.012
+ATOM     14  A27 MID            31.726   9.714  26.802 -0.16 -0.00    +0.013     0.012
+ATOM     15  A30 MID            33.689  11.002  28.344 -0.46 -0.00    +0.001     0.012
+ATOM     16  A29 MID            33.948   9.723  27.839 -0.43 -0.00    +0.000     0.012
+ATOM     17  A34 MID            35.184   9.096  28.133 -0.51 -0.00    +0.000     0.012
+ATOM     18  A28 MID            32.937   9.053  27.106 -0.26 -0.00    +0.001     0.012
+ATOM     19  A33 MID            35.405   7.823  27.700 -0.53 -0.00    +0.000     0.012
+ATOM     20  A32 MID            34.396   7.145  26.952 -0.55 -0.00    +0.000     0.012
+ATOM     21  A31 MID            33.177   7.748  26.659 -0.32 -0.00    +0.000     0.012
+ATOM     22  C9  MID            32.799  13.445  21.459 -0.18 -0.03    +0.254     0.012
+ATOM     23  N1  MID            33.521  12.338  21.913 -0.15 +0.03    -0.319     0.012
+ATOM     24  O10 MID            32.316  13.500  20.322 -0.17 +0.00    -0.270     0.012
+ATOM     25  C6  MID            34.094  12.333  23.272 -0.39 -0.03    +0.104     0.012
+ATOM     26  C2  MID            33.692  11.168  21.058 -0.36 +0.01    +0.104     0.012
+ATOM     27  C5  MID            33.666  11.081  24.048 -0.33 -0.00    +0.024     0.012
+ATOM     28  C4  MID            33.916   9.813  23.205 -0.53 -0.00    +0.004     0.012
+ATOM     29  C3  MID            33.213   9.923  21.818 -0.56 +0.00    +0.024     0.012
+ATOM     30  C11 MID            32.552  15.866  21.783 -0.34 -0.02    +0.058     0.012
+ATOM     31  A12 MID            32.466  16.923  22.796 -0.37 +0.01    -0.020     0.012
+ATOM     32  A14 MID            33.605  17.592  23.162 -0.49 +0.00    -0.004     0.012
+ATOM     33  A13 MID            31.252  17.281  23.317 -0.37 +0.00    -0.004     0.012
+ATOM     34  A16 MID            33.562  18.602  24.127 -0.50 -0.01    +0.019     0.012
+ATOM     35  A17 MID            32.350  18.947  24.692 -0.35 -0.12    +0.198     0.012
+ATOM     36  A15 MID            31.187  18.294  24.292 -0.47 -0.01    +0.019     0.012
+ATOM     37  C35 MID            32.285  20.030  25.685 -0.12 -0.63    +0.582     0.012
+ATOM     38  N36 MID            33.396  20.660  26.109 -0.37 +0.31    -0.254     0.012
+ATOM     39  N37 MID            31.213  20.173  26.475 -0.27 +0.40    -0.254     0.012
+ATOM     40  H29 MID            33.302  21.382  26.791 -0.22 -0.36    +0.172     0.012
+ATOM     41  H30 MID            34.265  20.643  25.615 +0.16 -0.14    +0.172     0.012
+ATOM     42  H31 MID            31.194  20.882  27.185 -0.42 -0.48    +0.172     0.012
+ATOM     43  H32 MID            30.332  19.756  26.254 -0.42 -0.28    +0.172     0.012
+TER
+ENDMDL
+
+
+>>> Closing the docking parameter file (DPF)...
+This docking finished at:			3:52 49" p.m., 07/17/2014
+
+
+________________________________________________________________________________
+
+autodock4: Successful Completion on "xtal.scripps.edu"
+
+Real= 13.71s,  CPU= 13.52s,  System= 0.05s
+________________________________________________________________________________
+

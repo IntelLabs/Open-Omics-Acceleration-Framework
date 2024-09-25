@@ -1,0 +1,38 @@
+autodock_parameter_version 4.1       # used by autodock to validate parameter set
+outlev 0
+
+seed 28641 1106107140                # seeds for random generator
+
+ligand_types C HD OA P               # ligand atom type names
+fld 1pgp_rec.maps.fld                # grid_data_file
+map 1pgp_rec.C.map                   # atom-specific affinity map
+map 1pgp_rec.HD.map                  # atom-specific affinity map
+map 1pgp_rec.OA.map                  # atom-specific affinity map
+map 1pgp_rec.P.map                   # atom-specific affinity map
+elecmap 1pgp_rec.e.map               # electrostatics map
+desolvmap 1pgp_rec.d.map             # desolvation map
+
+move 1pgp_lig.pdbqt                  # small molecule
+about 22.894 28.598 40.259           # small molecule center
+tran0 22.894 28.598 40.259           # small molecule center
+quat0 1 0 0 0                        # initial quaternion
+dihe0 0 0 0 0 0 0 0 0 0 0 0          # initial dihedrals (relative) or random
+tstep 0.0                            # translation step/A
+qstep 0.0                            # quaternion step/deg
+dstep 0.0                            # torsion step/deg
+unbound 0.0                          # free energy of the unbound state
+
+rmstol 2.0                           # cluster_tolerance/A
+
+extnrg 1000.0                        # external grid energy
+e0max 0.0 10000                      # max initial ernergy; max number of retries
+
+ga_pop_size 5                      # number of individuals in population
+ga_num_evals 250                     # maximum number of energy evaluations
+ga_num_generations 4                 # maximum number of generations
+set_ga                               # set the above parameters for GA or LGA
+
+set_psw1                             # set the above pseudo-Solis & Wets parameters
+
+output_pop_file popfile
+ga_run 1                             # do this many hybrid GA-LS runs

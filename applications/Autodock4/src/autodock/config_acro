@@ -1,0 +1,33 @@
+#!/usr/bin/perl
+
+#
+# Create a makefile that uses acro
+#
+
+system("cp ../acro/test/config.* test");
+
+open (MAKEFILE, "Makefile") || die "ERROR: cannot open file \"Makefile\"!\n";
+open (OUTFILE, ">Makefile-acro") || die "ERROR: cannot open file \"Makefile-acro\"!\n";
+
+while (<MAKEFILE>) {
+    #
+    # Uncomment out the LINUX configuration
+    #
+    if (/^### ACRO/) {
+       $tmp = $_;
+       $tmp =~ s/^### (.*)/$1/;
+       print OUTFILE $tmp;
+       next;
+       }
+    #
+    # Simple ignore the blank lines
+    #
+    if (/^ACRO/) {
+       next;
+       }
+    #
+    # Print all other lines
+    #
+      print OUTFILE $_;
+    }
+

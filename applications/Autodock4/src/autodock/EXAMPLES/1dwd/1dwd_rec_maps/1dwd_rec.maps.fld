@@ -1,0 +1,42 @@
+# AVS field file
+#
+# AutoDock Atomic Affinity and Electrostatic Grids
+#
+# Created by ../../latest_autogrid4.
+#
+#SPACING 0.375
+#NELEMENTS 60 60 60
+#CENTER 32.192 14.174 25.076
+#MACROMOLECULE 1dwd_rec.pdbqt
+#GRID_PARAMETER_FILE 1dwd_1dwd.gpf
+#
+ndim=3			# number of dimensions in the field
+dim1=61			# number of x-elements
+dim2=61			# number of y-elements
+dim3=61			# number of z-elements
+nspace=3		# number of physical coordinates per point
+veclen=8		# number of affinity values at each point
+data=float		# data type (byte, integer, float, double)
+field=uniform		# field type (uniform, rectilinear, irregular)
+coord 1 file=1dwd_rec.maps.xyz filetype=ascii offset=0
+coord 2 file=1dwd_rec.maps.xyz filetype=ascii offset=2
+coord 3 file=1dwd_rec.maps.xyz filetype=ascii offset=4
+label=A-affinity	# component label for variable 1
+label=C-affinity	# component label for variable 2
+label=HD-affinity	# component label for variable 3
+label=N-affinity	# component label for variable 4
+label=OA-affinity	# component label for variable 5
+label=S-affinity	# component label for variable 6
+label=Electrostatics	# component label for variable 6
+label=Desolvation	# component label for variable 7
+#
+# location of affinity grid files and how to read them
+#
+variable 1 file=1dwd_rec.A.map filetype=ascii skip=6
+variable 2 file=1dwd_rec.C.map filetype=ascii skip=6
+variable 3 file=1dwd_rec.HD.map filetype=ascii skip=6
+variable 4 file=1dwd_rec.N.map filetype=ascii skip=6
+variable 5 file=1dwd_rec.OA.map filetype=ascii skip=6
+variable 6 file=1dwd_rec.S.map filetype=ascii skip=6
+variable 7 file=1dwd_rec.e.map filetype=ascii skip=6
+variable 8 file=1dwd_rec.d.map filetype=ascii skip=6

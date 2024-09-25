@@ -1,0 +1,51 @@
+## GENERIC SECTION
+autodock_parameter_version 4.2       # used by autodock to validate parameter set
+outlev adt                           # diagnostic output level
+seed pid time                        # seeds for random generator
+
+## LIGAND-SPECIFIC SECTION
+ligand_types A C HD N OA  S          # atoms types in ligand
+fld 1dwd_rec.maps.fld                # grid_data_file
+map 1dwd_rec.A.map                   # atom-specific affinity map
+map 1dwd_rec.C.map                   # atom-specific affinity map
+map 1dwd_rec.HD.map                  # atom-specific affinity map
+map 1dwd_rec.N.map                   # atom-specific affinity map
+map 1dwd_rec.OA.map                  # atom-specific affinity map
+map 1dwd_rec.S.map                   # atom-specific affinity map
+elecmap 1dwd_rec.e.map               # electrostatics map
+desolvmap 1dwd_rec.d.map             # desolvation map
+move 1dwd_lig.pdbqt                  # small molecule
+about  32.34 14.05 24.92             # small molecule center
+
+## INITIAL SEARCH STATE SECTION
+tran0 random                         # initial coordinates/A or random
+quaternion random                    # initial quaternion
+dihe0 random                         # initial dihedrals (relative) or random
+
+## FREE ENERGY ENTROPY ADJUSTMENT SECTION
+torsdof 10                           # torsional degrees of freedom
+
+## SEARCH-SPECIFIC SECTION
+ga_pop_size 150                      # number of individuals in population
+ga_num_evals 2500000                 # maximum number of energy evaluations  
+ga_num_generations 27000             # maximum number of generations
+ga_elitism 1                         # number of top individuals to survive to next generation
+ga_mutation_rate 0.02                # rate of gene mutation
+ga_crossover_rate 0.8                # rate of crossover
+set_ga                               # set the above parameters for GA or LGA
+
+## LOCAL SEARCH PARAMETERS SECTION
+sw_max_its 300                       # iterations of Solis & Wets local search
+sw_max_succ 4                        # consecutive successes before changing rho
+sw_max_fail 4                        # consecutive failures before changing rho
+sw_rho 1.0                           # size of local search space to sample
+sw_lb_rho 0.01                       # lower bound on rho
+ls_search_freq 0.06                  # probability of performing local search on individual
+set_psw1                             # set the above pseudo Solis & Wets parameters
+
+## PERFORM SEARCH SECTION
+ga_run 10                            # do this many hybrid GA-LS runs
+
+## ANALYSIS SECTION
+rmstol 0.5                           # cluster_tolerance/A
+analysis                             # perform a ranked cluster analysis

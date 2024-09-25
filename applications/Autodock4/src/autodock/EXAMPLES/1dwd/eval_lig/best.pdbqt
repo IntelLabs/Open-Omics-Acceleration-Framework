@@ -1,0 +1,104 @@
+MODEL        8
+USER    Run = 8
+USER    DPF = 1dwd_1dwd.dpf
+USER  
+USER    Estimated Free Energy of Binding    =  -11.11 kcal/mol  [=(1)+(2)+(3)-(4)]
+USER    Estimated Inhibition Constant, Ki   =    7.15 nM (nanomolar)  [Temperature = 298.15 K]
+USER    
+USER    (1) Final Intermolecular Energy     =  -14.10 kcal/mol
+USER        vdW + Hbond + desolv Energy     =  -12.68 kcal/mol
+USER        Electrostatic Energy            =   -1.42 kcal/mol
+USER    (2) Final Total Internal Energy     =   -2.07 kcal/mol
+USER    (3) Torsional Free Energy           =   +2.98 kcal/mol
+USER    (4) Unbound System's Energy  [=(2)] =   -2.07 kcal/mol
+USER    
+USER    
+USER    NEWDPF move 1dwd_lig.pdbqt
+USER    NEWDPF about 32.340000 14.050000 24.920000
+USER    NEWDPF tran0 32.561188 14.175975 25.087352
+USER    NEWDPF quaternion0 -0.009953 -0.043213 -0.005848 0.998999
+USER    NEWDPF axisangle0 -0.222530 -0.966119 -0.130747 5.127202
+USER    NEWDPF quat0 -0.222530 -0.966119 -0.130747 5.127202 # deprecated
+USER    NEWDPF dihe0 3.13 -130.72 149.20 -174.17 -6.62 -125.50 -77.41 2.38 
+USER  
+REMARK  8 active torsions:
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK    1  A    between atoms: C11_4828  and  A12_4831 
+REMARK       I    between atoms: N1_4806  and  C9_4826 
+REMARK    2  A    between atoms: C8_4824  and  C9_4826 
+REMARK       I    between atoms: C35_4868  and  N36_4869 
+REMARK    3  A    between atoms: N18_4841  and  S22_4848 
+REMARK    4  A    between atoms: C8_4824  and  C11_4828 
+REMARK       I    between atoms: N7_4822  and  C20_4846 
+REMARK       I    between atoms: A17_4840  and  C35_4868 
+REMARK    5  A    between atoms: N7_4822  and  C8_4824 
+REMARK    6  A    between atoms: N18_4841  and  C19_4843 
+REMARK    7  A    between atoms: S22_4848  and  A26_4853 
+REMARK    8  A    between atoms: C19_4843  and  C20_4846 
+USER                              x       y       z     vdW  Elec       q    Type
+USER                           _______ _______ _______ _____ _____    ______ ____
+ROOT
+ATOM      1  C8  MID            32.702  14.523  22.479 -0.24 -0.04    +0.164 C 
+ENDROOT
+BRANCH   1   2
+ATOM      2  N7  MID            31.491  14.228  23.261 -0.04 +0.07    -0.337 N 
+ATOM      3  H11 MID            30.616  14.113  22.793 +0.07 -0.04    +0.164 HD
+ATOM      4  C20 MID            31.527  14.049  24.604 -0.19 -0.05    +0.254 C 
+ATOM      5  O21 MID            32.565  14.172  25.265 -0.72 -0.02    -0.270 OA
+BRANCH   4   6
+ATOM      6  C19 MID            30.218  13.744  25.152 -0.11 -0.06    +0.196 C 
+BRANCH   6   7
+ATOM      7  N18 MID            30.151  12.348  25.429 -0.06 +0.05    -0.290 N 
+ATOM      8  H19 MID            29.694  11.767  24.752 +0.05 -0.02    +0.174 HD
+BRANCH   7   9
+ATOM      9  S22 MID            30.062  11.865  26.989 -0.15 -0.04    +0.261 S 
+ATOM     10  O23 MID            29.013  10.881  27.106 -0.04 +0.02    -0.200 OA
+ATOM     11  O24 MID            30.149  13.047  27.829 -0.27 +0.05    -0.200 OA
+BRANCH   9  12
+ATOM     12  A26 MID            31.540  10.967  27.276 -0.17 -0.01    +0.103 A 
+ATOM     13  A25 MID            32.507  11.606  28.044 -0.38 -0.00    +0.013 A 
+ATOM     14  A27 MID            31.726   9.707  26.791 -0.16 -0.00    +0.013 A 
+ATOM     15  A30 MID            33.696  10.993  28.327 -0.46 -0.00    +0.001 A 
+ATOM     16  A29 MID            33.952   9.714  27.820 -0.43 -0.00    +0.000 A 
+ATOM     17  A34 MID            35.188   9.085  28.110 -0.51 -0.00    +0.000 A 
+ATOM     18  A28 MID            32.938   9.045  27.090 -0.26 -0.00    +0.001 A 
+ATOM     19  A33 MID            35.406   7.812  27.676 -0.53 -0.00    +0.000 A 
+ATOM     20  A32 MID            34.394   7.135  26.931 -0.55 -0.00    +0.000 A 
+ATOM     21  A31 MID            33.175   7.740  26.642 -0.32 -0.00    +0.000 A 
+ENDBRANCH   9  12
+ENDBRANCH   7   9
+ENDBRANCH   6   7
+ENDBRANCH   4   6
+ENDBRANCH   1   2
+BRANCH   1  22
+ATOM     22  C9  MID            32.794  13.444  21.453 -0.18 -0.03    +0.254 C 
+ATOM     23  N1  MID            33.520  12.339  21.905 -0.15 +0.03    -0.319 N 
+ATOM     24  O10 MID            32.308  13.498  20.318 -0.17 +0.00    -0.270 OA
+ATOM     25  C6  MID            34.098  12.335  23.262 -0.39 -0.03    +0.104 C 
+ATOM     26  C2  MID            33.691  11.169  21.050 -0.36 +0.01    +0.104 C 
+ATOM     27  C5  MID            33.675  11.083  24.040 -0.33 -0.00    +0.024 C 
+ATOM     28  C4  MID            33.924   9.815  23.196 -0.53 -0.00    +0.004 C 
+ATOM     29  C3  MID            33.217   9.923  21.812 -0.56 +0.00    +0.024 C 
+ENDBRANCH   1  22
+BRANCH   1  30
+ATOM     30  C11 MID            32.547  15.865  21.778 -0.33 -0.02    +0.058 C 
+BRANCH  30  31
+ATOM     31  A12 MID            32.464  16.922  22.791 -0.37 +0.01    -0.020 A 
+ATOM     32  A14 MID            33.604  17.590  23.155 -0.49 +0.00    -0.004 A 
+ATOM     33  A13 MID            31.251  17.282  23.313 -0.37 +0.00    -0.004 A 
+ATOM     34  A16 MID            33.563  18.601  24.120 -0.50 -0.01    +0.019 A 
+ATOM     35  A17 MID            32.352  18.947  24.687 -0.35 -0.12    +0.198 A 
+ATOM     36  A15 MID            31.188  18.295  24.288 -0.47 -0.01    +0.019 A 
+ATOM     37  C35 MID            32.290  20.030  25.680 -0.12 -0.63    +0.582 C 
+ATOM     38  N36 MID            33.402  20.659  26.102 -0.37 +0.31    -0.254 N 
+ATOM     39  N37 MID            31.219  20.174  26.471 -0.27 +0.40    -0.254 N 
+ATOM     40  H29 MID            33.310  21.381  26.784 -0.22 -0.36    +0.172 HD
+ATOM     41  H30 MID            34.270  20.641  25.607 +0.16 -0.14    +0.172 HD
+ATOM     42  H31 MID            31.202  20.883  27.181 -0.42 -0.48    +0.172 HD
+ATOM     43  H32 MID            30.337  19.758  26.252 -0.42 -0.28    +0.172 HD
+ENDBRANCH  30  31
+ENDBRANCH   1  30
+TORSDOF 10
+TER
+ENDMDL
+

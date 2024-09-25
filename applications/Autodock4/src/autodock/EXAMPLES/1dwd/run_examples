@@ -1,0 +1,25 @@
+#! /bin/bash
+# $Id: run_examples,v 1.4 2014/07/17 22:52:13 mp Exp $
+#
+# run the main set of AutoDock examples 
+#   - omits the very long 25,000,000-eval runs
+
+( cd dock_rigidlig; bash make_rec_maps)
+( cd dock_flexlig_flexres; bash make_rigid_maps)
+
+
+for d in \
+	eval_lig  \
+	local_search_lig  \
+	simulated_annealing \
+	recluster \
+	dock_rigidlig  \
+	dock_flexlig  \
+	dock_flexlig_flexres  \
+	; do
+
+	if [ -d $d ]; then
+	  echo "$(date)  running examples in $d"
+	  ( cd $d && bash run_examples )
+	fi
+done

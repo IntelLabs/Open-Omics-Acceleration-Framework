@@ -1,0 +1,16 @@
+autodock_parameter_version 4.2       # used by autodock to validate parameter set
+intelec                              # calculate internal electrostatics
+ligand_types P C HD OA N             # atoms types in ligand
+fld 1pgp_rigid.maps.fld              # grid_data_file
+map 1pgp_rigid.P.map                 # atom-specific affinity map
+map 1pgp_rigid.C.map                 # atom-specific affinity map
+map 1pgp_rigid.HD.map                # atom-specific affinity map
+map 1pgp_rigid.OA.map                # atom-specific affinity map
+map 1pgp_rigid.N.map                 # atom-specific affinity map
+elecmap 1pgp_rigid.e.map             # electrostatics map
+desolvmap 1pgp_rigid.d.map           # desolvation map
+move 1pgp_lig.pdbqt                  # small molecule
+flexres 1pgp_flex.pdbqt              # file containing flexible residues
+about 23.407 29.2817 39.8079         # small molecule center
+tran0 23.407 29.2817 39.8079         # initial coordinates/A or random
+epdb                                 # compute energy of PDBQT specified by 'move' 

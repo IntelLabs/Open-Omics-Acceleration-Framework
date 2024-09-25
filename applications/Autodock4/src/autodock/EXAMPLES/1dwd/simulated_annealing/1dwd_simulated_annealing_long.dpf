@@ -1,0 +1,37 @@
+## GENERIC SECTION
+autodock_parameter_version 4.2       # used by autodock to validate parameter set
+outlev adt
+intelec                              # calculate internal electrostatics
+seed 28641 1106107140                         # seeds for random generator
+
+## LIGAND-SPECIFIC SECTION
+ligand_types A C HD N OA  S          # atoms types in ligand
+fld 1dwd_rec.maps.fld # grid_data_file
+map 1dwd_rec.A.map    # atom-specific affinity map
+map 1dwd_rec.C.map    # atom-specific affinity map
+map 1dwd_rec.HD.map   # atom-specific affinity map
+map 1dwd_rec.N.map    # atom-specific affinity map
+map 1dwd_rec.OA.map   # atom-specific affinity map
+map 1dwd_rec.S.map    # atom-specific affinity map
+elecmap 1dwd_rec.e.map # electrostatics map
+desolvmap 1dwd_rec.d.map # desolvation map
+move 1dwd_lig.pdbqt                  # small molecule
+
+## SIMULATED ANNEALING SEARCH PARAMETERS SECTION
+tstep 0.2                            # translation step/A
+qstep 5.0                            # quaternion step/deg
+dstep 5.0                            # torsion step/deg
+rt0 100.0                            # initial annealing temperature (times gas constant)
+linear_schedule                      # use linear, arithmetic temperature reduction
+cycles 50                            # number of temperature reduction cycles
+accs 30000 	                      # maximum number of accepted steps per cycle
+rejs 30000                           # maximum number of rejected steps per cycle
+select m                             # state selection flag: (m)inimum or (l)ast state
+
+## PERFORM SEARCH SECTION
+simanneal 10
+
+
+## ANALYSIS SECTION
+rmstol 0.5                           # cluster_tolerance/A
+analysis                             # perform a ranked cluster analysis

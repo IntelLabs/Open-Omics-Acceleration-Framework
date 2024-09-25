@@ -1,0 +1,87 @@
+#! /bin/bash
+# $Id: mkdisttars,v 1.12 2014/07/17 18:29:16 mp Exp $
+# Usage example:
+# 
+#  cd /mgl/works/rhuey/autodocksuite_4.2.2.1
+# /mgl/works/rhuey/autodock_1/autodock/mkdisttars
+
+archlist="i86Windows i86Linux2 x86_64Linux2 x86_64Linux3 sun4SunOS5 MacOSX"
+version=4
+release=4.2.6
+umask 0
+proglist="autodock autogrid"
+
+# name for "arch" tar files is 
+# "autodocksuite-$release-<arch>.tar.gz"
+#
+# content for "arch" tar files is 
+# simply "<arch>/autodock4 <arch>/autogrid4"
+for arch in $archlist; do
+   archok=y
+   case $arch in 
+    i86Cygwin|i86Windows) exeext=.exe ;;
+    *) exeext="";;
+    esac
+    for prog in $proglist; do
+    progfile=${prog}${version}  # eg autodock4
+      archprogfile=$prog/$arch/$progfile$exeext
+      if [ ! -e $archprogfile ] ; then
+        echo $archprogfile missing
+	archok=n
+      else
+        ls -l $archprogfile
+      fi
+   done
+   if [ test$archok != testn ] ; then
+     tar cvf \
+     autodocksuite-${release}-$arch.tar \
+     -C autodock $arch/autodock4$exeext \
+     -C ../autogrid $arch/autogrid4$exeext 
+   gzip  autodocksuite-${release}-$arch.tar
+   fi
+done
+
+# name for "src" tar file is 
+# "autodocksuite-${release}-src-tar.gz"
+# content for "src" tar file is 
+#   "autodocksuite-${release}/src/auto{grid,dock}-${release}/"
+#   with all *.cc *.h *.cpp README COPYING, ... Tests
+# NOTE:    includes 'configure' but not Makefile)
+
+# how to create src directory:
+#
+# cd  autodocksuite-${release}
+ if [ ! -d src ]; then
+   mkdir src
+ fi
+ cd src
+ for prog in $proglist; do
+   if [ ! -d $prog ]; then
+      cvs co $prog
+   fi
+   if [ ! -e $prog/configure ]; then
+      cd $prog; autoreconf -i; cd ..
+   fi
+ done
+ cp -p autodock/README .   # more noticeable to users
+ cp -p autodock/RELEASENOTES .   # more noticeable to users
+ find . \( \
+   -name CVS -o \
+   -name test -o \
+   -name testdir -o \
+   -name '*.xcode' -o \
+   -name '*.pbproj' -o \
+   -name '*.cache' \
+   \) -exec /bin/rm -rf {}  \;
+
+ cd ..  # 
+# 
+mv src/autodock/EXAMPLES/1dwd ./examples  # cwd is autodocksuite-x
+rm -rf src/autodock/EXAMPLES
+( cd examples; bash mkdist; rm mkdist )
+mv  src/autodock/USERGUIDES src   # more noticeable to users
+tar cf autodocksuite-${release}-examples.tar examples
+gzip autodocksuite-${release}-examples.tar
+
+tar cf autodocksuite-${release}-src.tar src
+gzip autodocksuite-${release}-src.tar
