@@ -40,9 +40,15 @@ bash models.sh
 ### Export Directories  
 ```bash
 export INPUT=$PWD/<your input folder>                
-export OUTPUT=$PWD/<your output folder>     
-
+export OUTPUT=$PWD/<your output folder>
 ```
+```bash
+#examples
+mkdir -p input output
+export INPUT=$PWD/input                
+export OUTPUT=$PWD/output     
+```
+
 The `input` directory must contain both FASTA_FILE and PDB_FILE for the tool to process sequence and structural data
 ### Run Commands
 In this ESM setup, the `input` directory contains files like FASTA (protein sequences) and PDB (protein structures) for different tasks such as sequence extraction and protein folding. Each file type has a specific use. For testing, follow the provided instructions or refer to the research papers for more details. 
@@ -131,7 +137,7 @@ docker run -it \
 ```
 <br />
 
-#### ESMFold
+#### ESMFold Structure Prediction
 ESMFold predicts protein structures from amino acid sequences using advanced machine learning techniques, facilitating rapid structural insights in protein design.See [ESMFold Structure Prediction](#esmfold) for detailed user guide. 
 
 ```bash
