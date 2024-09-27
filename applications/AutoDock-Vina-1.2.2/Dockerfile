@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     gcc-8 \
     g++-8 \
     numactl \
+    time \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -21,6 +22,7 @@ RUN conda install -n vina_1.2.2_env -c conda-forge \
     sphinx \
     sphinx_rtd_theme \
     -y
+
 RUN git clone https://github.com/ccsb-scripps/AutoDock-Vina.git && \
     cd AutoDock-Vina && \
     git checkout v1.2.2 && \
@@ -35,3 +37,4 @@ ENV PATH="/root/miniforge3/envs/vina_1.2.2_env/bin:/AutoDock-Vina/build/linux/re
 
 WORKDIR /AutoDock-Vina/build/linux/release
 CMD ["/bin/bash"]
+
