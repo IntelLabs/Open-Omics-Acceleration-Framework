@@ -21,7 +21,17 @@ AutoDock Vina is distributed under the Apache License, Version 2.0.
 The installation instructions, documentation and tutorials can be found on [readthedocs.org](https://autodock-vina.readthedocs.io/en/latest/).
 
 ## Instruction for Dockersetup
-
+### Export Directories  
+```bash
+export INPUT=$PWD/<your input folder>                
+export OUTPUT=$PWD/<your output folder>
+```
+```bash
+#examples
+mkdir -p input output
+export INPUT=$PWD/input                
+export OUTPUT=$PWD/output     
+```
 cd AutoDock-Vina-1.2.2
 command to build docker image: docker build -t docker_vina .
 mkdir input_local
