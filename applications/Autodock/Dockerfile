@@ -21,9 +21,11 @@ RUN conda install -c conda-forge \
 RUN git clone https://github.com/emascarenhas/AutoDock-GPU.git && \
     cd AutoDock-GPU && \
     git checkout v1.4 && \
+    mv ../AutoDock-GPU ../AutoDock && \
+    cd ../AutoDock && \
     make DEVICE=CPU NUMWI=16
 
-ENV PATH="/AutoDock-GPU/bin:${PATH}"
+ENV PATH="/AutoDock/bin:${PATH}"
 
 CMD ["/bin/bash"]
 
