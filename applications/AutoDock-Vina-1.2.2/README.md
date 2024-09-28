@@ -52,3 +52,4 @@ This command will run AutoDock Vina on your receptor and ligand files, placing t
 ### 7. Expected Output
 After running the above command, you should find the output file (rand-1_out.pdbqt) in the output_local directory.
 
+For further details on AutoDock Vina, please refer to the official documentation(https://autodock-vina.readthedocs.io/en/latest/)
