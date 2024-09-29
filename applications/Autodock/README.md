@@ -67,7 +67,7 @@ Go to the Autodock directory where the Dockerfile is located and build the Docke
 cd Autodock/
 docker build -t autodock-sycl-cpu .
 ```
-This will build the image with the tag **autodock-gpu-sycl**
+This will build the image with the tag `autodock-gpu-sycl`
 ## 3. Prepare Input and Output Directories
 You need to set up input and output directories that will be mounted to the Docker container for easy access to molecular files and docking results
 
@@ -110,7 +110,7 @@ After the container finishes running, the results will be available in your outp
 $OUTPUT_SYCL_CPU/rand-0.dlg
 $OUTPUT_SYCL_CPU/rand-0.xml
 ```
-These files contain the docking results in both .dlg and .xml formats.
+These files contain the docking results in both `.dlg` and `.xml` formats.
 # Usage
 
 ## Basic command
