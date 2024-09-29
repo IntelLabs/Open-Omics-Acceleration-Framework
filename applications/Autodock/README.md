@@ -54,15 +54,35 @@ After successful compilation, the host binary **autodock_&lt;type&gt;_&lt;N&gt;w
 | **&lt;type&gt;**    | Accelerator chosen           | `cpu`, `gpu`                                      |
 | **&lt;N&gt;**       | work-group/thread block size | `1`, `2`, `4`, `8`,`16`, `32`, `64`, `128`, `256` |
 
-# Docker Instructions
+# Instructions for DockerSetup 
+## 1. Build the Docker Image
+```zsh
+cd Autodock/
+docker build -t autodock-gpu-sycl .
+```
 
-## 1. docker run
+## 2. Prepare Input and Output Directories
+Set up your input and output directories:
+```zsh
+export INPUT_SYCL_CPU=$PWD/4fev
+export OUTPUT_SYCL_CPU=$PWD/4fev_output_autodock_sycl_docker
+```
+Ensure your input directory 4fev contains the all the neccessary dependent map files mentioned in receptor(pdbqt) and ligand(pdbqt)
+
+## 3. Running the Docker Container
+
+Run the docker container with the following command:
+
 ```zsh
 docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output 0ed7945aac86 sh -c "cd /input && autodock_cpu_16wi --ffile protein.maps.fld --lfile rand-0.pdbqt --nrun 100 --resnam /output/rand-0"
 ```
-
-## 2. 
-
+## 4. Accessing the Results
+After the run completes, the results will be available in the output directory:
+```zsh
+$OUTPUT_SYCL_CPU/rand-0.dlg
+$OUTPUT_SYCL_CPU/rand-0.xml
+```
+This file contains the docking results.
 # Usage
 
 ## Basic command
