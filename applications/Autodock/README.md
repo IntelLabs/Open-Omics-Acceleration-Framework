@@ -59,7 +59,6 @@ After successful compilation, the host binary **autodock_&lt;type&gt;_&lt;N&gt;w
 First, clone the repository containing Autodock:
 ```zsh
 git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal/tree/main/applications/Autodock
-cd Autodock/
 ```
 
 ## 2. Build the Docker Image
