@@ -54,15 +54,20 @@ After successful compilation, the host binary **autodock_&lt;type&gt;_&lt;N&gt;w
 | **&lt;type&gt;**    | Accelerator chosen           | `cpu`, `gpu`                                      |
 | **&lt;N&gt;**       | work-group/thread block size | `1`, `2`, `4`, `8`,`16`, `32`, `64`, `128`, `256` |
 
-# Instructions for DockerSetup 
-## 1. Build the Docker Image
+# Instructions for DockerSetup
+## 1. Clone the Repository
+First, clone the repository containing Autodock:
+git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal/tree/main/applications/Autodock
+cd Autodock/
+
+## 2. Build the Docker Image
 Go to the Autodock directory where the Dockerfile is located and build the Docker image:
 ```zsh
 cd Autodock/
 docker build -t autodock-sycl-cpu .
 ```
 This will build the image with the tag **autodock-gpu-sycl**
-## 2. Prepare Input and Output Directories
+## 3. Prepare Input and Output Directories
 You need to set up input and output directories that will be mounted to the Docker container for easy access to molecular files and docking results
 
 Create the directories on your host machine:
@@ -85,7 +90,7 @@ export INPUT_SYCL_CPU=$PWD/4fev
 export OUTPUT_SYCL_CPU=$PWD/4fev_output_autodock_sycl_cpu
 ```
 
-## 3. Running the Docker Container
+## 4. Running the Docker Container
 
 Run the docker container with the following command:
 
@@ -98,7 +103,7 @@ In this command:
 * `-v $OUTPUT_SYCL_CPU:/output` mounts your local output directory to the container's /output directory.
 * Replace `autodock_cpu_16wi` with the appropriate executable if the name differs. 
 
-## 4. Accessing the Results
+## 5. Accessing the Results
 After the container finishes running, the results will be available in your output directory:
 ```zsh
 $OUTPUT_SYCL_CPU/rand-0.dlg
