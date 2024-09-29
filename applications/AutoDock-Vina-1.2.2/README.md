@@ -13,7 +13,7 @@
 
 The installation instructions, documentation and tutorials can be found on [readthedocs.org](https://autodock-vina.readthedocs.io/en/latest/).
 
-## AutoDock Vina 1.2.2 Docker Setup
+## Docker Setup
 
 This repository contains a Docker setup for running AutoDock Vina 1.2.2. The following instructions guide you through cloning therepository, building the Docker image, setting up input/output directories, and running AutoDock Vina inside the Docker container.
 ### 1. Clone the Repository
@@ -32,13 +32,13 @@ docker build -t docker_vina .
 ```
 
 ### 3. Setup Input and Output Directories
-Create the input and output directories:
+Create the input and output directories on your local machine:
 ```bash
 mkdir input_local
 mkdir output_local
 ```
 ### 4. Prepare Input Files
-Add your receptor (.pdbqt), ligand (.pdbqt), and dependent map files to the input_local directory
+Add your receptor (.pdbqt), ligand (.pdbqt), and dependent map files to the `input_local` directory
 
 ### 5. Set Environment Variables
 Set environment variables to reference the input and output directories:
@@ -51,11 +51,11 @@ Run the Docker container and execute AutoDock Vina:
 ```bash
 docker run -it -v $INPUT_VINA:/input -v $OUTPUT_VINA:/output docker_vina sh -c "cd /input && vina --receptor protein.pdbqt --ligand rand-1.pdbqt --out /output/rand-1_out.pdbqt --center_x 16.459 --center_y -19.946 --center_z -5.850 --size_x 18 --size_y 18 --size_z 18 --seed 1234 --exhaustiveness 64"
 ```
-This command will run AutoDock Vina on your receptor and ligand files, placing the result in the output_local directory.
+This command will run AutoDock Vina on your receptor and ligand files, placing the result in the `output_local` directory.
 
 ### 7. Expected Output
 
-After running the above command, you should find the output file (rand-1_out.pdbqt) in the output_local directory.
+After running the above command, you should find the output file (`rand-1_out.pdbqt`) in the `output_local` directory.
 
 ## Citations
 * [J. Eberhardt, D. Santos-Martins, A. F. Tillack, and S. Forli. (2021). AutoDock Vina 1.2.0: New Docking Methods, Expanded Force Field, and Python Bindings. Journal of Chemical Information and Modeling.](https://pubs.acs.org/doi/10.1021/acs.jcim.1c00203)
