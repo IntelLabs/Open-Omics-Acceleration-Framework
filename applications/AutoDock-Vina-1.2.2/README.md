@@ -1,4 +1,4 @@
-##AutoDock Vina: Docking and virtual screening program
+## AutoDock Vina: Docking and virtual screening program
 
 **AutoDock Vina** is one of the **fastest** and **most widely used** **open-source** docking engines. It is a turnkey computational docking program that is based on a simple scoring function and rapid gradient-optimization conformational search. It was originally designed and implemented by Dr. Oleg Trott in the Molecular Graphics Lab, and it is now being maintained and develop by the Forli Lab at The Scripps Research Institute.
 
