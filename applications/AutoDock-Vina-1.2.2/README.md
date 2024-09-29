@@ -48,13 +48,13 @@ export INPUT_VINA=$PWD/input_local
 export OUTPUT_VINA=$PWD/output_local
 ```
 ### 6. Run the Docker Container
+Before running the Docker container, check if the Docker image for `docker_vina` has been successfully generated:
 
-Before running the Docker container, find the image ID for `docker_vina`:
 ```bash
 docker images | grep docker_vina
 ```
-Collect the image ID of the `docker_vina` image from the output, and replace `<image_id>` in the following command with the actual ID:
-Run the Docker container and execute AutoDock Vina:
+If the image is listed, proceed to run the Docker container and execute vina:
+
 ```bash
 docker run -it -v $INPUT_VINA:/input -v $OUTPUT_VINA:/output <image_id> sh -c "cd /input && vina --receptor protein.pdbqt --ligand rand-1.pdbqt --out /output/rand-1_out.pdbqt --center_x 16.459 --center_y -19.946 --center_z -5.850 --size_x 18 --size_y 18 --size_z 18 --seed 1234 --exhaustiveness 64"
 ```
