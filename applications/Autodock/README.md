@@ -92,7 +92,12 @@ Run the docker container with the following command:
 ```zsh
 docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output docker_image_id sh -c "cd /input && autodock_cpu_16wi --ffile protein.maps.fld --lfile rand-0.pdbqt --nrun 100 --resnam /output/rand-0"
 ```
-Replace autodock_cpu_16wi with the appropriate executable if the name differs.
+In this command:
+
+* `-v $INPUT_SYCL_CPU:/input` mounts your local input directory to the container's /input directory. 
+* `-v $OUTPUT_SYCL_CPU:/output` mounts your local output directory to the container's /output directory.
+* Replace `autodock_cpu_16wi` with the appropriate executable if the name differs. 
+
 ## 4. Accessing the Results
 After the container finishes running, the results will be available in your output directory:
 ```zsh
