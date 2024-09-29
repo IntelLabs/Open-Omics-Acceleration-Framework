@@ -62,12 +62,24 @@ docker build -t autodock-gpu-sycl .
 ```
 
 ## 2. Prepare Input and Output Directories
-Set up your input and output directories:
+Set up your input and output directories. These directories will be mounted to the Docker container to facilitate the input of molecular files and output of docking results.
+
+Create the directories on your host machine:
+```zsh
+mkdir -p  <protein_name_input>
+mkdir -p <protein_name_output>
+```
+Let's say protein_name is 4fev
+```zsh
+mkdir -p 4fev
+mkdir -p 4fev_output_autodock_sycl_docker
+```
+Ensure your input directory 4fev contains the all the neccessary dependent map files mentioned in receptor(pdbqt) and ligand(pdbqt)
+
 ```zsh
 export INPUT_SYCL_CPU=$PWD/4fev
 export OUTPUT_SYCL_CPU=$PWD/4fev_output_autodock_sycl_docker
 ```
-Ensure your input directory 4fev contains the all the neccessary dependent map files mentioned in receptor(pdbqt) and ligand(pdbqt)
 
 ## 3. Running the Docker Container
 
