@@ -15,7 +15,7 @@ The installation instructions, documentation and tutorials can be found on [read
 
 ## Docker Setup
 
-This repository contains a Docker setup for running AutoDock Vina 1.2.2. The following instructions guide you through cloning therepository, building the Docker image, setting up input/output directories, and running AutoDock Vina inside the Docker container.
+This repository contains a Docker setup for running AutoDock Vina version 1.2.2. The following instructions guide you through cloning the repository, building the Docker image, setting up input/output directories, and running AutoDock Vina inside the Docker container.
 ### 1. Clone the Repository
 
 First, clone the repository containing AutoDock Vina 1.2.2:
