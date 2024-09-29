@@ -56,9 +56,10 @@ After successful compilation, the host binary **autodock_&lt;type&gt;_&lt;N&gt;w
 
 # Instructions for DockerSetup 
 ## 1. Build the Docker Image
+Go to the Autodock directory where the Dockerfile is located and build the Docker image:
 ```zsh
 cd Autodock/
-docker build -t autodock-gpu-sycl .
+docker build -t autodock-sycl-cpu .
 ```
 
 ## 2. Prepare Input and Output Directories
@@ -72,13 +73,13 @@ mkdir -p <protein_name_output>
 Let's say protein_name is 4fev
 ```zsh
 mkdir -p 4fev
-mkdir -p 4fev_output_autodock_sycl_docker
+mkdir -p 4fev_output_autodock_sycl_cpu_docker
 ```
 Ensure your input directory 4fev contains the all the neccessary dependent map files mentioned in receptor(pdbqt) and ligand(pdbqt)
 
 ```zsh
 export INPUT_SYCL_CPU=$PWD/4fev
-export OUTPUT_SYCL_CPU=$PWD/4fev_output_autodock_sycl_docker
+export OUTPUT_SYCL_CPU=$PWD/4fev_output_autodock_sycl_cpu_docker
 ```
 
 ## 3. Running the Docker Container
