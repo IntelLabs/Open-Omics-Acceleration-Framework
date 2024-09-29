@@ -96,7 +96,6 @@ export OUTPUT_SYCL_CPU=$PWD/4fev_output_autodock_sycl_cpu
 Run the docker container with the following command:
 
 ```zsh
-docker images | grep autodock-sycl-cpu
 docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output <docker_image_id> sh -c "cd /input && autodock_cpu_16wi --ffile protein.maps.fld --lfile rand-0.pdbqt --nrun 100 --resnam /output/rand-0"
 ```
 In this command:
