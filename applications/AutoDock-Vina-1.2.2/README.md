@@ -34,6 +34,7 @@ docker build -t docker_vina .
 ### 3. Setup Input and Output Directories
 Create the input and output directories on your local machine:
 ```bash
+cd ..
 mkdir input_local
 mkdir output_local
 ```
