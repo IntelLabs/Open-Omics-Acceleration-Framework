@@ -61,9 +61,9 @@ Go to the Autodock directory where the Dockerfile is located and build the Docke
 cd Autodock/
 docker build -t autodock-sycl-cpu .
 ```
-
+This will build the image with the tag **autodock-gpu-sycl**
 ## 2. Prepare Input and Output Directories
-Set up your input and output directories. These directories will be mounted to the Docker container to facilitate the input of molecular files and output of docking results.
+You need to set up input and output directories that will be mounted to the Docker container for easy access to molecular files and docking results
 
 Create the directories on your host machine:
 ```zsh
@@ -71,16 +71,18 @@ cd ..
 mkdir -p  <protein_name_input>
 mkdir -p <protein_name_output>
 ```
-Let's say protein_name is 4fev
+For example, if your protein name is 4fev:
 ```zsh
 mkdir -p 4fev
-mkdir -p 4fev_output_autodock_sycl_cpu_docker
+mkdir -p 4fev_output_autodock_sycl_cpu
 ```
-Ensure your input directory 4fev contains the all the neccessary dependent map files mentioned in receptor(pdbqt) and ligand(pdbqt)
 
+Ensure your input directory (4fev in this example) contains all the necessary files required for AutoDock-GPU, including the receptor (pdbqt) and ligand (pdbqt) files, along with the dependent map files.
+
+Now, export the input and output directory paths as environment variables for easy reference:
 ```zsh
 export INPUT_SYCL_CPU=$PWD/4fev
-export OUTPUT_SYCL_CPU=$PWD/4fev_output_autodock_sycl_cpu_docker
+export OUTPUT_SYCL_CPU=$PWD/4fev_output_autodock_sycl_cpu
 ```
 
 ## 3. Running the Docker Container
@@ -90,13 +92,14 @@ Run the docker container with the following command:
 ```zsh
 docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output docker_image_id sh -c "cd /input && autodock_cpu_16wi --ffile protein.maps.fld --lfile rand-0.pdbqt --nrun 100 --resnam /output/rand-0"
 ```
+Replace autodock_cpu_16wi with the appropriate executable if the name differs.
 ## 4. Accessing the Results
-After the run completes, the results will be available in the output directory:
+After the container finishes running, the results will be available in your output directory:
 ```zsh
 $OUTPUT_SYCL_CPU/rand-0.dlg
 $OUTPUT_SYCL_CPU/rand-0.xml
 ```
-This file contains the docking results.
+These files contain the docking results in both .dlg and .xml formats.
 # Usage
 
 ## Basic command
