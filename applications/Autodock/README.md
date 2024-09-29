@@ -83,7 +83,7 @@ mkdir -p 4fev
 mkdir -p 4fev_output_autodock_sycl_cpu
 ```
 
-Ensure your input directory (4fev in this example) contains all the necessary files required for AutoDock-GPU, including the receptor (pdbqt) and ligand (pdbqt) files, along with the dependent map files.
+Ensure your input directory (4fev in this example) contains all the necessary files required for Autodock, including the receptor (pdbqt) and ligand (pdbqt) files, along with the dependent map files.
 
 Now, export the input and output directory paths as environment variables for easy reference:
 ```zsh
