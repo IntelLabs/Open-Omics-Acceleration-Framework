@@ -32,8 +32,6 @@ See [more relevant papers](https://github.com/ccsb-scripps/AutoDock-GPU/wiki/Pub
 
 Other environments or configurations likely work as well, but are untested.
 
-# Instruction For Docker Setup
-
 
 # Compilation
 
