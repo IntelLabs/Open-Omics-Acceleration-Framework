@@ -67,7 +67,7 @@ Go to the Autodock directory where the Dockerfile is located and build the Docke
 cd Autodock/
 docker build -t autodock-sycl-cpu .
 ```
-This will build the image with the tag `autodock-gpu-sycl`
+This will build the image with the tag `autodock-sycl-cpu`
 ## 3. Prepare Input and Output Directories
 You need to set up input and output directories that will be mounted to the Docker container for easy access to molecular files and docking results
 
@@ -96,7 +96,8 @@ export OUTPUT_SYCL_CPU=$PWD/4fev_output_autodock_sycl_cpu
 Run the docker container with the following command:
 
 ```zsh
-docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output docker_image_id sh -c "cd /input && autodock_cpu_16wi --ffile protein.maps.fld --lfile rand-0.pdbqt --nrun 100 --resnam /output/rand-0"
+docker images | grep autodock-sycl-cpu
+docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output <docker_image_id> sh -c "cd /input && autodock_cpu_16wi --ffile protein.maps.fld --lfile rand-0.pdbqt --nrun 100 --resnam /output/rand-0"
 ```
 In this command:
 
