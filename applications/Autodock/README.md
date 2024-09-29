@@ -67,6 +67,7 @@ Set up your input and output directories. These directories will be mounted to t
 
 Create the directories on your host machine:
 ```zsh
+cd ..
 mkdir -p  <protein_name_input>
 mkdir -p <protein_name_output>
 ```
@@ -87,7 +88,7 @@ export OUTPUT_SYCL_CPU=$PWD/4fev_output_autodock_sycl_cpu_docker
 Run the docker container with the following command:
 
 ```zsh
-docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output 0ed7945aac86 sh -c "cd /input && autodock_cpu_16wi --ffile protein.maps.fld --lfile rand-0.pdbqt --nrun 100 --resnam /output/rand-0"
+docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output docker_image_id sh -c "cd /input && autodock_cpu_16wi --ffile protein.maps.fld --lfile rand-0.pdbqt --nrun 100 --resnam /output/rand-0"
 ```
 ## 4. Accessing the Results
 After the run completes, the results will be available in the output directory:
