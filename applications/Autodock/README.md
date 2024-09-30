@@ -55,6 +55,7 @@ After successful compilation, the host binary **autodock_&lt;type&gt;_&lt;N&gt;w
 | **&lt;N&gt;**       | work-group/thread block size | `1`, `2`, `4`, `8`,`16`, `32`, `64`, `128`, `256` |
 
 # Instructions for DockerSetup
+
 ## 1. Clone the Repository
 First, clone the repository containing Autodock:
 ```zsh

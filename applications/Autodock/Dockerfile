@@ -27,5 +27,6 @@ RUN git clone https://github.com/emascarenhas/AutoDock-GPU.git && \
 
 ENV PATH="/AutoDock/bin:${PATH}"
 
+
 CMD ["/bin/bash"]
 
