@@ -23,7 +23,7 @@ RUN git clone https://github.com/emascarenhas/AutoDock-GPU.git && \
     git checkout v1.4 && \
     mv ../AutoDock-GPU ../AutoDock && \
     cd ../AutoDock && \
-    make DEVICE=CPU NUMWI=16
+    make DEVICE=CPU NUMWI=64
 
 ENV PATH="/AutoDock/bin:${PATH}"
 
