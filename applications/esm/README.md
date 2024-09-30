@@ -4,8 +4,8 @@
 Open-Omics-ESM is an optimized version of the Evolutionary Scale Modeling (ESM) toolkit, tailored for modern CPUs. It improves the performance of key ESM modules—such as ESM-embeddings, LM-Design, InverseFolding, and ESMFold—by leveraging Intel Extension for PyTorch (IPEX) and performing computations in lower precision (bf16).
 
 ## Installation
-### Step 1: Run the build container script
-Execute the build script to create the Docker container
+### Step 1: Run the script to create the Docker images
+Execute the script using the following command:
 
 ```bash
  cd docker_setup
@@ -16,9 +16,9 @@ Select the ESM image you want to build based on your specific needs
 
 #### Given the options, here's how you might decide:
 
-*  esm - `Dockerfile.esm` is configured to set up ESM-Embeddings, LM-Designs, and InverseFolding with optimizations for Python 3.11 and PyTorch 2.4.0, providing enhanced performance and speed compared to the original open-sourced ESM.
-*  esm_fold - `Dockerfile.esmfold` is configured to set up ESMFold with optimizations for Python 3.7 and PyTorch 1.12.1, including Intel extensions (IPEX) to provide enhanced performance and speed. Unlike OpenFold, which also relies on PyTorch 1.12.1, ESMFold includes additional optimizations specific to Intel architectures, offering improved efficiency compared to the original open-sourced ESMFold.
-*  Both esm and esm_fold - build both images to incorporate both basic ESM functions and advanced folding capabilities, covering all use cases. This option will require additional build time and disk space
+*  esm - `Dockerfile.esm` is configured to ESM-Embeddings, LM-Designs, and InverseFolding with optimizations for Python 3.11 and PyTorch 2.4.0, providing enhanced performance and speed compared to the original open-sourced ESM.
+*  esm_fold - `Dockerfile.esmfold` is configured to ESMFold with optimizations for Python 3.7 and PyTorch 1.12.1, including Intel extensions (IPEX) to provide enhanced performance and speed. Unlike OpenFold, which also relies on PyTorch 1.12.1, ESMFold includes additional optimizations specific to Intel architectures, offering improved efficiency compared to the original open-sourced ESMFold.
+*  Both esm and esm_fold - build both images to incorporate both ESM functions and folding capabilities, covering all use cases. This option will require additional build time and disk space
 
 ```bash
 Which images do you want to build? #type task number
@@ -56,6 +56,7 @@ In this ESM setup, the `input` directory contains files like FASTA (protein sequ
 Compute embeddings for multiple protein sequences from a FASTA file in a single batch process using ESM.See [Compute embeddings in bulk from FASTA](#bulk_fasta) for detailed user guide.
 
 ```bash
+#example
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
@@ -70,6 +71,7 @@ LM-Design supports fixed backbone sequence generation for known structures and r
 <summary>Fixed backbone design</summary>
 
 ```bash
+#example
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
@@ -81,6 +83,7 @@ docker run -it \
 <summary>Free generation design</summary>
 
 ```bash
+#example
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $PWD/output:/output \
@@ -95,6 +98,7 @@ Inverse Folding involves generating sample protein sequences that are designed t
 <summary>Sample sequence designs for a given structure</summary>
 
 ```bash
+#example
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
@@ -106,6 +110,7 @@ docker run -it \
 <summary>Scoring sequences</summary>
 
 ```bash
+#example
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
@@ -117,6 +122,7 @@ docker run -it \
 <summary>Sample sequence designs for a given structure - Multichain backbone</summary>
 
 ```bash
+#example
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
@@ -128,6 +134,7 @@ docker run -it \
 <summary>Scoring sequences - Multichain backbone</summary>
 
 ```bash
+#example
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
@@ -141,6 +148,7 @@ docker run -it \
 ESMFold predicts protein structures from amino acid sequences using advanced machine learning techniques, facilitating rapid structural insights in protein design.See [ESMFold Structure Prediction](#esmfold) for detailed user guide. 
 
 ```bash
+#example
 docker run -it \
   -v $PWD/models:/checkpoints \
   -v $INPUT:/input \
