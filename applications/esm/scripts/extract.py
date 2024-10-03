@@ -95,6 +95,9 @@ def run(args):
     repr_layers = [(i + model.num_layers + 1) % (model.num_layers + 1) for i in args.repr_layers]
     enable_autocast = args.bf16
     device_type ="cpu" if nogpu else "cuda"
+    if args.timing:
+        import time
+        total_inference_time = 0
     with torch.no_grad():
         for batch_idx, (labels, strs, toks) in enumerate(data_loader):
             print(
@@ -103,8 +106,6 @@ def run(args):
             if torch.cuda.is_available() and not nogpu:
                 toks = toks.to(device="cuda", non_blocking=True)
             if args.timing:
-                import time
-                total_inference_time = 0
                 start_time = time.perf_counter()
 
             with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):

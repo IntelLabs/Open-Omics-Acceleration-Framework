@@ -264,7 +264,7 @@ index b578ad9..42e4fa1 100644
          logger.info(f'Final designed sequences:')
          for seq in self.decode(self.x_seqs):
 diff --git a/scripts/extract.py b/scripts/extract.py
-index 9e5bcb3..4f3115b 100644
+index 9e5bcb3..6e2b9b9 100644
 --- a/scripts/extract.py
 +++ b/scripts/extract.py
 @@ -56,18 +56,28 @@ def create_parser():
@@ -298,13 +298,16 @@ index 9e5bcb3..4f3115b 100644
          model = model.cuda()
          print("Transferred model to GPU")
  
-@@ -83,17 +93,26 @@ def run(args):
+@@ -83,17 +93,27 @@ def run(args):
  
      assert all(-(model.num_layers + 1) <= i <= model.num_layers for i in args.repr_layers)
      repr_layers = [(i + model.num_layers + 1) % (model.num_layers + 1) for i in args.repr_layers]
 -
 +    enable_autocast = args.bf16
 +    device_type ="cpu" if nogpu else "cuda"
++    if args.timing:
++        import time
++        total_inference_time = 0
      with torch.no_grad():
          for batch_idx, (labels, strs, toks) in enumerate(data_loader):
              print(
@@ -314,8 +317,6 @@ index 9e5bcb3..4f3115b 100644
 +            if torch.cuda.is_available() and not nogpu:
                  toks = toks.to(device="cuda", non_blocking=True)
 +            if args.timing:
-+                import time
-+                total_inference_time = 0
 +                start_time = time.perf_counter()
  
 -            out = model(toks, repr_layers=repr_layers, return_contacts=return_contacts)
@@ -328,7 +329,7 @@ index 9e5bcb3..4f3115b 100644
              logits = out["logits"].to(device="cpu")
              representations = {
                  layer: t.to(device="cpu") for layer, t in out["representations"].items()
-@@ -129,12 +148,24 @@ def run(args):
+@@ -129,12 +149,24 @@ def run(args):
                      result,
                      args.output_file,
                  )
