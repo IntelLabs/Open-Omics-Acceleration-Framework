@@ -14,23 +14,23 @@ RUN conda install -c conda-forge \
     mkl=2023.1 \
     dpcpp_linux-64=2023.1 \
     dpcpp-cpp-rt=2023.1 \
-    mkl-devel=2023.1
-
+    mkl-devel=2023.1 && \
+    conda clean --all -f -y
 ENV LD_LIBRARY_PATH="/opt/conda/lib:${LD_LIBRARY_PATH}"
 WORKDIR /opt
 ENV SERVICE_NAME="autodock-service"
 RUN groupadd --gid 1001 $SERVICE_NAME && \
-    useradd -m -g $SERVICE_NAME --shell /bin/false --uid 1001 $SERVICE_NAME
-RUN chown -R $SERVICE_NAME:$SERVICE_NAME /opt
+    useradd -m -g $SERVICE_NAME --shell /bin/false --uid 1001 $SERVICE_NAME && \
+    chown -R $SERVICE_NAME:$SERVICE_NAME /opt
+
 USER $SERVICE_NAME
-RUN git clone https://github.com/emascarenhas/AutoDock-GPU.git && \
-    cd AutoDock-GPU && \
+RUN git clone https://github.com/emascarenhas/AutoDock-GPU.git /opt/AutoDock && \
+    cd /opt/AutoDock && \
     git checkout v1.4 && \
-    cd .. && \
-    mv AutoDock-GPU AutoDock
-WORKDIR /opt/AutoDock
-RUN make DEVICE=CPU NUMWI=64
+    make DEVICE=CPU NUMWI=64 && \
+    rm -rf /opt/AutoDock/.git /opt/AutoDock/build_temp
 ENV PATH="/opt/AutoDock/bin:${PATH}"
 HEALTHCHECK NONE
 WORKDIR /opt/AutoDock/bin
 CMD ["/bin/bash"]
+
