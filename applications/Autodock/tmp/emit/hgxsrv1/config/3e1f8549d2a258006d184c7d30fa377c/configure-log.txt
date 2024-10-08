@@ -1,0 +1,4 @@
+Native Compiler invocation: ./ /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/input/1ac8/derived/eval.py
+Working directory: /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock
+Comptype: python
+* Configuring Python Filesystem Capture

@@ -21,14 +21,14 @@ WORKDIR /opt
 ENV SERVICE_NAME="autodock-service"
 RUN groupadd --gid 1001 $SERVICE_NAME && \
     useradd -m -g $SERVICE_NAME --shell /bin/false --uid 1001 $SERVICE_NAME && \
-    chown -R $SERVICE_NAME:$SERVICE_NAME /opt
-
+    mkdir -p /opt/AutoDock && \
+    chown -R $SERVICE_NAME:$SERVICE_NAME /opt/AutoDock
 USER $SERVICE_NAME
-RUN git clone https://github.com/emascarenhas/AutoDock-GPU.git /opt/AutoDock && \
-    cd /opt/AutoDock && \
-    git checkout v1.4 && \
-    make DEVICE=CPU NUMWI=64 && \
-    rm -rf /opt/AutoDock/.git /opt/AutoDock/build_temp
+WORKDIR /opt/AutoDock
+RUN git clone https://github.com/emascarenhas/AutoDock-GPU.git . && \
+    git checkout v1.4
+RUN make DEVICE=CPU NUMWI=64 && \
+    rm -rf .git build_temp
 ENV PATH="/opt/AutoDock/bin:${PATH}"
 HEALTHCHECK NONE
 WORKDIR /opt/AutoDock/bin

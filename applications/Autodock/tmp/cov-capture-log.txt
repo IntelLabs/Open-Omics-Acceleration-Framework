@@ -1,0 +1,45 @@
+2024-10-08T05:35:17.105Z|cov-capture|9395|debug|> cov-capture 2023.3.4 (build 858be4c112 p-2023.3-push-67)
+2024-10-08T05:35:17.105Z|cov-capture|9395|debug|> Coverity Buildless Capture version 2023.3.4 on Linux 4.15.0-166-generic x86_64
+2024-10-08T05:35:17.105Z|cov-capture|9395|debug|> Internal version numbers: 858be4c112 p-2023.3-push-67
+2024-10-08T05:35:17.105Z|cov-capture|9395|debug|> 
+2024-10-08T05:35:17.105Z|cov-capture|9395|debug|> Dumping from hostname : hgxsrv1
+2024-10-08T05:35:17.105Z|cov-capture|9395|debug|> Platform info:
+2024-10-08T05:35:17.105Z|cov-capture|9395|debug|> Sysname = Linux
+2024-10-08T05:35:17.105Z|cov-capture|9395|debug|> Release = 4.15.0-166-generic
+2024-10-08T05:35:17.105Z|cov-capture|9395|debug|> Machine = x86_64
+2024-10-08T05:35:17.105Z|cov-capture|9395|debug|> 
+2024-10-08T05:35:17.105Z|cov-capture|9395|debug|> 
+2024-10-08T05:35:17.105Z|cov-capture|9395|debug|> cov-capture command: cov-capture --dir tmp --source-dir ./ 
+2024-10-08T05:35:17.105Z|cov-capture|9395|debug|> Starting source mode.
+2024-10-08T05:35:19.691Z|cov-inspect-source|9442|info|> Scanning the file system for Apex, Java, JavaScript, PHP, Python, Ruby, TypeScript, and Web App Configuration files.
+2024-10-08T05:35:19.706Z|cov-inspect-source|9442|info|> Finished scanning the file system for Apex, Java, JavaScript, PHP, Python, Ruby, TypeScript, and Web App Configuration files.
+2024-10-08T05:35:19.706Z|cov-inspect-source|9442|info|> Successfully found JavaScript files.
+2024-10-08T05:35:19.706Z|cov-inspect-source|9442|info|> Successfully found Python files.
+2024-10-08T05:35:19.706Z|cov-inspect-source|9442|info|> Successfully found Configuration Files (Web App Configuration) files.
+2024-10-08T05:35:19.718Z|cov-emit-project|9449|debug|> Using project file "tmp/cov-capture/2024-10-08_01_35_15/project-info/sources-info.json".
+2024-10-08T05:35:19.718Z|cov-emit-project|9449|debug|> Using intermediate directory "tmp".
+2024-10-08T05:35:19.718Z|cov-emit-project|9449|debug|> Using logging endpoint "tmp/cov-capture/cov-internal-fluentd-port".
+2024-10-08T05:35:19.720Z|cov-emit-project|9449|debug|> Project ".": Transition from Inspected/Inspected to Emitted/Inspected
+2024-10-08T05:35:19.721Z|cov-emit-project|9449|debug|> Project ".": Transition from Emitted/Inspected to Emitted/Emitting
+2024-10-08T05:35:19.721Z|cov-emit-project|9449|info|> Emitting source group 1 of 3.
+2024-10-08T05:35:20.440Z|cov-emit-project|9449|debug|> Project ".": Transition from Emitted/Emitting to Emitted/Emitted
+2024-10-08T05:35:20.441Z|cov-emit-project|9449|debug|> Project ".": Transition from Emitted/Emitted to Succeeded/Emitted
+2024-10-08T05:35:20.441Z|cov-emit-project|9449|debug|> Project ".": Transition from Succeeded/Emitted to Succeeded/Completed
+2024-10-08T05:35:20.441Z|cov-emit-project|9449|debug|> Project ".": Transition from Inspected/Inspected to Emitted/Inspected
+2024-10-08T05:35:20.441Z|cov-emit-project|9449|debug|> Project ".": Transition from Emitted/Inspected to Emitted/Emitting
+2024-10-08T05:35:20.441Z|cov-emit-project|9449|info|> Emitting source group 2 of 3.
+2024-10-08T05:35:21.554Z|cov-emit-project|9449|debug|> Project ".": Transition from Emitted/Emitting to Emitted/Emitted
+2024-10-08T05:35:21.554Z|cov-emit-project|9449|debug|> Project ".": Transition from Emitted/Emitted to Succeeded/Emitted
+2024-10-08T05:35:21.554Z|cov-emit-project|9449|debug|> Project ".": Transition from Succeeded/Emitted to Succeeded/Completed
+2024-10-08T05:35:21.554Z|cov-emit-project|9449|debug|> Project ".": Transition from Inspected/Inspected to Emitted/Inspected
+2024-10-08T05:35:21.554Z|cov-emit-project|9449|debug|> Project ".": Transition from Emitted/Inspected to Emitted/Emitting
+2024-10-08T05:35:21.554Z|cov-emit-project|9449|info|> Emitting source group 3 of 3.
+2024-10-08T05:35:22.001Z|cov-emit-project|9449|warning|> Some source files failed to emit.         See the following log files for details:         "/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/cov-capture/2024-10-08_01_35_15/diagnostics/2024-10-08_01_35_21.555307,cov-translate,stdout"         "/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/cov-capture/2024-10-08_01_35_15/diagnostics/2024-10-08_01_35_21.555307,cov-translate,stderr"
+2024-10-08T05:35:22.002Z|cov-emit-project|9449|debug|> Project ".": Transition from Emitted/Emitting to Emitted/Emitted
+2024-10-08T05:35:22.002Z|cov-emit-project|9449|debug|> Project ".": Transition from Emitted/Emitted to Succeeded/Emitted
+2024-10-08T05:35:22.002Z|cov-emit-project|9449|debug|> Project ".": Transition from Succeeded/Emitted to Succeeded/Completed
+2024-10-08T05:35:22.008Z|cov-capture|9395|debug|> One or more projects were not emitted successfully.         See the following log files for details:         "tmp/cov-capture/2024-10-08_01_35_15/diagnostics/2024-10-08_01_35_19.712719,cov-emit-project,stdout"         "tmp/cov-capture/2024-10-08_01_35_15/diagnostics/2024-10-08_01_35_19.712719,cov-emit-project,stderr"
+2024-10-08T05:35:22.008Z|cov-capture|9395|debug|> There was a problem running cov-emit-project.
+2024-10-08T05:35:22.051Z|cov-capture|9395|info|> Emitted 7 JavaScript compilation units (100%) successfully.
+2024-10-08T05:35:22.051Z|cov-capture|9395|info|> Emitted 0 Python 2 compilation units (0%) successfully.
+2024-10-08T05:35:22.051Z|cov-capture|9395|info|> Emitted 64 Text data compilation units (100%) successfully.
