@@ -1,6 +1,5 @@
 FROM condaforge/miniforge3:4.10.2-0
 ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libboost-all-dev \
@@ -11,11 +10,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     time && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
-# Create and activate conda environment
 RUN conda create -n vina_1.2.2_env python=3.11 -y && \
     echo "source activate vina_1.2.2_env" >> ~/.bashrc
-
 RUN conda install -n vina_1.2.2_env -c conda-forge \
     numpy \
     swig \
@@ -23,35 +19,23 @@ RUN conda install -n vina_1.2.2_env -c conda-forge \
     sphinx \
     sphinx_rtd_theme \
     -y
-
-# Clone and build AutoDock-Vina
 WORKDIR /opt
 RUN git clone https://github.com/ccsb-scripps/AutoDock-Vina.git
 WORKDIR /opt/AutoDock-Vina
 RUN git checkout v1.2.2 && \
     git switch -c v1.2.2
-
 ENV CC=gcc-8
 ENV CXX=g++-8
-
-# Build AutoDock-Vina
 WORKDIR /opt/AutoDock-Vina/build/linux/release
 RUN make -j$(nproc)
-
-# Set up the environment and user
 ENV PATH="/opt/miniforge3/envs/vina_1.2.2_env/bin:/opt/AutoDock-Vina/build/linux/release:$PATH"
 ENV SERVICE_NAME="autodock-vina-service"
-
 RUN groupadd --gid 1001 $SERVICE_NAME && \
     useradd -m -g $SERVICE_NAME --shell /bin/false --uid 1001 $SERVICE_NAME
 
 RUN chown -R $SERVICE_NAME:$SERVICE_NAME /opt
-
-# Switch to non-root user
 USER $SERVICE_NAME
-
 HEALTHCHECK NONE
-
 WORKDIR /opt/AutoDock-Vina/build/linux/release
 CMD ["/bin/bash"]
 
