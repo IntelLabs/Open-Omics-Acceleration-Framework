@@ -27,7 +27,7 @@ RUN apt-get -qq -y install wget
 WORKDIR /app
 RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 WORKDIR Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam
-RUN git checkout e4cae79
+#RUN git checkout e4cae79
 
 RUN bash install.sh onprem
 

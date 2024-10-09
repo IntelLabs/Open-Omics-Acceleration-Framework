@@ -196,6 +196,7 @@ def pragzip_reader_real( comm, cpus, fname, outpipe, outdir, last=False ):
     threading.Thread(target=pr_t1, args=(f,startpos,endpos,bufs,sems)).start()
     threading.Thread(target=pr_t2, args=(outpipe,bufs,sems)).start()
 
+    
 def pragzip_reader(comm, cpus, fname, outdir, last=False):
     #outpipe = tempfile.mktemp()
     outpipe = tempfile.NamedTemporaryFile()
@@ -379,6 +380,7 @@ def sw_thr( outpipe, comm, comm2 ):
     send_wrap("done", rank, force=True)  # send to self last to avoid race condition with allreduce
     t1 = time.time()
 
+    
 # used for mode 2 and above
 def sam_writer( comm, fname ):
     rank = comm.Get_rank()
@@ -470,13 +472,13 @@ def main(argv):
     cpus=args["cpus"]
     threads=args["threads"]    ## read prefix for R1, I1, R2 files
     rindex=args["rindex"]
-    folder=args["input"] + "/"
+    inputdir=args["input"] + "/"
     output=args["output"] + "/"
     tempdir=args["tempdir"]
     if tempdir=="": tempdir=output
     else: tempdir=tempdir + "/"
     refdir=args["refdir"] + "/"
-    #if refdir=="": refdir=folder
+    #if refdir=="": refdir=inputdir
     prof=args["profile"]
     global keep
     keep=args["keep_unmapped"]
@@ -577,27 +579,31 @@ def main(argv):
             
 
     if mode in ['flatmode', 'sortedbam']:
-        assert os.path.exists(folder+rfile1) == True, "missing input read1 files"
+        assert os.path.exists(inputdir+rfile1) == True, "missing input read1 files"
         if not se_mode:
-            assert os.path.exists(folder+rfile2) == True, "missing input read2 files"
+            assert os.path.exists(inputdir+rfile2) == True, "missing input read2 files"
         # output paths
         assert os.path.exists(output) == True, "output path does not exist"
 
     if mode in ['sortedbam', 'flatmode']:
         ## bwa-mem2 index path check, every ranks checks the access.
+        flg = 0
         if rank == 0:
             g = rfile1
             if g.split(".")[-1] != "gz":
                 print("Error: reads file1 not in gzip format. Exiting...")
-                os.sys.exit(1)
+                #os.sys.exit(1)
+                flg = 1
                 
             if not se_mode:
                 g = rfile2
                 if g.split(".")[-1] != "gz":
                     print("Error: reads file2 not in gzip format. Exiting...")
-                    os.sys.exit(1)
-            
-
+                    #os.sys.exit(1)
+                    flg = 1
+                    
+        allexit(comm, flg)        
+        
         # chromo_dict information added
         if keep == False and rank == 0:
             chromo_file = os.path.join(refdir,ifile)+".fai"
@@ -643,9 +649,9 @@ def main(argv):
             
         # Execute bwamem2 -- may include sort, merge depending on mode
         begin0 = time.time()
-        fn1 = pragzip_reader( comm, int(cpus), folder+rfile1, output )
+        fn1 = pragzip_reader( comm, int(cpus), inputdir+rfile1, output )
         if not se_mode:
-            fn2 = pragzip_reader( comm, int(cpus), folder+rfile2, output, last=True )
+            fn2 = pragzip_reader( comm, int(cpus), inputdir+rfile2, output, last=True )
         fn3 = os.path.join(output, outfile + str("%05d"%rank) + ".sam")
         begin1 = time.time()
         if se_mode:
@@ -698,7 +704,7 @@ def main(argv):
             rl1, rl2, rl3, ri1 = read1, read2, read3, readi1
             barcode_index = rl2[0]
             #cmd='zcat ' + folder/barcode_index '| sed -n "2~4p" | shuf -n 1000 > ' + output + '/downsample.fq'
-            bash_command = '''zcat '''+  folder + "/" + barcode_index + \
+            bash_command = '''zcat '''+  inputdir + "/" + barcode_index + \
             ''' | sed -n '2~4p' | shuf -n 1000 > downsample.fq'''
             a = run(bash_command,shell=True, check=True, executable='/bin/bash')
             assert a.returncode == 0
@@ -719,12 +725,12 @@ def main(argv):
             #r1, r2, r3="--R1 ", "--R2 ", "--R3 "
             r1, r2, r3, i1 ="", "", "", ""
             for r in range(len(rl1)):
-                r1+="--R1 " + folder + "/" + rl1[r] + ' '
-                r2+="--R2 " + folder + "/" + rl2[r] + ' '
-                r3+="--R3 " + folder + "/" + rl3[r] + ' '
+                r1+="--R1 " + inputdir + "/" + rl1[r] + ' '
+                r2+="--R2 " + inputdir + "/" + rl2[r] + ' '
+                r3+="--R3 " + inputdir + "/" + rl3[r] + ' '
 
             for r in range(len(ri1)):
-                i1+="--I1 " + folder + "/" + ri1[r] + ' '
+                i1+="--I1 " + inputdir + "/" + ri1[r] + ' '
 
             ## print(r1)
             ## print(r2)
@@ -758,8 +764,8 @@ def main(argv):
                 #fn1 = "fastq_R1_" + str(r) + ".fastq.gz"
                 #fn2 = "fastq_R3_" + str(r) + ".fastq.gz"
                 #multiome-practice-may15_arcgtf_0.R1.trimmed_adapters.fastq.gz
-                fn1 = os.path.join(folder, prefix + "_" + str(r) + ".R1." + suffix)
-                fn2 =  os.path.join(folder, prefix + "_" + str(r) + ".R3." + suffix)
+                fn1 = os.path.join(inputdir, prefix + "_" + str(r) + ".R1." + suffix)
+                fn2 =  os.path.join(inputdir, prefix + "_" + str(r) + ".R3." + suffix)
 
                 if os.path.isfile(fn1) == False or os.path.isfile(fn2) == False:
                     print(f"[Info] Error: Number of files fastq files ({r}) < number of ranks ({nranks})")
@@ -771,11 +777,11 @@ def main(argv):
         comm.barrier()
         #fn1 = "fastq_R1_" + str(rank) + ".fastq.gz"
         #fn2 = "fastq_R3_" + str(rank) + ".fastq.gz"
-        fn1 = os.path.join(folder, prefix + "_" + str(rank) + ".R1." + suffix)
-        fn2 = os.path.join(folder, prefix + "_" + str(rank) + ".R3." + suffix)
+        fn1 = os.path.join(inputdir, prefix + "_" + str(rank) + ".R1." + suffix)
+        fn2 = os.path.join(inputdir, prefix + "_" + str(rank) + ".R3." + suffix)
 
-        #fn1 = folder + "/fastq_R1_" + str(rank) + ".fastq.gz"
-        #fn2 = folder + "/fastq_R3_" + str(rank) + ".fastq.gz"
+        #fn1 = inputdir + "/fastq_R1_" + str(rank) + ".fastq.gz"
+        #fn2 = inputdir + "/fastq_R3_" + str(rank) + ".fastq.gz"
         if rank == 0:
             print("[Info] Input files: ")
             print(fn1)
@@ -834,9 +840,9 @@ def main(argv):
         # Execute bwamem2 -- may include sort, merge depending on mode
         begin0 = time.time()
         #try:
-        fn1 = pragzip_reader( comm, int(cpus), folder+rfile1, output )
+        fn1 = pragzip_reader( comm, int(cpus), inputdir + rfile1, output )
         if not se_mode:
-            fn2 = pragzip_reader( comm, int(cpus), folder+rfile2, output, last=True )
+            fn2 = pragzip_reader( comm, int(cpus), inputdir + rfile2, output, last=True )
         fn3, thr = sam_writer( comm, output+'/aln' )
         #fn3 = output + "/aln" + str(rank) + ".sam"
         begin1 = time.time()
@@ -882,7 +888,9 @@ def main(argv):
             a=run(cmd,capture_output=True,shell=True)
             cmd=""
             
-    if not cmd=="": a=run(cmd,capture_output=True,shell=True)
+    if not cmd=="":
+        a=run(cmd,capture_output=True,shell=True)
+        assert a.returncode==0,"samtools sort Failed"    
     comm.barrier()
 
     if rank==0:
