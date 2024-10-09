@@ -236,17 +236,16 @@ WORKDIR /
 #COPY extra_scripts .
 RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
-RUN apt-get update 
+
+RUN apt-get update
+RUN apt-get -y install git
 RUN apt-get install -y build-essential
-RUN apt-get install -y git
-RUN apt -y install autoconf
-RUN apt -y install numactl
 RUN apt -y install zlib1g-dev
 RUN apt -y install libncurses5-dev
-RUN apt -y install libbz2-dev
-RUN apt -y install liblzma-dev
-#RUN apt -y install git
-RUN apt-get -qq -y install wget
+#RUN apt -y install libbz2-dev
+#RUN apt -y install liblzma-dev
+
+RUN  apt -y install autoconf make gcc libbz2-dev liblzma-dev libz-dev libcurl4-openssl-dev
 
 # compile htslib
 WORKDIR  /Open-Omics-Acceleration-Framework/applications/htslib

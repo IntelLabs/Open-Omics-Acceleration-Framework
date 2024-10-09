@@ -3,15 +3,8 @@ import os, sys
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 #from mpi4py import MPI
 
-def HWconfigure(sso, num_nodes):
-    #print("args: ", sys.argv)
-    #print(len(sys.argv))
-    assert len(sys.argv) == 3, "<exec> <sso> <num_nodes>"
+def HWConfigure(sso, num_nodes):
     run('lscpu > lscpu.txt', capture_output=True, shell=True)
-    #inf = sys.argv[1]
-    sso = sys.argv[1]
-    num_nodes = int(sys.argv[2])
-
     dt={}
     with open('lscpu.txt', 'r') as f:
         l = f.readline()
@@ -85,16 +78,16 @@ if __name__ == '__main__':
     parser.add_argument('--tempdir',default="/tempdir",help="Intermediate data directory")
     parser.add_argument('--refdir',default="/refdir",help="Reference genome directory")
     parser.add_argument('--output',default="/output", help="Output data directory")
-    parser.add_argument("-i", "--refindex", help="name of refindex file")
-    parser.add_argument("-r1", "--read1", help="name of read1")
-    parser.add_argument("-r2", "--read2", help="name of read2")
+    parser.add_argument("-i", "--refindex", default="None", help="name of refindex file")
+    parser.add_argument("-r1", "--read1", default="None", help="name of read1")
+    parser.add_argument("-r2", "--read2", default="None", help="name of read2")
     parser.add_argument('-in', '--rindex',action='store_true',help="It will index reference genome for bwa-mem2. If it is already done offline then don't use this flag.")
     parser.add_argument('-dindex',action='store_true',help="It will create .fai index. If it is done offline then disable this.")
     parser.add_argument('--container_tool',default="docker",help="Container tool used in pipeline : Docker/Podman")
     parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
     parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
     parser.add_argument('--keep_intermediate_sam',action='store_true',help="Keep intermediate sam files.")
-    parser.add_argument('--params', default='', help="parameter string to bwa-mem2 barring threads paramter")
+    parser.add_argument('--params', default='None', help="parameter string to bwa-mem2 barring threads paramter")
     parser.add_argument("-p", "--outfile", help="prefix for read files")
     args = vars(parser.parse_args())
     
@@ -110,30 +103,32 @@ if __name__ == '__main__':
     #cmd = "export I_MPI_PIN_DOMAIN==mask" + "; mpiexec -bootstrap ssh -n " + N + "-ppn " + PPN + " -bind-to " + BINDING + "-map-by " + BINDING + " --hostfile hostfile  python -u fq2bams.py --cpus" + CPUS + " --threads " + THREADS + " --input " +  args.input + " --output " +  args.output + " --refdir " +  args.refdir " + --refindex " + args.refindex + " --read1 " + args.read1 + " --read2 " + args.read2
     cwd = os.getcwd()
     cmd = "export LD_PRELOAD=" + cwd + "/libmimalloc.so.2.0:$LD_PRELOAD" + \
-        "; mpiexec -bootstrap ssh -n " + N + "-ppn " + PPN + \
+        "; mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
         " -bind-to " + BINDING + \
         " -map-by " + BINDING + \
         " --hostfile hostfile  " + \
-        " python -u fq2bams.py --cpus" + CPUS + \
-        " --threads " + THREADS + \
-        " --input " +  args.input + \
-        " --output " + args.output + \
-        " --refdir " +  args.refdir + \
-        " --refindex " + args.refindex + \
-        " --read1 " + args.read1 + \
-        " --read2 " + args.read2 + \
-        " --params " + args.params + \
-        " --keep_unmapped " + args.keep_unmapped + \
-        " --keep_intermediate_sam " + args.keep_intermediate_sam + \
+        " python -u fq2bams.py --cpus " + str(CPUS) + \
+        " --threads " + str(THREADS) + \
+        " --input " +  args["input"] + \
+        " --output " + args["output"] + \
+        " --refdir " +  args["refdir"] + \
+        " --refindex " + args["refindex"] + \
+        " --read1 " + args["read1"] + \
+        " --read2 " + args["read2"] + \
+        " --params " + args["params"] + \
         " --container_tool " + args.container_tool #+ \
 
-    if args.rindex:
+    if args["rindex"]:
         cmd += " --rindex "
-    if args.dindex:
-        cmd +=" --dindex " 
+    if args["dindex"]:
+        cmd +=" --dindex "
+    if args["keep_unmapped"]:
+        cmd += " --keep_unmapped "
+    if args["keep_intermediate_sam"]:
+        cmd +=" --keep_intermediate_sam "
 
-    cmd += " 2>&1 | tee " + args.output + "/log_fq2bams.txt"        
+    cmd += " 2>&1 | tee " + args["output"] + "/log_fq2bams.txt"        
     
     print("cmd: ", cmd)
     a = run(cmd, capture_output=True, shell=True)
-    assert a == 0, "fq2bam failed."
+    assert a == 0, "fq2bams failed."

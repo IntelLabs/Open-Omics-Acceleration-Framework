@@ -424,7 +424,9 @@ def run(args):
         rfile2 = ""
         se_mode = True
 
-    params = args.params
+    params = ""
+    if args["params"] != "" and args["params"] != "None":
+        params = args["params"]
     
     cpus = args["cpus"]
     threads = args["threads"]

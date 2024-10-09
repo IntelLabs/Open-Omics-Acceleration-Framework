@@ -452,7 +452,8 @@ def main(argv):
     params= ""
     if args["params"] != "" and args["params"]  != "None":
         params=args["params"]
-        params=params.replace("+","-")
+        #params=params.replace("+","-")
+
     read1 = rfile1 = args["read1"]
     read2 = rfile2 = args["read2"]
     read3 = args["read3"]
