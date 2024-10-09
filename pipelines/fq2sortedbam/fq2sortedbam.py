@@ -412,10 +412,10 @@ def main(argv):
     parser.add_argument('--input',help="Input data directory")
     parser.add_argument('--tempdir',default="",help="Intermediate data directory")
     parser.add_argument('--refdir',default="",help="Reference genome directory")
-    parser.add_argument('--read1',default="", nargs='+',help="name of r1 files")
-    parser.add_argument('--read2',default="", nargs='+',help="name of r2 files")
-    parser.add_argument('--read3',default="", nargs='+',help="name of r3 files (for fqprocess) seperated by spaces")
-    parser.add_argument('--readi1',default="", nargs='+',help="name of i1 files (for fqprocess) seperated by spaces")
+    parser.add_argument('--read1',default="", help="name of r1 files")
+    parser.add_argument('--read2',default="", help="name of r2 files")
+    parser.add_argument('--read3',default="", help="name of r3 files (for fqprocess) seperated by spaces")
+    parser.add_argument('--readi1',default="",help="name of i1 files (for fqprocess) seperated by spaces")
     
     parser.add_argument('--prefix',default="", help="prefix for processed R1 and R3 files for bwa-mem2")
     parser.add_argument('--suffix',default="", help="suffix for processed R1 and R3 files for bwa-mem2")
@@ -428,7 +428,7 @@ def main(argv):
     parser.add_argument('--output',help="Output data directory")
     parser.add_argument('--mode', default='sortedbam', help="flatmode/fqprocessonly/multifq/sortedbam. flatmode is just bwa w/o sort.")
     parser.add_argument('--params', default='', help="parameter string to bwa-mem2 barring threads paramter")
-    parser.add_argument("-i", "--index", help="name of index file")
+    parser.add_argument("-i", "--refindex", help="name of index file")
     parser.add_argument("-p", "--outfile", help="prefix for read files")
     parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
     parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
@@ -443,15 +443,16 @@ def main(argv):
     ## Arg values in the provided yaml file override any command-line or default args values
     args = vars(parser.parse_args())
 
-    if args["config"] != "":
-        args = populate_yaml(args)
+    #if args["config"] != "":
+    #    args = populate_yaml(args)
 
     global chromo_dict    
     read_type=args["read_type"]        
-    ifile=args["index"]
-    params=args["params"]
-
-    params=params.replace("+","-")
+    ifile=args["refindex"]
+    params= ""
+    if args["params"] != "" and args["params"]  != "None":
+        params=args["params"]
+        params=params.replace("+","-")
     read1 = rfile1 = args["read1"]
     read2 = rfile2 = args["read2"]
     read3 = args["read3"]
