@@ -28,7 +28,7 @@ echo "Setting up conda env named with given argument"
 echo "Setting up conda env named new_env...DONE"
 
 echo "Activating conda env..."
-source ~t /miniforge3/bin/activate fq2bam
+source ~/miniforge3/bin/activate fq2bam
 
 #echo "Downloading and setting up miniconda..."
 #if [ ! -e "Miniconda3-py39_23.3.1-0-Linux-x86_64.sh" ]
