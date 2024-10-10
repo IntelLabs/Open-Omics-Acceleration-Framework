@@ -44,8 +44,9 @@ Add your receptor (.pdbqt), ligand (.pdbqt), and dependent map files to the `inp
 ### 5. Set Environment Variables
 Set environment variables to reference the input and output directories:
 ```bash
-export INPUT_VINA=$PWD/input_local
-export OUTPUT_VINA=$PWD/output_local
+For your reference we have provided a 5wlo folder where all the grid maps of a 5wlo protein and ligand files are present
+export INPUT_VINA=$PWD/5wlo
+export OUTPUT_VINA=$PWD/5wlo_output
 ```
 ### 6. Run the Docker Container
 Before running the Docker container, check if the Docker image for `docker_vina` has been successfully generated:
