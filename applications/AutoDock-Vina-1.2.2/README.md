@@ -43,6 +43,7 @@ Add your receptor (.pdbqt), ligand (.pdbqt), and dependent map files to the `inp
 
 ### 5. Set Environment Variables
 Set environment variables to reference the input and output directories:
+We have provided a 5wlo folder where all the grid maps of a 5wlo protein and ligand files are present
 ```bash
 For your reference we have provided a 5wlo folder where all the grid maps of a 5wlo protein and ligand files are present
 export INPUT_VINA=$PWD/5wlo
