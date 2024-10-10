@@ -45,10 +45,10 @@ def HWConfigure(sso, num_nodes):
     PPN = int(num_physical_cores_per_node / num_physical_cores_per_rank)
     CPUS = int(ncores * nthreads * nsocks / PPN - 2*nthreads)
     THREADS = CPUS
-    print(f"N={int(N)}")
-    print(f"PPN={int(PPN)}")
-    print(f"CPUS={int(CPUS)}")
-    print(f"THREADS={int(THREADS)}")
+    #print(f"N={int(N)}")
+    #print(f"PPN={int(PPN)}")
+    #print(f"CPUS={int(CPUS)}")
+    #print(f"THREADS={int(THREADS)}")
     
     threads_per_rank = num_physical_cores_per_rank * nthreads
     bits = pow(2, num_physical_cores_per_rank) - 1
@@ -65,7 +65,7 @@ def HWConfigure(sso, num_nodes):
         allbits=0
         #print("{:x}".format(mask))
     mask=mask + "]"
-    print("I_MPI_PIN_DOMAIN={}".format(mask))
+    #print("I_MPI_PIN_DOMAIN={}".format(mask))
 
     return N, PPN, CPUS, THREADS, mask
 
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     ## rgs parser
     parser=ArgumentParser()
     parser.add_argument('--input', default="/input", help="Input data directory")
-    parser.add_argument('--tempdir',default="/tempdir",help="Intermediate data directory")
+    #parser.add_argument('--tempdir',default="/output",help="Intermediate data directory")
     parser.add_argument('--refdir',default="/refdir",help="Reference genome directory")
     parser.add_argument('--output',default="/output", help="Output data directory")
     parser.add_argument("-i", "--refindex", default="None", help="name of refindex file")
@@ -85,18 +85,21 @@ if __name__ == '__main__':
     parser.add_argument('-dindex',action='store_true',help="It will create .fai index. If it is done offline then disable this.")
     parser.add_argument('--container_tool',default="docker",help="Container tool used in pipeline : Docker/Podman")
     parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
-    parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
+    parser.add_argument('--not_keep_unmapped',action='store_true',help="To not keep the unmapped entries at the end of sam file.")
     parser.add_argument('--keep_intermediate_sam',action='store_true',help="Keep intermediate sam files.")
-    parser.add_argument('--params', default='None', help="parameter string to bwa-mem2 barring threads paramter")
+    parser.add_argument('--params', type=str, default='@RG\\tID:RG1\\tSM:RGSN1', help="parameter string to bwa-mem2 barring threads paramter")
     parser.add_argument("-p", "--outfile", help="prefix for read files")
+    parser.add_argument("--sso", action='store_true', help="prefix for read files")
+    parser.add_argument('--buildindexonly',action='store_true',help="It will create bwa and .fai index only. If it is done offline then disable this.")
     args = vars(parser.parse_args())
     
     num_nodes=1
-    N, PPN, CPUS, THREADS, mask = HWConfigure(args.sso, num_nodes)
+    N, PPN, CPUS, THREADS, mask = HWConfigure(args["sso"], num_nodes)
+    print("[Info] Running {} processes per compute node, each with {} threads".format(N, THREADS))
     cmd="hostname > hostfile"
     a = run(cmd, capture_output=True, shell=True)
     
-    BINDING=socket
+    BINDING="socket"
     cmd="mkdir -p logs"
     a = run(cmd, capture_output=True, shell=True)
 
@@ -112,17 +115,18 @@ if __name__ == '__main__':
         " --input " +  args["input"] + \
         " --output " + args["output"] + \
         " --refdir " +  args["refdir"] + \
+        " --tempdir " +  args["output"] + \
         " --refindex " + args["refindex"] + \
         " --read1 " + args["read1"] + \
         " --read2 " + args["read2"] + \
-        " --params " + args["params"] + \
-        " --container_tool " + args.container_tool #+ \
-
+        " --params " + "\"" + args["params"] + "\"" + \
+        " --container_tool " + args["container_tool"] #+ \
+        #" --buildindexonly " + args["buildindexonly"] #+ \
     if args["rindex"]:
         cmd += " --rindex "
     if args["dindex"]:
         cmd +=" --dindex "
-    if args["keep_unmapped"]:
+    if not args["not_keep_unmapped"]:
         cmd += " --keep_unmapped "
     if args["keep_intermediate_sam"]:
         cmd +=" --keep_intermediate_sam "
@@ -131,4 +135,4 @@ if __name__ == '__main__':
     
     print("cmd: ", cmd)
     a = run(cmd, capture_output=True, shell=True)
-    assert a == 0, "fq2bams failed."
+    assert a.returncode == 0, "fq2bams failed."

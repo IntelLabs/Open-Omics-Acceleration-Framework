@@ -25,7 +25,7 @@ def HWConfigure(sso, num_nodes):
     ncores = int(dt['Core(s) per socket'])
     nnuma = int(dt['NUMA node(s)'])
 
-    if sso == 'sso':
+    if sso:
         nsocks = 1
 
     th = 16  ## max cores per rank
@@ -46,11 +46,11 @@ def HWConfigure(sso, num_nodes):
     CPUS = int(ncores * nthreads * nsocks / PPN - 2*nthreads)
     SHARDS = int(ncores * nsocks / PPN)
     THREADS = CPUS
-    print(f"N={int(N)}")
-    print(f"PPN={int(PPN)}")
-    print(f"CPUS={int(CPUS)}")
-    print(f"SHARDS={int(SHARDS)}")
-    print(f"THREADS={int(THREADS)}")
+    #print(f"N={int(N)}")
+    #print(f"PPN={int(PPN)}")
+    #print(f"CPUS={int(CPUS)}")
+    #print(f"SHARDS={int(SHARDS)}")
+    #print(f"THREADS={int(THREADS)}")
     
     threads_per_rank = num_physical_cores_per_rank * nthreads
     bits = pow(2, num_physical_cores_per_rank) - 1
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     ## rgs parser
     parser=ArgumentParser()
     parser.add_argument('--input', default="/input", help="Input data directory")
-    parser.add_argument('--tempdir',default="/tempdir",help="Intermediate data directory")
+    #parser.add_argument('--tempdir',default="/output",help="Intermediate data directory")
     parser.add_argument('--refdir',default="/refdir",help="Reference genome directory")
     parser.add_argument('--output',default="/output", help="Output data directory")
     parser.add_argument("-i", "--refindex", default="None", help="name of refindex file")
@@ -90,15 +90,17 @@ if __name__ == '__main__':
     #parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
     #parser.add_argument('--keep_intermediate_sam',action='store_true',help="Keep intermediate sam files.")
     #parser.add_argument('--params', default='', help="parameter string to bwa-mem2 barring threads paramter")
-    parser.add_argument("-p", "--outfile", default="final.vcf", help="prefix for read files")
+    parser.add_argument("-p", "--outfile", default="finalvcf", help="prefix for the output vcf file")
+    parser.add_argument("--sso", action="store_true", help="prefix for the output vcf file")
     args = vars(parser.parse_args())
 
     num_nodes=1
-    N, PPN, CPUS, THREADS, SHARDS, mask = HWConfigure(args.sso, num_nodes)
+    N, PPN, CPUS, THREADS, SHARDS, mask = HWConfigure(args["sso"], num_nodes)
+    print('[Info] Running {} processes on one compute node, each with {} threads'.format(N, THREADS))
     cmd="hostname > hostfile"
     a = run(cmd, capture_output=True, shell=True)
     
-    BINDING=socket
+    BINDING="socket"
     cmd="mkdir -p logs"
     a = run(cmd, capture_output=True, shell=True)
 
@@ -114,14 +116,15 @@ if __name__ == '__main__':
         " --input " +  args["input"] + \
         " --output " + args["output"] + \
         " --refdir " +  args["refdir"] + \
+        " --tempdir " +  args["output"] + \
         " --refindex " + args["refindex"] + \
         " --shards " + str(SHARDS) + \
         " --outfile " + args["outfile"] + \
-        #" --container_tool " + args["container_tool"] + \
         " 2>&1 | tee " + args["output"] + "/log_bams2vcf.txt"
+        #" --container_tool " + args["container_tool"] + \
         
     
     print("cmd: ", cmd)
     a = run(cmd, capture_output=True, shell=True)
-    assert a == 0, "bams2vcf failed."
+    assert a.returncode == 0, "bams2vcf failed."
     print("[Info] Pipeline executed successfully.")

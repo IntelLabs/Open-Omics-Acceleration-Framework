@@ -18,6 +18,12 @@ from operator import itemgetter
 import pickle
 BINDIR="../.."
 
+def allexit(comm, flg):
+    comm.barrier()        
+    flg = comm.bcast(flg, root=0)
+    if flg: os.sys.exit(1)
+
+
 def main(argv):
     parser=ArgumentParser()
     parser.add_argument('--input', default="/input", help="Input data directory")
@@ -26,9 +32,9 @@ def main(argv):
     parser.add_argument('--output',default="/output", help="Output data directory")
     parser.add_argument("-i", "--refindex", help="name of refindex file")
     #parser.add_argument("-r", "--reads", nargs='+',help="name of reads file seperated by space")
-    #parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
-    #parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
-    #parser.add_argument('--shards',default=1,help="Number of shards for deepvariant")
+    parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
+    parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
+    parser.add_argument('--shards',default=1,help="Number of shards for deepvariant")
     parser.add_argument("-p", "--outfile", help="prefix for the output vcf file")    
     args = vars(parser.parse_args())
     ifile=args["refindex"]
@@ -61,10 +67,15 @@ def main(argv):
         print("[Info] Missing intermediate .pkl files from fq2bam part of the pipeline.")
         os.sys.exit(1)
 
-    if not os.path.isfile(os.path.join(inputdir, 'aln' + binstr + '.bam'))
+    if not os.path.isfile(os.path.join(inputdir, 'aln' + binstr + '.bam')):
         print("[Info] Missing intermediate .bam files from fq2bam part of the pipeline.")
         os.sys.exit(1)
-        
+       
+    if (ifile == "" or ifile == None) or not os.path.isfile(os.path.join(refdir, ifile)):
+        print("[Info] Missing reference file.")
+        os.sys.exit(1)
+
+
     with open(os.path.join(inputdir, 'bin_region.pkl'), 'rb') as f:
         bin_region = pickle.load(f)
     print(bin_region)
@@ -75,22 +86,22 @@ def main(argv):
         ' --reads='+ os.path.join(inputdir, 'aln' + binstr + '.bam') + ' '  + \
         ' --output_vcf=' + os.path.join(output, binstr, 'output.vcf.gz ') + ' ' + \
         ' --intermediate_results_dir '+ \
-        os.path.join(tempdir, '/intermediate_results_dir'+ binstr) + \
-        ' --num_shards='+nproc+ \
+        os.path.join(output, 'intermediate_results_dir'+ binstr) + \
+        ' --num_shards='+ str(nproc)+ \
         ' --dry_run=false --regions "' + bin_region[i*nranks+rank]+'"'
     
     print("Deepvariant commandline: ")
     print(command)
     
-    a = run('echo "'+command+'" > '+os.path.join(output, 'dvlog'+binstr+'.txt'), shell=True)
-    a = run(command + " 2>&1 >> " + os.path.join(output, 'dvlog'+binstr+'.txt'), shell=True)
+    a = run('echo "'+command+'" > '+os.path.join(output, logs, 'dvlog'+binstr+'.txt'), shell=True)
+    a = run(command + " 2>&1 >> " + os.path.join(output, logs, 'dvlog'+binstr+'.txt'), shell=True)
     assert a.returncode == 0,"[Info] Deepvariant execution failed."
     comm.barrier()
     
     bins_per_rank = 1
     flg = 0
     if rank == 0:
-        cmd = 'bash merge_vcf.sh '+output +' '+str(nranks)+' '+str(bins_per_rank)
+        cmd = 'bash merge_vcf.sh '+output +' '+str(nranks)+' '+str(bins_per_rank) + ' ' + outfile + " > " + output + "/logs/mergelog.txt"
         a = run(cmd, capture_output = True, shell = True)
         #assert a.returncode == 0,"VCF merge failed"
         if a.returncode != 0:
@@ -100,8 +111,18 @@ def main(argv):
         print("\nDeepVariant runtime",end5-t0)
         #print("\nTime for the whole pipeline",end5-start0)
 
-    allexit(comm, flg)  ## all ranks exit if failure in rank 0 above
+    if rank == 0:
+        print('[Info] Cleaning up....')
+        for i in range(nranks):
+            r = "%05d"%(i)
+            #print(r)
+            #os.system('ls -lh ' + r)
+            os.system('rm -rf ' + os.path.join(output, r))
+            os.system('rm -rf '+ os.path.join(output, 'intermediate_results_dir' + r))
+        print('[Info] Cleaning up done.')
 
+
+    allexit(comm, flg)  ## all ranks exit if failure in rank 0 above
     
 if __name__ == "__main__":
     main(sys.argv[1:])

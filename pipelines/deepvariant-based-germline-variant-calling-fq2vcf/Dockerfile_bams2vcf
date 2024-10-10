@@ -262,6 +262,10 @@ RUN chmod 775 configure
 RUN ./configure           # Needed for choosing optional functionality
 RUN make
 
+
+WORKDIR  /Open-Omics-Acceleration-Framework/applications/bcftools
+RUN make -j
+
 WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
 
 CMD ["/opt/deepvariant/bin/run_deepvariant", "--help"]

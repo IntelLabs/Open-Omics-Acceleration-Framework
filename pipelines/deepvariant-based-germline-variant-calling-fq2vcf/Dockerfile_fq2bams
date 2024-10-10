@@ -26,8 +26,8 @@ ENV PATH "/opt/conda/envs/dv_env/bin:/opt/conda/bin:$PATH"
 RUN echo "source activate dv_env" >> ~/.bashrc
 RUN source ~/.bashrc
 
-##WORKDIR /
-##RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+WORKDIR /
+RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
 # compile bwa-mem2
 RUN echo "Build bwa-mem2"

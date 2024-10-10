@@ -188,6 +188,10 @@ def sort_thr5(fname, comm):
     nranks = comm.Get_size()
     ndone = 0
     t0 = time.time()
+    #a = run('ls -las fname+("%05d.sam"%(0*nranks+rank))', capture_output=False, shell=True)
+    #s =  fname+("%05d.sam"%(0*nranks+rank))
+    #print(s)
+
     fl = [ open(fname+("%05d.sam"%(i*nranks+rank)),"w") for i in range(bins_per_rank) ]
     headers_done.acquire()  # wait until headers are read from bwamem2
     h = "".join(headers)
@@ -348,23 +352,23 @@ def allexit(comm, flg):
     if flg: os.sys.exit(1)
 
 
-def faidx(refdir, ifile):
+def faidx(refdir, ifile, output):
     g = refdir + ifile
-    print(g.split(".")[-1])
+    #print(g.split(".")[-1])
     if g.split(".")[-1] == "gz":
         print("Error: genome file should not be gzip for indexing.\nExiting...")
         return 1
     
     tic=time.time()
     a=run(f'{SAMTOOLS} faidx '+os.path.join(refdir,ifile) + ' > ' + \
-          output + 'logs/samlog.txt', capture_output=True, shell=True)
+          output + 'logs/samfaidxlog.txt', capture_output=True, shell=True)
     assert a.returncode==0,"samtools reference index creation failed"
     end=time.time()
     print("\n[Info] Reference to .fai index creation time",end-tic)
     return 0
 
 
-def input_check(refdir, inputdir, output, se_mode, ifile, rfile1, rfile2):
+def input_check(rank, comm, refdir, inputdir, output, se_mode, ifile, rfile1, rfile2):
     assert os.path.exists(refdir + ifile) == True, "missing bwa-mem2 genome"
     flg = 0
     if os.path.exists(refdir + ifile + ".bwt.2bit.64") == False: flg=1
@@ -414,19 +418,18 @@ def create_folder(fo):
     return flg
 
 
-def run(args):
+def rundown(args):
     ifile = args["refindex"]
-    rfile1 = args["reads"][0]    
-    se_mode = False
-    try:
-        rfile2 = args["reads"][1]
-    except:
-        rfile2 = ""
-        se_mode = True
-
+    rfile1 = args["read1"]
+    se_mode = True
+    rfile2 = ""
+    if args["read2"] != "" and args["read2"] != "None":
+        rfile2 = args["read2"]
+        se_mode = False
+    
     params = ""
     if args["params"] != "" and args["params"] != "None":
-        params = args["params"]
+        params = " -R " +  "\"" + args["params"] + "\""
     
     cpus = args["cpus"]
     threads = args["threads"]
@@ -436,7 +439,7 @@ def run(args):
     inputdir = args["input"] + "/"
     output = args["output"] + "/"
     tempdir = args["tempdir"]
-    if tempdir == "": tempdir = output
+    if tempdir == "" or tempdir == "None": tempdir = output
     else: tempdir = tempdir + "/"
     refdir = args["refdir"] + "/"
     #if tempdir=="": tempdir=output
@@ -509,7 +512,7 @@ def run(args):
     allexit(comm, flg)                    
 
     ##############################################################################
-    input_check(refdir, inputdir, output, se_mode, ifile, rfile1, rfile2)
+    input_check(rank, comm, refdir, inputdir, output, se_mode, ifile, rfile1, rfile2)
     ##############################################################################
     
     # chromo_dict information added
@@ -524,7 +527,7 @@ def run(args):
                 chromo_dict[chromo]= 1
             print(f'chromo_dict: {chromo_dict}')
         else:
-            print(f'Error: File "{chromo_file}" not found, resetting keep=True')
+            print(f'[Info] File "{chromo_file}" not found, resetting keep=True')
             #exit()
             keep = True                
 
@@ -540,15 +543,16 @@ def run(args):
     if not se_mode:    
         fn2 = pragzip_reader( comm, int(cpus), os.path.join(inputdir,rfile2), output, last=True )
     fn3, thr = sam_writer( comm, os.path.join(tempdir,'aln') )
+    #print("tempdir:" , tempdir, os.path.join(tempdir,'aln'))
     begin1 = time.time()
     #a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+os.path.join(refdir,ifile)+' '+fn1+' '+fn2+' > '+fn3,capture_output=True, shell=True)
     if se_mode:
-        a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+ 
-              refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' +
-              output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+        cmd = f'{BWA} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+        #print(cmd)
+        a=run(cmd, capture_output=True, shell=True)
     else:                
-        a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+
-              fn1+' '+fn2+' > '+fn3 + '  2> ' + output +
+        a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+ \
+              fn1+' '+fn2+' > '+fn3 + '  2> ' + output + \
               'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
     
     assert a.returncode==0,"bwa-mem2 Run Failed"
@@ -570,7 +574,8 @@ def run(args):
         binstr = '%05d'%(nranks*i+rank)
         #cmd+=f'{BINDIR}/applications/samtools/samtools sort --threads '+threads+' -T '+os.path.join(tempdir,'aln'+binstr+'.sorted') + ' -o '+ os.path.join(tempdir,'aln'+binstr+'.bam')+' '+ os.path.join(tempdir,'aln'+binstr+'.sam')
         cmd+=f'{SAMTOOLS} sort --threads '+threads+' -T '+tempdir+ '/aln'+binstr+ \
-            '.sorted -o '+ output +'/aln'+binstr+'.bam '+ output+'/aln'+binstr+'.sam;'        
+            '.sorted -o '+ tempdir +'/aln'+binstr+'.bam '+ tempdir+'/aln'+binstr+'.sam' + " > " + output + "/logs/logsam" + binstr + ".txt;"        
+        #print('samsort: ', cmd)
         if i%20==0:
             a = run(cmd, capture_output = True, shell = True)
             assert a.returncode==0,"samtools sort Failed"
@@ -628,15 +633,24 @@ def run(args):
     comm.barrier()
     if rank==0:
         end5=time.time()
+        print("[Info] Wrote intermediate files at ", tempdir)
         print("\n[Info] fq2bam runtime",end5-start0)
-        print("\n[Info] Starting Deepvariant execution...")
-    ##############################################################################
+        #print("\n[Info] Starting Deepvariant execution...")
+        idxname = os.path.join(output, rfile1 +".idx")
+        #print("R1: ", idxname)
+        os.system('rm ' + idxname)
+        if not se_mode:
+            idxname = os.path.join(output, rfile2 +".idx")
+            #print("R2: ", idxname)
+            os.system('rm ' + idxname)
 
+    ##############################################################################
+    return 0
 
 def main(argv):
     parser=ArgumentParser()
     parser.add_argument('--input', default="/input", help="Input data directory")
-    parser.add_argument('--tempdir',default="/tempdir",help="Intermediate data directory")
+    parser.add_argument('--tempdir',default="",help="Intermediate data directory")
     parser.add_argument('--refdir',default="/refdir",help="Reference genome directory")
     parser.add_argument('--output',default="/output", help="Output data directory")
     parser.add_argument("-i", "--refindex", help="name of refindex file")
@@ -653,7 +667,7 @@ def main(argv):
     parser.add_argument('--keep_intermediate_sam',action='store_true',help="Keep intermediate sam files.")
     parser.add_argument('--params', default='', help="parameter string to bwa-mem2 barring threads paramter")
     parser.add_argument("-p", "--outfile", help="prefix for read files")
-    parser.add_argument('-buildindexonly',action='store_true',help="It will create bwa and .fai index only. If it is done offline then disable this.")
+    parser.add_argument('--buildindexonly',action='store_true',help="It will create bwa and .fai index only. If it is done offline then disable this.")
     args = vars(parser.parse_args())
 
     if args['buildindexonly']:
@@ -662,16 +676,17 @@ def main(argv):
         refdir = args["refdir"] + "/"
         
         print("[Info] Indexing Starts", flush=True)
+        flg = faidx(refdir, ifile, output)
+        assert flg == 0, 'faidax failed.'
+
         begin = time.time()
-        a=run(f'{BWA} index '+ refdir + ifile + ' > ' + output + \
+        a=run(f'{BWA} index '+ os.path.join(refdir, ifile) + ' > ' + output + \
               '/logs/bwaindexlog.txt', capture_output=True, shell=True)
         
         end=time.time()
         print("\n[Info] Bwa Index creation time:",end-begin)
-        flg = faidx(refdir, ifile)
-        assert flg == 0, 'faidax failed.'
     else:
-        run(args)
+        rundown(args)
     
         
 if __name__ == "__main__":
