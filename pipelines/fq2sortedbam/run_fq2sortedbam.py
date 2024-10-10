@@ -25,7 +25,7 @@ def HWConfigure(sso, num_nodes):
     ncores = int(dt['Core(s) per socket'])
     nnuma = int(dt['NUMA node(s)'])
 
-    if sso == 'sso':
+    if sso:
         nsocks = 1
 
     th = 16  ## max cores per rank
@@ -45,10 +45,10 @@ def HWConfigure(sso, num_nodes):
     PPN = int(num_physical_cores_per_node / num_physical_cores_per_rank)
     CPUS = int(ncores * nthreads * nsocks / PPN - 2*nthreads)
     THREADS = CPUS
-    print(f"N={int(N)}")
-    print(f"PPN={int(PPN)}")
-    print(f"CPUS={int(CPUS)}")
-    print(f"THREADS={int(THREADS)}")
+    #print(f"N={int(N)}")
+    #print(f"PPN={int(PPN)}")
+    #print(f"CPUS={int(CPUS)}")
+    #print(f"THREADS={int(THREADS)}")
     
     threads_per_rank = num_physical_cores_per_rank * nthreads
     bits = pow(2, num_physical_cores_per_rank) - 1
@@ -65,7 +65,7 @@ def HWConfigure(sso, num_nodes):
         allbits=0
         #print("{:x}".format(mask))
     mask=mask + "]"
-    print("I_MPI_PIN_DOMAIN={}".format(mask))
+    #print("I_MPI_PIN_DOMAIN={}".format(mask))
 
     return N, PPN, CPUS, THREADS, mask
 
@@ -100,17 +100,19 @@ if __name__ == '__main__':
     parser.add_argument('--read_type',default="short",
                         help="(short/long): bwa-mem2 with short reads, mm2-fast with long reads")
     parser.add_argument('-in', '--rindex',action='store_true',help="It will index reference genome for bwa-mem2. If it is already done offline then don't use this flag.")
-    parser.add_argument('-dindex',action='store_true',help="It will create .fai index. If it is done offline then disable this.")
+    parser.add_argument('--dindex',action='store_true',help="It will create .fai index. If it is done offline then disable this.")
     parser.add_argument('--container_tool',default="docker",help="Container tool used in pipeline : Docker/Podman")
     parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
-    parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
-    parser.add_argument('--params', default='None', help="parameter string to bwa-mem2 barring threads paramter")
+    parser.add_argument('--not_keep_unmapped',action='store_true',help="Do not keep unmapped entries at the end of sam file.")
+    parser.add_argument('--params', type=str, default='@RG\\tID:RG1\\tSM:RGSN1', help="parameter string to bwa-mem2 barring threads paramter")
     parser.add_argument("-p", "--outfile", default="final", help="prefix for read files")
     parser.add_argument("--sso", action='store_true', help="prefix for read files")
     args = vars(parser.parse_args())
     
     num_nodes=1
     N, PPN, CPUS, THREADS, mask = HWConfigure(args["sso"], num_nodes)
+    print("[Info] Running {} processes per compute node, each with {} threads".format(N, THREADS))
+
     cmd="hostname > hostfile"
     a = run(cmd, capture_output=True, shell=True)
     
@@ -120,9 +122,9 @@ if __name__ == '__main__':
 
     #cmd = "export I_MPI_PIN_DOMAIN==mask" + "; mpiexec -bootstrap ssh -n " + N + "-ppn " + PPN + " -bind-to " + BINDING + "-map-by " + BINDING + " --hostfile hostfile  python -u fq2bams.py --cpus" + CPUS + " --threads " + THREADS + " --input " +  args.input + " --output " +  args.output + " --refdir " +  args.refdir " + --refindex " + args.refindex + " --read1 " + args.read1 + " --read2 " + args.read2
     cwd = os.getcwd()
-    print(cwd)
-    cmd = "export LD_PRELOAD=" + cwd + "/libmimalloc.so.2.0:$LD_PRELOAD" + \
-        "; mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
+    #print(cwd)
+    #cmd = "export LD_PRELOAD=" + cwd + "/libmimalloc.so.2.0:$LD_PRELOAD" + \
+    cmd = "mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
         " -bind-to " + BINDING + \
         " -map-by " + BINDING + \
         " --hostfile hostfile  " + \
@@ -137,7 +139,7 @@ if __name__ == '__main__':
         " --read2 " + args["read2"] + \
         " --read3 " + args["read3"] + \
         " --readi1 " + args["readi1"] + \
-        " --params " + args["params"] + \
+        " --params " + "\"" + args["params"] + "\"" + \
         " --prefix " + args["prefix"] + \
         " --suffix " + args["suffix"] + \
         " --whitelist " + args["whitelist"] + \
@@ -155,7 +157,7 @@ if __name__ == '__main__':
         cmd += " --rindex "
     if args["dindex"]:
         cmd +=" --dindex " 
-    if args["keep_unmapped"]:
+    if not args["not_keep_unmapped"]:
         cmd += " --keep_unmapped "
 
     cmd += " 2>&1 | tee " + args["output"] + "/log_fq2sortedbam.txt"        

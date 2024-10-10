@@ -433,8 +433,8 @@ def main(argv):
     parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
     parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
     parser.add_argument("-b", "--bam_size",default=9, help="bam file size in GB")
-    parser.add_argument('-in', '--rindex', default='False', help="It will build reference genome index for bwa aligner. If it is already done offline then don't use this flag.")
-    parser.add_argument('-dindex', default='False', help="It will create .fai index. If it is done offline then disable this.")
+    parser.add_argument('-in', '--rindex', action='store_true', help="It will build reference genome index for bwa aligner. If it is already done offline then don't use this flag.")
+    parser.add_argument('--dindex', action='store_true', help="It will create .fai index. If it is done offline then disable this.")
     parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
     parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
     parser.add_argument('--read_type',default="short",
@@ -450,9 +450,9 @@ def main(argv):
     read_type=args["read_type"]        
     ifile=args["refindex"]
     params= ""
-    if args["params"] != "" and args["params"]  != "None":
-        params=args["params"]
-        params=params.replace("+","-")
+    if args["params"] != "" and args["params"]  != "None" or args["params"] != None:
+        params = " -R " +  "\"" + args["params"] + "\""
+
     read1 = rfile1 = args["read1"]
     read2 = rfile2 = args["read2"]
     read3 = args["read3"]
@@ -473,6 +473,7 @@ def main(argv):
     cpus=args["cpus"]
     threads=args["threads"]    ## read prefix for R1, I1, R2 files
     rindex=args["rindex"]
+    #print('rindex: ', rindex)
     inputdir=args["input"] + "/"
     output=args["output"] + "/"
     tempdir=args["tempdir"]
@@ -511,7 +512,7 @@ def main(argv):
 
     def faidx(refdir, ifile):
         g = refdir + ifile
-        print(g.split(".")[-1])
+        #print(g.split(".")[-1])
         if g.split(".")[-1] == "gz":
             print("Error: genome file should not be gzip for indexing.\nExiting...")
             return 1
@@ -527,7 +528,7 @@ def main(argv):
 
     flg=0
     if rank == 0:
-        if dindex == 'True':
+        if dindex == True:
             flg = faidx(refdir, ifile)
 
     allexit(comm, flg)
@@ -551,7 +552,7 @@ def main(argv):
         #if prof: yappi.start()
         #file_size = os.path.getsize(folder+rfile1)
         #print("\nSize of FASTQ file:",file_size)
-        if rindex == 'True' :
+        if rindex == True :
             print("[Info] Indexing Starts", flush=True)
             begin = time.time()
             a=run(f'{BWA} index '+ refdir + ifile + ' > ' + output + \
@@ -661,9 +662,9 @@ def main(argv):
                         fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' +
                         str(rank) + '.txt',capture_output=True, shell=True)
             else:
-                a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+ 
-                      refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' +
-                      output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+                cmd=f'{BWA} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+                print('bwa cmd: ', cmd)
+                a=run(cmd, capture_output=True, shell=True)
 
         else:                
             a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+
@@ -853,13 +854,12 @@ def main(argv):
                       fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' +
                       str(rank) + '.txt',capture_output=True, shell=True)
             else:
-                a=run(f'{BWA} mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+
-                      ' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) +
-                      '.txt',capture_output=True, shell=True)
+                cmd=f'{BWA} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+                a=run(cmd, capture_output=True, shell=True)
         else:
-            a=run(f'{BWA} mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+
-                  fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) +
-                  '.txt',capture_output=True, shell=True)
+            cmd= f'{BWA} mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+ fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+            #print('bwa cmd', cmd)
+            a=run(cmd ,capture_output=True, shell=True)
             
         assert a.returncode == 0
         end1b=time.time()
@@ -911,9 +911,9 @@ def main(argv):
         infstr = bf[0]
         for i in range(1, len(bf)):
             infstr = infstr + " " + bf[i]
-        if outfile == "":
+        if outfile == "" or outfile == None or outfile == "None":
             outfile = "final_fq2bam"
-
+        #print('outfile: ',outfile)
         cmd+=f'{SAMTOOLS} cat -o ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr
         a=run(cmd,capture_output=True,shell=True)
         assert a.returncode == 0
