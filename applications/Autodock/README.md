@@ -71,14 +71,14 @@ docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_p
 ```
 This will build the image with the tag `autodock-sycl-cpu`
 ## 3. Prepare Input and Output Directories
-You need to set up input and output directories that will be mounted to the Docker container for easy access to molecular files and docking results
+Set up input and output directories that will be mounted to the Docker container for easy access to molecular files and docking results.
 
 Create the directories on your host machine:
 ```zsh
 mkdir -p  <protein_name_input>
 mkdir -p <protein_name_output>
 ```
-For example, We have provided a folder 4fev where all the necessary mapfiles,and required pdbqts are present. First copy that folder from Autodock, create a folder for output and export it in your shell environment.
+For example, We have provided a folder named `4fev`, which contains all the necessary map files and required `.pdbqt`. So create a folder to store the output.
 ```zsh
 mkdir -p 4fev_output_autodock_sycl_cpu
 ```
