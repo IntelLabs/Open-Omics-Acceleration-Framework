@@ -57,16 +57,17 @@ After successful compilation, the host binary **autodock_&lt;type&gt;_&lt;N&gt;w
 # Instructions for DockerSetup
 
 ## 1. Clone the Repository
-First, clone the repository containing Autodock:
+First, clone the repository:
 ```zsh
-git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal/tree/main/applications/Autodock
+git clone git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
+cd TransOmics.OpenOmicsInternal/applications
 ```
 
 ## 2. Build the Docker Image
 Go to the Autodock directory where the Dockerfile is located and build the Docker image:
 ```zsh
 cd Autodock/
-docker build -t autodock-sycl-cpu .
+docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t autodock-sycl-cpu .
 ```
 This will build the image with the tag `autodock-sycl-cpu`
 ## 3. Prepare Input and Output Directories
@@ -78,14 +79,11 @@ cd ..
 mkdir -p  <protein_name_input>
 mkdir -p <protein_name_output>
 ```
-For example, if your protein name is 4fev:
+For example, We have provided a folder 4fev where all the necessary mapfiles,and required pdbqts are present. First copy that folder from Autodock, create a folder for output and export it in your shell environment.
 ```zsh
-mkdir -p 4fev
+cp -r Autodock/4fev .
 mkdir -p 4fev_output_autodock_sycl_cpu
 ```
-
-Ensure your input directory (4fev in this example) contains all the necessary files required for Autodock, including the receptor (pdbqt) and ligand (pdbqt) files, along with the dependent map files.
-
 Now, export the input and output directory paths as environment variables for easy reference:
 ```zsh
 export INPUT_SYCL_CPU=$PWD/4fev
