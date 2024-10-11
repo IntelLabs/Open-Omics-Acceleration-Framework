@@ -15,10 +15,10 @@ The installation instructions, documentation and tutorials can be found on [read
 
 ## Docker Setup
 
-This repository contains a Docker setup for running AutoDock Vina version 1.2.2. The following instructions guide you through cloning the repository, building the Docker image, setting up input/output directories, and running AutoDock Vina inside the Docker container.
+This repository contains a Docker setup for running AutoDock Vina version 1.2.2. The following instructions will guide you through cloning the repository, building the Docker image, setting up input/output directories, and running AutoDock Vina inside the Docker container.
 ### 1. Clone the Repository
 
-First, clone the repository and navigate to vina folder:
+First, clone the repository and navigate to the AutoDock Vina folder:
 
 ```bash
 git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
@@ -38,7 +38,7 @@ mkdir input_local
 mkdir output_local
 ```
 ### 4. Prepare Input Files
-Add your receptor (.pdbqt), ligand (.pdbqt), and dependent map files to the `input_local` directory
+Add your receptor (`.pdbqt`), ligand (`.pdbqt`), and dependent map files to the `input_local` directory
 
 ### 5. Set Environment Variables
 Set environment variables to reference the input and output directories:
@@ -46,8 +46,8 @@ Set environment variables to reference the input and output directories:
 export INPUT_VINA=$PWD/input_local
 export OUTPUT_VINA=$PWD/output_local
 ```
-### 6. EXAMPLE
-We have given a protein 5wlo folder which contains all the necessary grid maps, protein pdbqt and ligands. Create 5wlo_output folder to store results. And then export these folders for to provide in docker volume.
+### 6. EXAMPLE: Running with Provided Data
+We have provided a folder for the protein `5wlo`, which contains all the necessary grid maps, protein PDBQT, and ligand files. Create an output folder for `5wlo` to store the results, and then export these directories for use with Docker:
 ```bash
 mkdir 5wlo_output
 export INPUT_VINA=$PWD/5wlo
@@ -55,17 +55,16 @@ export OUTPUT_VINA=$PWD/5wlo_output
 ```
 
 ### 7. Run the Docker Container
-Before running the Docker container, check if the Docker image with name `docker_vina` has been successfully generated or not:
-
+Before running the Docker container, verify that the Docker image named `docker_vina` has been successfully generated:
 ```bash
 docker images | grep docker_vina
 ```
-If the image is listed, proceed to run the Docker container and execute vina:
+If the image is listed, proceed to run the Docker container and execute  Autodock Vina:
 
 ```bash
 docker run -it -v $INPUT_VINA:/input -v $OUTPUT_VINA:/output <docker_image_name> sh -c "cd /input && vina --receptor protein.pdbqt --ligand rand-1.pdbqt --out /output/rand-1_out.pdbqt --center_x 16.459 --center_y -19.946 --center_z -5.850 --size_x 18 --size_y 18 --size_z 18 --seed 1234 --exhaustiveness 64"
 ```
-This command will run AutoDock Vina on your receptor and ligand files, placing the result in the `output_local` directory.
+This command will run AutoDock Vina on your receptor and ligand files, placing the result in the `output_local` directory. For `5wlo` protein output folder will be `5wlo_output`.
 
 ### 8. Expected Output
 
