@@ -34,7 +34,6 @@ docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_p
 ### 3. Setup Input and Output Directories
 Create the input and output directories on your local machine:
 ```bash
-cd ..
 mkdir input_local
 mkdir output_local
 ```
@@ -50,7 +49,6 @@ export OUTPUT_VINA=$PWD/output_local
 ### 6. EXAMPLE
 Copy the 5wlo folder outside AutoDock-Vina-1.2.2 folder, which has all the necessary grid maps, protein pdbqt and ligands. Create 5wlo_output folder to store results. And then export these folders for to provide in docker volume.
 ```bash
-cp -r TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2/5wlo .
 mkdir 5wlo_output
 export INPUT_VINA=$PWD/5wlo
 export OUTPUT_VINA=$PWD/5wlo_output
