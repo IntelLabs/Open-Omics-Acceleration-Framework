@@ -18,17 +18,17 @@ The installation instructions, documentation and tutorials can be found on [read
 This repository contains a Docker setup for running AutoDock Vina version 1.2.2. The following instructions guide you through cloning the repository, building the Docker image, setting up input/output directories, and running AutoDock Vina inside the Docker container.
 ### 1. Clone the Repository
 
-First, clone the repository containing AutoDock Vina  version 1.2.2:
+First, clone the repository and navigate to :
 
 ```bash
-git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal/tree/main/applications/AutoDock-Vina-1.2.2
-cd AutoDock-Vina-1.2.2
+git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
+cd TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2
 ```
 
 ### 2. Build the Docker Image
 Build the Docker image using the following command:
 ```bash
-docker build -t docker_vina .
+docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t docker_vina .
 ```
 
 ### 3. Setup Input and Output Directories
@@ -43,13 +43,21 @@ Add your receptor (.pdbqt), ligand (.pdbqt), and dependent map files to the `inp
 
 ### 5. Set Environment Variables
 Set environment variables to reference the input and output directories:
-We have provided a 5wlo folder where all the grid maps of a 5wlo protein and ligand files are present
 ```bash
+export INPUT_VINA=$PWD/input_local
+export OUTPUT_VINA=$PWD/output_local
+```
+### 6. EXAMPLE
+Copy the 5wlo folder outside AutoDock-Vina-1.2.2 folder, which has all the necessary grid maps, protein pdbqt and ligands. Create 5wlo_output folder to store results. And then export these folders for to provide in docker volume.
+```bash
+cp -r TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2/5wlo .
+mkdir 5wlo_output
 export INPUT_VINA=$PWD/5wlo
 export OUTPUT_VINA=$PWD/5wlo_output
 ```
-### 6. Run the Docker Container
-Before running the Docker container, check if the Docker image for `docker_vina` has been successfully generated:
+
+### 7. Run the Docker Container
+Before running the Docker container, check if the Docker image with name `docker_vina` has been successfully generated or not:
 
 ```bash
 docker images | grep docker_vina
@@ -61,7 +69,7 @@ docker run -it -v $INPUT_VINA:/input -v $OUTPUT_VINA:/output <image_id> sh -c "c
 ```
 This command will run AutoDock Vina on your receptor and ligand files, placing the result in the `output_local` directory.
 
-### 7. Expected Output
+### 8. Expected Output
 
 After running the above command, you should find the output file (`rand-1_out.pdbqt`) in the `output_local` directory.
 
