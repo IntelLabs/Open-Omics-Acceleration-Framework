@@ -18,7 +18,7 @@ The installation instructions, documentation and tutorials can be found on [read
 This repository contains a Docker setup for running AutoDock Vina version 1.2.2. The following instructions guide you through cloning the repository, building the Docker image, setting up input/output directories, and running AutoDock Vina inside the Docker container.
 ### 1. Clone the Repository
 
-First, clone the repository and navigate to :
+First, clone the repository and navigate to vina folder:
 
 ```bash
 git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
@@ -47,7 +47,7 @@ export INPUT_VINA=$PWD/input_local
 export OUTPUT_VINA=$PWD/output_local
 ```
 ### 6. EXAMPLE
-Copy the 5wlo folder outside AutoDock-Vina-1.2.2 folder, which has all the necessary grid maps, protein pdbqt and ligands. Create 5wlo_output folder to store results. And then export these folders for to provide in docker volume.
+We have given a protein 5wlo folder which contains all the necessary grid maps, protein pdbqt and ligands. Create 5wlo_output folder to store results. And then export these folders for to provide in docker volume.
 ```bash
 mkdir 5wlo_output
 export INPUT_VINA=$PWD/5wlo
@@ -63,7 +63,7 @@ docker images | grep docker_vina
 If the image is listed, proceed to run the Docker container and execute vina:
 
 ```bash
-docker run -it -v $INPUT_VINA:/input -v $OUTPUT_VINA:/output <image_id> sh -c "cd /input && vina --receptor protein.pdbqt --ligand rand-1.pdbqt --out /output/rand-1_out.pdbqt --center_x 16.459 --center_y -19.946 --center_z -5.850 --size_x 18 --size_y 18 --size_z 18 --seed 1234 --exhaustiveness 64"
+docker run -it -v $INPUT_VINA:/input -v $OUTPUT_VINA:/output <docker_image_name> sh -c "cd /input && vina --receptor protein.pdbqt --ligand rand-1.pdbqt --out /output/rand-1_out.pdbqt --center_x 16.459 --center_y -19.946 --center_z -5.850 --size_x 18 --size_y 18 --size_z 18 --seed 1234 --exhaustiveness 64"
 ```
 This command will run AutoDock Vina on your receptor and ligand files, placing the result in the `output_local` directory.
 
