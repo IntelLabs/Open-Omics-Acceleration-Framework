@@ -75,13 +75,11 @@ You need to set up input and output directories that will be mounted to the Dock
 
 Create the directories on your host machine:
 ```zsh
-cd ..
 mkdir -p  <protein_name_input>
 mkdir -p <protein_name_output>
 ```
 For example, We have provided a folder 4fev where all the necessary mapfiles,and required pdbqts are present. First copy that folder from Autodock, create a folder for output and export it in your shell environment.
 ```zsh
-cp -r Autodock/4fev .
 mkdir -p 4fev_output_autodock_sycl_cpu
 ```
 Now, export the input and output directory paths as environment variables for easy reference:
