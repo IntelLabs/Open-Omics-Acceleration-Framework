@@ -60,7 +60,7 @@ To get started using RFdiffusion:
 ```bash
 source setup_conda.sh
 ```
-Note: All use case scripts are available inside the examples folder.
+## Note: All use case scripts are available inside the examples folder.
 
 ## How to use Docker
 ```bash
