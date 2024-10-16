@@ -32,33 +32,38 @@ Performance optimization with bfloat16 and Intel Extension for PyTorch
 
  `--bf16` flag accelerates performance by utilizing bfloat16 precision, which enhances computational efficiency without compromising accuracy.
 
-### ESM Models
-Run bash `models.sh` to download all the required ESM models inside the bash script
-```bash
-bash models.sh
-```
+
 ### Export Directories  
 ```bash
 export INPUT=$PWD/<your input folder>                
 export OUTPUT=$PWD/<your output folder>
+export MODELS=$PWD/<your output folder>
 ```
+
+The following is an example to do the same.
 ```bash
-#examples
-mkdir -p input output
+mkdir -p input output models
 export INPUT=$PWD/input                
 export OUTPUT=$PWD/output     
+export MODELS=$PWD/models 
+```
+```bash
+chmod a+w $MODELS $OUTPUT
 ```
 
 The `input` directory must contain both FASTA_FILE and PDB_FILE for the tool to process sequence and structural data
 ### Run Commands
 In this ESM setup, the `input` directory contains files like FASTA (protein sequences) and PDB (protein structures) for different tasks such as sequence extraction and protein folding. Each file type has a specific use. For testing, follow the provided instructions or refer to the research papers for more details. 
+
+When you run the Docker command, the models will automatically be downloaded during the first run. The user will need to wait for the download to complete, but from the second run onward, the inference will run directly without downloading the models again.
+
 #### ESM-Embeddings 
 Compute embeddings for multiple protein sequences from a FASTA file in a single batch process using ESM.See [Compute embeddings in bulk from FASTA](#bulk_fasta) for detailed user guide.
 
 ```bash
 #example
 docker run -it \
-  -v $PWD/models:/checkpoints \
+  -v $MODELS:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
   esm_image:latest \
@@ -73,7 +78,7 @@ LM-Design supports fixed backbone sequence generation for known structures and r
 ```bash
 #example
 docker run -it \
-  -v $PWD/models:/checkpoints \
+  -v $MODELS:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
 	esm_image:latest  bash -c \
@@ -85,7 +90,7 @@ docker run -it \
 ```bash
 #example
 docker run -it \
-  -v $PWD/models:/checkpoints \
+  -v $MODELS:/checkpoints \
   -v $PWD/output:/output \
 	esm_image:latest  bash -c \
 	"cd examples/lm-design && python -m lm_design task=free_generation bf16=True &> /output/free_generation_log"
@@ -100,7 +105,7 @@ Inverse Folding involves generating sample protein sequences that are designed t
 ```bash
 #example
 docker run -it \
-  -v $PWD/models:/checkpoints \
+  -v $MODELS:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
   esm_image:latest \
@@ -112,7 +117,7 @@ docker run -it \
 ```bash
 #example
 docker run -it \
-  -v $PWD/models:/checkpoints \
+  -v $MODELS:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
   esm_image:latest \
@@ -124,7 +129,7 @@ docker run -it \
 ```bash
 #example
 docker run -it \
-  -v $PWD/models:/checkpoints \
+  -v $MODELS:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
   esm_image:latest \
@@ -136,7 +141,7 @@ docker run -it \
 ```bash
 #example
 docker run -it \
-  -v $PWD/models:/checkpoints \
+  -v $MODELS:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
   esm_image:latest \
@@ -150,7 +155,7 @@ ESMFold predicts protein structures from amino acid sequences using advanced mac
 ```bash
 #example
 docker run -it \
-  -v $PWD/models:/checkpoints \
+  -v $MODELS:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
   esmfold_image:latest \
