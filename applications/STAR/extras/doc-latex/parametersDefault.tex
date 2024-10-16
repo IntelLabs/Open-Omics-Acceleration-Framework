@@ -1,0 +1,1062 @@
+\optSection{Parameter Files}\label{Parameter_Files}
+\begin{optTable}
+\optName{parametersFiles}
+  \optValue{-}
+  \optLine{string: name of a user-defined parameters file, "-": none. Can only be defined on the command line.} 
+\end{optTable}
+\optSection{System}\label{System}
+\begin{optTable}
+\optName{sysShell}
+  \optValue{-}
+  \optLine{string: path to the shell binary, preferably bash, e.g. /bin/bash.} 
+\begin{optOptTable}
+  \optOpt{-}   \optOptLine{the default shell is executed, typically /bin/sh. This was reported to fail on some Ubuntu systems - then you need to specify path to bash.}
+\end{optOptTable}
+\end{optTable}
+\optSection{Run Parameters}\label{Run_Parameters}
+\begin{optTable}
+\optName{runMode}
+  \optValue{alignReads}
+  \optLine{string: type of the run.} 
+\begin{optOptTable}
+  \optOpt{alignReads}   \optOptLine{map reads}
+  \optOpt{genomeGenerate}   \optOptLine{generate genome files}
+  \optOpt{inputAlignmentsFromBAM}   \optOptLine{input alignments from BAM. Presently only works with --outWigType and --bamRemoveDuplicates options.}
+  \optOpt{liftOver}   \optOptLine{lift-over of GTF files (--sjdbGTFfile) between genome assemblies using chain file(s) from --genomeChainFiles.}
+  \optOpt{soloCellFiltering  {\textless}/path/to/raw/count/dir/{\textgreater}   {\textless}/path/to/output/prefix{\textgreater}}   \optOptLine{STARsolo cell filtering ("calling") without remapping, followed by the path to raw count directory and output (filtered) prefix}
+\end{optOptTable}
+\optName{runThreadN}
+  \optValue{1}
+  \optLine{int: number of threads to run STAR} 
+\optName{runDirPerm}
+  \optValue{User{\textunderscore}RWX}
+  \optLine{string: permissions for the directories created at the run-time.} 
+\begin{optOptTable}
+  \optOpt{User{\textunderscore}RWX}   \optOptLine{user-read/write/execute}
+  \optOpt{All{\textunderscore}RWX}   \optOptLine{all-read/write/execute (same as chmod 777)}
+\end{optOptTable}
+\optName{runRNGseed}
+  \optValue{777}
+  \optLine{int: random number generator seed.} 
+\end{optTable}
+\optSection{Genome Parameters}\label{Genome_Parameters}
+\begin{optTable}
+\optName{genomeDir}
+  \optValue{./GenomeDir/}
+  \optLine{string: path to the directory where genome files are stored (for --runMode alignReads) or will be generated (for --runMode generateGenome)} 
+\optName{genomeLoad}
+  \optValue{NoSharedMemory}
+  \optLine{string: mode of shared memory usage for the genome files. Only used with --runMode alignReads.} 
+\begin{optOptTable}
+  \optOpt{LoadAndKeep}   \optOptLine{load genome into shared and keep it in memory after run}
+  \optOpt{LoadAndRemove}   \optOptLine{load genome into shared but remove it after run}
+  \optOpt{LoadAndExit}   \optOptLine{load genome into shared memory and exit, keeping the genome in memory for future runs}
+  \optOpt{Remove}   \optOptLine{do not map anything, just remove loaded genome from memory}
+  \optOpt{NoSharedMemory}   \optOptLine{do not use shared memory, each job will have its own private copy of the genome}
+\end{optOptTable}
+\optName{genomeFastaFiles}
+  \optValue{-}
+  \optLine{string(s): path(s) to the fasta files with the genome sequences, separated by spaces. These files should be plain text FASTA files, they *cannot* be zipped.} 
+  \optLine{Required for the genome generation (--runMode genomeGenerate). Can also be used in the mapping (--runMode alignReads) to add extra (new) sequences to the genome (e.g. spike-ins).} 
+\optName{genomeChainFiles}
+  \optValue{-}
+  \optLine{string: chain files for genomic liftover. Only used with --runMode liftOver .} 
+\optName{genomeFileSizes}
+  \optValue{0}
+  \optLine{uint(s){\textgreater}0: genome files exact sizes in bytes. Typically, this should not be defined by the user.} 
+\optName{genomeTransformOutput}
+  \optValue{None}
+  \optLine{string(s):              which output to transform back to original genome} 
+\begin{optOptTable}
+  \optOpt{SAM}   \optOptLine{SAM/BAM alignments}
+  \optOpt{SJ}   \optOptLine{splice junctions (SJ.out.tab)}
+  \optOpt{Quant}   \optOptLine{quantifications (from --quantMode option)}
+  \optOpt{None}   \optOptLine{no transformation of the output}
+\end{optOptTable}
+\optName{genomeChrSetMitochondrial}
+  \optValue{chrM M MT}
+  \optLine{string(s):              names of the mitochondrial chromosomes. Presently only used for STARsolo statistics output/} 
+\end{optTable}
+\optSection{Genome Indexing Parameters - only used with --runMode genomeGenerate}\label{Genome_Indexing_Parameters_-_only_used_with_--runMode_genomeGenerate}
+\begin{optTable}
+\optName{genomeChrBinNbits}
+  \optValue{18}
+  \optLine{int: =log2(chrBin), where chrBin is the size of the bins for genome storage: each chromosome will occupy an integer number of bins. For a genome with large number of contigs, it is recommended to scale this parameter as min(18, log2[max(GenomeLength/NumberOfReferences,ReadLength)]).} 
+\optName{genomeSAindexNbases}
+  \optValue{14}
+  \optLine{int: length (bases) of the SA pre-indexing string. Typically between 10 and 15. Longer strings will use much more memory, but allow faster searches. For small genomes, the parameter --genomeSAindexNbases must be scaled down to min(14, log2(GenomeLength)/2 - 1).} 
+\optName{genomeSAsparseD}
+  \optValue{1}
+  \optLine{int{\textgreater}0: suffux array sparsity, i.e. distance between indices: use bigger numbers to decrease needed RAM at the cost of mapping speed reduction} 
+\optName{genomeSuffixLengthMax}
+  \optValue{-1}
+  \optLine{int: maximum length of the suffixes, has to be longer than read length. -1 = infinite.} 
+\optName{genomeTransformType}
+  \optValue{None}
+  \optLine{string: type of genome transformation} 
+\begin{optOptTable}
+  \optOpt{None}   \optOptLine{no transformation}
+  \optOpt{Haploid}   \optOptLine{replace reference alleles with alternative alleles from VCF file (e.g. consensus allele)}
+  \optOpt{Diploid}   \optOptLine{create two haplotypes for each chromosome listed in VCF file, for genotypes 1|2, assumes perfect phasing (e.g. personal genome)}
+\end{optOptTable}
+\optName{genomeTransformVCF}
+  \optValue{-}
+  \optLine{string: path to VCF file for genome transformation} 
+\end{optTable}
+\optSection{Splice Junctions Database}\label{Splice_Junctions_Database}
+\begin{optTable}
+\optName{sjdbFileChrStartEnd}
+  \optValue{-}
+  \optLine{string(s): path to the files with genomic coordinates (chr {\textless}tab{\textgreater} start {\textless}tab{\textgreater} end {\textless}tab{\textgreater} strand) for the splice junction introns. Multiple files can be supplied and will be concatenated.} 
+\optName{sjdbGTFfile}
+  \optValue{-}
+  \optLine{string: path to the GTF file with annotations} 
+\optName{sjdbGTFchrPrefix}
+  \optValue{-}
+  \optLine{string: prefix for chromosome names in a GTF file (e.g. 'chr' for using ENSMEBL annotations with UCSC genomes)} 
+\optName{sjdbGTFfeatureExon}
+  \optValue{exon}
+  \optLine{string: feature type in GTF file to be used as exons for building transcripts} 
+\optName{sjdbGTFtagExonParentTranscript}
+  \optValue{transcript{\textunderscore}id}
+  \optLine{string: GTF attribute name for parent transcript ID (default "transcript{\textunderscore}id" works for GTF files)} 
+\optName{sjdbGTFtagExonParentGene}
+  \optValue{gene{\textunderscore}id}
+  \optLine{string: GTF attribute name for parent gene ID (default "gene{\textunderscore}id" works for GTF files)} 
+\optName{sjdbGTFtagExonParentGeneName}
+  \optValue{gene{\textunderscore}name}
+  \optLine{string(s): GTF attribute name for parent gene name} 
+\optName{sjdbGTFtagExonParentGeneType}
+  \optValue{gene{\textunderscore}type gene{\textunderscore}biotype}
+  \optLine{string(s): GTF attribute name for parent gene type} 
+\optName{sjdbOverhang}
+  \optValue{100}
+  \optLine{int{\textgreater}0: length of the donor/acceptor sequence on each side of the junctions, ideally = (mate{\textunderscore}length - 1)} 
+\optName{sjdbScore}
+  \optValue{2}
+  \optLine{int: extra alignment score for alignments that cross database junctions} 
+\optName{sjdbInsertSave}
+  \optValue{Basic}
+  \optLine{string: which files to save when sjdb junctions are inserted on the fly at the mapping step} 
+\begin{optOptTable}
+  \optOpt{Basic}   \optOptLine{only small junction / transcript files}
+  \optOpt{All}   \optOptLine{all files including big Genome, SA and SAindex - this will create a complete genome directory}
+\end{optOptTable}
+\end{optTable}
+\optSection{Variation parameters}\label{Variation_parameters}
+\begin{optTable}
+\optName{varVCFfile}
+  \optValue{-}
+  \optLine{string: path to the VCF file that contains variation data. The 10th column should contain the genotype information, e.g. 0/1} 
+\end{optTable}
+\optSection{Input Files}\label{Input_Files}
+\begin{optTable}
+\optName{inputBAMfile}
+  \optValue{-}
+  \optLine{string: path to BAM input file, to be used with --runMode inputAlignmentsFromBAM} 
+\end{optTable}
+\optSection{Read Parameters}\label{Read_Parameters}
+\begin{optTable}
+\optName{readFilesType}
+  \optValue{Fastx}
+  \optLine{string: format of input read files} 
+\begin{optOptTable}
+  \optOpt{Fastx}   \optOptLine{FASTA or FASTQ}
+  \optOpt{SAM SE}   \optOptLine{SAM or BAM single-end reads; for BAM use --readFilesCommand samtools view}
+  \optOpt{SAM PE}   \optOptLine{SAM or BAM paired-end reads; for BAM use --readFilesCommand samtools view}
+\end{optOptTable}
+\optName{readFilesSAMattrKeep}
+  \optValue{All}
+  \optLine{string(s): for --readFilesType SAM SE/PE, which SAM tags to keep in the output BAM, e.g.: --readFilesSAMtagsKeep RG PL} 
+\begin{optOptTable}
+  \optOpt{All}   \optOptLine{keep all tags}
+  \optOpt{None}   \optOptLine{do not keep any tags}
+\end{optOptTable}
+\optName{readFilesIn}
+  \optValue{Read1 Read2}
+  \optLine{string(s): paths to files that contain input read1 (and, if needed,  read2)} 
+\optName{readFilesManifest}
+  \optValue{-}
+  \optLine{string: path to the "manifest" file with the names of read files. The manifest file should contain 3 tab-separated columns:} 
+  \optLine{paired-end reads: read1{\textunderscore}file{\textunderscore}name $tab$ read2{\textunderscore}file{\textunderscore}name $tab$ read{\textunderscore}group{\textunderscore}line.} 
+  \optLine{single-end reads: read1{\textunderscore}file{\textunderscore}name $tab$ -               $tab$ read{\textunderscore}group{\textunderscore}line.} 
+  \optLine{Spaces, but not tabs are allowed in file names.} 
+  \optLine{If read{\textunderscore}group{\textunderscore}line does not start with ID:, it can only contain one ID field, and ID: will be added to it.} 
+  \optLine{If read{\textunderscore}group{\textunderscore}line starts with ID:, it can contain several fields separated by $tab$, and all fields will be be copied verbatim into SAM @RG header line.} 
+\optName{readFilesPrefix}
+  \optValue{-}
+  \optLine{string: prefix for the read files names, i.e. it will be added in front of the strings in --readFilesIn} 
+\optName{readFilesCommand}
+  \optValue{-}
+  \optLine{string(s): command line to execute for each of the input file. This command should generate FASTA or FASTQ text and send it to stdout} 
+  \optLine{For example: zcat - to uncompress .gz files, bzcat - to uncompress .bz2 files, etc.} 
+\optName{readMapNumber}
+  \optValue{-1}
+  \optLine{int: number of reads to map from the beginning of the file} 
+  \optLine{-1: map all reads} 
+\optName{readMatesLengthsIn}
+  \optValue{NotEqual}
+  \optLine{string: Equal/NotEqual - lengths of names,sequences,qualities for both mates are the same  / not the same. NotEqual is safe in all situations.} 
+\optName{readNameSeparator}
+  \optValue{/}
+  \optLine{string(s): character(s) separating the part of the read names that will be trimmed in output (read name after space is always trimmed)} 
+\optName{readQualityScoreBase}
+  \optValue{33}
+  \optLine{int{\textgreater}=0: number to be subtracted from the ASCII code to get Phred quality score} 
+\end{optTable}
+\optSection{Read Clipping}\label{Read_Clipping}
+\begin{optTable}
+\optName{clipAdapterType}
+  \optValue{Hamming}
+  \optLine{string:                 adapter clipping type} 
+\begin{optOptTable}
+  \optOpt{Hamming}   \optOptLine{adapter clipping based on Hamming distance, with the number of mismatches controlled by --clip5pAdapterMMp}
+  \optOpt{CellRanger4}   \optOptLine{5p and 3p adapter clipping similar to CellRanger4. Utilizes Opal package by Martin Šošić: https://github.com/Martinsos/opal}
+  \optOpt{None}   \optOptLine{no adapter clipping, all other clip* parameters are disregarded}
+\end{optOptTable}
+\optName{clip3pNbases}
+  \optValue{0}
+  \optLine{int(s): number(s) of bases to clip from 3p of each mate. If one value is given, it will be assumed the same for both mates.} 
+\optName{clip3pAdapterSeq}
+  \optValue{-}
+  \optLine{string(s): adapter sequences to clip from 3p of each mate.  If one value is given, it will be assumed the same for both mates.} 
+\begin{optOptTable}
+  \optOpt{polyA}   \optOptLine{polyA sequence with the length equal to read length}
+\end{optOptTable}
+\optName{clip3pAdapterMMp}
+  \optValue{0.1}
+  \optLine{double(s): max proportion of mismatches for 3p adapter clipping for each mate.  If one value is given, it will be assumed the same for both mates.} 
+\optName{clip3pAfterAdapterNbases}
+  \optValue{0}
+  \optLine{int(s): number of bases to clip from 3p of each mate after the adapter clipping. If one value is given, it will be assumed the same for both mates.} 
+\optName{clip5pNbases}
+  \optValue{0}
+  \optLine{int(s): number(s) of bases to clip from 5p of each mate. If one value is given, it will be assumed the same for both mates.} 
+\end{optTable}
+\optSection{Limits}\label{Limits}
+\begin{optTable}
+\optName{limitGenomeGenerateRAM}
+  \optValue{31000000000}
+  \optLine{int{\textgreater}0: maximum available RAM (bytes) for genome generation} 
+\optName{limitIObufferSize}
+  \optValue{30000000 50000000}
+  \optLine{int(s){\textgreater}0: max available buffers size (bytes) for input/output, per thread} 
+\optName{limitOutSAMoneReadBytes}
+  \optValue{100000}
+  \optLine{int{\textgreater}0: max size of the SAM record (bytes) for one read. Recommended value: {\textgreater}(2*(LengthMate1+LengthMate2+100)*outFilterMultimapNmax} 
+\optName{limitOutSJoneRead}
+  \optValue{1000}
+  \optLine{int{\textgreater}0: max number of junctions for one read (including all multi-mappers)} 
+\optName{limitOutSJcollapsed}
+  \optValue{1000000}
+  \optLine{int{\textgreater}0: max number of collapsed junctions} 
+\optName{limitBAMsortRAM}
+  \optValue{0}
+  \optLine{int{\textgreater}=0: maximum available RAM (bytes) for sorting BAM. If =0, it will be set to the genome index size. 0 value can only be used with --genomeLoad NoSharedMemory option.} 
+\optName{limitSjdbInsertNsj}
+  \optValue{1000000}
+  \optLine{int{\textgreater}=0: maximum number of junctions to be inserted to the genome on the fly at the mapping stage, including those from annotations and those detected in the 1st step of the 2-pass run} 
+\optName{limitNreadsSoft}
+  \optValue{-1}
+  \optLine{int: soft limit on the number of reads} 
+\end{optTable}
+\optSection{Output: general}\label{Output:_general}
+\begin{optTable}
+\optName{outFileNamePrefix}
+  \optValue{./}
+  \optLine{string: output files name prefix (including full or relative path). Can only be defined on the command line.} 
+\optName{outTmpDir}
+  \optValue{-}
+  \optLine{string: path to a directory that will be used as temporary by STAR. All contents of this directory will be removed!} 
+\begin{optOptTable}
+  \optOpt{-}   \optOptLine{the temp directory will default to outFileNamePrefix{\textunderscore}STARtmp}
+\end{optOptTable}
+\optName{outTmpKeep}
+  \optValue{None}
+  \optLine{string: whether to keep the temporary files after STAR runs is finished} 
+\begin{optOptTable}
+  \optOpt{None}   \optOptLine{remove all temporary files}
+  \optOpt{All}   \optOptLine{keep all files}
+\end{optOptTable}
+\optName{outStd}
+  \optValue{Log}
+  \optLine{string: which output will be directed to stdout (standard out)} 
+\begin{optOptTable}
+  \optOpt{Log}   \optOptLine{log messages}
+  \optOpt{SAM}   \optOptLine{alignments in SAM format (which normally are output to Aligned.out.sam file), normal standard output will go into Log.std.out}
+  \optOpt{BAM{\textunderscore}Unsorted}   \optOptLine{alignments in BAM format, unsorted. Requires --outSAMtype BAM Unsorted}
+  \optOpt{BAM{\textunderscore}SortedByCoordinate}   \optOptLine{alignments in BAM format, sorted by coordinate. Requires --outSAMtype BAM SortedByCoordinate}
+  \optOpt{BAM{\textunderscore}Quant}   \optOptLine{alignments to transcriptome in BAM format, unsorted. Requires --quantMode TranscriptomeSAM}
+\end{optOptTable}
+\optName{outReadsUnmapped}
+  \optValue{None}
+  \optLine{string: output of unmapped and partially mapped (i.e. mapped only one mate of a paired end read) reads in separate file(s).} 
+\begin{optOptTable}
+  \optOpt{None}   \optOptLine{no output}
+  \optOpt{Fastx}   \optOptLine{output in separate fasta/fastq files, Unmapped.out.mate1/2}
+\end{optOptTable}
+\optName{outQSconversionAdd}
+  \optValue{0}
+  \optLine{int: add this number to the quality score (e.g. to convert from Illumina to Sanger, use -31)} 
+\optName{outMultimapperOrder}
+  \optValue{Old{\textunderscore}2.4}
+  \optLine{string: order of multimapping alignments in the output files} 
+\begin{optOptTable}
+  \optOpt{Old{\textunderscore}2.4}   \optOptLine{quasi-random order used before 2.5.0}
+  \optOpt{Random}   \optOptLine{random order of alignments for each multi-mapper. Read mates (pairs) are always adjacent, all alignment for each read stay together. This option will become default in the future releases.}
+\end{optOptTable}
+\end{optTable}
+\optSection{Output: SAM and BAM}\label{Output:_SAM_and_BAM}
+\begin{optTable}
+\optName{outSAMtype}
+  \optValue{SAM}
+  \optLine{strings: type of SAM/BAM output} 
+  \optLine{1st word:} 
+\begin{optOptTable}
+  \optOpt{BAM}   \optOptLine{output BAM without sorting}
+  \optOpt{SAM}   \optOptLine{output SAM without sorting}
+  \optOpt{None}   \optOptLine{no SAM/BAM output}
+\end{optOptTable}
+  \optLine{2nd, 3rd:} 
+\begin{optOptTable}
+  \optOpt{Unsorted}   \optOptLine{standard unsorted}
+  \optOpt{SortedByCoordinate}   \optOptLine{sorted by coordinate. This option will allocate extra memory for sorting which can be specified by --limitBAMsortRAM.}
+\end{optOptTable}
+\optName{outSAMmode}
+  \optValue{Full}
+  \optLine{string: mode of SAM output} 
+\begin{optOptTable}
+  \optOpt{None}   \optOptLine{no SAM output}
+  \optOpt{Full}   \optOptLine{full SAM output}
+  \optOpt{NoQS}   \optOptLine{full SAM but without quality scores}
+\end{optOptTable}
+\optName{outSAMstrandField}
+  \optValue{None}
+  \optLine{string: Cufflinks-like strand field flag} 
+\begin{optOptTable}
+  \optOpt{None}   \optOptLine{not used}
+  \optOpt{intronMotif}   \optOptLine{strand derived from the intron motif. This option changes the output alignments: reads with inconsistent and/or non-canonical introns are filtered out.}
+\end{optOptTable}
+\optName{outSAMattributes}
+  \optValue{Standard}
+  \optLine{string(s): a string of desired SAM attributes, in the order desired for the output SAM. Tags can be listed in any combination/order.} 
+  \optLine{***Presets:} 
+\begin{optOptTable}
+  \optOpt{None}   \optOptLine{no attributes}
+  \optOpt{Standard}   \optOptLine{NH HI AS nM}
+  \optOpt{All}   \optOptLine{NH HI AS nM NM MD jM jI MC ch}
+\end{optOptTable}
+  \optLine{***Alignment:} 
+\begin{optOptTable}
+  \optOpt{NH}   \optOptLine{number of loci the reads maps to: =1 for unique mappers, {\textgreater}1 for multimappers. Standard SAM tag.}
+  \optOpt{HI}   \optOptLine{multiple alignment index, starts with --outSAMattrIHstart (=1 by default). Standard SAM tag.}
+  \optOpt{AS}   \optOptLine{local alignment score, +1/-1 for matches/mismateches, score* penalties for indels and gaps. For PE reads, total score for two mates. Stadnard SAM tag.}
+  \optOpt{nM}   \optOptLine{number of mismatches. For PE reads, sum over two mates.}
+  \optOpt{NM}   \optOptLine{edit distance to the reference (number of mismatched + inserted + deleted bases) for each mate. Standard SAM tag.}
+  \optOpt{MD}   \optOptLine{string encoding mismatched and deleted reference bases (see standard SAM specifications). Standard SAM tag.}
+  \optOpt{jM}   \optOptLine{intron motifs for all junctions (i.e. N in CIGAR): 0: non-canonical; 1: GT/AG, 2: CT/AC, 3: GC/AG, 4: CT/GC, 5: AT/AC, 6: GT/AT. If splice junctions database is used, and a junction is annotated, 20 is added to its motif value.}
+  \optOpt{jI}   \optOptLine{start and end of introns for all junctions (1-based).}
+  \optOpt{XS}   \optOptLine{alignment strand according to --outSAMstrandField.}
+  \optOpt{MC}   \optOptLine{mate's CIGAR string. Standard SAM tag.}
+  \optOpt{ch}   \optOptLine{marks all segment of all chimeric alingments for --chimOutType WithinBAM output.}
+  \optOpt{cN}   \optOptLine{number of bases clipped from the read ends: 5' and 3'}
+\end{optOptTable}
+  \optLine{***Variation:} 
+\begin{optOptTable}
+  \optOpt{vA}   \optOptLine{variant allele}
+  \optOpt{vG}   \optOptLine{genomic coordinate of the variant overlapped by the read.}
+  \optOpt{vW}   \optOptLine{1 - alignment passes WASP filtering; 2,3,4,5,6,7 - alignment does not pass WASP filtering. Requires --waspOutputMode SAMtag.}
+  \optOpt{ha}   \optOptLine{haplotype (1/2) when mapping to the diploid genome. Requires genome generated with --genomeTransformType Diploid .}
+\end{optOptTable}
+  \optLine{***STARsolo:} 
+\begin{optOptTable}
+  \optOpt{CR CY UR UY}   \optOptLine{sequences and quality scores of cell barcodes and UMIs for the solo* demultiplexing.}
+  \optOpt{GX GN}   \optOptLine{gene ID and gene name for unique-gene reads.}
+  \optOpt{gx gn}   \optOptLine{gene IDs and gene names for unique- and multi-gene reads.}
+  \optOpt{CB UB}   \optOptLine{error-corrected cell barcodes and UMIs for solo* demultiplexing. Requires --outSAMtype BAM SortedByCoordinate.}
+  \optOpt{sM}   \optOptLine{assessment of CB and UMI.}
+  \optOpt{sS}   \optOptLine{sequence of the entire barcode (CB,UMI,adapter).}
+  \optOpt{sQ}   \optOptLine{quality of the entire barcode.}
+  \optOpt{sF}   \optOptLine{type of feature overlap and number of features for each alignment}
+\end{optOptTable}
+  \optLine{***Unsupported/undocumented:} 
+\begin{optOptTable}
+  \optOpt{rB}   \optOptLine{alignment block read/genomic coordinates.}
+  \optOpt{vR}   \optOptLine{read coordinate of the variant.}
+\end{optOptTable}
+\optName{outSAMattrIHstart}
+  \optValue{1}
+  \optLine{int{\textgreater}=0:                     start value for the IH attribute. 0 may be required by some downstream software, such as Cufflinks or StringTie.} 
+\optName{outSAMunmapped}
+  \optValue{None}
+  \optLine{string(s): output of unmapped reads in the SAM format} 
+  \optLine{1st word:} 
+\begin{optOptTable}
+  \optOpt{None}   \optOptLine{no output}
+  \optOpt{Within}   \optOptLine{output unmapped reads within the main SAM file (i.e. Aligned.out.sam)}
+\end{optOptTable}
+  \optLine{2nd word:} 
+\begin{optOptTable}
+  \optOpt{KeepPairs}   \optOptLine{record unmapped mate for each alignment, and, in case of unsorted output, keep it adjacent to its mapped mate. Only affects multi-mapping reads.}
+\end{optOptTable}
+\optName{outSAMorder}
+  \optValue{Paired}
+  \optLine{string: type of sorting for the SAM output} 
+  \optLine{Paired: one mate after the other for all paired alignments} 
+  \optLine{PairedKeepInputOrder: one mate after the other for all paired alignments, the order is kept the same as in the input FASTQ files} 
+\optName{outSAMprimaryFlag}
+  \optValue{OneBestScore}
+  \optLine{string: which alignments are considered primary - all others will be marked with 0x100 bit in the FLAG} 
+\begin{optOptTable}
+  \optOpt{OneBestScore}   \optOptLine{only one alignment with the best score is primary}
+  \optOpt{AllBestScore}   \optOptLine{all alignments with the best score are primary}
+\end{optOptTable}
+\optName{outSAMreadID}
+  \optValue{Standard}
+  \optLine{string: read ID record type} 
+\begin{optOptTable}
+  \optOpt{Standard}   \optOptLine{first word (until space) from the FASTx read ID line, removing /1,/2 from the end}
+  \optOpt{Number}   \optOptLine{read number (index) in the FASTx file}
+\end{optOptTable}
+\optName{outSAMmapqUnique}
+  \optValue{255}
+  \optLine{int: 0 to 255: the MAPQ value for unique mappers} 
+\optName{outSAMflagOR}
+  \optValue{0}
+  \optLine{int: 0 to 65535: sam FLAG will be bitwise OR'd with this value, i.e. FLAG=FLAG | outSAMflagOR. This is applied after all flags have been set by STAR, and after outSAMflagAND. Can be used to set specific bits that are not set otherwise.} 
+\optName{outSAMflagAND}
+  \optValue{65535}
+  \optLine{int: 0 to 65535: sam FLAG will be bitwise AND'd with this value, i.e. FLAG=FLAG {\&} outSAMflagOR. This is applied after all flags have been set by STAR, but before outSAMflagOR. Can be used to unset specific bits that are not set otherwise.} 
+\optName{outSAMattrRGline}
+  \optValue{-}
+  \optLine{string(s): SAM/BAM read group line. The first word contains the read group identifier and must start with "ID:", e.g. --outSAMattrRGline ID:xxx CN:yy "DS:z z z".} 
+  \optLine{xxx will be added as RG tag to each output alignment. Any spaces in the tag values have to be double quoted.} 
+  \optLine{Comma separated RG lines correspons to different (comma separated) input files in --readFilesIn. Commas have to be surrounded by spaces, e.g.} 
+  \optLine{--outSAMattrRGline ID:xxx , ID:zzz "DS:z z" , ID:yyy DS:yyyy} 
+\optName{outSAMheaderHD}
+  \optValue{-}
+  \optLine{strings: @HD (header) line of the SAM header} 
+\optName{outSAMheaderPG}
+  \optValue{-}
+  \optLine{strings: extra @PG (software) line of the SAM header (in addition to STAR)} 
+\optName{outSAMheaderCommentFile}
+  \optValue{-}
+  \optLine{string: path to the file with @CO (comment) lines of the SAM header} 
+\optName{outSAMfilter}
+  \optValue{None}
+  \optLine{string(s): filter the output into main SAM/BAM files} 
+\begin{optOptTable}
+  \optOpt{KeepOnlyAddedReferences}   \optOptLine{only keep the reads for which all alignments are to the extra reference sequences added with --genomeFastaFiles at the mapping stage.}
+  \optOpt{KeepAllAddedReferences}   \optOptLine{keep all alignments to the extra reference sequences added with --genomeFastaFiles at the mapping stage.}
+\end{optOptTable}
+\optName{outSAMmultNmax}
+  \optValue{-1}
+  \optLine{int: max number of multiple alignments for a read that will be output to the SAM/BAM files. Note that if this value is not equal to -1, the top scoring alignment will be output first} 
+\begin{optOptTable}
+  \optOpt{-1}   \optOptLine{all alignments (up to --outFilterMultimapNmax) will be output}
+\end{optOptTable}
+\optName{outSAMtlen}
+  \optValue{1}
+  \optLine{int: calculation method for the TLEN field in the SAM/BAM files} 
+\begin{optOptTable}
+  \optOpt{1}   \optOptLine{leftmost base of the (+)strand mate to rightmost base of the (-)mate. (+)sign for the (+)strand mate}
+  \optOpt{2}   \optOptLine{leftmost base of any mate to rightmost base of any mate. (+)sign for the mate with the leftmost base. This is different from 1 for overlapping mates with protruding ends}
+\end{optOptTable}
+\optName{outBAMcompression}
+  \optValue{1}
+  \optLine{int: -1 to 10  BAM compression level, -1=default compression (6?), 0=no compression, 10=maximum compression} 
+\optName{outBAMsortingThreadN}
+  \optValue{0}
+  \optLine{int: {\textgreater}=0: number of threads for BAM sorting. 0 will default to min(6,--runThreadN).} 
+\optName{outBAMsortingBinsN}
+  \optValue{50}
+  \optLine{int: {\textgreater}0:  number of genome bins for coordinate-sorting} 
+\end{optTable}
+\optSection{BAM processing}\label{BAM_processing}
+\begin{optTable}
+\optName{bamRemoveDuplicatesType}
+  \optValue{-}
+  \optLine{string: mark duplicates in the BAM file, for now only works with (i) sorted BAM fed with inputBAMfile, and (ii) for paired-end alignments only} 
+\begin{optOptTable}
+  \optOpt{-}   \optOptLine{no duplicate removal/marking}
+  \optOpt{UniqueIdentical}   \optOptLine{mark all multimappers, and duplicate unique mappers. The coordinates, FLAG, CIGAR must be identical}
+  \optOpt{UniqueIdenticalNotMulti}   \optOptLine{mark duplicate unique mappers but not multimappers.}
+\end{optOptTable}
+\optName{bamRemoveDuplicatesMate2basesN}
+  \optValue{0}
+  \optLine{int{\textgreater}0: number of bases from the 5' of mate 2 to use in collapsing (e.g. for RAMPAGE)} 
+\end{optTable}
+\optSection{Output Wiggle}\label{Output_Wiggle}
+\begin{optTable}
+\optName{outWigType}
+  \optValue{None}
+  \optLine{string(s): type of signal output, e.g. "bedGraph" OR "bedGraph read1{\textunderscore}5p". Requires sorted BAM: --outSAMtype BAM SortedByCoordinate .} 
+  \optLine{1st word:} 
+\begin{optOptTable}
+  \optOpt{None}   \optOptLine{no signal output}
+  \optOpt{bedGraph}   \optOptLine{bedGraph format}
+  \optOpt{wiggle}   \optOptLine{wiggle format}
+\end{optOptTable}
+  \optLine{2nd word:} 
+\begin{optOptTable}
+  \optOpt{read1{\textunderscore}5p}   \optOptLine{signal from only 5' of the 1st read, useful for CAGE/RAMPAGE etc}
+  \optOpt{read2}   \optOptLine{signal from only 2nd read}
+\end{optOptTable}
+\optName{outWigStrand}
+  \optValue{Stranded}
+  \optLine{string: strandedness of wiggle/bedGraph output} 
+\begin{optOptTable}
+  \optOpt{Stranded}   \optOptLine{separate strands, str1 and str2}
+  \optOpt{Unstranded}   \optOptLine{collapsed strands}
+\end{optOptTable}
+\optName{outWigReferencesPrefix}
+  \optValue{-}
+  \optLine{string: prefix matching reference names to include in the output wiggle file, e.g. "chr", default "-" - include all references} 
+\optName{outWigNorm}
+  \optValue{RPM}
+  \optLine{string: type of normalization for the signal} 
+\begin{optOptTable}
+  \optOpt{RPM}   \optOptLine{reads per million of mapped reads}
+  \optOpt{None}   \optOptLine{no normalization, "raw" counts}
+\end{optOptTable}
+\end{optTable}
+\optSection{Output Filtering}\label{Output_Filtering}
+\begin{optTable}
+\optName{outFilterType}
+  \optValue{Normal}
+  \optLine{string: type of filtering} 
+\begin{optOptTable}
+  \optOpt{Normal}   \optOptLine{standard filtering using only current alignment}
+  \optOpt{BySJout}   \optOptLine{keep only those reads that contain junctions that passed filtering into SJ.out.tab}
+\end{optOptTable}
+\optName{outFilterMultimapScoreRange}
+  \optValue{1}
+  \optLine{int: the score range below the maximum score for multimapping alignments} 
+\optName{outFilterMultimapNmax}
+  \optValue{10}
+  \optLine{int: maximum number of loci the read is allowed to map to. Alignments (all of them) will be output only if the read maps to no more loci than this value.} 
+  \optLine{Otherwise no alignments will be output, and the read will be counted as "mapped to too many loci" in the Log.final.out .} 
+\optName{outFilterMismatchNmax}
+  \optValue{10}
+  \optLine{int: alignment will be output only if it has no more mismatches than this value.} 
+\optName{outFilterMismatchNoverLmax}
+  \optValue{0.3}
+  \optLine{real: alignment will be output only if its ratio of mismatches to *mapped* length is less than or equal to this value.} 
+\optName{outFilterMismatchNoverReadLmax}
+  \optValue{1.0}
+  \optLine{real: alignment will be output only if its ratio of mismatches to *read* length is less than or equal to this value.} 
+\optName{outFilterScoreMin}
+  \optValue{0}
+  \optLine{int: alignment will be output only if its score is higher than or equal to this value.} 
+\optName{outFilterScoreMinOverLread}
+  \optValue{0.66}
+  \optLine{real: same as outFilterScoreMin, but normalized to read length (sum of mates' lengths for paired-end reads)} 
+\optName{outFilterMatchNmin}
+  \optValue{0}
+  \optLine{int: alignment will be output only if the number of matched bases is higher than or equal to this value.} 
+\optName{outFilterMatchNminOverLread}
+  \optValue{0.66}
+  \optLine{real: sam as outFilterMatchNmin, but normalized to the read length (sum of mates' lengths for paired-end reads).} 
+\optName{outFilterIntronMotifs}
+  \optValue{None}
+  \optLine{string: filter alignment using their motifs} 
+\begin{optOptTable}
+  \optOpt{None}   \optOptLine{no filtering}
+  \optOpt{RemoveNoncanonical}   \optOptLine{filter out alignments that contain non-canonical junctions}
+  \optOpt{RemoveNoncanonicalUnannotated}   \optOptLine{filter out alignments that contain non-canonical unannotated junctions when using annotated splice junctions database. The annotated non-canonical junctions will be kept.}
+\end{optOptTable}
+\optName{outFilterIntronStrands}
+  \optValue{RemoveInconsistentStrands}
+  \optLine{string: filter alignments} 
+\begin{optOptTable}
+  \optOpt{RemoveInconsistentStrands}   \optOptLine{remove alignments that have junctions with inconsistent strands}
+  \optOpt{None}   \optOptLine{no filtering}
+\end{optOptTable}
+\end{optTable}
+\optSection{Output splice junctions (SJ.out.tab)}\label{Output_splice_junctions_(SJ.out.tab)}
+\begin{optTable}
+\optName{outSJtype}
+  \optValue{Standard}
+  \optLine{string: type of splice junction output} 
+\begin{optOptTable}
+  \optOpt{Standard}   \optOptLine{standard SJ.out.tab output}
+  \optOpt{None}   \optOptLine{no splice junction output}
+\end{optOptTable}
+\end{optTable}
+\optSection{Output Filtering: Splice Junctions}\label{Output_Filtering:_Splice_Junctions}
+\begin{optTable}
+\optName{outSJfilterReads}
+  \optValue{All}
+  \optLine{string: which reads to consider for collapsed splice junctions output} 
+\begin{optOptTable}
+  \optOpt{All}   \optOptLine{all reads, unique- and multi-mappers}
+  \optOpt{Unique}   \optOptLine{uniquely mapping reads only}
+\end{optOptTable}
+\optName{outSJfilterOverhangMin}
+  \optValue{30 12 12 12}
+  \optLine{4 integers:    minimum overhang length for splice junctions on both sides for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif} 
+  \optLine{does not apply to annotated junctions} 
+\optName{outSJfilterCountUniqueMin}
+  \optValue{3 1 1 1}
+  \optLine{4 integers: minimum uniquely mapping read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif} 
+  \optLine{Junctions are output if one of outSJfilterCountUniqueMin OR outSJfilterCountTotalMin conditions are satisfied} 
+  \optLine{does not apply to annotated junctions} 
+\optName{outSJfilterCountTotalMin}
+  \optValue{3 1 1 1}
+  \optLine{4 integers: minimum total (multi-mapping+unique) read count per junction for: (1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif. -1 means no output for that motif} 
+  \optLine{Junctions are output if one of outSJfilterCountUniqueMin OR outSJfilterCountTotalMin conditions are satisfied} 
+  \optLine{does not apply to annotated junctions} 
+\optName{outSJfilterDistToOtherSJmin}
+  \optValue{10 0 5 10}
+  \optLine{4 integers{\textgreater}=0: minimum allowed distance to other junctions' donor/acceptor} 
+  \optLine{does not apply to annotated junctions} 
+\optName{outSJfilterIntronMaxVsReadN}
+  \optValue{50000 100000 200000}
+  \optLine{N integers{\textgreater}=0: maximum gap allowed for junctions supported by 1,2,3,,,N reads} 
+  \optLine{i.e. by default junctions supported by 1 read can have gaps {\textless}=50000b, by 2 reads: {\textless}=100000b, by 3 reads: {\textless}=200000. by {\textgreater}=4 reads any gap {\textless}=alignIntronMax} 
+  \optLine{does not apply to annotated junctions} 
+\end{optTable}
+\optSection{Scoring}\label{Scoring}
+\begin{optTable}
+\optName{scoreGap}
+  \optValue{0}
+  \optLine{int: splice junction penalty (independent on intron motif)} 
+\optName{scoreGapNoncan}
+  \optValue{-8}
+  \optLine{int: non-canonical junction penalty (in addition to scoreGap)} 
+\optName{scoreGapGCAG}
+  \optValue{-4}
+  \optLine{int: GC/AG and CT/GC junction penalty (in addition to scoreGap)} 
+\optName{scoreGapATAC}
+  \optValue{-8}
+  \optLine{int: AT/AC  and GT/AT junction penalty  (in addition to scoreGap)} 
+\optName{scoreGenomicLengthLog2scale}
+  \optValue{-0.25}
+  \optLine{int: extra score logarithmically scaled with genomic length of the alignment: scoreGenomicLengthLog2scale*log2(genomicLength)} 
+\optName{scoreDelOpen}
+  \optValue{-2}
+  \optLine{int: deletion open penalty} 
+\optName{scoreDelBase}
+  \optValue{-2}
+  \optLine{int: deletion extension penalty per base (in addition to scoreDelOpen)} 
+\optName{scoreInsOpen}
+  \optValue{-2}
+  \optLine{int: insertion open penalty} 
+\optName{scoreInsBase}
+  \optValue{-2}
+  \optLine{int: insertion extension penalty per base (in addition to scoreInsOpen)} 
+\optName{scoreStitchSJshift}
+  \optValue{1}
+  \optLine{int: maximum score reduction while searching for SJ boundaries in the stitching step} 
+\end{optTable}
+\optSection{Alignments and Seeding}\label{Alignments_and_Seeding}
+\begin{optTable}
+\optName{seedSearchStartLmax}
+  \optValue{50}
+  \optLine{int{\textgreater}0: defines the search start point through the read - the read is split into pieces no longer than this value} 
+\optName{seedSearchStartLmaxOverLread}
+  \optValue{1.0}
+  \optLine{real: seedSearchStartLmax normalized to read length (sum of mates' lengths for paired-end reads)} 
+\optName{seedSearchLmax}
+  \optValue{0}
+  \optLine{int{\textgreater}=0: defines the maximum length of the seeds, if =0 seed length is not limited} 
+\optName{seedMultimapNmax}
+  \optValue{10000}
+  \optLine{int{\textgreater}0: only pieces that map fewer than this value are utilized in the stitching procedure} 
+\optName{seedPerReadNmax}
+  \optValue{1000}
+  \optLine{int{\textgreater}0: max number of seeds per read} 
+\optName{seedPerWindowNmax}
+  \optValue{50}
+  \optLine{int{\textgreater}0: max number of seeds per window} 
+\optName{seedNoneLociPerWindow}
+  \optValue{10}
+  \optLine{int{\textgreater}0: max number of one seed loci per window} 
+\optName{seedSplitMin}
+  \optValue{12}
+  \optLine{int{\textgreater}0: min length of the seed sequences split by Ns or mate gap} 
+\optName{seedMapMin}
+  \optValue{5}
+  \optLine{int{\textgreater}0: min length of seeds to be mapped} 
+\optName{alignIntronMin}
+  \optValue{21}
+  \optLine{int: minimum intron size, genomic gap is considered intron if its length{\textgreater}=alignIntronMin, otherwise it is considered Deletion} 
+\optName{alignIntronMax}
+  \optValue{0}
+  \optLine{int: maximum intron size, if 0, max intron size will be determined by (2\^{}winBinNbits)*winAnchorDistNbins} 
+\optName{alignMatesGapMax}
+  \optValue{0}
+  \optLine{int: maximum gap between two mates, if 0, max intron gap will be determined by (2\^{}winBinNbits)*winAnchorDistNbins} 
+\optName{alignSJoverhangMin}
+  \optValue{5}
+  \optLine{int{\textgreater}0: minimum overhang (i.e. block size) for spliced alignments} 
+\optName{alignSJstitchMismatchNmax}
+  \optValue{0 -1 0 0}
+  \optLine{4*int{\textgreater}=0: maximum number of mismatches for stitching of the splice junctions (-1: no limit).} 
+  \optLine{(1) non-canonical motifs, (2) GT/AG and CT/AC motif, (3) GC/AG and CT/GC motif, (4) AT/AC and GT/AT motif.} 
+\optName{alignSJDBoverhangMin}
+  \optValue{3}
+  \optLine{int{\textgreater}0: minimum overhang (i.e. block size) for annotated (sjdb) spliced alignments} 
+\optName{alignSplicedMateMapLmin}
+  \optValue{0}
+  \optLine{int{\textgreater}0: minimum mapped length for a read mate that is spliced} 
+\optName{alignSplicedMateMapLminOverLmate}
+  \optValue{0.66}
+  \optLine{real{\textgreater}0: alignSplicedMateMapLmin normalized to mate length} 
+\optName{alignWindowsPerReadNmax}
+  \optValue{10000}
+  \optLine{int{\textgreater}0: max number of windows per read} 
+\optName{alignTranscriptsPerWindowNmax}
+  \optValue{100}
+  \optLine{int{\textgreater}0: max number of transcripts per window} 
+\optName{alignTranscriptsPerReadNmax}
+  \optValue{10000}
+  \optLine{int{\textgreater}0: max number of different alignments per read to consider} 
+\optName{alignEndsType}
+  \optValue{Local}
+  \optLine{string: type of read ends alignment} 
+\begin{optOptTable}
+  \optOpt{Local}   \optOptLine{standard local alignment with soft-clipping allowed}
+  \optOpt{EndToEnd}   \optOptLine{force end-to-end read alignment, do not soft-clip}
+  \optOpt{Extend5pOfRead1}   \optOptLine{fully extend only the 5p of the read1, all other ends: local alignment}
+  \optOpt{Extend5pOfReads12}   \optOptLine{fully extend only the 5p of the both read1 and read2, all other ends: local alignment}
+\end{optOptTable}
+\optName{alignEndsProtrude}
+  \optValue{0 ConcordantPair}
+  \optLine{int, string:        allow protrusion of alignment ends, i.e. start (end) of the +strand mate downstream of the start (end) of the -strand mate} 
+  \optLine{1st word: int: maximum number of protrusion bases allowed} 
+  \optLine{2nd word: string:} 
+\begin{optOptTable}
+  \optOpt{ConcordantPair}   \optOptLine{report alignments with non-zero protrusion as concordant pairs}
+  \optOpt{DiscordantPair}   \optOptLine{report alignments with non-zero protrusion as discordant pairs}
+\end{optOptTable}
+\optName{alignSoftClipAtReferenceEnds}
+  \optValue{Yes}
+  \optLine{string: allow the soft-clipping of the alignments past the end of the chromosomes} 
+\begin{optOptTable}
+  \optOpt{Yes}   \optOptLine{allow}
+  \optOpt{No}   \optOptLine{prohibit, useful for compatibility with Cufflinks}
+\end{optOptTable}
+\optName{alignInsertionFlush}
+  \optValue{None}
+  \optLine{string: how to flush ambiguous insertion positions} 
+\begin{optOptTable}
+  \optOpt{None}   \optOptLine{insertions are not flushed}
+  \optOpt{Right}   \optOptLine{insertions are flushed to the right}
+\end{optOptTable}
+\end{optTable}
+\optSection{Paired-End reads}\label{Paired-End_reads}
+\begin{optTable}
+\optName{peOverlapNbasesMin}
+  \optValue{0}
+  \optLine{int{\textgreater}=0:             minimum number of overlapping bases to trigger mates merging and realignment. Specify {\textgreater}0 value to switch on the "merginf of overlapping mates" algorithm.} 
+\optName{peOverlapMMp}
+  \optValue{0.01}
+  \optLine{real, {\textgreater}=0 {\&} {\textless}1:     maximum proportion of mismatched bases in the overlap area} 
+\end{optTable}
+\optSection{Windows, Anchors, Binning}\label{Windows,_Anchors,_Binning}
+\begin{optTable}
+\optName{winAnchorMultimapNmax}
+  \optValue{50}
+  \optLine{int{\textgreater}0: max number of loci anchors are allowed to map to} 
+\optName{winBinNbits}
+  \optValue{16}
+  \optLine{int{\textgreater}0: =log2(winBin), where winBin is the size of the bin for the windows/clustering, each window will occupy an integer number of bins.} 
+\optName{winAnchorDistNbins}
+  \optValue{9}
+  \optLine{int{\textgreater}0: max number of bins between two anchors that allows aggregation of anchors into one window} 
+\optName{winFlankNbins}
+  \optValue{4}
+  \optLine{int{\textgreater}0: log2(winFlank), where win Flank is the size of the left and right flanking regions for each window} 
+\optName{winReadCoverageRelativeMin}
+  \optValue{0.5}
+  \optLine{real{\textgreater}=0: minimum relative coverage of the read sequence by the seeds in a window, for STARlong algorithm only.} 
+\optName{winReadCoverageBasesMin}
+  \optValue{0}
+  \optLine{int{\textgreater}0: minimum number of bases covered by the seeds in a window , for STARlong algorithm only.} 
+\end{optTable}
+\optSection{Chimeric Alignments}\label{Chimeric_Alignments}
+\begin{optTable}
+\optName{chimOutType}
+  \optValue{Junctions}
+  \optLine{string(s): type of chimeric output} 
+\begin{optOptTable}
+  \optOpt{Junctions}   \optOptLine{Chimeric.out.junction}
+  \optOpt{SeparateSAMold}   \optOptLine{output old SAM into separate Chimeric.out.sam file}
+  \optOpt{WithinBAM}   \optOptLine{output into main aligned BAM files (Aligned.*.bam)}
+  \optOpt{WithinBAM HardClip}   \optOptLine{(default) hard-clipping in the CIGAR for supplemental chimeric alignments (default if no 2nd word is present)}
+  \optOpt{WithinBAM SoftClip}   \optOptLine{soft-clipping in the CIGAR for supplemental chimeric alignments}
+\end{optOptTable}
+\optName{chimSegmentMin}
+  \optValue{0}
+  \optLine{int{\textgreater}=0: minimum length of chimeric segment length, if ==0, no chimeric output} 
+\optName{chimScoreMin}
+  \optValue{0}
+  \optLine{int{\textgreater}=0: minimum total (summed) score of the chimeric segments} 
+\optName{chimScoreDropMax}
+  \optValue{20}
+  \optLine{int{\textgreater}=0: max drop (difference) of chimeric score (the sum of scores of all chimeric segments) from the read length} 
+\optName{chimScoreSeparation}
+  \optValue{10}
+  \optLine{int{\textgreater}=0: minimum difference (separation) between the best chimeric score and the next one} 
+\optName{chimScoreJunctionNonGTAG}
+  \optValue{-1}
+  \optLine{int: penalty for a non-GT/AG chimeric junction} 
+\optName{chimJunctionOverhangMin}
+  \optValue{20}
+  \optLine{int{\textgreater}=0: minimum overhang for a chimeric junction} 
+\optName{chimSegmentReadGapMax}
+  \optValue{0}
+  \optLine{int{\textgreater}=0: maximum gap in the read sequence between chimeric segments} 
+\optName{chimFilter}
+  \optValue{banGenomicN}
+  \optLine{string(s): different filters for chimeric alignments} 
+\begin{optOptTable}
+  \optOpt{None}   \optOptLine{no filtering}
+  \optOpt{banGenomicN}   \optOptLine{Ns are not allowed in the genome sequence around the chimeric junction}
+\end{optOptTable}
+\optName{chimMainSegmentMultNmax}
+  \optValue{10}
+  \optLine{int{\textgreater}=1: maximum number of multi-alignments for the main chimeric segment. =1 will prohibit multimapping main segments.} 
+\optName{chimMultimapNmax}
+  \optValue{0}
+  \optLine{int{\textgreater}=0: maximum number of chimeric multi-alignments} 
+\begin{optOptTable}
+  \optOpt{0}   \optOptLine{use the old scheme for chimeric detection which only considered unique alignments}
+\end{optOptTable}
+\optName{chimMultimapScoreRange}
+  \optValue{1}
+  \optLine{int{\textgreater}=0: the score range for multi-mapping chimeras below the best chimeric score. Only works with --chimMultimapNmax {\textgreater} 1} 
+\optName{chimNonchimScoreDropMin}
+  \optValue{20}
+  \optLine{int{\textgreater}=0: to trigger chimeric detection, the drop in the best non-chimeric alignment score with respect to the read length has to be greater than this value} 
+\optName{chimOutJunctionFormat}
+  \optValue{0}
+  \optLine{int: formatting type for the Chimeric.out.junction file} 
+\begin{optOptTable}
+  \optOpt{0}   \optOptLine{no comment lines/headers}
+  \optOpt{1}   \optOptLine{comment lines at the end of the file: command line and Nreads: total, unique/multi-mapping}
+\end{optOptTable}
+\end{optTable}
+\optSection{Quantification of Annotations}\label{Quantification_of_Annotations}
+\begin{optTable}
+\optName{quantMode}
+  \optValue{-}
+  \optLine{string(s): types of quantification requested} 
+\begin{optOptTable}
+  \optOpt{-}   \optOptLine{none}
+  \optOpt{TranscriptomeSAM}   \optOptLine{output SAM/BAM alignments to transcriptome into a separate file}
+  \optOpt{GeneCounts}   \optOptLine{count reads per gene}
+\end{optOptTable}
+\optName{quantTranscriptomeBAMcompression}
+  \optValue{1}
+  \optLine{int: -2 to 10  transcriptome BAM compression level} 
+\begin{optOptTable}
+  \optOpt{-2}   \optOptLine{no BAM output}
+  \optOpt{-1}   \optOptLine{default compression (6?)}
+  \optOpt{0}   \optOptLine{no compression}
+  \optOpt{10}   \optOptLine{maximum compression}
+\end{optOptTable}
+\optName{quantTranscriptomeSAMoutput}
+  \optValue{BanSingleEnd{\textunderscore}BanIndels{\textunderscore}ExtendSoftclip}
+  \optLine{string: alignment filtering for TranscriptomeSAM output} 
+\begin{optOptTable}
+  \optOpt{BanSingleEnd{\textunderscore}BanIndels{\textunderscore}ExtendSoftclip}   \optOptLine{prohibit indels and single-end alignments, extend softclips - compatible with RSEM}
+  \optOpt{BanSingleEnd}   \optOptLine{prohibit single-end alignments, allow indels and softclips}
+  \optOpt{BanSingleEnd{\textunderscore}ExtendSoftclip}   \optOptLine{prohibit single-end alignments, extend softclips, allow indels}
+\end{optOptTable}
+\end{optTable}
+\optSection{2-pass Mapping}\label{2-pass_Mapping}
+\begin{optTable}
+\optName{twopassMode}
+  \optValue{None}
+  \optLine{string: 2-pass mapping mode.} 
+\begin{optOptTable}
+  \optOpt{None}   \optOptLine{1-pass mapping}
+  \optOpt{Basic}   \optOptLine{basic 2-pass mapping, with all 1st pass junctions inserted into the genome indices on the fly}
+\end{optOptTable}
+\optName{twopass1readsN}
+  \optValue{-1}
+  \optLine{int: number of reads to process for the 1st step. Use very large number (or default -1) to map all reads in the first step.} 
+\end{optTable}
+\optSection{WASP parameters}\label{WASP_parameters}
+\begin{optTable}
+\optName{waspOutputMode}
+  \optValue{None}
+  \optLine{string: WASP allele-specific output type. This is re-implementation of the original WASP mappability filtering by Bryce van de Geijn, Graham McVicker, Yoav Gilad {\&} Jonathan K Pritchard. Please cite the original WASP paper: Nature Methods 12, 1061–1063 (2015), https://www.nature.com/articles/nmeth.3582 .} 
+\begin{optOptTable}
+  \optOpt{SAMtag}   \optOptLine{add WASP tags to the alignments that pass WASP filtering}
+\end{optOptTable}
+\end{optTable}
+\optSection{STARsolo (single cell RNA-seq) parameters}\label{STARsolo_(single_cell_RNA-seq)_parameters}
+\begin{optTable}
+\optName{soloType}
+  \optValue{None}
+  \optLine{string(s): type of single-cell RNA-seq} 
+\begin{optOptTable}
+  \optOpt{CB{\textunderscore}UMI{\textunderscore}Simple}   \optOptLine{(a.k.a. Droplet) one UMI and one Cell Barcode of fixed length in read2, e.g. Drop-seq and 10X Chromium.}
+  \optOpt{CB{\textunderscore}UMI{\textunderscore}Complex}   \optOptLine{multiple Cell Barcodes of varying length, one UMI of fixed length and one adapter sequence of fixed length are allowed in read2 only (e.g. inDrop, ddSeq).}
+  \optOpt{CB{\textunderscore}samTagOut}   \optOptLine{output Cell Barcode as CR and/or CB SAm tag. No UMI counting. --readFilesIn cDNA{\textunderscore}read1 [cDNA{\textunderscore}read2 if paired-end] CellBarcode{\textunderscore}read . Requires --outSAMtype BAM Unsorted [and/or SortedByCoordinate]}
+  \optOpt{SmartSeq}   \optOptLine{Smart-seq: each cell in a separate FASTQ (paired- or single-end), barcodes are corresponding read-groups, no UMI sequences, alignments deduplicated according to alignment start and end (after extending soft-clipped bases)}
+\end{optOptTable}
+\optName{soloCBtype}
+  \optValue{Sequence}
+  \optLine{string: cell barcode type} 
+  \optLine{Sequence: cell barcode is a sequence (standard option)} 
+  \optLine{String: cell barcode is an arbitrary string} 
+\optName{soloCBwhitelist}
+  \optValue{-}
+  \optLine{string(s): file(s) with whitelist(s) of cell barcodes. Only --soloType CB{\textunderscore}UMI{\textunderscore}Complex allows more than one whitelist file.} 
+\begin{optOptTable}
+  \optOpt{None}   \optOptLine{no whitelist: all cell barcodes are allowed}
+\end{optOptTable}
+\optName{soloCBstart}
+  \optValue{1}
+  \optLine{int{\textgreater}0: cell barcode start base} 
+\optName{soloCBlen}
+  \optValue{16}
+  \optLine{int{\textgreater}0: cell barcode length} 
+\optName{soloUMIstart}
+  \optValue{17}
+  \optLine{int{\textgreater}0: UMI start base} 
+\optName{soloUMIlen}
+  \optValue{10}
+  \optLine{int{\textgreater}0: UMI length} 
+\optName{soloBarcodeReadLength}
+  \optValue{1}
+  \optLine{int: length of the barcode read} 
+\begin{optOptTable}
+  \optOpt{1}   \optOptLine{equal to sum of soloCBlen+soloUMIlen}
+  \optOpt{0}   \optOptLine{not defined, do not check}
+\end{optOptTable}
+\optName{soloBarcodeMate}
+  \optValue{0}
+  \optLine{int: identifies which read mate contains the barcode (CB+UMI) sequence} 
+\begin{optOptTable}
+  \optOpt{0}   \optOptLine{barcode sequence is on separate read, which should always be the last file in the --readFilesIn listed}
+  \optOpt{1}   \optOptLine{barcode sequence is a part of mate 1}
+  \optOpt{2}   \optOptLine{barcode sequence is a part of mate 2}
+\end{optOptTable}
+\optName{soloCBposition}
+  \optValue{-}
+  \optLine{strings(s):             position of Cell Barcode(s) on the barcode read.} 
+  \optLine{Presently only works with --soloType CB{\textunderscore}UMI{\textunderscore}Complex, and barcodes are assumed to be on Read2.} 
+  \optLine{Format for each barcode: startAnchor{\textunderscore}startPosition{\textunderscore}endAnchor{\textunderscore}endPosition} 
+  \optLine{start(end)Anchor defines the Anchor Base for the CB: 0: read start; 1: read end; 2: adapter start; 3: adapter end} 
+  \optLine{start(end)Position is the 0-based position with of the CB start(end) with respect to the Anchor Base} 
+  \optLine{String for different barcodes are separated by space.} 
+  \optLine{Example: inDrop (Zilionis et al, Nat. Protocols, 2017):} 
+  \optLine{--soloCBposition  0{\textunderscore}0{\textunderscore}2{\textunderscore}-1  3{\textunderscore}1{\textunderscore}3{\textunderscore}8} 
+\optName{soloUMIposition}
+  \optValue{-}
+  \optLine{string:                  position of the UMI on the barcode read, same as soloCBposition} 
+  \optLine{Example: inDrop (Zilionis et al, Nat. Protocols, 2017):} 
+  \optLine{--soloCBposition  3{\textunderscore}9{\textunderscore}3{\textunderscore}14} 
+\optName{soloAdapterSequence}
+  \optValue{-}
+  \optLine{string:                 adapter sequence to anchor barcodes. Only one adapter sequence is allowed.} 
+\optName{soloAdapterMismatchesNmax}
+  \optValue{1}
+  \optLine{int{\textgreater}0:                  maximum number of mismatches allowed in adapter sequence.} 
+\optName{soloCBmatchWLtype}
+  \optValue{1MM{\textunderscore}multi}
+  \optLine{string:                 matching the Cell Barcodes to the WhiteList} 
+\begin{optOptTable}
+  \optOpt{Exact}   \optOptLine{only exact matches allowed}
+  \optOpt{1MM}   \optOptLine{only one match in whitelist with 1 mismatched base allowed. Allowed CBs have to have at least one read with exact match.}
+  \optOpt{1MM{\textunderscore}multi}   \optOptLine{multiple matches in whitelist with 1 mismatched base allowed, posterior probability calculation is used choose one of the matches.}
+\end{optOptTable}
+  \optLine{Allowed CBs have to have at least one read with exact match. This option matches best with CellRanger 2.2.0} 
+\begin{optOptTable}
+  \optOpt{1MM{\textunderscore}multi{\textunderscore}pseudocounts}   \optOptLine{same as 1MM{\textunderscore}Multi, but pseudocounts of 1 are added to all whitelist barcodes.}
+  \optOpt{1MM{\textunderscore}multi{\textunderscore}Nbase{\textunderscore}pseudocounts}   \optOptLine{same as 1MM{\textunderscore}multi{\textunderscore}pseudocounts, multimatching to WL is allowed for CBs with N-bases. This option matches best with CellRanger {\textgreater}= 3.0.0}
+  \optOpt{EditDist{\textunderscore}2}   \optOptLine{allow up to edit distance of 3 fpr each of the barcodes. May include one deletion + one insertion. Only works with --soloType CB{\textunderscore}UMI{\textunderscore}Complex. Matches to multiple passlist barcdoes are not allowed. Similar to ParseBio Split-seq pipeline.}
+\end{optOptTable}
+\optName{soloInputSAMattrBarcodeSeq}
+  \optValue{-}
+  \optLine{string(s):              when inputting reads from a SAM file (--readsFileType SAM SE/PE), these SAM attributes mark the barcode sequence (in proper order).} 
+  \optLine{For instance, for 10X CellRanger or STARsolo BAMs, use --soloInputSAMattrBarcodeSeq CR UR .} 
+  \optLine{This parameter is required when running STARsolo with input from SAM. } 
+\optName{soloInputSAMattrBarcodeQual}
+  \optValue{-}
+  \optLine{string(s):              when inputting reads from a SAM file (--readsFileType SAM SE/PE), these SAM attributes mark the barcode qualities (in proper order).} 
+  \optLine{For instance, for 10X CellRanger or STARsolo BAMs, use --soloInputSAMattrBarcodeQual CY UY .} 
+  \optLine{If this parameter is '-' (default), the quality 'H' will be assigned to all bases.} 
+\optName{soloStrand}
+  \optValue{Forward}
+  \optLine{string: strandedness of the solo libraries:} 
+\begin{optOptTable}
+  \optOpt{Unstranded}   \optOptLine{no strand information}
+  \optOpt{Forward}   \optOptLine{read strand same as the original RNA molecule}
+  \optOpt{Reverse}   \optOptLine{read strand opposite to the original RNA molecule}
+\end{optOptTable}
+\optName{soloFeatures}
+  \optValue{Gene}
+  \optLine{string(s): genomic features for which the UMI counts per Cell Barcode are collected} 
+\begin{optOptTable}
+  \optOpt{Gene}   \optOptLine{genes: reads match the gene transcript}
+  \optOpt{SJ}   \optOptLine{splice junctions: reported in SJ.out.tab}
+  \optOpt{GeneFull}   \optOptLine{full gene (pre-mRNA): count all reads overlapping genes' exons and introns}
+  \optOpt{GeneFull{\textunderscore}ExonOverIntron}   \optOptLine{full gene (pre-mRNA): count all reads overlapping genes' exons and introns: prioritize 100{\%} overlap with exons}
+  \optOpt{GeneFull{\textunderscore}Ex50pAS}   \optOptLine{full gene (pre-RNA): count all reads overlapping genes' exons and introns: prioritize {\textgreater}50{\%} overlap with exons. Do not count reads with 100{\%} exonic overlap in the antisense direction.}
+\end{optOptTable}
+\optName{soloMultiMappers}
+  \optValue{Unique}
+  \optLine{string(s): counting method for reads mapping to multiple genes           } 
+\begin{optOptTable}
+  \optOpt{Unique}   \optOptLine{count only reads that map to unique genes}
+  \optOpt{Uniform}   \optOptLine{uniformly distribute multi-genic UMIs to all genes}
+  \optOpt{Rescue}   \optOptLine{distribute UMIs proportionally to unique+uniform counts (~ first iteration of EM)}
+  \optOpt{PropUnique}   \optOptLine{distribute UMIs proportionally to unique mappers, if present, and uniformly if not.}
+  \optOpt{EM}   \optOptLine{multi-gene UMIs are distributed using Expectation Maximization algorithm}
+\end{optOptTable}
+\optName{soloUMIdedup}
+  \optValue{1MM{\textunderscore}All}
+  \optLine{string(s):              type of UMI deduplication (collapsing) algorithm} 
+\begin{optOptTable}
+  \optOpt{1MM{\textunderscore}All}   \optOptLine{all UMIs with 1 mismatch distance to each other are collapsed (i.e. counted once).}
+  \optOpt{1MM{\textunderscore}Directional{\textunderscore}UMItools}   \optOptLine{follows the "directional" method from the UMI-tools by Smith, Heger and Sudbery (Genome Research 2017).}
+  \optOpt{1MM{\textunderscore}Directional}   \optOptLine{same as 1MM{\textunderscore}Directional{\textunderscore}UMItools, but with more stringent criteria for duplicate UMIs}
+  \optOpt{Exact}   \optOptLine{only exactly matching UMIs are collapsed.}
+  \optOpt{NoDedup}   \optOptLine{no deduplication of UMIs, count all reads.}
+  \optOpt{1MM{\textunderscore}CR}   \optOptLine{CellRanger2-4 algorithm for 1MM UMI collapsing.}
+\end{optOptTable}
+\optName{soloUMIfiltering}
+  \optValue{-}
+  \optLine{string(s):              type of UMI filtering (for reads uniquely mapping to genes)} 
+\begin{optOptTable}
+  \optOpt{-}   \optOptLine{basic filtering: remove UMIs with N and homopolymers (similar to CellRanger 2.2.0).}
+  \optOpt{MultiGeneUMI}   \optOptLine{basic + remove lower-count UMIs that map to more than one gene.}
+  \optOpt{MultiGeneUMI{\textunderscore}All}   \optOptLine{basic + remove all UMIs that map to more than one gene.}
+  \optOpt{MultiGeneUMI{\textunderscore}CR}   \optOptLine{basic + remove lower-count UMIs that map to more than one gene, matching CellRanger {\textgreater} 3.0.0 .}
+\end{optOptTable}
+  \optLine{Only works with --soloUMIdedup 1MM{\textunderscore}CR} 
+\optName{soloOutFileNames}
+  \optValue{Solo.out/ features.tsv barcodes.tsv matrix.mtx}
+  \optLine{string(s):              file names for STARsolo output:} 
+  \optLine{file{\textunderscore}name{\textunderscore}prefix   gene{\textunderscore}names   barcode{\textunderscore}sequences   cell{\textunderscore}feature{\textunderscore}count{\textunderscore}matrix} 
+\optName{soloCellFilter}
+  \optValue{CellRanger2.2 3000 0.99 10}
+  \optLine{string(s):              cell filtering type and parameters} 
+\begin{optOptTable}
+  \optOpt{None}   \optOptLine{do not output filtered cells}
+  \optOpt{TopCells}   \optOptLine{only report top cells by UMI count, followed by the exact number of cells}
+  \optOpt{CellRanger2.2}   \optOptLine{simple filtering of CellRanger 2.2.}
+\end{optOptTable}
+  \optLine{Can be followed by numbers: number of expected cells, robust maximum percentile for UMI count, maximum to minimum ratio for UMI count} 
+  \optLine{The harcoded values are from CellRanger: nExpectedCells=3000;  maxPercentile=0.99;  maxMinRatio=10} 
+\begin{optOptTable}
+  \optOpt{EmptyDrops{\textunderscore}CR}   \optOptLine{EmptyDrops filtering in CellRanger flavor. Please cite the original EmptyDrops paper: A.T.L Lun et al, Genome Biology, 20, 63 (2019): https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1662-y}
+\end{optOptTable}
+  \optLine{Can be followed by 10 numeric parameters:  nExpectedCells   maxPercentile   maxMinRatio   indMin   indMax   umiMin   umiMinFracMedian   candMaxN   FDR   simN } 
+  \optLine{The harcoded values are from CellRanger:             3000            0.99            10    45000    90000      500               0.01      20000  0.01  10000} 
+\optName{soloOutFormatFeaturesGeneField3}
+  \optValue{"Gene Expression"}
+  \optLine{string(s):                field 3 in the Gene features.tsv file. If "-", then no 3rd field is output.} 
+\optName{soloCellReadStats}
+  \optValue{None}
+  \optLine{string:                 Output reads statistics for each CB} 
+\begin{optOptTable}
+  \optOpt{Standard}   \optOptLine{standard output}
+\end{optOptTable}
+\end{optTable}

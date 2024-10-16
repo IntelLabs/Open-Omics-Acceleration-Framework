@@ -1,0 +1,24 @@
+*.o
+Depend.list
+
+.project
+.kdev4/
+source.kdev4
+
+
+# Don't track intermediary files from building the manual
+extras/doc-latex/*.aux
+extras/doc-latex/*.fdb_latexmk
+extras/doc-latex/*.fls
+extras/doc-latex/*.log
+extras/doc-latex/*.out
+extras/doc-latex/*.gz
+extras/doc-latex/*.toc
+
+# Don't track the STAR binary once it has being built
+source/STAR
+.DS_Store
+*.xcworkspacedata
+*.pbxproj
+*.plist
+*.xcuserstate
