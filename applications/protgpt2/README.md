@@ -58,7 +58,7 @@ docker run -it -v $OUTPUT_FOLDER:/app protgpt2:latest python protgpt2.py  --mode
 
 ```bash
 export OUTPUT_FOLDER=$PWD
-
+chmod a+w $OUTPUT_FOLDER
 docker run -it -v $OUTPUT_FOLDER:/data protgpt2:latest python protgpt2.py  --model_dir ./model_dir --max_length 100 --do_sample True --top_k 950 --repetition_penalty 1.2 --num_return_sequences 10 --eos_token_id 0  --dtype float32 --iterations 5 --output_file /data/output_seq.txt
 ```
 
