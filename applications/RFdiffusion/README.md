@@ -89,6 +89,8 @@ mkdir -p output
 export OUTPUT_DIR=$PWD/output
 export INPUT_FILE=$PWD/examples/input_pdbs/5TPN.pdb
 
+chmod a+w $OUTPUT_DIR
+
 docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/design_motifscaffolding inference.input_pdb=/data 'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=1 inference.precision=float32
 ```
 
