@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libboost-all-dev \
     swig \
+    vim \
     gcc-8 \
     g++-8 \
     numactl \
