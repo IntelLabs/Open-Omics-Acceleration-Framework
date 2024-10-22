@@ -47,8 +47,8 @@ export INPUT_VINA=$PWD/input_local
 export OUTPUT_VINA=$PWD/output_local
 ```
 ### 6. EXAMPLE: Running with Provided Data
-For a sample run, use the provided protein folder for 5wlo:
-Create an output directory:
+We’ve provided a sample protein, 5wlo, with all the necessary files (receptor, ligand, grid maps).
+Create an output directory for storing results specific to 5wlo:
 ```bash
 mkdir 5wlo_output
 ```
