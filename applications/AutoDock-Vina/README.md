@@ -22,7 +22,7 @@ First, clone the repository and navigate to the AutoDock Vina folder:
 
 ```bash
 git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
-cd TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2
+cd TransOmics.OpenOmicsInternal/applications/AutoDock-Vina
 ```
 
 ### 2. Build the Docker Image
