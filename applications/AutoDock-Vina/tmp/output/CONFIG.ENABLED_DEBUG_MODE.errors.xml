@@ -1,0 +1,27 @@
+<error>
+<domain>OTHER</domain>
+<lang>Python 3</lang>
+<checker>CONFIG.ENABLED_DEBUG_MODE</checker>
+<type>debug_mode</type>
+<subtype>debug_mode_enabled_django</subtype>
+<file>/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2/example/autodock_scripts/dry.py</file>
+<function>!dry.py!%SCRIPT</function>
+<functionMergeName>!dry.py!%SCRIPT</functionMergeName>
+<ordered>true</ordered>
+<event>
+<main>true</main>
+<tag>debug_mode</tag>
+<description>{CovLStrv2{{t{The debug mode is enabled.}}}}</description>
+<line>948</line>
+<column>3</column>
+</event>
+<event>
+<remediation>true</remediation>
+<tag>remediation</tag>
+<description>{CovLStrv2{{t{Disable the debug mode in the production code.}}}}</description>
+<line>948</line>
+<column>3</column>
+</event>
+<extra></extra>
+<subcategory>debug_mode_enabled_django</subcategory>
+</error>

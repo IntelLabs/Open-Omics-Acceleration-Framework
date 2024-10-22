@@ -1,0 +1,27 @@
+<error>
+<domain>OTHER</domain>
+<lang>Python 3</lang>
+<checker>IDENTICAL_BRANCHES</checker>
+<type>identical_branches</type>
+<subtype>if</subtype>
+<file>/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2/example/autodock_scripts/wet.py</file>
+<function>!wet.py!closest</function>
+<functionMergeName>!wet.py!closest</functionMergeName>
+<score>100</score>
+<ordered>false</ordered>
+<event>
+<tag>else_branch</tag>
+<description>{CovLStrv2{{t{The else branch, identical to the then branch.}}}}</description>
+<line>94</line>
+<column>9</column>
+</event>
+<event>
+<main>true</main>
+<tag>identical_branches</tag>
+<description>{CovLStrv2{{t{The same code is executed regardless of whether {0} is true, because the 'then' and 'else' branches are identical. Should one of the branches be modified, or the entire 'if' statement replaced?}{{code{best_candidate != &quot;&quot;}}}}}}</description>
+<line>91</line>
+<column>5</column>
+</event>
+<extra></extra>
+<subcategory>if</subcategory>
+</error>

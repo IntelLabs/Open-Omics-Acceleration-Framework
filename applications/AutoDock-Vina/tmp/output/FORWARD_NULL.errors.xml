@@ -1,0 +1,54 @@
+<error>
+<domain>OTHER</domain>
+<lang>Python 3</lang>
+<checker>FORWARD_NULL</checker>
+<type>null_pointer_dereference_exception</type>
+<subtype>constant</subtype>
+<file>/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2/example/autodock_scripts/mapwater.py</file>
+<function>!mapwater.py!coop_blend</function>
+<functionMergeName>!mapwater.py!coop_blend</functionMergeName>
+<score>100</score>
+<ordered>true</ordered>
+<event>
+<tag>assign_undefined</tag>
+<description>{CovLStrv2{{t{Assigning: {0} {1}= {2}.}{{code{first}}}{}{{code{undefined}}}}}}</description>
+<line>367</line>
+<column>1</column>
+</event>
+<event>
+<main>true</main>
+<tag>invalid_operation</tag>
+<description>{CovLStrv2{{t{Invalid operation on null-like value {0}.}{{code{first}}}}}}</description>
+<line>373</line>
+<column>5</column>
+</event>
+<extra>first</extra>
+<subcategory>bad_null_value_use</subcategory>
+</error>
+<error>
+<domain>OTHER</domain>
+<lang>Python 3</lang>
+<checker>FORWARD_NULL</checker>
+<type>null_pointer_dereference_exception</type>
+<subtype>constant</subtype>
+<file>/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2/example/autodock_scripts/mapwater.py</file>
+<function>!mapwater.py!coop_blend</function>
+<functionMergeName>!mapwater.py!coop_blend</functionMergeName>
+<score>100</score>
+<ordered>true</ordered>
+<event>
+<tag>assign_undefined</tag>
+<description>{CovLStrv2{{t{Assigning: {0} {1}= {2}.}{{code{second}}}{}{{code{undefined}}}}}}</description>
+<line>367</line>
+<column>1</column>
+</event>
+<event>
+<main>true</main>
+<tag>invalid_operation</tag>
+<description>{CovLStrv2{{t{Invalid operation on null-like value {0}.}{{code{second}}}}}}</description>
+<line>374</line>
+<column>5</column>
+</event>
+<extra>second</extra>
+<subcategory>bad_null_value_use</subcategory>
+</error>

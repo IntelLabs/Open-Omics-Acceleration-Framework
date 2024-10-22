@@ -1,0 +1,42 @@
+<error>
+<domain>OTHER</domain>
+<lang>Python 3</lang>
+<checker>IDENTIFIER_TYPO</checker>
+<type>identifier_typo</type>
+<file>/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2/build/python/vina/vina_cli.py</file>
+<function>!vina!vina_cli.py!cmd_lineparser</function>
+<functionMergeName>!vina!vina_cli.py!cmd_lineparser</functionMergeName>
+<score>100</score>
+<ordered>false</ordered>
+<event>
+<main>true</main>
+<tag>identifier_typo</tag>
+<description>{CovLStrv2{{t{Using {0} appears to be a typo:{1}}{{code{weight_ad4_desolv}}}{{ul{{t{Identifier {0} is only known to be referenced here, or in copies of this code.}{{code{weight_ad4_desolv}}}}}{{t{Identifier {0} is referenced elsewhere at least {1} times.}{{code{weight_ad4_dsolv}}}{2}}}}}}}}</description>
+<line>129</line>
+<column>59</column>
+</event>
+<event>
+<event_set>1</event_set>
+<tag>identifier_use</tag>
+<description>{CovLStrv2{{t{Example {0}: }{1}}{t{Using identifier {0}.}{{code{weight_ad4_dsolv}}}}}}</description>
+<line>232</line>
+<column>24</column>
+</event>
+<event>
+<event_set>2</event_set>
+<tag>identifier_use</tag>
+<description>{CovLStrv2{{t{Example {0}: }{2}}{t{Using identifier {0}.}{{code{weight_ad4_dsolv}}}}}}</description>
+<file>/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2/build/python/vina/vina_wrapper.py</file>
+<line>714</line>
+<column>148</column>
+</event>
+<event>
+<remediation>true</remediation>
+<tag>remediation</tag>
+<description>{CovLStrv2{{t{Should identifier {0} be replaced by {1}?}{{code{weight_ad4_desolv}}}{{code{weight_ad4_dsolv}}}}}}</description>
+<line>129</line>
+<column>59</column>
+</event>
+<extra>weight_ad4_desolv</extra>
+<subcategory>none</subcategory>
+</error>

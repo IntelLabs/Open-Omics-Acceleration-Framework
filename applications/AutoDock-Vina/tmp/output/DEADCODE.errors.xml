@@ -1,0 +1,204 @@
+<error>
+<domain>OTHER</domain>
+<lang>Python 3</lang>
+<checker>DEADCODE</checker>
+<type>deadcode</type>
+<subtype>logical_contradiction</subtype>
+<file>/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2/example/autodock_scripts/wet.py</file>
+<function>!wet.py!calc_plane</function>
+<functionMergeName>!wet.py!calc_plane</functionMergeName>
+<score>100</score>
+<ordered>false</ordered>
+<event>
+<tag>assignment</tag>
+<description>{CovLStrv2{{t{Assigning: {0} {1}= {2}.}{{code{DEBUG}}}{}{{code{0}}}}}}</description>
+<line>349</line>
+<column>5</column>
+</event>
+<event>
+<tag>const</tag>
+<description>{CovLStrv2{{t{At condition {0}, the value of {1} must be equal to {2}.}{{code{DEBUG}}}{{code{DEBUG}}}{0}}}}</description>
+<line>355</line>
+<column>8</column>
+</event>
+<event>
+<tag>truth</tag>
+<description>{CovLStrv2{{t{At condition {0}, the truth value of {1} must be false.}{{code{DEBUG}}}{{code{DEBUG}}}}}}</description>
+<line>355</line>
+<column>8</column>
+</event>
+<event>
+<tag>possible_types</tag>
+<description>{CovLStrv2{{t{At condition {0}, the type of {1} must be {2}.}{{code{DEBUG}}}{{code{DEBUG}}}{Integer}}}}</description>
+<line>355</line>
+<column>8</column>
+</event>
+<event>
+<tag>dead_error_condition</tag>
+<description>{CovLStrv2{{t{The condition {0} cannot be true.}{{code{DEBUG}}}}}}</description>
+<line>355</line>
+<column>5</column>
+</event>
+<event>
+<main>true</main>
+<tag>dead_error_begin</tag>
+<description>{CovLStrv2{{t{Execution cannot reach this statement: {0}.}{{code{print(atom1);}}}}}}</description>
+<line>356</line>
+<column>9</column>
+</event>
+<extra>DEBUG</extra>
+<subcategory>none</subcategory>
+</error>
+<error>
+<domain>OTHER</domain>
+<lang>Python 3</lang>
+<checker>DEADCODE</checker>
+<type>deadcode</type>
+<subtype>logical_contradiction</subtype>
+<file>/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2/example/autodock_scripts/wet.py</file>
+<function>!wet.py!bound</function>
+<functionMergeName>!wet.py!bound</functionMergeName>
+<score>100</score>
+<ordered>false</ordered>
+<event>
+<tag>assignment</tag>
+<description>{CovLStrv2{{t{Assigning: {0} {1}= {2}.}{{code{DEBUG}}}{}{{code{0}}}}}}</description>
+<line>252</line>
+<column>5</column>
+</event>
+<event>
+<tag>const</tag>
+<description>{CovLStrv2{{t{At condition {0}, the value of {1} must be equal to {2}.}{{code{DEBUG}}}{{code{DEBUG}}}{0}}}}</description>
+<line>253</line>
+<column>8</column>
+</event>
+<event>
+<tag>truth</tag>
+<description>{CovLStrv2{{t{At condition {0}, the truth value of {1} must be false.}{{code{DEBUG}}}{{code{DEBUG}}}}}}</description>
+<line>253</line>
+<column>8</column>
+</event>
+<event>
+<tag>possible_types</tag>
+<description>{CovLStrv2{{t{At condition {0}, the type of {1} must be {2}.}{{code{DEBUG}}}{{code{DEBUG}}}{Integer}}}}</description>
+<line>253</line>
+<column>8</column>
+</event>
+<event>
+<tag>dead_error_condition</tag>
+<description>{CovLStrv2{{t{The condition {0} cannot be true.}{{code{DEBUG}}}}}}</description>
+<line>253</line>
+<column>5</column>
+</event>
+<event>
+<main>true</main>
+<tag>dead_error_line</tag>
+<description>{CovLStrv2{{t{Execution cannot reach this statement: {0}.}{{code{print(&quot;Finding mates for &quot;,...}}}}}}</description>
+<line>254</line>
+<column>9</column>
+</event>
+<extra>DEBUG</extra>
+<subcategory>none</subcategory>
+</error>
+<error>
+<domain>OTHER</domain>
+<lang>Python 3</lang>
+<checker>DEADCODE</checker>
+<type>deadcode</type>
+<subtype>logical_contradiction</subtype>
+<file>/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2/example/autodock_scripts/mapwater.py</file>
+<function>!mapwater.py!optimal</function>
+<functionMergeName>!mapwater.py!optimal</functionMergeName>
+<score>100</score>
+<ordered>false</ordered>
+<event>
+<tag>cond_at_least</tag>
+<description>{CovLStrv2{{t{Condition {0}, taking false branch. Now the value of {1} is at least {2}.}{{code{oxygen &lt; 0}}}{{code{oxygen}}}{0}}}}</description>
+<line>298</line>
+<column>9</column>
+</event>
+<event>
+<tag>at_least</tag>
+<description>{CovLStrv2{{t{At condition {0}, the value of {1} must be at least {2}.}{{code{oxygen &lt; hydrogen}}}{{code{oxygen}}}{0}}}}</description>
+<line>303</line>
+<column>14</column>
+</event>
+<event>
+<tag>cond_at_most</tag>
+<description>{CovLStrv2{{t{Condition {0}, taking false branch. Now the value of {1} is at most {2}.}{{code{hydrogen &gt;= 0}}}{{code{hydrogen}}}{-1}}}}</description>
+<line>295</line>
+<column>5</column>
+</event>
+<event>
+<tag>at_most</tag>
+<description>{CovLStrv2{{t{At condition {0}, the value of {1} must be at most {2}.}{{code{oxygen &lt; hydrogen}}}{{code{hydrogen}}}{-1}}}}</description>
+<line>303</line>
+<column>14</column>
+</event>
+<event>
+<tag>dead_error_condition</tag>
+<description>{CovLStrv2{{t{The condition {0} cannot be true.}{{code{oxygen &lt; hydrogen}}}}}}</description>
+<line>303</line>
+<column>9</column>
+</event>
+<event>
+<main>true</main>
+<tag>dead_error_begin</tag>
+<description>{CovLStrv2{{t{Execution cannot reach this statement: {0}.}{{code{O += 1;}}}}}}</description>
+<line>304</line>
+<column>13</column>
+</event>
+<extra>hydrogen,oxygen</extra>
+<subcategory>none</subcategory>
+</error>
+<error>
+<domain>OTHER</domain>
+<lang>Python 3</lang>
+<checker>DEADCODE</checker>
+<type>deadcode</type>
+<subtype>logical_contradiction</subtype>
+<file>/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2/example/autodock_scripts/mapwater.py</file>
+<function>!mapwater.py!optimal_spherical</function>
+<functionMergeName>!mapwater.py!optimal_spherical</functionMergeName>
+<score>100</score>
+<ordered>false</ordered>
+<event>
+<tag>cond_at_least</tag>
+<description>{CovLStrv2{{t{Condition {0}, taking false branch. Now the value of {1} is at least {2}.}{{code{oxygen &lt; 0}}}{{code{oxygen}}}{0}}}}</description>
+<line>326</line>
+<column>9</column>
+</event>
+<event>
+<tag>at_least</tag>
+<description>{CovLStrv2{{t{At condition {0}, the value of {1} must be at least {2}.}{{code{oxygen &lt; hydrogen}}}{{code{oxygen}}}{0}}}}</description>
+<line>332</line>
+<column>14</column>
+</event>
+<event>
+<tag>cond_at_most</tag>
+<description>{CovLStrv2{{t{Condition {0}, taking false branch. Now the value of {1} is at most {2}.}{{code{hydrogen &gt;= 0}}}{{code{hydrogen}}}{-1}}}}</description>
+<line>323</line>
+<column>5</column>
+</event>
+<event>
+<tag>at_most</tag>
+<description>{CovLStrv2{{t{At condition {0}, the value of {1} must be at most {2}.}{{code{oxygen &lt; hydrogen}}}{{code{hydrogen}}}{-1}}}}</description>
+<line>332</line>
+<column>14</column>
+</event>
+<event>
+<tag>dead_error_condition</tag>
+<description>{CovLStrv2{{t{The condition {0} cannot be true.}{{code{oxygen &lt; hydrogen}}}}}}</description>
+<line>332</line>
+<column>9</column>
+</event>
+<event>
+<main>true</main>
+<tag>dead_error_begin</tag>
+<description>{CovLStrv2{{t{Execution cannot reach this statement: {0}.}{{code{O += 1;}}}}}}</description>
+<line>333</line>
+<column>13</column>
+</event>
+<extra>hydrogen,oxygen</extra>
+<subcategory>none</subcategory>
+</error>

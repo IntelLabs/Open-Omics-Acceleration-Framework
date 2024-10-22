@@ -1,0 +1,4 @@
+/home/hgx/omics/srilekhx/coverity_scans/coverity/analysis/bin/cov-configure
+--ruby
+-c
+tmp/cov-capture/2024-10-19_03_12_08/compiler-config/sources/coverity_config.xml

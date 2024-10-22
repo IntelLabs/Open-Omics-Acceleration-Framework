@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE coverity SYSTEM "coverity_config.dtd">
+<coverity>
+<!-- Version 2023.3.4 -->
+    <cit_version>1</cit_version>
+    <config>
+      <include>$CONFIGDIR$/template-apex-config-0/coverity_config.xml</include>
+      <include>$CONFIGDIR$/template-capture-config-files-config-0/coverity_config.xml</include>
+      <include>$CONFIGDIR$/template-javafs-config-0/coverity_config.xml</include>
+      <include>$CONFIGDIR$/template-jsp-config-0/coverity_config.xml</include>
+      <include>$CONFIGDIR$/template-android-config-0/coverity_config.xml</include>
+      <include>$CONFIGDIR$/template-javascript-config-0/coverity_config.xml</include>
+      <include>$CONFIGDIR$/template-html-config-0/coverity_config.xml</include>
+      <include>$CONFIGDIR$/template-jsx-config-0/coverity_config.xml</include>
+      <include>$CONFIGDIR$/template-vue-config-0/coverity_config.xml</include>
+      <include>$CONFIGDIR$/template-php-config-0/coverity_config.xml</include>
+      <include>$CONFIGDIR$/template-python-config-0/coverity_config.xml</include>
+      <include>$CONFIGDIR$/template-ruby-config-0/coverity_config.xml</include>
+      <include>$CONFIGDIR$/template-typescript-config-0/coverity_config.xml</include>
+    </config>
+</coverity>
+
