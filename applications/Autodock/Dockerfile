@@ -31,6 +31,6 @@ RUN make DEVICE=CPU NUMWI=64 && \
     rm -rf .git build_temp
 ENV PATH="/opt/AutoDock/bin:${PATH}"
 HEALTHCHECK NONE
-WORKDIR /opt/AutoDock/bin
-CMD ["/bin/bash"]
+WORKDIR /input
+CMD ["autodock_cpu_64wi","--help"]
 
