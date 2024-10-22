@@ -15,9 +15,9 @@ The installation instructions, documentation and tutorials can be found on [read
 
 ## Docker Setup
 
-This repository contains a Docker setup for running AutoDock Vina version 1.2.2. The following instructions will guide you through cloning the repository, building the Docker image, setting up input/output directories, and running AutoDock Vina inside the Docker container.
-### 1. Clone the Repository
+This guide will help you clone the repository, build the Docker image, set up input/output directories, and run AutoDock Vina (v1.2.2) inside a Docker container.
 
+### 1. Clone the Repository
 First, clone the repository and navigate to the AutoDock Vina folder:
 
 ```bash
@@ -30,49 +30,54 @@ Build the Docker image using the following command:
 ```bash
 docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t docker_vina .
 ```
+Make sure Docker is installed and properly set up on your system.
 
 ### 3. Setup Input and Output Directories
-Create the input and output directories on your local machine:
+Create directories for input and output on your local machine:
 ```bash
-mkdir input_local
-mkdir output_local
+mkdir input_local output_local
 ```
+These will be mounted to the Docker container during execution.
 ### 4. Prepare Input Files
-Add your receptor (`.pdbqt`), ligand (`.pdbqt`), and dependent map files to the `input_local` directory
-
+Add your receptor (`.pdbqt`), ligand (`.pdbqt`), and dependent map files to the `input_local` directory of a protein. Ensure the correct formatting of these files for AutoDock Vina.
 ### 5. Set Environment Variables
-Set environment variables to reference the input and output directories:
+Set environment variables for the input and output directories:
 ```bash
 export INPUT_VINA=$PWD/input_local
 export OUTPUT_VINA=$PWD/output_local
 ```
 ### 6. EXAMPLE: Running with Provided Data
-We have provided a folder for the protein `5wlo`, which contains all the necessary grid maps, protein PDBQT, and ligand files. Create an output folder for `5wlo` to store the results, and then export these directories for use with Docker:
+For a sample run, use the provided protein folder for 5wlo:
+Create an output directory:
 ```bash
 mkdir 5wlo_output
+```
+Set the environment variables for the 5wlo protein:
+```bash
 export INPUT_VINA=$PWD/5wlo
 export OUTPUT_VINA=$PWD/5wlo_output
 ```
-### 7. Add the necessary permission to output directory
+### 7. Add the necessary permission
+Ensure Docker has the required permissions to write to the output folder:
 ```bash
 sudo chmod -R 777 $OUTPUT_VINA
 ```
 
 ### 8. Run the Docker Container
-Before running the Docker container, verify that the Docker image named `docker_vina` has been successfully generated:
+Check if the Docker image was built successfully:
 ```bash
 docker images | grep docker_vina
 ```
-If the image is listed, proceed to run the Docker container and execute  Autodock Vina:
+If the image is listed, run AutoDock Vina with the following command:
 
 ```bash
 docker run -it -v $INPUT_VINA:/input -v $OUTPUT_VINA:/output docker_vina vina --receptor protein.pdbqt --ligand rand-1.pdbqt --out /output/rand-1_out.pdbqt --center_x 16.459 --center_y -19.946 --center_z -5.850 --size_x 18 --size_y 18 --size_z 18 --seed 1234 --exhaustiveness 64
 ```
-This command will run AutoDock Vina on your receptor and ligand files, placing the result in the `output_local` directory. For `5wlo` protein output folder will be `5wlo_output`.
+This command will process your receptor and ligand files and place the results in the specified output directory.
 
 ### 9. Expected Output
 
-After running the above command, you should find the output file (`rand-1_out.pdbqt`) in the `output_local` directory.
+After running the above command, you should find the output file (`rand-1_out.pdbqt`) in the output directory (`output_local` or `5wlo_output` for the 5wlo example).
 
 ## Citations
 * [J. Eberhardt, D. Santos-Martins, A. F. Tillack, and S. Forli. (2021). AutoDock Vina 1.2.0: New Docking Methods, Expanded Force Field, and Python Bindings. Journal of Chemical Information and Modeling.](https://pubs.acs.org/doi/10.1021/acs.jcim.1c00203)
