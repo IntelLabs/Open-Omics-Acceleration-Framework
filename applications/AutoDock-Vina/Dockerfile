@@ -25,6 +25,7 @@ RUN groupadd --gid 1001 $SERVICE_NAME && \
 RUN chown -R $SERVICE_NAME:$SERVICE_NAME /opt
 USER $SERVICE_NAME
 ENV PATH="/opt/AutoDock-Vina/build/linux/release:$PATH"
+WORKDIR /input
 HEALTHCHECK NONE
-CMD ["/bin/bash"]
+CMD ["vina","--help"]
 

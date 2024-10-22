@@ -66,7 +66,7 @@ docker images | grep docker_vina
 If the image is listed, proceed to run the Docker container and execute  Autodock Vina:
 
 ```bash
-docker run -it -v $INPUT_VINA:/input -v $OUTPUT_VINA:/output <docker_image_name> /bin/bash -c "cd /input && vina --receptor protein.pdbqt --ligand rand-1.pdbqt --out /output/rand-1_out.pdbqt --center_x 16.459 --center_y -19.946 --center_z -5.850 --size_x 18 --size_y 18 --size_z 18 --seed 1234 --exhaustiveness 64"
+docker run -it -v $INPUT_VINA:/input -v $OUTPUT_VINA:/output docker_vina vina --receptor protein.pdbqt --ligand rand-1.pdbqt --out /output/rand-1_out.pdbqt --center_x 16.459 --center_y -19.946 --center_z -5.850 --size_x 18 --size_y 18 --size_z 18 --seed 1234 --exhaustiveness 64
 ```
 This command will run AutoDock Vina on your receptor and ligand files, placing the result in the `output_local` directory. For `5wlo` protein output folder will be `5wlo_output`.
 
