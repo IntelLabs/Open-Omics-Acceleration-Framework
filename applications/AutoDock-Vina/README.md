@@ -33,37 +33,28 @@ docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_p
 Make sure Docker is installed and properly set up on your system.
 
 ### 3. Setup Input and Output Directories
-Create directories for input and output on your local machine:
+Create directories for input and output on your local machine which will be mounted to the Docker container during execution.
 ```bash
-mkdir input_local output_local
+mkdir -p <input_dir>
+mkdir -p <output_dir>
 ```
-These will be mounted to the Docker container during execution.
-### 4. Prepare Input Files
-Add your receptor (`.pdbqt`), ligand (`.pdbqt`), and dependent map files to the `input_local` directory of a protein. Ensure the correct formatting of these files for AutoDock Vina.
-### 5. Set Environment Variables
-Set environment variables for the input and output directories:
-```bash
-export INPUT_VINA=$PWD/input_local
-export OUTPUT_VINA=$PWD/output_local
-```
-### 6. EXAMPLE: Running with Provided Data
-We’ve provided a sample protein, 5wlo, with all the necessary files (receptor, ligand, grid maps).
-Create an output directory for storing results specific to 5wlo:
+Add your receptor (`.pdbqt`), ligand (`.pdbqt`), and dependent grid maps to the input directory of a protein.
+
+We have provided a sample protein `5wlo` with all the necessary files (receptor, ligand, grid maps).
+Create an output directory for storing results specific to `5wlo`:
 ```bash
 mkdir 5wlo_output
 ```
-Set the environment variables for the 5wlo protein:
+Set the environment variables for the `5wlo` protein:
 ```bash
 export INPUT_VINA=$PWD/5wlo
 export OUTPUT_VINA=$PWD/5wlo_output
 ```
-### 7. Add the necessary permission
-Ensure Docker has the required permissions to write to the output folder:
+Add the necessary permissions to write to the output folder:
 ```bash
 sudo chmod -R 777 $OUTPUT_VINA
 ```
-
-### 8. Run the Docker Container
+### 4. Run the Docker Container
 Check if the Docker image was built successfully:
 ```bash
 docker images | grep docker_vina
@@ -75,9 +66,9 @@ docker run -it -v $INPUT_VINA:/input -v $OUTPUT_VINA:/output docker_vina vina --
 ```
 This command will process your receptor and ligand files and place the results in the specified output directory.
 
-### 9. Expected Output
+### 5. Expected Output
 
-After running the above command, you should find the output file (`rand-1_out.pdbqt`) in the output directory (`output_local` or `5wlo_output` for the 5wlo example).
+After running the above command, you should find the output file (`rand-1_out.pdbqt`) in the output directory (`5wlo_output` for the 5wlo example).
 
 ## Citations
 * [J. Eberhardt, D. Santos-Martins, A. F. Tillack, and S. Forli. (2021). AutoDock Vina 1.2.0: New Docking Methods, Expanded Force Field, and Python Bindings. Journal of Chemical Information and Modeling.](https://pubs.acs.org/doi/10.1021/acs.jcim.1c00203)
