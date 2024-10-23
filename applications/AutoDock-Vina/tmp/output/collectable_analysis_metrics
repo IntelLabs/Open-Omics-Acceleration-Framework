@@ -447,7 +447,7 @@
         "__SQLI_BUDA_STATICS_WORMHOLING:report_nosink_errors"
       ]
     },
-    "time" : 85,
+    "time" : 93,
     "line-counts" : {
       "Apex" : {
         "blank-lines" : 0,
@@ -510,9 +510,9 @@
         "comment-lines" : 0
       },
       "Python 3" : {
-        "blank-lines" : 981,
-        "code-lines" : 4204,
-        "comment-lines" : 602
+        "blank-lines" : 1962,
+        "code-lines" : 8408,
+        "comment-lines" : 1204
       },
       "Ruby" : {
         "blank-lines" : 0,
@@ -530,9 +530,9 @@
         "comment-lines" : 0
       },
       "Text" : {
-        "blank-lines" : 7,
-        "code-lines" : 50,
-        "comment-lines" : 16
+        "blank-lines" : 14,
+        "code-lines" : 278,
+        "comment-lines" : 33
       },
       "TypeScript" : {
         "blank-lines" : 0,
@@ -547,64 +547,72 @@
     },
     "file-statistics-by-extension" : {
       "<none>" : {
-        "files" : 1,
-        "total-bytes" : 850
+        "files" : 2,
+        "total-bytes" : 1719
       },
       "fld" : {
-        "files" : 7,
-        "total-bytes" : 12123
+        "files" : 14,
+        "total-bytes" : 24246
       },
       "glg" : {
-        "files" : 6,
-        "total-bytes" : 1403062
+        "files" : 12,
+        "total-bytes" : 2806124
       },
       "gpf" : {
-        "files" : 6,
-        "total-bytes" : 6809
+        "files" : 12,
+        "total-bytes" : 13618
+      },
+      "html" : {
+        "files" : 15,
+        "total-bytes" : 751873
       },
       "in" : {
-        "files" : 1,
-        "total-bytes" : 60
+        "files" : 2,
+        "total-bytes" : 120
       },
       "js" : {
         "files" : 7,
         "total-bytes" : 0
       },
       "md" : {
-        "files" : 2,
-        "total-bytes" : 5755
+        "files" : 4,
+        "total-bytes" : 11155
       },
       "mol2" : {
-        "files" : 1,
-        "total-bytes" : 8902
+        "files" : 2,
+        "total-bytes" : 17804
       },
       "pdbqt" : {
-        "files" : 34,
-        "total-bytes" : 3229799
+        "files" : 68,
+        "total-bytes" : 6459598
       },
       "py" : {
-        "files" : 15,
-        "total-bytes" : 221251
+        "files" : 30,
+        "total-bytes" : 442502
       },
       "rst" : {
-        "files" : 15,
-        "total-bytes" : 103415
+        "files" : 30,
+        "total-bytes" : 206830
       },
       "toml" : {
-        "files" : 1,
-        "total-bytes" : 96
+        "files" : 2,
+        "total-bytes" : 192
       },
       "txt" : {
-        "files" : 7,
-        "total-bytes" : 944
+        "files" : 14,
+        "total-bytes" : 1888
+      },
+      "xml" : {
+        "files" : 2,
+        "total-bytes" : 5494
       },
       "xyz" : {
-        "files" : 6,
-        "total-bytes" : 251
+        "files" : 12,
+        "total-bytes" : 502
       },
       "yml" : {
-        "files" : 2,
-        "total-bytes" : 797
+        "files" : 4,
+        "total-bytes" : 1594
       }
     },
     "ident" : "2023.3.4 (build 858be4c112 p-2023.3-push-67)",
@@ -612,42 +620,42 @@
     "short-platform" : "linux64",
     "extver" : "2023.3.4",
     "intver" : "858be4c112 p-2023.3-push-67",
-    "aw-peak-mem-bytes" : 855470080,
-    "am+aw-peak-mem-bytes" : 1537089536,
+    "aw-peak-mem-bytes" : 855547904,
+    "am+aw-peak-mem-bytes" : 2056282112,
     "bytecode-functions" : 0,
     "concurrency" : true,
     "cxx" : true,
     "enable-parse-warnings" : false,
     "failures" : 0,
-    "files-analyzed" : 19,
+    "files-analyzed" : 55,
     "force" : false,
-    "function-metrics-count" : 454,
-    "functions-analyzed" : 454,
-    "incremental-hits" : 0,
-    "incremental-misses" : 3344,
+    "function-metrics-count" : 908,
+    "functions-analyzed" : 908,
+    "incremental-hits" : 4179,
+    "incremental-misses" : 2502,
     "dyncg-sites-resolved" : 0,
     "dyncg-sites-total" : 0,
     "max-mem" : 2048,
     "memout-count" : 0,
     "pathout-count" : 0,
     "paths" : 5000,
-    "paths-analyzed" : 2210,
-    "peak-mem-bytes" : 4266782720,
+    "paths-analyzed" : 4420,
+    "peak-mem-bytes" : 4401266688,
     "security" : true,
-    "tus-count" : 111,
+    "tus-count" : 232,
     "string-graph-nodes" : 0,
     "web-app-entry-points" : 0,
     "web-app-views-unused" : 0,
     "ta.code_age_thresholds" : "0, 0",
     "enabled-checkers" : "ALLOC_FREE_MISMATCH ANDROID_CAPABILITY_LEAK ANGULAR_ELEMENT_REFERENCE ANGULAR_EXPRESSION_INJECTION ANGULAR_SCE_DISABLED ANONYMOUS_DB_CONNECTION ARRAY_VS_SINGLETON ASPNET_MVC_VERSION_HEADER ASSERT_SIDE_EFFECT ATTRIBUTE_NAME_CONFLICT AUTO_CAUSES_COPY BAD_ALLOC_ARITHMETIC BAD_ALLOC_STRLEN BAD_CERT_VERIFICATION BAD_CHECK_OF_WAIT_COND BAD_COMPARE BAD_EQ BAD_EQ_TYPES BAD_FREE BAD_LOCK_OBJECT BAD_OVERRIDE BAD_SHIFT BAD_SIZEOF BUFFER_SIZE CALL_SUPER CHAR_IO CHECKED_RETURN CHROOT COM.BAD_FREE COM.BSTR.CONV CONFIG.ANDROID_GRADLE_OBFUSCATION_NOT_ENABLED CONFIG.ASPNET_VERSION_HEADER CONFIG.ASP_VIEWSTATE_MAC CONFIG.BEEGO_CSRF_PROTECTION_DISABLED CONFIG.CONNECTION_STRING_PASSWORD CONFIG.COOKIES_MISSING_HTTPONLY CONFIG.COOKIE_SIGNING_DISABLED CONFIG.DEAD_AUTHORIZATION_RULE CONFIG.DJANGO_CSRF_PROTECTION_DISABLED CONFIG.DYNAMIC_DATA_HTML_COMMENT CONFIG.ENABLED_DEBUG_MODE CONFIG.ENABLED_TRACE_MODE CONFIG.HANA_XS_PREVENT_XSRF_DISABLED CONFIG.HARDCODED_CREDENTIALS_AUDIT CONFIG.HARDCODED_TOKEN CONFIG.MISSING_CUSTOM_ERROR_PAGE CONFIG.SYMFONY_CSRF_PROTECTION_DISABLED CONFIG.UNSAFE_SESSION_TIMEOUT CONFIG.VUE_ROUTER_PARAMS_EXPOSED_TO_PROPS CONSTANT_EXPRESSION_RESULT COOKIE_INJECTION COOKIE_SERIALIZER_CONFIG COPY_INSTEAD_OF_MOVE COPY_PASTE_ERROR CORS_MISCONFIGURATION CORS_MISCONFIGURATION_AUDIT CSRF CSS_INJECTION CTOR_DTOR_LEAK CUDA.COLLECTIVE_WARP_SHUFFLE_WIDTH CUDA.CUDEVICE_HANDLES CUDA.DEVICE_DEPENDENT CUDA.DEVICE_DEPENDENT_CALLBACKS CUDA.DIVERGENCE_AT_COLLECTIVE_OPERATION CUDA.ERROR_INTERFACE CUDA.ERROR_KERNEL_LAUNCH CUDA.FORK CUDA.INACTIVE_THREAD_AT_COLLECTIVE_WARP CUDA.INITIATION_OBJECT_DEVICE_THREAD_BLOCK CUDA.INVALID_MEMORY_ACCESS CUDA.SHARE_FUNCTION CUDA.SHARE_OBJECT_STREAM_ASSOCIATED CUDA.SPECIFIERS_INCONSISTENCY CUDA.SYNCHRONIZE_CALLBACKS CUDA.SYNCHRONIZE_TERMINATION DC.DANGEROUS DC.DEADLOCK DC.PREDICTABLE_KEY_PASSWORD DC.STREAM_BUFFER DC.WEAK_CRYPTO DEADCODE DELETE_ARRAY DELETE_VOID DENY_LIST_FOR_AUTHN DETEKT.* DISTRUSTED_DATA_DESERIALIZATION DIVIDE_BY_ZERO DNS_PREFETCHING DOM_XSS DYNAMIC_OBJECT_ATTRIBUTES EL_INJECTION EVALUATION_ORDER EXPOSED_DIRECTORY_LISTING EXPOSED_PREFERENCES EXPRESS_WINSTON_SENSITIVE_LOGGING FB.* FORMAT_STRING_INJECTION FORWARD_NULL GLOBAL_INIT_ORDER GUARDED_BY_VIOLATION HARDCODED_CREDENTIALS HEADER_INJECTION HIBERNATE_BAD_HASHCODE HOST_HEADER_VALIDATION_DISABLED IDENTICAL_BRANCHES IDENTIFIER_TYPO IMPLICIT_INTENT INCOMPATIBLE_CAST INEFFICIENT_RESERVE INFINITE_LOOP INSECURE_COMMUNICATION INSECURE_COOKIE INSECURE_CSP INSECURE_FILE_PERMISSIONS INSECURE_NETWORK_BIND INSECURE_RANDOM INSECURE_REFERRER_POLICY INSECURE_SALT INSUFFICIENT_LOGGING INVALIDATE_ITERATOR JAVA_CODE_INJECTION JCR_INJECTION JINJA2_AUTOESCAPE_DISABLED JSONWEBTOKEN_UNTRUSTED_DECODE JSP_DYNAMIC_INCLUDE JSP_SQL_INJECTION LDAP_INJECTION LDAP_NOT_CONSTANT LOCALSTORAGE_MANIPULATION LOCALSTORAGE_WRITE LOCK_EVASION LOCK_INVERSION LOG_INJECTION MISMATCHED_ITERATOR MISSING_AUTHZ MISSING_BREAK MISSING_COMMA MISSING_IFRAME_SANDBOX MISSING_MOVE_ASSIGNMENT MISSING_PASSWORD_VALIDATOR MISSING_PERMISSION_FOR_BROADCAST MISSING_RESTORE MISSING_RETURN MISSING_THROW MOBILE_ID_MISUSE MULTIPLE_INIT_SMART_PTRS NEGATIVE_RETURNS NESTING_INDENT_MISMATCH NON_STATIC_GUARDING_STATIC NOSQL_QUERY_INJECTION NO_EFFECT NULL_RETURNS OAUTH2_MISCONFIGURATION OGNL_INJECTION OPEN_ARGS OPEN_REDIRECT ORM_LOAD_NULL_CHECK ORM_UNNECESSARY_GET OS_CMD_INJECTION OVERFLOW_BEFORE_WIDEN OVERLAPPING_COPY OVERRUN PASS_BY_VALUE PATH_MANIPULATION PMD.* PRECEDENCE_ERROR PREDICTABLE_RANDOM_SEED PRINTF_ARGS PROPERTY_MIXUP RAILS_DEFAULT_ROUTES RAILS_DEVISE_CONFIG RAILS_MISSING_FILTER_ACTION READLINK REGEX_CONFUSION REGEX_INJECTION REGEX_MISSING_ANCHOR RESOURCE_LEAK RETURN_LOCAL REVERSE_INULL REVERSE_NEGATIVE REVERSE_TABNABBING RISKY_CRYPTO RUBY_VULNERABLE_LIBRARY SCRIPT_CODE_INJECTION SECURE_TEMP SENSITIVE_DATA_LEAK SERVLET_ATOMICITY SESSIONSTORAGE_MANIPULATION SESSION_FIXATION SESSION_MANIPULATION SIGMA.* SIGN_EXTENSION SIZEOF_MISMATCH SOCKET_ACCEPT_ALL_ORIGINS SQLI SQL_NOT_CONSTANT STATIC_API_KEY STRAY_SEMICOLON STREAM_FORMAT_STATE STRICT_TRANSPORT_SECURITY STRING_NULL STRING_OVERFLOW STRING_SIZE SUPPRESSED_ERROR SWAPPED_ARGUMENTS SYMFONY_EL_INJECTION TAINTED_ENVIRONMENT_WITH_EXECUTION TAINTED_SCALAR TAINTED_STRING TAINT_ASSERT TEMPLATE_INJECTION TOCTOU TRUST_BOUNDARY_VIOLATION UNCAUGHT_EXCEPT UNCHECKED_ORIGIN UNENCRYPTED_SENSITIVE_DATA UNEXPECTED_CONTROL_FLOW UNINIT UNINIT_CTOR UNINTENDED_GLOBAL UNINTENDED_INTEGER_DIVISION UNKNOWN_LANGUAGE_INJECTION UNLESS_CASE_SENSITIVE_ROUTE_MATCHING UNLOCKED_ACCESS UNLOGGED_SECURITY_EXCEPTION UNREACHABLE UNRESTRICTED_ACCESS_TO_FILE UNRESTRICTED_DISPATCH UNRESTRICTED_MESSAGE_TARGET UNSAFE_BASIC_AUTH UNSAFE_BUFFER_METHOD UNSAFE_DESERIALIZATION UNSAFE_FUNCTIONALITY UNSAFE_JNI UNSAFE_NAMED_QUERY UNSAFE_REFLECTION UNSAFE_SESSION_SETTING UNSAFE_XML_PARSE_CONFIG UNUSED_VALUE URL_MANIPULATION USELESS_CALL USER_POINTER USE_AFTER_FREE USE_AFTER_MOVE VARARGS VIRTUAL_DTOR VOLATILE_ATOMICITY WEAK_GUARD WEAK_PASSWORD_HASH WEAK_URL_SANITIZATION WRAPPER_ESCAPE WRITE_CONST_FIELD WRONG_METHOD XML_EXTERNAL_ENTITY XML_INJECTION XPATH_INJECTION XSS Y2K38_SAFETY",
-    "CONFIG.ENABLED_DEBUG_MODE-new-defect-count" : 1,
-    "COPY_PASTE_ERROR-new-defect-count" : 1,
-    "DEADCODE-new-defect-count" : 4,
-    "FORWARD_NULL-new-defect-count" : 2,
-    "IDENTICAL_BRANCHES-new-defect-count" : 1,
-    "IDENTIFIER_TYPO-new-defect-count" : 1,
-    "UNREACHABLE-new-defect-count" : 2,
-    "total-new-defect-count" : 12,
+    "CONFIG.ENABLED_DEBUG_MODE-new-defect-count" : 2,
+    "COPY_PASTE_ERROR-new-defect-count" : 2,
+    "DEADCODE-new-defect-count" : 8,
+    "FORWARD_NULL-new-defect-count" : 4,
+    "IDENTICAL_BRANCHES-new-defect-count" : 2,
+    "IDENTIFIER_TYPO-new-defect-count" : 2,
+    "UNREACHABLE-new-defect-count" : 4,
+    "total-new-defect-count" : 24,
     "total-input-files" : -1,
     "matching-input-files" : -1,
     "wu-time-milliseconds" : {
@@ -665,7 +673,7 @@
       "fortran" : 0,
       "go" : 0,
       "html" : 0,
-      "javascript" : 6949,
+      "javascript" : 0,
       "javascript-minified" : 0,
       "javascript-es6-module" : 0,
       "javascript-es6-module-minified" : 0,
@@ -680,7 +688,7 @@
       "objcpp" : 0,
       "php" : 0,
       "python2" : 0,
-      "python3" : 6383727,
+      "python3" : 5784871,
       "ruby" : 0,
       "swift" : 0,
       "scala" : 0,

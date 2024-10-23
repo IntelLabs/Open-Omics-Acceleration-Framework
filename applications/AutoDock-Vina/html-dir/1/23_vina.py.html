@@ -1,0 +1,531 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html><head><title>Coverity error reader: /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina/build/python/vina/vina.py</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head>
+<body link="#000000" vlink="#000000"><pre>
+<b><a name="line1">1    </a></b>	#!/usr/bin/env python
+<b><a name="line2">2    </a></b>	# -*- coding: utf-8 -*-
+<b><a name="line3">3    </a></b>	#
+<b><a name="line4">4    </a></b>	# Vina
+<b><a name="line5">5    </a></b>	#
+<b><a name="line6">6    </a></b>	
+<b><a name="line7">7    </a></b>	import os
+<b><a name="line8">8    </a></b>	import glob
+<b><a name="line9">9    </a></b>	import stat
+<b><a name="line10">10   </a></b>	import sys
+<b><a name="line11">11   </a></b>	
+<b><a name="line12">12   </a></b>	import numpy as np
+<b><a name="line13">13   </a></b>	
+<b><a name="line14">14   </a></b>	from .vina_wrapper import Vina as _Vina
+<b><a name="line15">15   </a></b>	from . import utils
+<b><a name="line16">16   </a></b>	
+<b><a name="line17">17   </a></b>	
+<b><a name="line18">18   </a></b>	class Vina:
+<b><a name="line19">19   </a></b>	    def __init__(self, sf_name='vina', cpu=0, seed=0, no_refine=False, verbosity=1):
+<b><a name="line20">20   </a></b>	        &quot;&quot;&quot;Initialize a Vina object.
+<b><a name="line21">21   </a></b>	
+<b><a name="line22">22   </a></b>	        Args:
+<b><a name="line23">23   </a></b>	            sf_name (str): Scoring function name to use (Vina or ad4) (default: vina)
+<b><a name="line24">24   </a></b>	            cpu (int): Number of CPU to use (default: 0; use all of them)
+<b><a name="line25">25   </a></b>	            seed (int): Random seed (default: 0; ramdomly choosed)
+<b><a name="line26">26   </a></b>	            no_refine (boolean): when receptor is provided, do not use explicit receptor atoms
+<b><a name="line27">27   </a></b>	                (instead of precalculated grids) for: (1) local optimization and scoring after docking,
+<b><a name="line28">28   </a></b>	                (2) --local_only jobs, and (3) --score_only jobs (default: False)
+<b><a name="line29">29   </a></b>	            verbosity (int): verbosity 0: not output, 1: normal, 2: verbose (default: 1; some output)
+<b><a name="line30">30   </a></b>	
+<b><a name="line31">31   </a></b>	        &quot;&quot;&quot;
+<b><a name="line32">32   </a></b>	        sf_name = sf_name.lower()
+<b><a name="line33">33   </a></b>	        if not sf_name in ('vina', 'vinardo', 'ad4'):
+<b><a name="line34">34   </a></b>	            raise ValueError('Error: Scoring function %s not recognized. (only vina, vinardo or ad4)' % sf_name)
+<b><a name="line35">35   </a></b>	
+<b><a name="line36">36   </a></b>	        self._vina = _Vina(sf_name, cpu, seed, verbosity, no_refine)
+<b><a name="line37">37   </a></b>	        
+<b><a name="line38">38   </a></b>	        self._sf_name = sf_name
+<b><a name="line39">39   </a></b>	        if sf_name == 'vina':
+<b><a name="line40">40   </a></b>	            self._weights = (-0.035579, -0.005156, 0.840245, -0.035069, -0.587439, 50, 0.05846)
+<b><a name="line41">41   </a></b>	        elif sf_name == 'vinardo':
+<b><a name="line42">42   </a></b>	            self._weights = (-0.045, 0.8, -0.035, -0.6, 50, 0.05846)
+<b><a name="line43">43   </a></b>	        else:
+<b><a name="line44">44   </a></b>	            self._weights = (0.1662, 0.1209, 0.1406, 0.1322, 50)
+<b><a name="line45">45   </a></b>	        self._rigid_receptor = None
+<b><a name="line46">46   </a></b>	        self._flex_receptor = None
+<b><a name="line47">47   </a></b>	        self._ligands = None
+<b><a name="line48">48   </a></b>	        self._center = None
+<b><a name="line49">49   </a></b>	        self._box_size = None
+<b><a name="line50">50   </a></b>	        self._spacing = None
+<b><a name="line51">51   </a></b>	        self._even_nelements = True
+<b><a name="line52">52   </a></b>	        if sf_name in ('vina', 'vinardo'):
+<b><a name="line53">53   </a></b>	            self._no_refine = no_refine
+<b><a name="line54">54   </a></b>	        else:
+<b><a name="line55">55   </a></b>	            self._no_refine = False
+<b><a name="line56">56   </a></b>	        self._seed = self._vina.seed()
+<b><a name="line57">57   </a></b>	
+<b><a name="line58">58   </a></b>	    def __str__(self):
+<b><a name="line59">59   </a></b>	        &quot;&quot;&quot;Print basic information about Docking configuration (rigid receptor, flex receptor, 
+<b><a name="line60">60   </a></b>	            ligands, scoring function, weights, no_refine, box center, box dimensions, 
+<b><a name="line61">61   </a></b>	            box spacing, box even nelements, seed).
+<b><a name="line62">62   </a></b>	            
+<b><a name="line63">63   </a></b>	        &quot;&quot;&quot;
+<b><a name="line64">64   </a></b>	        info = &quot;Receptor (rigid): %s\n&quot; % self._rigid_receptor
+<b><a name="line65">65   </a></b>	        info += &quot;Receptor (flex): %s\n&quot; % self._flex_receptor
+<b><a name="line66">66   </a></b>	
+<b><a name="line67">67   </a></b>	        if isinstance(self._ligands, (list, tuple)):
+<b><a name="line68">68   </a></b>	            info += &quot;Ligands: %s\n&quot; % &quot;, &quot;.join(self._ligands)
+<b><a name="line69">69   </a></b>	        else:
+<b><a name="line70">70   </a></b>	            info += &quot;Ligand: %s\n&quot; % self._ligands
+<b><a name="line71">71   </a></b>	
+<b><a name="line72">72   </a></b>	        info += &quot;Scoring function: %s\n&quot; % self._sf_name
+<b><a name="line73">73   </a></b>	        info += &quot;Weights: %s\n&quot; % &quot; &quot;.join([&quot;%.6f&quot; % i for i in self._weights])
+<b><a name="line74">74   </a></b>	        info += &quot;No refinement with receptor atoms: %s\n&quot; % self._no_refine
+<b><a name="line75">75   </a></b>	
+<b><a name="line76">76   </a></b>	        if self._center is not None:
+<b><a name="line77">77   </a></b>	            info += &quot;Box center: %s\n&quot; % &quot; &quot;.join([&quot;%.3f&quot; % i for i in self._center])
+<b><a name="line78">78   </a></b>	            info += &quot;Box dimensions: %s\n&quot; % &quot; &quot;.join([&quot;%.2f&quot; % i for i in self._box_size])
+<b><a name="line79">79   </a></b>	            info += &quot;Box spacing: %.3f\n&quot; % self._spacing
+<b><a name="line80">80   </a></b>	            info += &quot;Box even NELEMENTS: %s\n&quot; % self._even_nelements
+<b><a name="line81">81   </a></b>	
+<b><a name="line82">82   </a></b>	        info += &quot;Seed: %s&quot; % self._seed
+<b><a name="line83">83   </a></b>	
+<b><a name="line84">84   </a></b>	        return info
+<b><a name="line85">85   </a></b>	    
+<b><a name="line86">86   </a></b>	    def cite(self):
+<b><a name="line87">87   </a></b>	        &quot;&quot;&quot;Print citation message.&quot;&quot;&quot;
+<b><a name="line88">88   </a></b>	        self._vina.cite()
+<b><a name="line89">89   </a></b>	
+<b><a name="line90">90   </a></b>	    def info(self):
+<b><a name="line91">91   </a></b>	        &quot;&quot;&quot;Return information about the docking configuration.
+<b><a name="line92">92   </a></b>	        
+<b><a name="line93">93   </a></b>	        Returns:
+<b><a name="line94">94   </a></b>	            dict (str): Dictionary of information about the docking configuration.
+<b><a name="line95">95   </a></b>	            
+<b><a name="line96">96   </a></b>	            Information:
+<b><a name="line97">97   </a></b>	                rigid_receptor (str),
+<b><a name="line98">98   </a></b>	                flex_receptor (str),
+<b><a name="line99">99   </a></b>	                ligands (list),
+<b><a name="line100">100  </a></b>	                scoring_function (str),
+<b><a name="line101">101  </a></b>	                weights (tuple),
+<b><a name="line102">102  </a></b>	                no_refine (bool),
+<b><a name="line103">103  </a></b>	                box_center (list),
+<b><a name="line104">104  </a></b>	                box_size (list),
+<b><a name="line105">105  </a></b>	                box_spacing (float),
+<b><a name="line106">106  </a></b>	                box_even_elements (bool),
+<b><a name="line107">107  </a></b>	                seed (int)
+<b><a name="line108">108  </a></b>	        
+<b><a name="line109">109  </a></b>	        &quot;&quot;&quot;
+<b><a name="line110">110  </a></b>	        info = {}
+<b><a name="line111">111  </a></b>	
+<b><a name="line112">112  </a></b>	        info['rigid_receptor'] = self._rigid_receptor
+<b><a name="line113">113  </a></b>	        info['flex_receptor'] = self._flex_receptor
+<b><a name="line114">114  </a></b>	        info['ligands'] = self._ligands
+<b><a name="line115">115  </a></b>	        info['scoring_function'] = self._sf_name
+<b><a name="line116">116  </a></b>	        info['weights'] = self._weights
+<b><a name="line117">117  </a></b>	        info['no_refine'] = self._no_refine
+<b><a name="line118">118  </a></b>	        info['box_center'] = self._center
+<b><a name="line119">119  </a></b>	        info['box_size'] = self._box_size
+<b><a name="line120">120  </a></b>	        info['box_spacing'] = self._spacing
+<b><a name="line121">121  </a></b>	        info['box_even_elements'] = self._even_nelements
+<b><a name="line122">122  </a></b>	        info['seed'] = self._seed
+<b><a name="line123">123  </a></b>	        
+<b><a name="line124">124  </a></b>	        return info
+<b><a name="line125">125  </a></b>	
+<b><a name="line126">126  </a></b>	    def set_receptor(self, rigid_pdbqt_filename=None, flex_pdbqt_filename=None):
+<b><a name="line127">127  </a></b>	        &quot;&quot;&quot;Set receptor.
+<b><a name="line128">128  </a></b>	
+<b><a name="line129">129  </a></b>	        Args:
+<b><a name="line130">130  </a></b>	            rigid_pdbqt_filename (str): rigid pdbqt receptor filename (default: None)
+<b><a name="line131">131  </a></b>	            flex_pdbqt_filename (str): flexible residues pdbqt filename (default: None)
+<b><a name="line132">132  </a></b>	
+<b><a name="line133">133  </a></b>	        &quot;&quot;&quot;
+<b><a name="line134">134  </a></b>	        if rigid_pdbqt_filename is None and flex_pdbqt_filename is None:
+<b><a name="line135">135  </a></b>	            raise ValueError('Error: No (rigid) receptor or flexible residues were specified')
+<b><a name="line136">136  </a></b>	
+<b><a name="line137">137  </a></b>	        # For the rigid part of the receptor
+<b><a name="line138">138  </a></b>	        if rigid_pdbqt_filename is not None:
+<b><a name="line139">139  </a></b>	            if not os.path.exists(rigid_pdbqt_filename):
+<b><a name="line140">140  </a></b>	                raise RuntimeError('Error: file %s does not exist.' % rigid_pdbqt_filename)
+<b><a name="line141">141  </a></b>	            _, extension = os.path.splitext(rigid_pdbqt_filename)
+<b><a name="line142">142  </a></b>	            if not extension == '.pdbqt':
+<b><a name="line143">143  </a></b>	                raise TypeError('Error: Vina requires a PDBQT file for the (rigid) receptor.')
+<b><a name="line144">144  </a></b>	
+<b><a name="line145">145  </a></b>	        # For the flex part of the receptor
+<b><a name="line146">146  </a></b>	        if flex_pdbqt_filename is not None:
+<b><a name="line147">147  </a></b>	            if not os.path.exists(flex_pdbqt_filename):
+<b><a name="line148">148  </a></b>	                raise RuntimeError('Error: file %s does not exist.' % flex_pdbqt_filename)
+<b><a name="line149">149  </a></b>	            _, extension = os.path.splitext(flex_pdbqt_filename)
+<b><a name="line150">150  </a></b>	            if not extension == '.pdbqt':
+<b><a name="line151">151  </a></b>	                raise TypeError('Error: Vina requires a PDBQT file for the (flex) receptor.')
+<b><a name="line152">152  </a></b>	
+<b><a name="line153">153  </a></b>	        if rigid_pdbqt_filename is not None:
+<b><a name="line154">154  </a></b>	            if flex_pdbqt_filename is not None:
+<b><a name="line155">155  </a></b>	                self._vina.set_receptor(rigid_pdbqt_filename, flex_pdbqt_filename)
+<b><a name="line156">156  </a></b>	            else:
+<b><a name="line157">157  </a></b>	                self._vina.set_receptor(rigid_pdbqt_filename)
+<b><a name="line158">158  </a></b>	        else:
+<b><a name="line159">159  </a></b>	            self._vina.set_receptor('', flex_pdbqt_filename)
+<b><a name="line160">160  </a></b>	
+<b><a name="line161">161  </a></b>	        self._rigid_receptor = rigid_pdbqt_filename
+<b><a name="line162">162  </a></b>	        self._flex_receptor = flex_pdbqt_filename
+<b><a name="line163">163  </a></b>	
+<b><a name="line164">164  </a></b>	    def set_ligand_from_file(self, pdbqt_filename):
+<b><a name="line165">165  </a></b>	        &quot;&quot;&quot;Set ligand(s) from a file. The chemical file format must be PDBQT.
+<b><a name="line166">166  </a></b>	
+<b><a name="line167">167  </a></b>	        Args:
+<b><a name="line168">168  </a></b>	            pdbqt_filename (str or list): Name or list of PDBQT filename(s)
+<b><a name="line169">169  </a></b>	
+<b><a name="line170">170  </a></b>	        &quot;&quot;&quot;
+<b><a name="line171">171  </a></b>	        if not isinstance(pdbqt_filename, (list, tuple)):
+<b><a name="line172">172  </a></b>	            pdbqt_filename = [pdbqt_filename]
+<b><a name="line173">173  </a></b>	
+<b><a name="line174">174  </a></b>	        for pf in pdbqt_filename:
+<b><a name="line175">175  </a></b>	            if not os.path.exists(pf):
+<b><a name="line176">176  </a></b>	                raise RuntimeError('Error: file %s does not exist.' % pf)
+<b><a name="line177">177  </a></b>	            _, extension = os.path.splitext(pf)
+<b><a name="line178">178  </a></b>	            if not extension == '.pdbqt':
+<b><a name="line179">179  </a></b>	                raise TypeError('Error: Vina requires a PDBQT file for the ligand.')
+<b><a name="line180">180  </a></b>	
+<b><a name="line181">181  </a></b>	        if len(pdbqt_filename) == 1:
+<b><a name="line182">182  </a></b>	            self._vina.set_ligand_from_file(pdbqt_filename[0])
+<b><a name="line183">183  </a></b>	        else:
+<b><a name="line184">184  </a></b>	            self._vina.set_ligand_from_file(pdbqt_filename)
+<b><a name="line185">185  </a></b>	
+<b><a name="line186">186  </a></b>	        self._ligands = pdbqt_filename
+<b><a name="line187">187  </a></b>	    
+<b><a name="line188">188  </a></b>	    def set_ligand_from_string(self, pdbqt_string):
+<b><a name="line189">189  </a></b>	        &quot;&quot;&quot;Set ligand(s) from a string. The chemical file format must be PDBQT.
+<b><a name="line190">190  </a></b>	
+<b><a name="line191">191  </a></b>	        Args:
+<b><a name="line192">192  </a></b>	            pdbqt_string (str or list): string or list of PDBQT strings
+<b><a name="line193">193  </a></b>	
+<b><a name="line194">194  </a></b>	        &quot;&quot;&quot;
+<b><a name="line195">195  </a></b>	        if not isinstance(pdbqt_string, (list, tuple)):
+<b><a name="line196">196  </a></b>	            pdbqt_string = [pdbqt_string]
+<b><a name="line197">197  </a></b>	        
+<b><a name="line198">198  </a></b>	        for ps in pdbqt_string:
+<b><a name="line199">199  </a></b>	            if not isinstance(ps, str):
+<b><a name="line200">200  </a></b>	                raise TypeError('Error: %s is not a string.' % ps)
+<b><a name="line201">201  </a></b>	
+<b><a name="line202">202  </a></b>	        if len(pdbqt_string) == 1:
+<b><a name="line203">203  </a></b>	            self._vina.set_ligand_from_string(pdbqt_string[0])
+<b><a name="line204">204  </a></b>	        else:
+<b><a name="line205">205  </a></b>	            self._vina.set_ligand_from_string(pdbqt_string)
+<b><a name="line206">206  </a></b>	
+<b><a name="line207">207  </a></b>	        self._ligands = pdbqt_string
+<b><a name="line208">208  </a></b>	
+<b><a name="line209">209  </a></b>	    def set_weights(self, weights):
+<b><a name="line210">210  </a></b>	        &quot;&quot;&quot;Set potential weights for vina or ad4 scoring function.
+<b><a name="line211">211  </a></b>	
+<b><a name="line212">212  </a></b>	        Args:
+<b><a name="line213">213  </a></b>	            weights (list): list or weights
+<b><a name="line214">214  </a></b>	
+<b><a name="line215">215  </a></b>	        &quot;&quot;&quot;
+<b><a name="line216">216  </a></b>	        if not isinstance(weights, (list, tuple)):
+<b><a name="line217">217  </a></b>	            raise TypeError('Error: Cannot set weights (%s).' % weights)
+<b><a name="line218">218  </a></b>	        if self._sf_name == 'vina':
+<b><a name="line219">219  </a></b>	            if len(weights) != 7:
+<b><a name="line220">220  </a></b>	                raise ValueError('Error: Number of weights does not correspond to Vina scoring function.' )
+<b><a name="line221">221  </a></b>	            self._vina.set_vina_weights(*weights)
+<b><a name="line222">222  </a></b>	        else:
+<b><a name="line223">223  </a></b>	            if len(weights) != 6:
+<b><a name="line224">224  </a></b>	                raise ValueError('Error: Number of weights does not correspond to AD4 or Vinardo scoring function.')
+</pre>
+<table summary="events" bgcolor=#e0e0e0>
+<tr><td><font color="red">
+<a name="error:0"></a>
+<a name="error"></a>
+<!-- merge-key d47ee7b9f6a9e19bc9c82fb4f01beed0 -->
+<b>(1) Event unreachable</b>: </font></td>
+<td><font color="red">This code cannot be reached: &quot;if (self._sf_name == &quot;ad4&quot;)...&quot;.</font></td>
+</tr>
+</table>
+<pre><b><a name="line225">225  </a></b>	                if self._sf_name == 'ad4':
+<b><a name="line226">226  </a></b>	                    self._vina.set_ad4_weights(*weights)
+<b><a name="line227">227  </a></b>	                else:
+<b><a name="line228">228  </a></b>	                    self._vina.set_vinardo_weights(*weights)
+<b><a name="line229">229  </a></b>	
+<b><a name="line230">230  </a></b>	        self._weights = weights
+<b><a name="line231">231  </a></b>	
+<b><a name="line232">232  </a></b>	    def compute_vina_maps(self, center, box_size, spacing=0.375, force_even_voxels=False):
+<b><a name="line233">233  </a></b>	        &quot;&quot;&quot;Compute affinity maps using Vina scoring function.
+<b><a name="line234">234  </a></b>	
+<b><a name="line235">235  </a></b>	        Args:
+<b><a name="line236">236  </a></b>	            center (list): center position
+<b><a name="line237">237  </a></b>	            box_size (list): size of the box in Angstrom
+<b><a name="line238">238  </a></b>	            spacing (float): grid spacing (default: 0.375)
+<b><a name="line239">239  </a></b>	            force_even_voxels (boolean): Force the number of voxels (NPTS/NELEMENTS) to be an even number
+<b><a name="line240">240  </a></b>	                (and forcing the number of grid points to be odd) (default: False)
+<b><a name="line241">241  </a></b>	
+<b><a name="line242">242  </a></b>	        &quot;&quot;&quot;
+<b><a name="line243">243  </a></b>	        if len(center) != 3:
+<b><a name="line244">244  </a></b>	            raise ValueError('Error: center of the box needs to be defined by (x, y, z) in Angstrom.')
+<b><a name="line245">245  </a></b>	        elif len(box_size) != 3:
+<b><a name="line246">246  </a></b>	            raise ValueError('Error: box size needs to be defined by (a, b, c) in Angstrom.')
+<b><a name="line247">247  </a></b>	        elif not all([i &gt; 0 for i in box_size]):
+<b><a name="line248">248  </a></b>	            raise ValueError('Error: box dimensions are required to be positive.')
+<b><a name="line249">249  </a></b>	        elif spacing &lt;= 0:
+<b><a name="line250">250  </a></b>	            raise ValueError('Error: spacing should be greater than zero.')
+<b><a name="line251">251  </a></b>	
+<b><a name="line252">252  </a></b>	        x, y, z = center
+<b><a name="line253">253  </a></b>	        a, b, c = box_size
+<b><a name="line254">254  </a></b>	
+<b><a name="line255">255  </a></b>	        self._vina.compute_vina_maps(x, y, z, a, b, c, spacing, force_even_voxels)
+<b><a name="line256">256  </a></b>	
+<b><a name="line257">257  </a></b>	        self._center = center
+<b><a name="line258">258  </a></b>	        self._box_size = box_size
+<b><a name="line259">259  </a></b>	        self._spacing = spacing
+<b><a name="line260">260  </a></b>	        self._voxels = np.ceil(np.array(box_size) / self._spacing).astype(np.int)
+<b><a name="line261">261  </a></b>	
+<b><a name="line262">262  </a></b>	        # Necessary step to know if we can write maps or not later
+<b><a name="line263">263  </a></b>	        if force_even_voxels:
+<b><a name="line264">264  </a></b>	            self._voxels[0] += int(self._voxels[0] % 2 == 1)
+<b><a name="line265">265  </a></b>	            self._voxels[1] += int(self._voxels[1] % 2 == 1)
+<b><a name="line266">266  </a></b>	            self._voxels[2] += int(self._voxels[2] % 2 == 1)
+<b><a name="line267">267  </a></b>	
+<b><a name="line268">268  </a></b>	    def load_maps(self, map_prefix_filename):
+<b><a name="line269">269  </a></b>	        &quot;&quot;&quot;Load vina or ad4 affinity maps.
+<b><a name="line270">270  </a></b>	
+<b><a name="line271">271  </a></b>	        Args:
+<b><a name="line272">272  </a></b>	            map_prefix_filename (str): affinity map prefix filename
+<b><a name="line273">273  </a></b>	
+<b><a name="line274">274  </a></b>	        &quot;&quot;&quot;
+<b><a name="line275">275  </a></b>	        if not glob.glob('%s.*.map' % map_prefix_filename):
+<b><a name="line276">276  </a></b>	            raise RuntimeError('Error: Cannot find affinity maps with %s' % map_prefix_filename)
+<b><a name="line277">277  </a></b>	
+<b><a name="line278">278  </a></b>	        self._vina.load_maps(map_prefix_filename)
+<b><a name="line279">279  </a></b>	    
+<b><a name="line280">280  </a></b>	    def write_maps(self, map_prefix_filename='receptor', gpf_filename='NULL',
+<b><a name="line281">281  </a></b>	                   fld_filename='NULL', receptor_filename='NULL', overwrite=False):
+<b><a name="line282">282  </a></b>	        &quot;&quot;&quot;Write affinity maps.
+<b><a name="line283">283  </a></b>	
+<b><a name="line284">284  </a></b>	        Args:
+<b><a name="line285">285  </a></b>	            map_prefix_filename (str): affinity map pathname (path directory + prefix)
+<b><a name="line286">286  </a></b>	            gpf_filename (str): grid protein filename (default: NULL)
+<b><a name="line287">287  </a></b>	            fld_filename (str): fld filename (default: NULL)
+<b><a name="line288">288  </a></b>	            receptor filename (str): receptor filename (default: NULL)
+<b><a name="line289">289  </a></b>	            overwrite (bool): allow overwriting (default: false)
+<b><a name="line290">290  </a></b>	
+<b><a name="line291">291  </a></b>	        &quot;&quot;&quot;
+<b><a name="line292">292  </a></b>	        if self._center is None:
+<b><a name="line293">293  </a></b>	            raise RuntimeError('Error: no affinity maps were defined.')
+<b><a name="line294">294  </a></b>	        elif not overwrite:
+<b><a name="line295">295  </a></b>	            existing_maps = glob.glob('%s.*.map' % map_prefix_filename)
+<b><a name="line296">296  </a></b>	            if existing_maps:
+<b><a name="line297">297  </a></b>	                raise RuntimeError('Error: Cannot overwrite existing affinity maps (%s)' % existing_maps)
+<b><a name="line298">298  </a></b>	
+<b><a name="line299">299  </a></b>	        if any(self._voxels % 2 == 1):
+<b><a name="line300">300  </a></b>	            error_msg = 'Error: Can\'t write maps. Number of voxels (NPTS/NELEMENTS) is odd: %s.' % self._voxels
+<b><a name="line301">301  </a></b>	            error_msg += ' Set \'force_even_voxels\' to True when computing vina maps.'
+<b><a name="line302">302  </a></b>	            raise RuntimeError(error_msg)
+<b><a name="line303">303  </a></b>	
+<b><a name="line304">304  </a></b>	        self._vina.write_maps(map_prefix_filename, gpf_filename, fld_filename, receptor_filename)
+<b><a name="line305">305  </a></b>	    
+<b><a name="line306">306  </a></b>	    def write_pose(self, pdbqt_filename, remarks='', overwrite=False):
+<b><a name="line307">307  </a></b>	        &quot;&quot;&quot;Write pose (after randomize or optimize).
+<b><a name="line308">308  </a></b>	
+<b><a name="line309">309  </a></b>	        Args:
+<b><a name="line310">310  </a></b>	            pdbqt_filename (str): output PDBQT filename
+<b><a name="line311">311  </a></b>	            remarks (str): REMARKS to add in the PDBQT filename
+<b><a name="line312">312  </a></b>	            overwrite (bool): allow overwriting (default: false)
+<b><a name="line313">313  </a></b>	
+<b><a name="line314">314  </a></b>	        &quot;&quot;&quot;
+<b><a name="line315">315  </a></b>	        if not utils.check_file_writable(pdbqt_filename):
+<b><a name="line316">316  </a></b>	            raise RuntimeError('Error: Cannot write pose at %s.' % pdbqt_filename)
+<b><a name="line317">317  </a></b>	        elif not overwrite:
+<b><a name="line318">318  </a></b>	            if os.path.exists(pdbqt_filename):
+<b><a name="line319">319  </a></b>	                raise RuntimeError('Error: Cannot overwrite %s, already exists.' % pdbqt_filename)
+<b><a name="line320">320  </a></b>	
+<b><a name="line321">321  </a></b>	        self._vina.write_pose(pdbqt_filename, remarks)
+<b><a name="line322">322  </a></b>	    
+<b><a name="line323">323  </a></b>	    def write_poses(self, pdbqt_filename, n_poses=9, energy_range=3.0, overwrite=False):
+<b><a name="line324">324  </a></b>	        &quot;&quot;&quot;Write poses from docking.
+<b><a name="line325">325  </a></b>	
+<b><a name="line326">326  </a></b>	        Args:
+<b><a name="line327">327  </a></b>	            pdbqt_filename (str): PDBQT file containing poses found
+<b><a name="line328">328  </a></b>	            n_pose (int): number of poses to write (default: 9)
+<b><a name="line329">329  </a></b>	            energy_range (float): maximum energy difference from best pose (default: 3.0 kcal/mol)
+<b><a name="line330">330  </a></b>	            overwrite (bool): allow overwriting (default: false)
+<b><a name="line331">331  </a></b>	
+<b><a name="line332">332  </a></b>	        &quot;&quot;&quot;
+<b><a name="line333">333  </a></b>	        if not utils.check_file_writable(pdbqt_filename):
+<b><a name="line334">334  </a></b>	            raise RuntimeError(
+<b><a name="line335">335  </a></b>	                'Error: Cannot write docking results at %s.' % pdbqt_filename)
+<b><a name="line336">336  </a></b>	        elif not overwrite:
+<b><a name="line337">337  </a></b>	            if os.path.exists(pdbqt_filename):
+<b><a name="line338">338  </a></b>	                raise RuntimeError(
+<b><a name="line339">339  </a></b>	                    'Error: Cannot overwrite %s, already exists.' % pdbqt_filename)
+<b><a name="line340">340  </a></b>	        elif n_poses &lt;= 0:
+<b><a name="line341">341  </a></b>	            raise ValueError(
+<b><a name="line342">342  </a></b>	                'Error: number of poses written must be greater than zero.')
+<b><a name="line343">343  </a></b>	        elif energy_range &lt;= 0:
+<b><a name="line344">344  </a></b>	            raise ValueError('Error: energy range must be greater than zero.')
+<b><a name="line345">345  </a></b>	
+<b><a name="line346">346  </a></b>	        self._vina.write_poses(pdbqt_filename, n_poses, energy_range)
+<b><a name="line347">347  </a></b>	    
+<b><a name="line348">348  </a></b>	    def poses(self, n_poses=9, energy_range=3.0, coordinates_only=False):
+<b><a name="line349">349  </a></b>	        &quot;&quot;&quot;Get poses from docking.
+<b><a name="line350">350  </a></b>	
+<b><a name="line351">351  </a></b>	        Args:
+<b><a name="line352">352  </a></b>	            n_pose (int): number of poses to retrieve (default: 9)
+<b><a name="line353">353  </a></b>	            energy_range (float): maximum energy difference from best pose (default: 3.0 kcal/mol)
+<b><a name="line354">354  </a></b>	            coordinates_only (bool): return coordinates for each pose only
+<b><a name="line355">355  </a></b>	
+<b><a name="line356">356  </a></b>	        Returns:
+<b><a name="line357">357  </a></b>	            str/ndarray: PDBQT file string or Array of coordinates of poses if coordinates_only=True
+<b><a name="line358">358  </a></b>	
+<b><a name="line359">359  </a></b>	        &quot;&quot;&quot;
+<b><a name="line360">360  </a></b>	        if n_poses &lt;= 0:
+<b><a name="line361">361  </a></b>	            raise ValueError('Error: number of poses written must be greater than zero.')
+<b><a name="line362">362  </a></b>	        elif energy_range &lt;= 0:
+<b><a name="line363">363  </a></b>	            raise ValueError('Error: energy range must be greater than zero.')
+<b><a name="line364">364  </a></b>	        
+<b><a name="line365">365  </a></b>	        if coordinates_only:
+<b><a name="line366">366  </a></b>	            # Dirty hack to get the coordinates from C++, it is not advised to have vector&lt;vector&lt;vector&lt;double&gt;&gt;&gt;
+<b><a name="line367">367  </a></b>	            coordinates = np.array(self._vina.get_poses_coordinates(n_poses, energy_range))
+<b><a name="line368">368  </a></b>	            coordinates = coordinates.reshape((coordinates.shape[0], coordinates.shape[1] // 3, 3))
+<b><a name="line369">369  </a></b>	            coordinates = np.around(coordinates, decimals=3)
+<b><a name="line370">370  </a></b>	            return coordinates
+<b><a name="line371">371  </a></b>	        else:
+<b><a name="line372">372  </a></b>	            return self._vina.get_poses(n_poses, energy_range)
+<b><a name="line373">373  </a></b>	    
+<b><a name="line374">374  </a></b>	    def energies(self, n_poses=9, energy_range=3.0):
+<b><a name="line375">375  </a></b>	        &quot;&quot;&quot;Get pose energies from docking.
+<b><a name="line376">376  </a></b>	
+<b><a name="line377">377  </a></b>	        Args:
+<b><a name="line378">378  </a></b>	            n_pose (int): number of poses to retrieve (default: 9)
+<b><a name="line379">379  </a></b>	            energy_range (float): maximum energy difference from best pose (default: 3.0 kcal/mol)
+<b><a name="line380">380  </a></b>	        
+<b><a name="line381">381  </a></b>	        Returns:
+<b><a name="line382">382  </a></b>	            ndarray: Array of energies from each pose (rows=poses, columns=energies) 
+<b><a name="line383">383  </a></b>	            
+<b><a name="line384">384  </a></b>	            Vina/Vinardo FF:
+<b><a name="line385">385  </a></b>	                columns=[total, inter, intra, torsions, intra best pose]
+<b><a name="line386">386  </a></b>	            
+<b><a name="line387">387  </a></b>	            AutoDock FF:
+<b><a name="line388">388  </a></b>	                columns=[total, inter, intra, torsions, -intra]
+<b><a name="line389">389  </a></b>	
+<b><a name="line390">390  </a></b>	        &quot;&quot;&quot;
+<b><a name="line391">391  </a></b>	        if n_poses &lt;= 0:
+<b><a name="line392">392  </a></b>	            raise ValueError('Error: number of poses written must be greater than zero.')
+<b><a name="line393">393  </a></b>	        elif energy_range &lt;= 0:
+<b><a name="line394">394  </a></b>	            raise ValueError('Error: energy range must be greater than zero.')
+<b><a name="line395">395  </a></b>	
+<b><a name="line396">396  </a></b>	        return np.around(self._vina.get_poses_energies(n_poses, energy_range), decimals=3)
+<b><a name="line397">397  </a></b>	
+<b><a name="line398">398  </a></b>	    def randomize(self):
+<b><a name="line399">399  </a></b>	        &quot;&quot;&quot;Randomize the input ligand conformation.&quot;&quot;&quot;
+<b><a name="line400">400  </a></b>	        self._vina.randomize()
+<b><a name="line401">401  </a></b>	    
+<b><a name="line402">402  </a></b>	    def score(self):
+<b><a name="line403">403  </a></b>	        &quot;&quot;&quot;Score current pose.
+<b><a name="line404">404  </a></b>	
+<b><a name="line405">405  </a></b>	        Returns:
+<b><a name="line406">406  </a></b>	            nadarray: Array of energies from current pose.
+<b><a name="line407">407  </a></b>	
+<b><a name="line408">408  </a></b>	            Vina/Vinardo FF:
+<b><a name="line409">409  </a></b>	                columns=[total, lig_inter, flex_inter, other_inter, flex_intra, lig_intra, torsions, lig_intra best pose]
+<b><a name="line410">410  </a></b>	            
+<b><a name="line411">411  </a></b>	            AutoDock FF:
+<b><a name="line412">412  </a></b>	                columns=[total, lig_inter, flex_inter, other_inter, flex_intra, lig_intra, torsions, -lig_intra]
+<b><a name="line413">413  </a></b>	
+<b><a name="line414">414  </a></b>	        &quot;&quot;&quot;
+<b><a name="line415">415  </a></b>	        # It does not make sense to report energies with a precision higher than 3
+<b><a name="line416">416  </a></b>	        # since the coordinates precision is 3.
+<b><a name="line417">417  </a></b>	        energies = np.around(self._vina.score(), decimals=3)
+<b><a name="line418">418  </a></b>	        return energies
+<b><a name="line419">419  </a></b>	
+<b><a name="line420">420  </a></b>	    def optimize(self, max_steps=0):
+<b><a name="line421">421  </a></b>	        &quot;&quot;&quot;Quick local BFGS energy optimization.
+<b><a name="line422">422  </a></b>	
+<b><a name="line423">423  </a></b>	        Args:
+<b><a name="line424">424  </a></b>	            max_steps (int): Maximum number of local minimization steps (default: 0). When max_steps is equal to 0,
+<b><a name="line425">425  </a></b>	                             the maximum number of steps will be equal to (25 + num_movable_atoms) / 3).
+<b><a name="line426">426  </a></b>	
+<b><a name="line427">427  </a></b>	        Returns:
+<b><a name="line428">428  </a></b>	            nadarray: Array of energies from optimized pose.
+<b><a name="line429">429  </a></b>	
+<b><a name="line430">430  </a></b>	            Vina/Vinardo FF:
+<b><a name="line431">431  </a></b>	                columns=[total, lig_inter, flex_inter, other_inter, flex_intra, lig_intra, torsions, lig_intra best pose]
+<b><a name="line432">432  </a></b>	            
+<b><a name="line433">433  </a></b>	            AutoDock FF:
+<b><a name="line434">434  </a></b>	                columns=[total, lig_inter, flex_inter, other_inter, flex_intra, lig_intra, torsions, -lig_intra]
+<b><a name="line435">435  </a></b>	
+<b><a name="line436">436  </a></b>	        &quot;&quot;&quot;
+<b><a name="line437">437  </a></b>	        if max_steps &lt; 0:
+<b><a name="line438">438  </a></b>	            raise ValueError('Error: max_steps cannot be negative.')
+<b><a name="line439">439  </a></b>	
+<b><a name="line440">440  </a></b>	        # It does not make sense to report energies with a precision higher than 3
+<b><a name="line441">441  </a></b>	        # since the coordinates precision is 3.
+<b><a name="line442">442  </a></b>	        energies = np.around(self._vina.optimize(max_steps), decimals=3)
+<b><a name="line443">443  </a></b>	        return energies
+<b><a name="line444">444  </a></b>	
+<b><a name="line445">445  </a></b>	    def dock(self, exhaustiveness=8, n_poses=20, min_rmsd=1.0, max_evals=0):
+<b><a name="line446">446  </a></b>	        &quot;&quot;&quot;Docking: global search optimization.
+<b><a name="line447">447  </a></b>	
+<b><a name="line448">448  </a></b>	        Args:
+<b><a name="line449">449  </a></b>	            exhaustiveness (int): Number of MC run (default: 8)
+<b><a name="line450">450  </a></b>	            n_poses (int): number of pose to generate (default: 20)
+<b><a name="line451">451  </a></b>	            min_rmsd (float): minimum RMSD difference between poses (default: 1.0 Ansgtrom)
+<b><a name="line452">452  </a></b>	            max_evals (int): Maximum number of evaluation (default: 0; use heuristics rules)
+<b><a name="line453">453  </a></b>	
+<b><a name="line454">454  </a></b>	        &quot;&quot;&quot;
+<b><a name="line455">455  </a></b>	        if exhaustiveness &lt;= 0:
+<b><a name="line456">456  </a></b>	            raise ValueError('Error: exhaustiveness must be 1 or greater.')
+<b><a name="line457">457  </a></b>	        elif n_poses &lt;= 0:
+<b><a name="line458">458  </a></b>	            raise ValueError('Error: number of poses to generate must be greater than zero.')
+<b><a name="line459">459  </a></b>	        elif min_rmsd &lt;= 0:
+<b><a name="line460">460  </a></b>	            raise ValueError('Error: minimal RMSD must be greater than zero.')
+<b><a name="line461">461  </a></b>	        elif max_evals &lt; 0:
+<b><a name="line462">462  </a></b>	            raise ValueError('Error: maximum evaluations must be positive.')
+<b><a name="line463">463  </a></b>	
+<b><a name="line464">464  </a></b>	        self._vina.global_search(exhaustiveness, n_poses, min_rmsd, max_evals)
+<b><a name="line465">465  </a></b>	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></body>
+</html>

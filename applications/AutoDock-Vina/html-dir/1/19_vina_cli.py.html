@@ -1,0 +1,376 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html><head><title>Coverity error reader: /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2/build/python/vina/vina_cli.py</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head>
+<body link="#000000" vlink="#000000"><pre>
+<b><a name="line1">1    </a></b>	#!/usr/bin/env python
+<b><a name="line2">2    </a></b>	# -*- coding: utf-8 -*-
+<b><a name="line3">3    </a></b>	#
+<b><a name="line4">4    </a></b>	# Vina CLI
+<b><a name="line5">5    </a></b>	#
+<b><a name="line6">6    </a></b>	
+<b><a name="line7">7    </a></b>	import argparse
+<b><a name="line8">8    </a></b>	import os
+<b><a name="line9">9    </a></b>	
+<b><a name="line10">10   </a></b>	import numpy as np
+<b><a name="line11">11   </a></b>	
+<b><a name="line12">12   </a></b>	from .vina import Vina
+<b><a name="line13">13   </a></b>	
+<b><a name="line14">14   </a></b>	
+<b><a name="line15">15   </a></b>	def cmd_lineparser():
+<b><a name="line16">16   </a></b>	    parser = argparse.ArgumentParser(description='AutoDock-Vina 1.2.0 (Python CLI)',
+<b><a name="line17">17   </a></b>	                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+<b><a name="line18">18   </a></b>	    # Input receptor, flex and ligand
+<b><a name="line19">19   </a></b>	    parser.add_argument('-r', '--receptor', dest='receptor', default=None,
+<b><a name="line20">20   </a></b>	                        type=str, action='store', help='rigid part of the receptor (PDBQT)')
+<b><a name="line21">21   </a></b>	    parser.add_argument('-f', '--flex', dest='flex', default=None,
+<b><a name="line22">22   </a></b>	                        type=str, action='store', help='flexible side chains, if any (PDBQT)')
+<b><a name="line23">23   </a></b>	    group = parser.add_mutually_exclusive_group()
+<b><a name="line24">24   </a></b>	    group.add_argument('-l', '--ligand', dest='ligands', default=None,
+<b><a name="line25">25   </a></b>	                       nargs='+', action='store', help='ligand (PDBQT)')
+<b><a name="line26">26   </a></b>	    group.add_argument('-b', '--batch', dest='batch', default=None,
+<b><a name="line27">27   </a></b>	                       nargs='+', action='store', help='ligand (PDBQT)')
+<b><a name="line28">28   </a></b>	    # Scoring function
+<b><a name="line29">29   </a></b>	    parser.add_argument('-s', '--scoring', dest='sf_name', default='vina',
+<b><a name="line30">30   </a></b>	                        type=str, choices=['ad4', 'vina', 'vinardo'], action='store',
+<b><a name="line31">31   </a></b>	                        help='scoring function (ad4, vina or vinardo)')
+<b><a name="line32">32   </a></b>	    # Dimensions maps
+<b><a name="line33">33   </a></b>	    group_dim = parser.add_argument_group('Search space options')
+<b><a name="line34">34   </a></b>	    group_dim.add_argument('-m', '--maps', dest='maps', default=None,
+<b><a name="line35">35   </a></b>	                        action='store', help='affinity maps for ad4, vina or vinardo scoring function')
+<b><a name="line36">36   </a></b>	    group_dim.add_argument('--center_x', dest='center_x', default=None,
+<b><a name="line37">37   </a></b>	                        type=float, action='store', help='X coordinate of the center (Angstrom)')
+<b><a name="line38">38   </a></b>	    group_dim.add_argument('--center_y', dest='center_y', default=None,
+<b><a name="line39">39   </a></b>	                        type=float, action='store', help='Y coordinate of the center (Angstrom)')
+<b><a name="line40">40   </a></b>	    group_dim.add_argument('--center_z', dest='center_z', default=None,
+<b><a name="line41">41   </a></b>	                        type=float, action='store', help='Z coordinate of the center (Angstrom)')
+<b><a name="line42">42   </a></b>	    group_dim.add_argument('--size_x', dest='size_x', default=None,
+<b><a name="line43">43   </a></b>	                        type=float, action='store', help='size in the X dimension (Angstrom)')
+<b><a name="line44">44   </a></b>	    group_dim.add_argument('--size_y', dest='size_y', default=None,
+<b><a name="line45">45   </a></b>	                        type=float, action='store', help='size in the Y dimension (Angstrom)')
+<b><a name="line46">46   </a></b>	    group_dim.add_argument('--size_z', dest='size_z', default=None,
+<b><a name="line47">47   </a></b>	                        type=float, action='store', help='size in the Z dimension (Angstrom)')
+<b><a name="line48">48   </a></b>	    # Actions
+<b><a name="line49">49   </a></b>	    group_actions = parser.add_argument_group('Action options')
+<b><a name="line50">50   </a></b>	    group_actions.add_argument('--randomize_only', dest='randomize_only', default=False,
+<b><a name="line51">51   </a></b>	                        action='store_true', help='randomize input, attempting to avoid clashes')
+<b><a name="line52">52   </a></b>	    group_actions.add_argument('--score_only', dest='score_only', default=False,
+<b><a name="line53">53   </a></b>	                        action='store_true', help='score only - needs maps')
+<b><a name="line54">54   </a></b>	    group_actions.add_argument('--local_only', dest='local_only', default=False,
+<b><a name="line55">55   </a></b>	                        action='store_true', help='do local search only')
+<b><a name="line56">56   </a></b>	    # Output
+<b><a name="line57">57   </a></b>	    group_out = parser.add_argument_group('Output options')
+<b><a name="line58">58   </a></b>	    group_out.add_argument('-o', '--out', dest='out', default=None,
+<b><a name="line59">59   </a></b>	                        type=str, action='store',
+<b><a name="line60">60   </a></b>	                        help='output models (PDBQT), the default is chosen based on the ligand file name')
+<b><a name="line61">61   </a></b>	    group_out.add_argument('-d', '--dir', dest='dir', default=None,
+<b><a name="line62">62   </a></b>	                        type=str, action='store',
+<b><a name="line63">63   </a></b>	                        help='output directory for batch mode')
+<b><a name="line64">64   </a></b>	    group_out.add_argument('--write_maps', dest='write_maps', default=None,
+<b><a name="line65">65   </a></b>	                        type=str, action='store',
+<b><a name="line66">66   </a></b>	                        help='output filename (directory + prefix name) for maps')
+<b><a name="line67">67   </a></b>	    # Extra arguments
+<b><a name="line68">68   </a></b>	    group_extra = parser.add_argument_group('Extra options')
+<b><a name="line69">69   </a></b>	    group_extra.add_argument('--cpu', dest='cpu', default=0,
+<b><a name="line70">70   </a></b>	                        type=int, action='store',
+<b><a name="line71">71   </a></b>	                        help='the number of CPUs to use (the default is to try to detect the number of CPUs or, failing that, use 1)')
+<b><a name="line72">72   </a></b>	    group_extra.add_argument('--seed', dest='seed', default=0,
+<b><a name="line73">73   </a></b>	                        type=int, action='store',
+<b><a name="line74">74   </a></b>	                        help='explicit random seed')
+<b><a name="line75">75   </a></b>	    group_extra.add_argument('--exhaustiveness', dest='exhaustiveness', default=8,
+<b><a name="line76">76   </a></b>	                        type=int, action='store',
+<b><a name="line77">77   </a></b>	                        help='exhaustiveness of the global search (roughly proportional to time): 1+')
+<b><a name="line78">78   </a></b>	    group_extra.add_argument('--max_evals', dest='max_evals', default=0,
+<b><a name="line79">79   </a></b>	                        type=int, action='store',
+<b><a name="line80">80   </a></b>	                        help='number of evaluations in each MC run (if zero, which is the default, the number of MC steps is based on heuristics)')
+<b><a name="line81">81   </a></b>	    group_extra.add_argument('--num_modes', dest='num_modes', default=9,
+<b><a name="line82">82   </a></b>	                        type=int, action='store',
+<b><a name="line83">83   </a></b>	                        help='maximum number of binding modes to generate')
+<b><a name="line84">84   </a></b>	    group_extra.add_argument('--min_rmsd', dest='min_rmsd', default=1.0,
+<b><a name="line85">85   </a></b>	                        type=float, action='store',
+<b><a name="line86">86   </a></b>	                        help='minimum RMSD between output poses')
+<b><a name="line87">87   </a></b>	    group_extra.add_argument('--energy_range', dest='energy_range', default=3.0,
+<b><a name="line88">88   </a></b>	                        type=float, action='store',
+<b><a name="line89">89   </a></b>	                        help='maximum energy difference between the best binding mode and the worst one displayed (kcal/mol)')
+<b><a name="line90">90   </a></b>	    group_extra.add_argument('--spacing', dest='grid_spacing', default=0.375,
+<b><a name="line91">91   </a></b>	                        type=float, action='store',
+<b><a name="line92">92   </a></b>	                        help='grid spacing (Angstrom)')
+<b><a name="line93">93   </a></b>	    group_extra.add_argument('--verbosity', dest='verbosity', default=1,
+<b><a name="line94">94   </a></b>	                        type=int, action='store',
+<b><a name="line95">95   </a></b>	                        help='verbosity (0=no output, 1=normal, 2=verbose)')
+<b><a name="line96">96   </a></b>	    # Scoring function weight
+<b><a name="line97">97   </a></b>	    group_weight = parser.add_argument_group('Scoring function weights options')
+<b><a name="line98">98   </a></b>	    # Vina
+<b><a name="line99">99   </a></b>	    group_weight.add_argument('--weight_gauss1', dest='weight_gauss1', default=-0.035579,
+<b><a name="line100">100  </a></b>	                             type=float, action='store', help='gauss_1 weight')
+<b><a name="line101">101  </a></b>	    group_weight.add_argument('--weight_gauss2', dest='weight_gauss2', default=-0.005156,
+<b><a name="line102">102  </a></b>	                             type=float, action='store', help='gauss_2 weight')
+<b><a name="line103">103  </a></b>	    group_weight.add_argument('--weight_repulsion', dest='weight_repulsion', default=0.840245,
+<b><a name="line104">104  </a></b>	                             type=float, action='store', help='repulsion weight')
+<b><a name="line105">105  </a></b>	    group_weight.add_argument('--weight_hydrophobic', dest='weight_hydrophobic', default=-0.035069,
+<b><a name="line106">106  </a></b>	                             type=float, action='store', help='hydrophobic weight')
+<b><a name="line107">107  </a></b>	    group_weight.add_argument('--weight_hydrogen', dest='weight_hydrogen', default=-0.587439,
+<b><a name="line108">108  </a></b>	                             type=float, action='store', help='Hydrogen bond weights')
+<b><a name="line109">109  </a></b>	    group_weight.add_argument('--weight_rot', dest='weight_rot', default=0.05846,
+<b><a name="line110">110  </a></b>	                             type=float, action='store', help='N_rot weight')
+<b><a name="line111">111  </a></b>	    # Vinardo
+<b><a name="line112">112  </a></b>	    group_weight.add_argument('--weight_vinardo_gauss1', dest='weight_vinardo_gauss1', default=-0.045,
+<b><a name="line113">113  </a></b>	                              type=float, action='store', help='vinardo gauss_1 weight')
+<b><a name="line114">114  </a></b>	    group_weight.add_argument('--weight_vinardo_repulsion', dest='weight_vinardo_repulsion', default=0.8,
+<b><a name="line115">115  </a></b>	                              type=float, action='store', help='vinardo repulsion weight')
+<b><a name="line116">116  </a></b>	    group_weight.add_argument('--weight_vinardo_hydrophobic', dest='weight_vinardo_hydrophobic', default=-0.035,
+<b><a name="line117">117  </a></b>	                              type=float, action='store', help='vinardo hydrophobic weight')
+<b><a name="line118">118  </a></b>	    group_weight.add_argument('--weight_vinardo_hydrogen', dest='weight_vinardo_hydrogen', default=-0.600,
+<b><a name="line119">119  </a></b>	                              type=float, action='store', help='vinardo Hydrogen bond weights')
+<b><a name="line120">120  </a></b>	    group_weight.add_argument('--weight_vinardo_rot', dest='weight_vinardo_rot', default=0.05846,
+<b><a name="line121">121  </a></b>	                              type=float, action='store', help='vinardo N_rot weight')
+<b><a name="line122">122  </a></b>	    # AutoDock 4
+<b><a name="line123">123  </a></b>	    group_weight.add_argument('--weight_ad4_vdw', dest='weight_ad4_vdw', default=0.1662,
+<b><a name="line124">124  </a></b>	                             type=float, action='store', help='ad4_vdw weight')
+<b><a name="line125">125  </a></b>	    group_weight.add_argument('--weight_ad4_hb', dest='weight_ad4_hb', default=0.1209,
+<b><a name="line126">126  </a></b>	                             type=float, action='store', help='ad4_hb weight')
+<b><a name="line127">127  </a></b>	    group_weight.add_argument('--weight_ad4_elec', dest='weight_ad4_elec', default=0.1406,
+<b><a name="line128">128  </a></b>	                             type=float, action='store', help='ad4_electstrostatic weight')
+</pre>
+<table summary="events" bgcolor=#e0e0e0>
+<tr><td><font color="red">
+<a name="error:0"></a>
+<a name="error"></a>
+<!-- merge-key ed6fdbae2eff5a2fd32dcf039bd06dfd -->
+<b>(1) Event identifier_typo</b>: </font></td>
+<td><font color="red">Using &quot;weight_ad4_desolv&quot; appears to be a typo:
+* Identifier &quot;weight_ad4_desolv&quot; is only known to be referenced here, or in copies of this code.
+* Identifier &quot;weight_ad4_dsolv&quot; is referenced elsewhere at least 2 times.
+</font></td>
+</tr>
+<tr><td><font color="red">
+<a name="error:3"></a>
+<!-- merge-key ed6fdbae2eff5a2fd32dcf039bd06dfd -->
+<b>(4) Event remediation</b>: </font></td>
+<td><font color="red">Should identifier &quot;weight_ad4_desolv&quot; be replaced by &quot;weight_ad4_dsolv&quot;?</font></td>
+</tr>
+<tr><td><font color="red">Also see events: </font></td>
+<td><font color="red">[<a href="19.0_vina_cli.py.html#error:1">identifier_use</a>][<a href="19.0_vina_wrapper.py.html#error:2">identifier_use</a>]</font></td></tr>
+</table>
+<pre><b><a name="line129">129  </a></b>	    group_weight.add_argument('--weight_ad4_desolv', dest='weight_ad4_desolv', default=0.1322,
+<b><a name="line130">130  </a></b>	                             type=float, action='store', help='ad4_desolvation weight')
+<b><a name="line131">131  </a></b>	    group_weight.add_argument('--weight_ad4_rot', dest='weight_ad4_rot', default=0.2983,
+<b><a name="line132">132  </a></b>	                             type=float, action='store', help='ad4_rot weight')
+<b><a name="line133">133  </a></b>	    # Macrocycle
+<b><a name="line134">134  </a></b>	    group_weight.add_argument('--weight_glue', dest='weight_glue', default=50.0,
+<b><a name="line135">135  </a></b>	                             type=float, action='store', help='macrocycle glue weight')
+<b><a name="line136">136  </a></b>	
+<b><a name="line137">137  </a></b>	    args = parser.parse_args()
+<b><a name="line138">138  </a></b>	    
+<b><a name="line139">139  </a></b>	    # We need the rigid receptor or the maps, not both
+<b><a name="line140">140  </a></b>	    if args.receptor is not None and args.maps is not None:
+<b><a name="line141">141  </a></b>	        parser.error('ERROR: Cannot specify both receptor and affinity maps at the same time, --flex argument is allowed with receptor or maps.')
+<b><a name="line142">142  </a></b>	    
+<b><a name="line143">143  </a></b>	    if args.maps is None:
+<b><a name="line144">144  </a></b>	        if not all(v is not None for v in [args.center_x, args.center_y, args.center_z]):
+<b><a name="line145">145  </a></b>	            parser.error('ERROR: The center of the grid box was not defined correctly (X %s Y %s Z %s).' \
+<b><a name="line146">146  </a></b>	                         % (args.center_x, args.center_y, args.center_z))
+<b><a name="line147">147  </a></b>	        if not all(v is not None for v in [args.size_x, args.size_y, args.size_z]):
+<b><a name="line148">148  </a></b>	            parser.error('ERROR: The size of the grid box was not defined correctly (X %s Y %s Z %s).' \
+<b><a name="line149">149  </a></b>	                         % (args.size_x, args.size_y, args.size_z))
+<b><a name="line150">150  </a></b>	
+<b><a name="line151">151  </a></b>	    # Check that arguments are compatible with the scoring function
+<b><a name="line152">152  </a></b>	    if args.sf_name == 'vina' or args.sf_name == 'vinardo':
+<b><a name="line153">153  </a></b>	        if args.receptor is None and args.maps is None:
+<b><a name="line154">154  </a></b>	            parser.error('ERROR: The receptor or affinity maps must be specified.')
+<b><a name="line155">155  </a></b>	    elif args.sf_name == 'ad4':
+<b><a name="line156">156  </a></b>	        if args.receptor is not None:
+<b><a name="line157">157  </a></b>	            parser.error('ERROR: No receptor allowed, only --flex argument with the AD4 scoring function.')
+<b><a name="line158">158  </a></b>	        if args.maps is None:
+<b><a name="line159">159  </a></b>	            parser.error('ERROR: Affinity maps are missing.')
+<b><a name="line160">160  </a></b>	    
+<b><a name="line161">161  </a></b>	    # Check that arguments are compatible with the ligand/batch mode
+<b><a name="line162">162  </a></b>	    if args.batch is None and args.ligands is None:
+<b><a name="line163">163  </a></b>	        parser.error('ERROR: Missing ligand(s).')
+<b><a name="line164">164  </a></b>	
+<b><a name="line165">165  </a></b>	    if args.ligands is not None:
+<b><a name="line166">166  </a></b>	        if args.dir is not None:
+<b><a name="line167">167  </a></b>	            parser.error('ERROR: In --ligand mode, --dir argument cannot be specified.')
+<b><a name="line168">168  </a></b>	        if args.out is None and not args.score_only:
+<b><a name="line169">169  </a></b>	            if len(args.ligands) == 1:
+<b><a name="line170">170  </a></b>	                args.out = '%s_out.pdbqt' % os.path.splitext(args.ligands[0])[0]
+<b><a name="line171">171  </a></b>	            else:
+<b><a name="line172">172  </a></b>	                parser.error('ERROR: Output name must be defined when docking simultaneously multiple ligands.')
+<b><a name="line173">173  </a></b>	    elif args.batch is not None:
+<b><a name="line174">174  </a></b>	        if args.dir is None:
+<b><a name="line175">175  </a></b>	            parser.error('ERROR: Need to specify an output directory for batch mode.')
+<b><a name="line176">176  </a></b>	        else:
+<b><a name="line177">177  </a></b>	            if not os.path.isdir(args.dir):
+<b><a name="line178">178  </a></b>	                parser.error('ERROR: Directory %s does not exist.' % args.args)
+<b><a name="line179">179  </a></b>	
+<b><a name="line180">180  </a></b>	    return args
+<b><a name="line181">181  </a></b>	
+<b><a name="line182">182  </a></b>	
+<b><a name="line183">183  </a></b>	def main():
+<b><a name="line184">184  </a></b>	    args = cmd_lineparser()
+<b><a name="line185">185  </a></b>	
+<b><a name="line186">186  </a></b>	    if args.verbosity &gt; 0:
+<b><a name="line187">187  </a></b>	        print('Scoring function : %s' % args.sf_name)
+<b><a name="line188">188  </a></b>	        if args.receptor is not None:
+<b><a name="line189">189  </a></b>	            print('Rigid receptor: %s' % args.receptor)
+<b><a name="line190">190  </a></b>	        if args.flex is not None:
+<b><a name="line191">191  </a></b>	            print('Flex receptor: %s ' % flex_name)
+<b><a name="line192">192  </a></b>	
+<b><a name="line193">193  </a></b>	        if len(args.ligands) == 1:
+<b><a name="line194">194  </a></b>	                print('Ligand: %s' % args.ligands[0])
+<b><a name="line195">195  </a></b>	        elif len(args.ligands) &gt; 1:
+<b><a name="line196">196  </a></b>	            print('Ligands:')
+<b><a name="line197">197  </a></b>	            for ligand in args.ligands:
+<b><a name="line198">198  </a></b>	                print('  - %s' % ligand)
+<b><a name="line199">199  </a></b>	        elif len(args.batch) &gt; 1:
+<b><a name="line200">200  </a></b>	                print('Ligands (batch mode): %d molecules.' % len(args.batch))
+<b><a name="line201">201  </a></b>	
+<b><a name="line202">202  </a></b>	        if args.maps is None:
+<b><a name="line203">203  </a></b>	            print('Center: X %.3f Y %.3f Z %.3f' % (args.center_x, args.center_y, args.center_z))
+<b><a name="line204">204  </a></b>	            print('Size: X %4d Y %4d Z %4d' % (args.size_x, args.size_y, args.size_z))
+<b><a name="line205">205  </a></b>	            print('Grid space: %f' % args.grid_spacing)
+<b><a name="line206">206  </a></b>	
+<b><a name="line207">207  </a></b>	        print('Exhaustiveness: %d' % args.exhaustiveness)
+<b><a name="line208">208  </a></b>	        print('CPU: %d' % args.cpu)
+<b><a name="line209">209  </a></b>	        if args.seed != 0:
+<b><a name="line210">210  </a></b>	            print('Seed: %d' % args.seed)
+<b><a name="line211">211  </a></b>	        print('Verbosity: %d' % args.verbosity)
+<b><a name="line212">212  </a></b>	
+<b><a name="line213">213  </a></b>	    v = Vina(args.sf_name, args.cpu, args.seed, args.verbosity)
+<b><a name="line214">214  </a></b>	
+<b><a name="line215">215  </a></b>	    # rigid_name variable can be ignored for AD4
+<b><a name="line216">216  </a></b>	    if args.receptor is not None or args.flex is not None:
+<b><a name="line217">217  </a></b>	        v.set_receptor(args.receptor, args.flex)
+<b><a name="line218">218  </a></b>	
+<b><a name="line219">219  </a></b>	    # Technically we don't have to initialize weights,
+<b><a name="line220">220  </a></b>	    # because they are initialized during the Vina object creation with the default weights
+<b><a name="line221">221  </a></b>	    # but we still do it in case the user decided to change them
+<b><a name="line222">222  </a></b>	    if args.sf_name == 'vina':
+<b><a name="line223">223  </a></b>	        v.set_weights([args.weight_gauss1, args.weight_gauss2, args.weight_repulsion,
+<b><a name="line224">224  </a></b>	                       args.weight_hydrophobic, args.weight_hydrogen, args.weight_glue,
+<b><a name="line225">225  </a></b>	                       args.weight_rot])
+<b><a name="line226">226  </a></b>	    elif args.sf_name == 'vinardo':
+<b><a name="line227">227  </a></b>	        v.set_weights([args.weight_vinardo_gauss1, args.weight_vinardo_repulsion,
+<b><a name="line228">228  </a></b>	                       args.weight_vinardo_hydrophobic, args.weight_vinardo_hydrogen, args.weight_vinardo_glue,
+<b><a name="line229">229  </a></b>	                       args.weight_vinardo_rot])
+<b><a name="line230">230  </a></b>	    else:
+<b><a name="line231">231  </a></b>	        v.set_weights([args.weight_ad4_vdw, args.weight_ad4_hb, args.weight_ad4_elec,
+<b><a name="line232">232  </a></b>	                       args.weight_ad4_dsolv, args.weight_glue, args.weight_ad4_rot])
+<b><a name="line233">233  </a></b>	        v.load_maps(args.maps)
+<b><a name="line234">234  </a></b>	
+<b><a name="line235">235  </a></b>	        # It works, but why would you do this?!
+<b><a name="line236">236  </a></b>	        if args.write_maps is not None:
+<b><a name="line237">237  </a></b>	            v.write_maps(args.write_maps)
+<b><a name="line238">238  </a></b>	
+<b><a name="line239">239  </a></b>	    if args.ligands is not None:
+<b><a name="line240">240  </a></b>	        v.set_ligand_from_file(args.ligands)
+<b><a name="line241">241  </a></b>	
+<b><a name="line242">242  </a></b>	        if args.sf_name == 'vina' or args.sf_name == 'vinardo':
+<b><a name="line243">243  </a></b>	            if args.maps is not None:
+<b><a name="line244">244  </a></b>	                v.load_maps(args.maps);
+<b><a name="line245">245  </a></b>	            else:
+<b><a name="line246">246  </a></b>	                # Will compute maps only for Vina atom types in the ligand(s)
+<b><a name="line247">247  </a></b>	                box_center = (args.center_x, args.center_y, args.center_z)
+<b><a name="line248">248  </a></b>	                box_size = (args.size_x, args.size_y, args.size_z)
+<b><a name="line249">249  </a></b>	                v.compute_vina_maps(box_center, box_size, args.grid_spacing)
+<b><a name="line250">250  </a></b>	
+<b><a name="line251">251  </a></b>	                if args.write_maps is not None:
+<b><a name="line252">252  </a></b>	                    v.write_maps(args.write_maps)
+<b><a name="line253">253  </a></b>	
+<b><a name="line254">254  </a></b>	        if args.randomize_only:
+<b><a name="line255">255  </a></b>	            v.randomize()
+<b><a name="line256">256  </a></b>	            v.write_pose(args.out)
+<b><a name="line257">257  </a></b>	        elif args.score_only:
+<b><a name="line258">258  </a></b>	            v.score()
+<b><a name="line259">259  </a></b>	        elif args.local_only:
+<b><a name="line260">260  </a></b>	            v.optimize()
+<b><a name="line261">261  </a></b>	            v.write_pose(args.name)
+<b><a name="line262">262  </a></b>	        else:
+<b><a name="line263">263  </a></b>	            v.dock(args.exhaustiveness, args.num_modes, args.min_rmsd, args.max_evals)
+<b><a name="line264">264  </a></b>	            v.write_poses(args.out, args.num_modes, args.energy_range)
+<b><a name="line265">265  </a></b>	    else:
+<b><a name="line266">266  </a></b>	        if args.sf_name == 'vina' or args.sf_name == 'vinardo':
+<b><a name="line267">267  </a></b>	            if args.maps is not None:
+<b><a name="line268">268  </a></b>	                v.load_maps(args.maps);
+<b><a name="line269">269  </a></b>	            else:
+<b><a name="line270">270  </a></b>	                # Will compute maps for all the Vina atom types
+<b><a name="line271">271  </a></b>	                box_center = (args.center_x, args.center_y, args.center_z)
+<b><a name="line272">272  </a></b>	                box_size = (args.size_x, args.size_y, args.size_z)
+<b><a name="line273">273  </a></b>	                v.compute_vina_maps(box_center, box_size, args.grid_spacing)
+<b><a name="line274">274  </a></b>	
+<b><a name="line275">275  </a></b>	                if args.write_maps is not None:
+<b><a name="line276">276  </a></b>	                    v.write_maps(args.write_maps)
+<b><a name="line277">277  </a></b>	
+<b><a name="line278">278  </a></b>	        for ligand in args.batch:
+<b><a name="line279">279  </a></b>	            v.set_ligand_from_file(ligand)
+<b><a name="line280">280  </a></b>	
+<b><a name="line281">281  </a></b>	            molecule_name = os.path.splitext(os.path.basename(ligand))[0]
+<b><a name="line282">282  </a></b>	            out_name = '%s%s%s_out.pdbqt' % (args.dir, os.path.sep(), molecule_name)
+<b><a name="line283">283  </a></b>	
+<b><a name="line284">284  </a></b>	            if args.randomize_only:
+<b><a name="line285">285  </a></b>	                v.randomize()
+<b><a name="line286">286  </a></b>	                v.write_pose(out_name)
+<b><a name="line287">287  </a></b>	            elif args.score_only:
+<b><a name="line288">288  </a></b>	                v.score()
+<b><a name="line289">289  </a></b>	            elif args.local_only:
+<b><a name="line290">290  </a></b>	                v.optimize()
+<b><a name="line291">291  </a></b>	                v.write_pose(out_name)
+<b><a name="line292">292  </a></b>	            else:
+<b><a name="line293">293  </a></b>	                v.dock(args.exhaustiveness, args.num_modes, args.min_rmsd, args.max_evals)
+<b><a name="line294">294  </a></b>	                v.write_poses(args.out_name, args.num_modes, args.energy_range)
+<b><a name="line295">295  </a></b>	
+<b><a name="line296">296  </a></b>	
+<b><a name="line297">297  </a></b>	if __name__ == '__main__':
+<b><a name="line298">298  </a></b>	    main()
+<b><a name="line299">299  </a></b>	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></body>
+</html>

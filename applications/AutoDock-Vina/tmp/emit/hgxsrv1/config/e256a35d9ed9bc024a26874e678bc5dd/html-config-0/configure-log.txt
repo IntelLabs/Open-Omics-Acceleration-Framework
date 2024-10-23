@@ -1,0 +1,2 @@
+**** BEGIN PROBE run_test_sanity ****
+**** END PROBE run_test_sanity ****

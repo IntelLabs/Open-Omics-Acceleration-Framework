@@ -1,289 +1,392 @@
-2024-10-19 03:12:34,312 [plugins:INFO] Scanning plug-in dir = /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/code/plugins/builtin
-2024-10-19 03:12:34,313 [plugins:INFO] Scanning plug-in dir = /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/code/plugins/test
-2024-10-19 03:12:34,387 [plugins:INFO] Scan root = /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/readthedocs.yml
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/README.md
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/Dockerfile
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/docs/source/docking_requirements.rst
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/docs/source/vina.rst
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/docs/source/changes.rst
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/docs/source/docking_python.rst
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/docs/source/docking_multiple_ligands.rst
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/docs/source/citations.rst
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/docs/source/docking_flexible.rst
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/docs/source/index.rst
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/docs/source/docking_hydrated.rst
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/docs/source/introduction.rst
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/docs/source/faq.rst
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/docs/source/installation.rst
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/docs/source/docking_macrocycle.rst
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/docs/source/docking_zinc.rst
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/docs/source/docking_basic.rst
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/5wlo/5wlo_config.txt
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/5wlo/rand-1.pdbqt
-2024-10-19 03:12:34,387 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/5wlo/batch_5wlo.txt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/5wlo/rand-2.pdbqt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/5wlo/rand-0.pdbqt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/5wlo/protein.pdbqt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/5wlo/flex-xray.pdbqt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/5wlo/protein.maps.fld
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/build/python/requirements.txt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/build/python/README.md
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/build/python/MANIFEST.in
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/build/python/environment.yml
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/build/python/pyproject.toml
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_zinc_metalloproteins/solution/protein_tz.gpf
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_zinc_metalloproteins/solution/1s63_ligand_ad4_out.pdbqt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_zinc_metalloproteins/solution/protein_tz.maps.xyz
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_zinc_metalloproteins/solution/protein_tz.maps.fld
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_zinc_metalloproteins/solution/protein_tz.pdbqt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_zinc_metalloproteins/solution/protein_tz.glg
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_zinc_metalloproteins/solution/protein.pdbqt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_zinc_metalloproteins/solution/1s63_ligand.pdbqt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/flexible_docking/solution/1fpu_receptor_rigid.pdbqt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/flexible_docking/solution/1fpu_receptor_rigid.glg
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/flexible_docking/solution/1fpu_receptor_flex.pdbqt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/flexible_docking/solution/1fpu_receptor.pdbqt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/flexible_docking/solution/1fpu_ligand_flex_ad4_out.pdbqt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/flexible_docking/solution/1fpu_receptor_rigid_vina_box.txt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/flexible_docking/solution/1fpu_ligand_flex_vina_out.pdbqt
-2024-10-19 03:12:34,388 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/flexible_docking/solution/1fpu_receptor_rigid.maps.fld
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/flexible_docking/solution/1fpu_receptor_rigid.gpf
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/flexible_docking/solution/1fpu_receptor_rigid.maps.xyz
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/flexible_docking/data/1iep_ligand.pdbqt
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/mulitple_ligands_docking/solution/5x72_receptor.maps.fld
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/mulitple_ligands_docking/solution/5x72_receptor.glg
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/mulitple_ligands_docking/solution/5x72_ligand_ad4_out.pdbqt
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/mulitple_ligands_docking/solution/5x72_receptor_vina_box.txt
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/mulitple_ligands_docking/solution/5x72_ligand_p59.pdbqt
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/mulitple_ligands_docking/solution/5x72_ligand_vina_out.pdbqt
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/mulitple_ligands_docking/solution/5x72_receptor.gpf
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/mulitple_ligands_docking/solution/5x72_receptor.pdbqt
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/mulitple_ligands_docking/solution/5x72_ligand_p69.pdbqt
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/mulitple_ligands_docking/solution/5x72_receptor.maps.xyz
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/basic_docking/solution/1iep_ligand_ad4_out.pdbqt
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/basic_docking/solution/1iep_ligand_vina_out.pdbqt
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/basic_docking/solution/1iep_receptor.maps.fld
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/basic_docking/solution/1iep_receptor_vina_box.txt
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/basic_docking/solution/1iep_receptor.maps.xyz
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/basic_docking/solution/1iep_receptor.pdbqt
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/basic_docking/solution/1iep_receptor.glg
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/basic_docking/solution/1iep_receptor.gpf
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/basic_docking/solution/1iep_ligand.pdbqt
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/hydrated_docking/solution/1uw6_ligand_ad4_out.pdbqt
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/hydrated_docking/solution/1uw6_ligand_ad4_out_DRY_SCORED.pdbqt
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/hydrated_docking/solution/1uw6_receptor.maps.fld
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/hydrated_docking/solution/1uw6_receptor.gpf
-2024-10-19 03:12:34,389 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/hydrated_docking/solution/1uw6_receptor.maps.xyz
-2024-10-19 03:12:34,390 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/hydrated_docking/solution/1uw6_receptor.pdbqt
-2024-10-19 03:12:34,390 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/hydrated_docking/solution/1uw6_receptor.glg
-2024-10-19 03:12:34,390 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/hydrated_docking/solution/1uw6_ligand.pdbqt
-2024-10-19 03:12:34,390 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_macrocycles/solution/BACE_1_ligand_vina_out.pdbqt
-2024-10-19 03:12:34,390 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_macrocycles/solution/BACE_1_receptor_vina_box.txt
-2024-10-19 03:12:34,390 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_macrocycles/solution/BACE_1_receptor.maps.fld
-2024-10-19 03:12:34,390 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_macrocycles/solution/BACE_1_receptor.pdbqt
-2024-10-19 03:12:34,390 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_macrocycles/solution/BACE_1_ligand.pdbqt
-2024-10-19 03:12:34,390 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_macrocycles/solution/BACE_1_ligand_ad4_out.pdbqt
-2024-10-19 03:12:34,390 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_macrocycles/solution/BACE_1_receptor.gpf
-2024-10-19 03:12:34,390 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_macrocycles/solution/BACE_1_receptor.glg
-2024-10-19 03:12:34,390 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_macrocycles/solution/BACE_1_receptor.maps.xyz
-2024-10-19 03:12:34,390 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/docking_with_macrocycles/data/BACE_1_ligand.mol2
-2024-10-19 03:12:34,390 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/python_scripting/1iep_receptor.pdbqt
-2024-10-19 03:12:34,390 [plugins:DEBUG]      * /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/example/python_scripting/1iep_ligand.pdbqt
-2024-10-19 03:12:34,390 [plugins:INFO] Scan found 2 files
-2024-10-19 03:12:34,392 [plugins:INFO] -------------- Running plug-in JSP (priority=60) --------------
-2024-10-19 03:12:34,392 [plugins:DEBUG] JSP.main: Start
-2024-10-19 03:12:34,392 [plugins:DEBUG] JSP.main: webapp_root = /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0
-2024-10-19 03:12:34,392 [plugins:DEBUG] JSP.main: Num JSP files: 0
-2024-10-19 03:12:34,392 [plugins:INFO] -------------- Running plug-in Facelets2 (priority=50) --------------
-2024-10-19 03:12:34,392 [plugins:INFO] -------------- Running plug-in MyBatis (priority=50) --------------
-2024-10-19 03:12:34,392 [plugins:DEBUG] MyBatis.main: Start
-2024-10-19 03:12:34,393 [plugins:DEBUG] Skipping MyBatis analysis. Framework not detected.
-2024-10-19 03:12:34,393 [plugins:INFO] -------------- Running plug-in MyBatisXML (priority=50) --------------
-2024-10-19 03:12:34,394 [plugins:DEBUG] MyBatis.main: Start
-2024-10-19 03:12:34,394 [plugins:DEBUG] MyBatis.main: End
-2024-10-19 03:12:34,394 [plugins:INFO] -------------- Running plug-in SpringData (priority=50) --------------
-2024-10-19 03:12:34,394 [plugins:DEBUG] SpringData.main: Start
-2024-10-19 03:12:34,397 [plugins:DEBUG] Skipping SpringData analysis. Framework not detected.
-2024-10-19 03:12:34,397 [plugins:INFO] -------------- Running plug-in Struts2Xml (priority=50) --------------
-2024-10-19 03:12:34,397 [plugins:INFO] Struts2Xml.main: Start
-2024-10-19 03:12:34,397 [plugins:INFO] -------------- Skipping disabled plug-in: Test_BogusClassName
-2024-10-19 03:12:34,397 [plugins:INFO] -------------- Skipping disabled plug-in: Test_Failure
-2024-10-19 03:12:34,397 [plugins:INFO] -------------- Running plug-in Tiles (priority=50) --------------
-2024-10-19 03:12:34,397 [plugins:DEBUG] Tiles.main: Start
-2024-10-19 03:12:34,397 [plugins:DEBUG] Tiles.main: webapp_root='/tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0', working_dir='/tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0.tmp'
-2024-10-19 03:12:34,397 [plugins:DEBUG] Tiles.main: 0 JSPs, 0 XML files
-2024-10-19 03:12:34,397 [plugins:DEBUG] Tiles::consumeDefinitions- JSP files set:
+2024-10-22 23:27:18,352 [plugins:INFO] Scanning plug-in dir = /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/code/plugins/builtin
+2024-10-22 23:27:18,353 [plugins:INFO] Scanning plug-in dir = /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/code/plugins/test
+2024-10-22 23:27:18,425 [plugins:INFO] Scan root = /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0
+2024-10-22 23:27:18,425 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/readthedocs.yml
+2024-10-22 23:27:18,425 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/README.md
+2024-10-22 23:27:18,425 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/Dockerfile
+2024-10-22 23:27:18,425 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/docs/source/docking_requirements.rst
+2024-10-22 23:27:18,425 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/docs/source/vina.rst
+2024-10-22 23:27:18,425 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/docs/source/changes.rst
+2024-10-22 23:27:18,425 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/docs/source/docking_python.rst
+2024-10-22 23:27:18,425 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/docs/source/docking_multiple_ligands.rst
+2024-10-22 23:27:18,425 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/docs/source/citations.rst
+2024-10-22 23:27:18,425 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/docs/source/docking_flexible.rst
+2024-10-22 23:27:18,425 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/docs/source/index.rst
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/docs/source/docking_hydrated.rst
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/docs/source/introduction.rst
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/docs/source/faq.rst
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/docs/source/installation.rst
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/docs/source/docking_macrocycle.rst
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/docs/source/docking_zinc.rst
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/docs/source/docking_basic.rst
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/5wlo/5wlo_config.txt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/5wlo/rand-1.pdbqt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/5wlo/batch_5wlo.txt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/5wlo/rand-2.pdbqt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/5wlo/rand-0.pdbqt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/5wlo/protein.pdbqt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/5wlo/flex-xray.pdbqt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/5wlo/protein.maps.fld
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/build/python/requirements.txt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/build/python/README.md
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/build/python/MANIFEST.in
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/build/python/environment.yml
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/build/python/pyproject.toml
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_zinc_metalloproteins/solution/protein_tz.gpf
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_zinc_metalloproteins/solution/1s63_ligand_ad4_out.pdbqt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_zinc_metalloproteins/solution/protein_tz.maps.xyz
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_zinc_metalloproteins/solution/protein_tz.maps.fld
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_zinc_metalloproteins/solution/protein_tz.pdbqt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_zinc_metalloproteins/solution/protein_tz.glg
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_zinc_metalloproteins/solution/protein.pdbqt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_zinc_metalloproteins/solution/1s63_ligand.pdbqt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/flexible_docking/solution/1fpu_receptor_rigid.pdbqt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/flexible_docking/solution/1fpu_receptor_rigid.glg
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/flexible_docking/solution/1fpu_receptor_flex.pdbqt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/flexible_docking/solution/1fpu_receptor.pdbqt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/flexible_docking/solution/1fpu_ligand_flex_ad4_out.pdbqt
+2024-10-22 23:27:18,426 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/flexible_docking/solution/1fpu_receptor_rigid_vina_box.txt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/flexible_docking/solution/1fpu_ligand_flex_vina_out.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/flexible_docking/solution/1fpu_receptor_rigid.maps.fld
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/flexible_docking/solution/1fpu_receptor_rigid.gpf
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/flexible_docking/solution/1fpu_receptor_rigid.maps.xyz
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/flexible_docking/data/1iep_ligand.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/mulitple_ligands_docking/solution/5x72_receptor.maps.fld
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/mulitple_ligands_docking/solution/5x72_receptor.glg
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/mulitple_ligands_docking/solution/5x72_ligand_ad4_out.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/mulitple_ligands_docking/solution/5x72_receptor_vina_box.txt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/mulitple_ligands_docking/solution/5x72_ligand_p59.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/mulitple_ligands_docking/solution/5x72_ligand_vina_out.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/mulitple_ligands_docking/solution/5x72_receptor.gpf
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/mulitple_ligands_docking/solution/5x72_receptor.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/mulitple_ligands_docking/solution/5x72_ligand_p69.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/mulitple_ligands_docking/solution/5x72_receptor.maps.xyz
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/basic_docking/solution/1iep_ligand_ad4_out.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/basic_docking/solution/1iep_ligand_vina_out.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/basic_docking/solution/1iep_receptor.maps.fld
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/basic_docking/solution/1iep_receptor_vina_box.txt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/basic_docking/solution/1iep_receptor.maps.xyz
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/basic_docking/solution/1iep_receptor.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/basic_docking/solution/1iep_receptor.glg
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/basic_docking/solution/1iep_receptor.gpf
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/basic_docking/solution/1iep_ligand.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/hydrated_docking/solution/1uw6_ligand_ad4_out.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/hydrated_docking/solution/1uw6_ligand_ad4_out_DRY_SCORED.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/hydrated_docking/solution/1uw6_receptor.maps.fld
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/hydrated_docking/solution/1uw6_receptor.gpf
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/hydrated_docking/solution/1uw6_receptor.maps.xyz
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/hydrated_docking/solution/1uw6_receptor.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/hydrated_docking/solution/1uw6_receptor.glg
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/hydrated_docking/solution/1uw6_ligand.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_macrocycles/solution/BACE_1_ligand_vina_out.pdbqt
+2024-10-22 23:27:18,427 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_macrocycles/solution/BACE_1_receptor_vina_box.txt
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_macrocycles/solution/BACE_1_receptor.maps.fld
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_macrocycles/solution/BACE_1_receptor.pdbqt
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_macrocycles/solution/BACE_1_ligand.pdbqt
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_macrocycles/solution/BACE_1_ligand_ad4_out.pdbqt
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_macrocycles/solution/BACE_1_receptor.gpf
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_macrocycles/solution/BACE_1_receptor.glg
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_macrocycles/solution/BACE_1_receptor.maps.xyz
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/docking_with_macrocycles/data/BACE_1_ligand.mol2
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/python_scripting/1iep_receptor.pdbqt
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/example/python_scripting/1iep_ligand.pdbqt
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/html-dir/index.xml
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/html-dir/summary.xml
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/readthedocs.yml
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/README.md
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/Dockerfile
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/docs/source/docking_requirements.rst
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/docs/source/vina.rst
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/docs/source/changes.rst
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/docs/source/docking_python.rst
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/docs/source/docking_multiple_ligands.rst
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/docs/source/citations.rst
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/docs/source/docking_flexible.rst
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/docs/source/index.rst
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/docs/source/docking_hydrated.rst
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/docs/source/introduction.rst
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/docs/source/faq.rst
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/docs/source/installation.rst
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/docs/source/docking_macrocycle.rst
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/docs/source/docking_zinc.rst
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/docs/source/docking_basic.rst
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/5wlo/5wlo_config.txt
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/5wlo/rand-1.pdbqt
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/5wlo/batch_5wlo.txt
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/5wlo/rand-2.pdbqt
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/5wlo/rand-0.pdbqt
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/5wlo/protein.pdbqt
+2024-10-22 23:27:18,428 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/5wlo/flex-xray.pdbqt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/5wlo/protein.maps.fld
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/build/python/requirements.txt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/build/python/README.md
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/build/python/MANIFEST.in
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/build/python/environment.yml
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/build/python/pyproject.toml
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_zinc_metalloproteins/solution/protein_tz.gpf
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_zinc_metalloproteins/solution/1s63_ligand_ad4_out.pdbqt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_zinc_metalloproteins/solution/protein_tz.maps.xyz
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_zinc_metalloproteins/solution/protein_tz.maps.fld
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_zinc_metalloproteins/solution/protein_tz.pdbqt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_zinc_metalloproteins/solution/protein_tz.glg
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_zinc_metalloproteins/solution/protein.pdbqt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_zinc_metalloproteins/solution/1s63_ligand.pdbqt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/flexible_docking/solution/1fpu_receptor_rigid.pdbqt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/flexible_docking/solution/1fpu_receptor_rigid.glg
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/flexible_docking/solution/1fpu_receptor_flex.pdbqt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/flexible_docking/solution/1fpu_receptor.pdbqt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/flexible_docking/solution/1fpu_ligand_flex_ad4_out.pdbqt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/flexible_docking/solution/1fpu_receptor_rigid_vina_box.txt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/flexible_docking/solution/1fpu_ligand_flex_vina_out.pdbqt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/flexible_docking/solution/1fpu_receptor_rigid.maps.fld
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/flexible_docking/solution/1fpu_receptor_rigid.gpf
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/flexible_docking/solution/1fpu_receptor_rigid.maps.xyz
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/flexible_docking/data/1iep_ligand.pdbqt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/mulitple_ligands_docking/solution/5x72_receptor.maps.fld
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/mulitple_ligands_docking/solution/5x72_receptor.glg
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/mulitple_ligands_docking/solution/5x72_ligand_ad4_out.pdbqt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/mulitple_ligands_docking/solution/5x72_receptor_vina_box.txt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/mulitple_ligands_docking/solution/5x72_ligand_p59.pdbqt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/mulitple_ligands_docking/solution/5x72_ligand_vina_out.pdbqt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/mulitple_ligands_docking/solution/5x72_receptor.gpf
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/mulitple_ligands_docking/solution/5x72_receptor.pdbqt
+2024-10-22 23:27:18,429 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/mulitple_ligands_docking/solution/5x72_ligand_p69.pdbqt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/mulitple_ligands_docking/solution/5x72_receptor.maps.xyz
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/basic_docking/solution/1iep_ligand_ad4_out.pdbqt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/basic_docking/solution/1iep_ligand_vina_out.pdbqt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/basic_docking/solution/1iep_receptor.maps.fld
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/basic_docking/solution/1iep_receptor_vina_box.txt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/basic_docking/solution/1iep_receptor.maps.xyz
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/basic_docking/solution/1iep_receptor.pdbqt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/basic_docking/solution/1iep_receptor.glg
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/basic_docking/solution/1iep_receptor.gpf
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/basic_docking/solution/1iep_ligand.pdbqt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/hydrated_docking/solution/1uw6_ligand_ad4_out.pdbqt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/hydrated_docking/solution/1uw6_ligand_ad4_out_DRY_SCORED.pdbqt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/hydrated_docking/solution/1uw6_receptor.maps.fld
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/hydrated_docking/solution/1uw6_receptor.gpf
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/hydrated_docking/solution/1uw6_receptor.maps.xyz
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/hydrated_docking/solution/1uw6_receptor.pdbqt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/hydrated_docking/solution/1uw6_receptor.glg
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/hydrated_docking/solution/1uw6_ligand.pdbqt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_macrocycles/solution/BACE_1_ligand_vina_out.pdbqt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_macrocycles/solution/BACE_1_receptor_vina_box.txt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_macrocycles/solution/BACE_1_receptor.maps.fld
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_macrocycles/solution/BACE_1_receptor.pdbqt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_macrocycles/solution/BACE_1_ligand.pdbqt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_macrocycles/solution/BACE_1_ligand_ad4_out.pdbqt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_macrocycles/solution/BACE_1_receptor.gpf
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_macrocycles/solution/BACE_1_receptor.glg
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_macrocycles/solution/BACE_1_receptor.maps.xyz
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/docking_with_macrocycles/data/BACE_1_ligand.mol2
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/python_scripting/1iep_receptor.pdbqt
+2024-10-22 23:27:18,430 [plugins:DEBUG]      * /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/example/python_scripting/1iep_ligand.pdbqt
+2024-10-22 23:27:18,430 [plugins:INFO] Scan found 2 files
+2024-10-22 23:27:18,432 [plugins:INFO] -------------- Running plug-in JSP (priority=60) --------------
+2024-10-22 23:27:18,432 [plugins:DEBUG] JSP.main: Start
+2024-10-22 23:27:18,432 [plugins:DEBUG] JSP.main: webapp_root = /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0
+2024-10-22 23:27:18,432 [plugins:DEBUG] JSP.main: Num JSP files: 0
+2024-10-22 23:27:18,432 [plugins:INFO] -------------- Running plug-in Facelets2 (priority=50) --------------
+2024-10-22 23:27:18,433 [plugins:INFO] -------------- Running plug-in MyBatis (priority=50) --------------
+2024-10-22 23:27:18,433 [plugins:DEBUG] MyBatis.main: Start
+2024-10-22 23:27:18,434 [plugins:DEBUG] Skipping MyBatis analysis. Framework not detected.
+2024-10-22 23:27:18,434 [plugins:INFO] -------------- Running plug-in MyBatisXML (priority=50) --------------
+2024-10-22 23:27:18,434 [plugins:DEBUG] MyBatis.main: Start
+2024-10-22 23:27:18,434 [plugins:DEBUG] MyBatis.main: End
+2024-10-22 23:27:18,435 [plugins:INFO] -------------- Running plug-in SpringData (priority=50) --------------
+2024-10-22 23:27:18,435 [plugins:DEBUG] SpringData.main: Start
+2024-10-22 23:27:18,439 [plugins:DEBUG] Skipping SpringData analysis. Framework not detected.
+2024-10-22 23:27:18,439 [plugins:INFO] -------------- Running plug-in Struts2Xml (priority=50) --------------
+2024-10-22 23:27:18,439 [plugins:INFO] Struts2Xml.main: Start
+2024-10-22 23:27:18,440 [plugins:INFO] -------------- Skipping disabled plug-in: Test_BogusClassName
+2024-10-22 23:27:18,440 [plugins:INFO] -------------- Skipping disabled plug-in: Test_Failure
+2024-10-22 23:27:18,440 [plugins:INFO] -------------- Running plug-in Tiles (priority=50) --------------
+2024-10-22 23:27:18,440 [plugins:DEBUG] Tiles.main: Start
+2024-10-22 23:27:18,440 [plugins:DEBUG] Tiles.main: webapp_root='/tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0', working_dir='/tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0.tmp'
+2024-10-22 23:27:18,440 [plugins:DEBUG] Tiles.main: 0 JSPs, 2 XML files
+2024-10-22 23:27:18,440 [plugins:DEBUG] Tiles::consumeDefinitions- JSP files set:
 []
-2024-10-19 03:12:34,397 [plugins:DEBUG] Ordered tiles ref: []
-2024-10-19 03:12:34,397 [plugins:DEBUG] After propagation: {}
-2024-10-19 03:12:34,397 [plugins:DEBUG] Tiles::main- Found 0 tiles
-2024-10-19 03:12:34,397 [plugins:DEBUG] Tiles::main- Generated tiles structure
+2024-10-22 23:27:18,440 [plugins:DEBUG] Ordered tiles ref: []
+2024-10-22 23:27:18,440 [plugins:DEBUG] After propagation: {}
+2024-10-22 23:27:18,440 [plugins:DEBUG] Tiles::main- Found 0 tiles
+2024-10-22 23:27:18,440 [plugins:DEBUG] Tiles::main- Generated tiles structure
 {}
-2024-10-19 03:12:34,397 [plugins:DEBUG] Tiles::addViewsToConfiguration- 0 tiles defs with 0 views
-2024-10-19 03:12:34,398 [plugins:INFO] -------------- Running plug-in SpringBeans (priority=20) --------------
-2024-10-19 03:12:34,398 [plugins:DEBUG] SpringBeans.main: Start
-2024-10-19 03:12:34,398 [plugins:INFO] -------------- Running plug-in Struts1Xml (priority=20) --------------
-2024-10-19 03:12:34,398 [plugins:INFO] Struts1Xml.main: Start
-2024-10-19 03:12:34,398 [plugins:INFO] -------------- Running plug-in DWR (priority=10) --------------
-2024-10-19 03:12:34,398 [plugins:INFO] DWR.main: Start
-2024-10-19 03:12:34,399 [plugins:INFO] -------------- Running plug-in JavaHttpServer (priority=10) --------------
-2024-10-19 03:12:34,399 [plugins:DEBUG] JavaHttpServer.main: Start
-2024-10-19 03:12:34,399 [plugins:INFO] -------------- Running plug-in Restlet (priority=10) --------------
-2024-10-19 03:12:34,399 [plugins:DEBUG] Restlet.main: Start
-2024-10-19 03:12:34,399 [plugins:DEBUG] Skipping Restlet. Framework not detected.
-2024-10-19 03:12:34,400 [plugins:INFO] -------------- Skipping disabled plug-in: Seam
-2024-10-19 03:12:34,400 [plugins:INFO] -------------- Running plug-in SpringBoot (priority=10) --------------
-2024-10-19 03:12:34,400 [plugins:DEBUG] SpringBoot.main: Start
-2024-10-19 03:12:34,400 [plugins:DEBUG] Skipping SpringBoot analysis. Framework not detected.
-2024-10-19 03:12:34,400 [plugins:INFO] -------------- Running plug-in SpringMVC3 (priority=10) --------------
-2024-10-19 03:12:34,400 [plugins:DEBUG] SpringMVC3.main: Start
-2024-10-19 03:12:34,402 [plugins:DEBUG] Skipping SpringMVC3 analysis. Framework not detected.
-2024-10-19 03:12:34,402 [plugins:INFO] -------------- Running plug-in SpringWS (priority=10) --------------
-2024-10-19 03:12:34,402 [plugins:DEBUG] SpringWS.main: Start
-2024-10-19 03:12:34,403 [plugins:DEBUG] Skipping SpringWS analysis. Framework not detected.
-2024-10-19 03:12:34,403 [plugins:INFO] -------------- Running plug-in Struts1 (priority=10) --------------
-2024-10-19 03:12:34,403 [plugins:DEBUG] Struts1.main: Start
-2024-10-19 03:12:34,403 [plugins:DEBUG] Struts1.mapActionsToForms: {}
-2024-10-19 03:12:34,403 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.action.Action
+2024-10-22 23:27:18,440 [plugins:DEBUG] Tiles::addViewsToConfiguration- 0 tiles defs with 0 views
+2024-10-22 23:27:18,440 [plugins:INFO] -------------- Running plug-in SpringBeans (priority=20) --------------
+2024-10-22 23:27:18,440 [plugins:DEBUG] SpringBeans.main: Start
+2024-10-22 23:27:18,440 [plugins:INFO] -------------- Running plug-in Struts1Xml (priority=20) --------------
+2024-10-22 23:27:18,440 [plugins:INFO] Struts1Xml.main: Start
+2024-10-22 23:27:18,441 [plugins:INFO] -------------- Running plug-in DWR (priority=10) --------------
+2024-10-22 23:27:18,441 [plugins:INFO] DWR.main: Start
+2024-10-22 23:27:18,442 [plugins:INFO] -------------- Running plug-in JavaHttpServer (priority=10) --------------
+2024-10-22 23:27:18,442 [plugins:DEBUG] JavaHttpServer.main: Start
+2024-10-22 23:27:18,443 [plugins:INFO] -------------- Running plug-in Restlet (priority=10) --------------
+2024-10-22 23:27:18,443 [plugins:DEBUG] Restlet.main: Start
+2024-10-22 23:27:18,443 [plugins:DEBUG] Skipping Restlet. Framework not detected.
+2024-10-22 23:27:18,443 [plugins:INFO] -------------- Skipping disabled plug-in: Seam
+2024-10-22 23:27:18,443 [plugins:INFO] -------------- Running plug-in SpringBoot (priority=10) --------------
+2024-10-22 23:27:18,443 [plugins:DEBUG] SpringBoot.main: Start
+2024-10-22 23:27:18,444 [plugins:DEBUG] Skipping SpringBoot analysis. Framework not detected.
+2024-10-22 23:27:18,444 [plugins:INFO] -------------- Running plug-in SpringMVC3 (priority=10) --------------
+2024-10-22 23:27:18,444 [plugins:DEBUG] SpringMVC3.main: Start
+2024-10-22 23:27:18,447 [plugins:DEBUG] Skipping SpringMVC3 analysis. Framework not detected.
+2024-10-22 23:27:18,447 [plugins:INFO] -------------- Running plug-in SpringWS (priority=10) --------------
+2024-10-22 23:27:18,447 [plugins:DEBUG] SpringWS.main: Start
+2024-10-22 23:27:18,448 [plugins:DEBUG] Skipping SpringWS analysis. Framework not detected.
+2024-10-22 23:27:18,448 [plugins:INFO] -------------- Running plug-in Struts1 (priority=10) --------------
+2024-10-22 23:27:18,448 [plugins:DEBUG] Struts1.main: Start
+2024-10-22 23:27:18,448 [plugins:DEBUG] Struts1.mapActionsToForms: {}
+2024-10-22 23:27:18,448 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.action.Action
 []
-2024-10-19 03:12:34,403 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.BaseAction
+2024-10-22 23:27:18,448 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.BaseAction
 []
-2024-10-19 03:12:34,404 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.DownloadAction
+2024-10-22 23:27:18,449 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.DownloadAction
 []
-2024-10-19 03:12:34,404 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.ForwardAction
+2024-10-22 23:27:18,449 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.ForwardAction
 []
-2024-10-19 03:12:34,405 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.IncludeAction
+2024-10-22 23:27:18,450 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.IncludeAction
 []
-2024-10-19 03:12:34,405 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.SwitchAction
+2024-10-22 23:27:18,450 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.SwitchAction
 []
-2024-10-19 03:12:34,405 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.LocaleAction
+2024-10-22 23:27:18,450 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.LocaleAction
 []
-2024-10-19 03:12:34,406 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ActionEx
+2024-10-22 23:27:18,451 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ActionEx
 []
-2024-10-19 03:12:34,406 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.AbstractBLogicAction
+2024-10-22 23:27:18,451 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.AbstractBLogicAction
 []
-2024-10-19 03:12:34,407 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ClearSessionAction
+2024-10-22 23:27:18,451 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ClearSessionAction
 []
-2024-10-19 03:12:34,407 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.DispatchAction
+2024-10-22 23:27:18,452 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.DispatchAction
 []
-2024-10-19 03:12:34,407 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ForwardAction
+2024-10-22 23:27:18,452 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ForwardAction
 []
-2024-10-19 03:12:34,408 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.LogoffAction
+2024-10-22 23:27:18,452 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.LogoffAction
 []
-2024-10-19 03:12:34,408 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.MakeSessionDirectoryAction
+2024-10-22 23:27:18,453 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.MakeSessionDirectoryAction
 []
-2024-10-19 03:12:34,409 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ReloadCodeListAction
+2024-10-22 23:27:18,453 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ReloadCodeListAction
 []
-2024-10-19 03:12:34,411 [plugins:INFO] -------------- Running plug-in Terasoluna (priority=10) --------------
-2024-10-19 03:12:34,411 [plugins:DEBUG] Terasoluna::main- Start
-2024-10-19 03:12:34,411 [plugins:DEBUG] %s::main- Framework classes not found.
-2024-10-19 03:12:34,411 [plugins:INFO] -------------- Running plug-in Android (priority=5) --------------
-2024-10-19 03:12:34,411 [plugins:DEBUG] Android: main: Start
-2024-10-19 03:12:34,411 [plugins:DEBUG] Android: main: emit_app_root: '/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2'
-2024-10-19 03:12:34,411 [plugins:DEBUG] Android: main: unpacked_app_root='/tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0'
-2024-10-19 03:12:34,411 [plugins:DEBUG] Android: main: temp_dir='/tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0.tmp'
-2024-10-19 03:12:34,413 [plugins:DEBUG] Android: Module roots: []
-2024-10-19 03:12:34,413 [plugins:INFO] Working in fallback mode
-2024-10-19 03:12:34,413 [plugins:ERROR] Android: No valid manifests found!
-2024-10-19 03:12:34,413 [plugins:INFO] -------------- Running plug-in Axis1 (priority=5) --------------
-2024-10-19 03:12:34,413 [plugins:INFO] Axis1.main: Start
-2024-10-19 03:12:34,413 [plugins:INFO] -------------- Running plug-in Cordova (priority=5) --------------
-2024-10-19 03:12:34,431 [plugins:DEBUG] Cordova framelet.main: No Cordova project files (config.xml or package.json) present in emit.
-2024-10-19 03:12:34,431 [plugins:INFO] -------------- Running plug-in Deserialization (priority=5) --------------
-2024-10-19 03:12:34,431 [plugins:INFO] Deserialization.main: Start
-2024-10-19 03:12:34,432 [plugins:INFO] -------------- Running plug-in DotNetMVC (priority=5) --------------
-2024-10-19 03:12:34,432 [plugins:INFO] DotNetMVC.main: Start
-2024-10-19 03:12:34,432 [plugins:DEBUG] DotNetMVC.main: Phase: Setup
-2024-10-19 03:12:34,432 [plugins:DEBUG] DotNetMVC.main: Setup: Create type hierarchy
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.main: Setup: Collapse 'AsyncController' into 'Controller'.
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.main: Phase: Create Controller Entry Points
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Entry Point Methods: Compute which methods are Entry Points.
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 1)
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Inherited Entry Points: Compute entry points inherited from parent
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 2)
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: CSRF Protected Methods: Compute which methods are CSRF protected.
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Include/Exclude Paths: Compute taint paths (whitelists).
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Finish: Create EntryPoint Directives.
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.createEntryPointDirectives: Total controller entry points: 0
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Entry Point Methods: Compute which methods are Entry Points.
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 1)
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Inherited Entry Points: Compute entry points inherited from parent
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 2)
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: CSRF Protected Methods: Compute which methods are CSRF protected.
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Include/Exclude Paths: Compute taint paths (whitelists).
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Finish: Create EntryPoint Directives.
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.createEntryPointDirectives: Total controller entry points: 0
-2024-10-19 03:12:34,434 [plugins:DEBUG] DotNetMVC.main: Phase: Create Razor Entry Points
-2024-10-19 03:12:34,435 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Detect Views: Heuristically Detect Whether Class Is View.
-2024-10-19 03:12:34,435 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Finish: Create Razor Entry Points for View Classes.
-2024-10-19 03:12:34,435 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Total Razor View entry points: 0
-2024-10-19 03:12:34,435 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Detect Views: Heuristically Detect Whether Class Is View.
-2024-10-19 03:12:34,435 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Finish: Create Razor Entry Points for View Classes.
-2024-10-19 03:12:34,435 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Total Razor View entry points: 0
-2024-10-19 03:12:34,435 [plugins:DEBUG] DotNetMVC.main: Phase: Create Views
-2024-10-19 03:12:34,435 [plugins:DEBUG] DotNetMVC.doMvcViews: Detect Views: Heuristically Detect Whether Class Is View.
-2024-10-19 03:12:34,435 [plugins:DEBUG] DotNetMVC.doMvcViews: Finish: Parse Class to Create View Directive.
-2024-10-19 03:12:34,435 [plugins:DEBUG] DotNetMVC.doMvcViews: Detect Views: Heuristically Detect Whether Class Is View.
-2024-10-19 03:12:34,435 [plugins:DEBUG] DotNetMVC.doMvcViews: Finish: Parse Class to Create View Directive.
-2024-10-19 03:12:34,435 [plugins:DEBUG] DotNetMVC.main: Phase: Create Filters
-2024-10-19 03:12:34,435 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
-2024-10-19 03:12:34,435 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
-2024-10-19 03:12:34,435 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
-2024-10-19 03:12:34,436 [plugins:INFO] -------------- Running plug-in DotNetWebServices (priority=5) --------------
-2024-10-19 03:12:34,436 [plugins:INFO] DotNetWebServices.main: Start
-2024-10-19 03:12:34,436 [plugins:DEBUG] DotNetWebServices.main: Web API 2 Controllers
-2024-10-19 03:12:34,437 [plugins:DEBUG] DotNetWebServices.main: WCF Services
-2024-10-19 03:12:34,437 [plugins:DEBUG] DotNetWebServices.doWcfServices: WCF operation impls = 0
-2024-10-19 03:12:34,437 [plugins:DEBUG] DotNetWebServices.main: ASMX Web Services
-2024-10-19 03:12:34,438 [plugins:DEBUG] DotNetWebServices.doAsmxServices: ASMX service methods = 0
-2024-10-19 03:12:34,438 [plugins:DEBUG] DotNetWebServices.main: Create Filters
-2024-10-19 03:12:34,438 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
-2024-10-19 03:12:34,438 [plugins:INFO] -------------- Running plug-in EJB (priority=5) --------------
-2024-10-19 03:12:34,438 [plugins:INFO] [WARN] EJB.main: Start
-2024-10-19 03:12:34,439 [plugins:INFO] [DEBUG] EJB - total entry points: 0
-2024-10-19 03:12:34,439 [plugins:INFO] -------------- Running plug-in GWTCallbacks (priority=5) --------------
-2024-10-19 03:12:34,440 [plugins:INFO] GWTCallbacks.main: Start
-2024-10-19 03:12:34,440 [plugins:DEBUG] GWTCallbacks::main- Types ('com.google.gwt.user.client.rpc.AsyncCallback', 'com.google.gwt.http.client.RequestCallback') not found.
-2024-10-19 03:12:34,440 [plugins:INFO] -------------- Running plug-in GWTRPC (priority=5) --------------
-2024-10-19 03:12:34,440 [plugins:INFO] GWTRPC.main: Start
-2024-10-19 03:12:34,441 [plugins:DEBUG] GWTRPC.processRemoteServiceServlets: found implementors of RemoteService but no extenders of RemoteServiceServlet. This might be a custom GWT RPC framework.
-2024-10-19 03:12:34,442 [plugins:DEBUG] GWTRPC.processRemoteServiceServlets: found implementors of RemoteService but no extenders of RemoteServiceServlet. This might be a custom GWT RPC framework.
-2024-10-19 03:12:34,442 [plugins:DEBUG] GWTRPC.processRemoteServiceServlets: found implementors of RemoteService but no extenders of RemoteServiceServlet. This might be a custom GWT RPC framework.
-2024-10-19 03:12:34,442 [plugins:INFO] GWTRPC - total entry points: 0
-2024-10-19 03:12:34,442 [plugins:INFO] -------------- Running plug-in GWTRequestFactory (priority=5) --------------
-2024-10-19 03:12:34,442 [plugins:INFO] GWTRequestFactory.main: Start
-2024-10-19 03:12:34,443 [plugins:INFO] -------------- Running plug-in JSF2 (priority=5) --------------
-2024-10-19 03:12:34,443 [plugins:INFO] JSF2.main: Start
-2024-10-19 03:12:34,443 [plugins:INFO] -------------- Running plug-in JaxRS (priority=5) --------------
-2024-10-19 03:12:34,451 [plugins:DEBUG] JaxRS::main- Types ('javax.ws.rs.Path', 'jakarta.ws.rs.Path', 'javax.ws.rs.Consumes', 'jakarta.ws.rs.Consumes', 'javax.ws.rs.Produces', 'jakarta.ws.rs.Produces', 'javax.ws.rs.GET', 'jakarta.ws.rs.GET', 'javax.ws.rs.PUT', 'jakarta.ws.rs.PUT', 'javax.ws.rs.HEAD', 'jakarta.ws.rs.HEAD', 'javax.ws.rs.POST', 'jakarta.ws.rs.POST', 'javax.ws.rs.OPTIONS', 'jakarta.ws.rs.OPTIONS', 'javax.ws.rs.DELETE', 'jakarta.ws.rs.DELETE', 'javax.ws.rs.Path', 'jakarta.ws.rs.Path', 'javax.ws.rs.CookieParam', 'jakarta.ws.rs.CookieParam', 'javax.ws.rs.FormParam', 'jakarta.ws.rs.FormParam', 'javax.ws.rs.HeaderParam', 'jakarta.ws.rs.HeaderParam', 'javax.ws.rs.MatrixParam', 'jakarta.ws.rs.MatrixParam', 'javax.ws.rs.PathParam', 'jakarta.ws.rs.PathParam', 'javax.ws.rs.QueryParam', 'jakarta.ws.rs.QueryParam', 'javax.ws.rs.BeanParam', 'jakarta.ws.rs.BeanParam') not found.
-2024-10-19 03:12:34,451 [plugins:INFO] -------------- Running plug-in JaxWS (priority=5) --------------
-2024-10-19 03:12:34,453 [plugins:DEBUG] JaxWS.main: Application does not contain WS annotations, exiting.
-2024-10-19 03:12:34,453 [plugins:INFO] -------------- Skipping disabled plug-in: Skeleton
-2024-10-19 03:12:34,453 [plugins:INFO] -------------- Running plug-in Struts2 (priority=5) --------------
-2024-10-19 03:12:34,453 [plugins:INFO] Struts2.main: Start
-2024-10-19 03:12:34,462 [plugins:INFO] -------------- Running plug-in Symfony (priority=5) --------------
-2024-10-19 03:12:34,462 [plugins:DEBUG] Symfony: main: Start
-2024-10-19 03:12:34,462 [plugins:DEBUG] Symfony: main: emit_app_root: '/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2'
-2024-10-19 03:12:34,462 [plugins:DEBUG] Symfony: main: unpacked_app_root='/tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0'
-2024-10-19 03:12:34,462 [plugins:DEBUG] Symfony: main: temp_dir='/tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0.tmp'
-2024-10-19 03:12:34,464 [plugins:DEBUG] Symfony: Handling Symfony YML Routes.
-2024-10-19 03:12:34,464 [plugins:DEBUG] Symfony: analyzeYmlFiles: Analyzing 2 .yml files.
-2024-10-19 03:12:34,464 [plugins:DEBUG] Symfony: parseYmlFile: Parsing: /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/build/python/environment.yml
-2024-10-19 03:12:34,466 [plugins:DEBUG] Symfony: parseYmlFile: Success.
-2024-10-19 03:12:34,466 [plugins:DEBUG] Symfony: parseYmlFile: Parsing: /tmp/cov-hgx/0e1c219dfb009f2fd8aab8484a9729a2/fwa/dom-0/readthedocs.yml
-2024-10-19 03:12:34,469 [plugins:DEBUG] Symfony: parseYmlFile: Success.
-2024-10-19 03:12:34,469 [plugins:DEBUG] Symfony: SymfonyRouteFromYml: invalid YML: could not extract both path and controller.
-2024-10-19 03:12:34,469 [plugins:DEBUG] Symfony: SymfonyRouteFromYml: invalid YML: could not extract both path and controller.
-2024-10-19 03:12:34,469 [plugins:DEBUG] Symfony: SymfonyRouteFromYml: invalid YML: could not extract both path and controller.
-2024-10-19 03:12:34,469 [plugins:DEBUG] Symfony: SymfonyRouteFromYml: invalid YML: could not extract both path and controller.
-2024-10-19 03:12:34,469 [plugins:DEBUG] Symfony: Handling Symfony Route Annotations.
-2024-10-19 03:12:34,523 [plugins:INFO] -------------- Running plug-in Vertx (priority=5) --------------
-2024-10-19 03:12:34,523 [plugins:INFO] Vertx.main: Start
-2024-10-19 03:12:34,524 [plugins:DEBUG] Vertx::main- Types ('io.vertx.core.AbstractVerticle', 'io.vertx.rxjava.ext.web.RoutingContext') not found.
-2024-10-19 03:12:34,524 [plugins:INFO] -------------- Skipping disabled plug-in: WSXmlRpc
-2024-10-19 03:12:34,524 [plugins:INFO] -------------- Running plug-in WebForms (priority=5) --------------
-2024-10-19 03:12:34,525 [plugins:INFO] WebForms.main: Start
-2024-10-19 03:12:34,527 [plugins:INFO] -------------- Running plug-in WebSockets (priority=5) --------------
-2024-10-19 03:12:34,527 [plugins:INFO] WebSockets.main: Start
-2024-10-19 03:12:34,529 [plugins:DEBUG] WebSockets::main- Types ('javax.websocket.server.ServerEndpoint', 'javax.websocket.ClientEndpoint', 'javax.websocket.OnMessage', 'jakarta.websocket.server.ServerEndpoint', 'jakarta.websocket.ClientEndpoint', 'jakarta.websocket.OnMessage') not found.
+2024-10-22 23:27:18,455 [plugins:INFO] -------------- Running plug-in Terasoluna (priority=10) --------------
+2024-10-22 23:27:18,455 [plugins:DEBUG] Terasoluna::main- Start
+2024-10-22 23:27:18,455 [plugins:DEBUG] %s::main- Framework classes not found.
+2024-10-22 23:27:18,455 [plugins:INFO] -------------- Running plug-in Android (priority=5) --------------
+2024-10-22 23:27:18,455 [plugins:DEBUG] Android: main: Start
+2024-10-22 23:27:18,455 [plugins:DEBUG] Android: main: emit_app_root: '/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications'
+2024-10-22 23:27:18,455 [plugins:DEBUG] Android: main: unpacked_app_root='/tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0'
+2024-10-22 23:27:18,455 [plugins:DEBUG] Android: main: temp_dir='/tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0.tmp'
+2024-10-22 23:27:18,457 [plugins:DEBUG] Android: Module roots: []
+2024-10-22 23:27:18,457 [plugins:INFO] Working in fallback mode
+2024-10-22 23:27:18,457 [plugins:ERROR] Android: No valid manifests found!
+2024-10-22 23:27:18,457 [plugins:DEBUG] Android: AndroidManifest.xml files: []
+2024-10-22 23:27:18,457 [plugins:DEBUG] Android: layout files: ['/tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/html-dir/index.xml', '/tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/html-dir/summary.xml']
+2024-10-22 23:27:18,457 [plugins:DEBUG] Android: analyzeLayout: /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/html-dir/index.xml
+2024-10-22 23:27:18,458 [plugins:DEBUG] Android: analyzeLayout: /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/html-dir/summary.xml
+2024-10-22 23:27:18,458 [plugins:INFO] -------------- Running plug-in Axis1 (priority=5) --------------
+2024-10-22 23:27:18,458 [plugins:INFO] Axis1.main: Start
+2024-10-22 23:27:18,458 [plugins:INFO] -------------- Running plug-in Cordova (priority=5) --------------
+2024-10-22 23:27:18,473 [plugins:DEBUG] Cordova framelet.main: No Cordova project files (config.xml or package.json) present in emit.
+2024-10-22 23:27:18,473 [plugins:INFO] -------------- Running plug-in Deserialization (priority=5) --------------
+2024-10-22 23:27:18,473 [plugins:INFO] Deserialization.main: Start
+2024-10-22 23:27:18,473 [plugins:INFO] -------------- Running plug-in DotNetMVC (priority=5) --------------
+2024-10-22 23:27:18,473 [plugins:INFO] DotNetMVC.main: Start
+2024-10-22 23:27:18,473 [plugins:DEBUG] DotNetMVC.main: Phase: Setup
+2024-10-22 23:27:18,473 [plugins:DEBUG] DotNetMVC.main: Setup: Create type hierarchy
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.main: Setup: Collapse 'AsyncController' into 'Controller'.
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.main: Phase: Create Controller Entry Points
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Entry Point Methods: Compute which methods are Entry Points.
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 1)
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Inherited Entry Points: Compute entry points inherited from parent
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 2)
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: CSRF Protected Methods: Compute which methods are CSRF protected.
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Include/Exclude Paths: Compute taint paths (whitelists).
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Finish: Create EntryPoint Directives.
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.createEntryPointDirectives: Total controller entry points: 0
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Entry Point Methods: Compute which methods are Entry Points.
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 1)
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Inherited Entry Points: Compute entry points inherited from parent
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 2)
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: CSRF Protected Methods: Compute which methods are CSRF protected.
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Include/Exclude Paths: Compute taint paths (whitelists).
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Finish: Create EntryPoint Directives.
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.createEntryPointDirectives: Total controller entry points: 0
+2024-10-22 23:27:18,475 [plugins:DEBUG] DotNetMVC.main: Phase: Create Razor Entry Points
+2024-10-22 23:27:18,476 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Detect Views: Heuristically Detect Whether Class Is View.
+2024-10-22 23:27:18,476 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Finish: Create Razor Entry Points for View Classes.
+2024-10-22 23:27:18,476 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Total Razor View entry points: 0
+2024-10-22 23:27:18,476 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Detect Views: Heuristically Detect Whether Class Is View.
+2024-10-22 23:27:18,476 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Finish: Create Razor Entry Points for View Classes.
+2024-10-22 23:27:18,476 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Total Razor View entry points: 0
+2024-10-22 23:27:18,476 [plugins:DEBUG] DotNetMVC.main: Phase: Create Views
+2024-10-22 23:27:18,476 [plugins:DEBUG] DotNetMVC.doMvcViews: Detect Views: Heuristically Detect Whether Class Is View.
+2024-10-22 23:27:18,476 [plugins:DEBUG] DotNetMVC.doMvcViews: Finish: Parse Class to Create View Directive.
+2024-10-22 23:27:18,476 [plugins:DEBUG] DotNetMVC.doMvcViews: Detect Views: Heuristically Detect Whether Class Is View.
+2024-10-22 23:27:18,476 [plugins:DEBUG] DotNetMVC.doMvcViews: Finish: Parse Class to Create View Directive.
+2024-10-22 23:27:18,476 [plugins:DEBUG] DotNetMVC.main: Phase: Create Filters
+2024-10-22 23:27:18,476 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
+2024-10-22 23:27:18,476 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
+2024-10-22 23:27:18,476 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
+2024-10-22 23:27:18,477 [plugins:INFO] -------------- Running plug-in DotNetWebServices (priority=5) --------------
+2024-10-22 23:27:18,477 [plugins:INFO] DotNetWebServices.main: Start
+2024-10-22 23:27:18,477 [plugins:DEBUG] DotNetWebServices.main: Web API 2 Controllers
+2024-10-22 23:27:18,477 [plugins:DEBUG] DotNetWebServices.main: WCF Services
+2024-10-22 23:27:18,478 [plugins:DEBUG] DotNetWebServices.doWcfServices: WCF operation impls = 0
+2024-10-22 23:27:18,478 [plugins:DEBUG] DotNetWebServices.main: ASMX Web Services
+2024-10-22 23:27:18,478 [plugins:DEBUG] DotNetWebServices.doAsmxServices: ASMX service methods = 0
+2024-10-22 23:27:18,478 [plugins:DEBUG] DotNetWebServices.main: Create Filters
+2024-10-22 23:27:18,479 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
+2024-10-22 23:27:18,479 [plugins:INFO] -------------- Running plug-in EJB (priority=5) --------------
+2024-10-22 23:27:18,479 [plugins:INFO] [WARN] EJB.main: Start
+2024-10-22 23:27:18,480 [plugins:INFO] [DEBUG] EJB - total entry points: 0
+2024-10-22 23:27:18,480 [plugins:INFO] -------------- Running plug-in GWTCallbacks (priority=5) --------------
+2024-10-22 23:27:18,480 [plugins:INFO] GWTCallbacks.main: Start
+2024-10-22 23:27:18,481 [plugins:DEBUG] GWTCallbacks::main- Types ('com.google.gwt.user.client.rpc.AsyncCallback', 'com.google.gwt.http.client.RequestCallback') not found.
+2024-10-22 23:27:18,481 [plugins:INFO] -------------- Running plug-in GWTRPC (priority=5) --------------
+2024-10-22 23:27:18,481 [plugins:INFO] GWTRPC.main: Start
+2024-10-22 23:27:18,482 [plugins:DEBUG] GWTRPC.processRemoteServiceServlets: found implementors of RemoteService but no extenders of RemoteServiceServlet. This might be a custom GWT RPC framework.
+2024-10-22 23:27:18,483 [plugins:DEBUG] GWTRPC.processRemoteServiceServlets: found implementors of RemoteService but no extenders of RemoteServiceServlet. This might be a custom GWT RPC framework.
+2024-10-22 23:27:18,483 [plugins:DEBUG] GWTRPC.processRemoteServiceServlets: found implementors of RemoteService but no extenders of RemoteServiceServlet. This might be a custom GWT RPC framework.
+2024-10-22 23:27:18,483 [plugins:INFO] GWTRPC - total entry points: 0
+2024-10-22 23:27:18,483 [plugins:INFO] -------------- Running plug-in GWTRequestFactory (priority=5) --------------
+2024-10-22 23:27:18,483 [plugins:INFO] GWTRequestFactory.main: Start
+2024-10-22 23:27:18,484 [plugins:INFO] -------------- Running plug-in JSF2 (priority=5) --------------
+2024-10-22 23:27:18,484 [plugins:INFO] JSF2.main: Start
+2024-10-22 23:27:18,484 [plugins:INFO] -------------- Running plug-in JaxRS (priority=5) --------------
+2024-10-22 23:27:18,493 [plugins:DEBUG] JaxRS::main- Types ('javax.ws.rs.Path', 'jakarta.ws.rs.Path', 'javax.ws.rs.Consumes', 'jakarta.ws.rs.Consumes', 'javax.ws.rs.Produces', 'jakarta.ws.rs.Produces', 'javax.ws.rs.GET', 'jakarta.ws.rs.GET', 'javax.ws.rs.PUT', 'jakarta.ws.rs.PUT', 'javax.ws.rs.HEAD', 'jakarta.ws.rs.HEAD', 'javax.ws.rs.POST', 'jakarta.ws.rs.POST', 'javax.ws.rs.OPTIONS', 'jakarta.ws.rs.OPTIONS', 'javax.ws.rs.DELETE', 'jakarta.ws.rs.DELETE', 'javax.ws.rs.Path', 'jakarta.ws.rs.Path', 'javax.ws.rs.CookieParam', 'jakarta.ws.rs.CookieParam', 'javax.ws.rs.FormParam', 'jakarta.ws.rs.FormParam', 'javax.ws.rs.HeaderParam', 'jakarta.ws.rs.HeaderParam', 'javax.ws.rs.MatrixParam', 'jakarta.ws.rs.MatrixParam', 'javax.ws.rs.PathParam', 'jakarta.ws.rs.PathParam', 'javax.ws.rs.QueryParam', 'jakarta.ws.rs.QueryParam', 'javax.ws.rs.BeanParam', 'jakarta.ws.rs.BeanParam') not found.
+2024-10-22 23:27:18,493 [plugins:INFO] -------------- Running plug-in JaxWS (priority=5) --------------
+2024-10-22 23:27:18,494 [plugins:DEBUG] JaxWS.main: Application does not contain WS annotations, exiting.
+2024-10-22 23:27:18,494 [plugins:INFO] -------------- Skipping disabled plug-in: Skeleton
+2024-10-22 23:27:18,494 [plugins:INFO] -------------- Running plug-in Struts2 (priority=5) --------------
+2024-10-22 23:27:18,494 [plugins:INFO] Struts2.main: Start
+2024-10-22 23:27:18,504 [plugins:INFO] -------------- Running plug-in Symfony (priority=5) --------------
+2024-10-22 23:27:18,504 [plugins:DEBUG] Symfony: main: Start
+2024-10-22 23:27:18,504 [plugins:DEBUG] Symfony: main: emit_app_root: '/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications'
+2024-10-22 23:27:18,504 [plugins:DEBUG] Symfony: main: unpacked_app_root='/tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0'
+2024-10-22 23:27:18,504 [plugins:DEBUG] Symfony: main: temp_dir='/tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0.tmp'
+2024-10-22 23:27:18,506 [plugins:DEBUG] Symfony: Handling Symfony YML Routes.
+2024-10-22 23:27:18,506 [plugins:DEBUG] Symfony: analyzeYmlFiles: Analyzing 4 .yml files.
+2024-10-22 23:27:18,506 [plugins:DEBUG] Symfony: parseYmlFile: Parsing: /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/build/python/environment.yml
+2024-10-22 23:27:18,508 [plugins:DEBUG] Symfony: parseYmlFile: Success.
+2024-10-22 23:27:18,508 [plugins:DEBUG] Symfony: parseYmlFile: Parsing: /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina-1.2.2/readthedocs.yml
+2024-10-22 23:27:18,511 [plugins:DEBUG] Symfony: parseYmlFile: Success.
+2024-10-22 23:27:18,511 [plugins:DEBUG] Symfony: SymfonyRouteFromYml: invalid YML: could not extract both path and controller.
+2024-10-22 23:27:18,511 [plugins:DEBUG] Symfony: SymfonyRouteFromYml: invalid YML: could not extract both path and controller.
+2024-10-22 23:27:18,511 [plugins:DEBUG] Symfony: SymfonyRouteFromYml: invalid YML: could not extract both path and controller.
+2024-10-22 23:27:18,511 [plugins:DEBUG] Symfony: SymfonyRouteFromYml: invalid YML: could not extract both path and controller.
+2024-10-22 23:27:18,511 [plugins:DEBUG] Symfony: parseYmlFile: Parsing: /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/build/python/environment.yml
+2024-10-22 23:27:18,513 [plugins:DEBUG] Symfony: parseYmlFile: Success.
+2024-10-22 23:27:18,513 [plugins:DEBUG] Symfony: parseYmlFile: Parsing: /tmp/cov-hgx/7e7c1514de101d51dd44961a0c3a756d/fwa/dom-0/AutoDock-Vina/readthedocs.yml
+2024-10-22 23:27:18,516 [plugins:DEBUG] Symfony: parseYmlFile: Success.
+2024-10-22 23:27:18,516 [plugins:DEBUG] Symfony: SymfonyRouteFromYml: invalid YML: could not extract both path and controller.
+2024-10-22 23:27:18,516 [plugins:DEBUG] Symfony: SymfonyRouteFromYml: invalid YML: could not extract both path and controller.
+2024-10-22 23:27:18,516 [plugins:DEBUG] Symfony: SymfonyRouteFromYml: invalid YML: could not extract both path and controller.
+2024-10-22 23:27:18,516 [plugins:DEBUG] Symfony: SymfonyRouteFromYml: invalid YML: could not extract both path and controller.
+2024-10-22 23:27:18,516 [plugins:DEBUG] Symfony: Handling Symfony Route Annotations.
+2024-10-22 23:27:18,611 [plugins:INFO] -------------- Running plug-in Vertx (priority=5) --------------
+2024-10-22 23:27:18,611 [plugins:INFO] Vertx.main: Start
+2024-10-22 23:27:18,613 [plugins:DEBUG] Vertx::main- Types ('io.vertx.core.AbstractVerticle', 'io.vertx.rxjava.ext.web.RoutingContext') not found.
+2024-10-22 23:27:18,613 [plugins:INFO] -------------- Skipping disabled plug-in: WSXmlRpc
+2024-10-22 23:27:18,613 [plugins:INFO] -------------- Running plug-in WebForms (priority=5) --------------
+2024-10-22 23:27:18,613 [plugins:INFO] WebForms.main: Start
+2024-10-22 23:27:18,615 [plugins:INFO] -------------- Running plug-in WebSockets (priority=5) --------------
+2024-10-22 23:27:18,615 [plugins:INFO] WebSockets.main: Start
+2024-10-22 23:27:18,618 [plugins:DEBUG] WebSockets::main- Types ('javax.websocket.server.ServerEndpoint', 'javax.websocket.ClientEndpoint', 'javax.websocket.OnMessage', 'jakarta.websocket.server.ServerEndpoint', 'jakarta.websocket.ClientEndpoint', 'jakarta.websocket.OnMessage') not found.

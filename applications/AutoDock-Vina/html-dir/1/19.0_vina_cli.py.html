@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
-<html><head><title>Coverity error reader: /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2/build/python/vina/vina_cli.py</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head>
+<html><head><title>Coverity error reader: /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina/build/python/vina/vina_cli.py</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head>
 <body link="#000000" vlink="#000000"><pre>
 <b><a name="line1">1    </a></b>	#!/usr/bin/env python
 <b><a name="line2">2    </a></b>	# -*- coding: utf-8 -*-
@@ -130,28 +130,7 @@
 <b><a name="line126">126  </a></b>	                             type=float, action='store', help='ad4_hb weight')
 <b><a name="line127">127  </a></b>	    group_weight.add_argument('--weight_ad4_elec', dest='weight_ad4_elec', default=0.1406,
 <b><a name="line128">128  </a></b>	                             type=float, action='store', help='ad4_electstrostatic weight')
-</pre>
-<table summary="events" bgcolor=#e0e0e0>
-<tr><td><font color="red">
-<a name="error:0"></a>
-<a name="error"></a>
-<!-- merge-key ed6fdbae2eff5a2fd32dcf039bd06dfd -->
-<b>(1) Event identifier_typo</b>: </font></td>
-<td><font color="red">Using &quot;weight_ad4_desolv&quot; appears to be a typo:
-* Identifier &quot;weight_ad4_desolv&quot; is only known to be referenced here, or in copies of this code.
-* Identifier &quot;weight_ad4_dsolv&quot; is referenced elsewhere at least 2 times.
-</font></td>
-</tr>
-<tr><td><font color="red">
-<a name="error:3"></a>
-<!-- merge-key ed6fdbae2eff5a2fd32dcf039bd06dfd -->
-<b>(4) Event remediation</b>: </font></td>
-<td><font color="red">Should identifier &quot;weight_ad4_desolv&quot; be replaced by &quot;weight_ad4_dsolv&quot;?</font></td>
-</tr>
-<tr><td><font color="red">Also see events: </font></td>
-<td><font color="red">[<a href="#error:1">identifier_use</a>][<a href="10.0_vina_wrapper.py.html#error:2">identifier_use</a>]</font></td></tr>
-</table>
-<pre><b><a name="line129">129  </a></b>	    group_weight.add_argument('--weight_ad4_desolv', dest='weight_ad4_desolv', default=0.1322,
+<b><a name="line129">129  </a></b>	    group_weight.add_argument('--weight_ad4_desolv', dest='weight_ad4_desolv', default=0.1322,
 <b><a name="line130">130  </a></b>	                             type=float, action='store', help='ad4_desolvation weight')
 <b><a name="line131">131  </a></b>	    group_weight.add_argument('--weight_ad4_rot', dest='weight_ad4_rot', default=0.2983,
 <b><a name="line132">132  </a></b>	                             type=float, action='store', help='ad4_rot weight')
@@ -263,7 +242,7 @@
 <td><font color="red">Example 1: Using identifier &quot;weight_ad4_dsolv&quot;.</font></td>
 </tr>
 <tr><td><font color="red">Also see events: </font></td>
-<td><font color="red">[<a href="#error:0">identifier_typo</a>][<a href="10.0_vina_wrapper.py.html#error:2">identifier_use</a>][<a href="#error:3">remediation</a>]</font></td></tr>
+<td><font color="red">[<a href="19_vina_cli.py.html#error:0">identifier_typo</a>][<a href="19.0_vina_wrapper.py.html#error:2">identifier_use</a>][<a href="19_vina_cli.py.html#error:3">remediation</a>]</font></td></tr>
 </table>
 <pre><b><a name="line232">232  </a></b>	                       args.weight_ad4_dsolv, args.weight_glue, args.weight_ad4_rot])
 <b><a name="line233">233  </a></b>	        v.load_maps(args.maps)

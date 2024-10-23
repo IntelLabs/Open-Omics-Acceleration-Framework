@@ -1,19 +1,20 @@
 cov-analyze --dir tmp --enable-default --security --webapp-security --enable-audit-checkers 
 Analysis summary report:
 ------------------------
-Files analyzed                 : 19 Total
-    Python 2                   : 2
-    Python 3                   : 13
-    Text                       : 4
-Total LoC input to cov-analyze : 4254
-Functions analyzed             : 454
-Paths analyzed                 : 2210
-Time taken by analysis         : 00:01:25
-Defect occurrences found       : 12 Total
-                                  1 CONFIG.ENABLED_DEBUG_MODE
-                                  1 COPY_PASTE_ERROR
-                                  4 DEADCODE
-                                  2 FORWARD_NULL
-                                  1 IDENTICAL_BRANCHES
-                                  1 IDENTIFIER_TYPO
-                                  2 UNREACHABLE
+Files analyzed                 : 55 Total
+    HTML                       : 15
+    Python 2                   : 4
+    Python 3                   : 26
+    Text                       : 10
+Total LoC input to cov-analyze : 8686
+Functions analyzed             : 908
+Paths analyzed                 : 4420
+Time taken by analysis         : 00:01:33
+Defect occurrences found       : 24 Total
+                                  2 CONFIG.ENABLED_DEBUG_MODE
+                                  2 COPY_PASTE_ERROR
+                                  8 DEADCODE
+                                  4 FORWARD_NULL
+                                  2 IDENTICAL_BRANCHES
+                                  2 IDENTIFIER_TYPO
+                                  4 UNREACHABLE

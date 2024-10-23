@@ -40,3 +40,45 @@
 <extra></extra>
 <subcategory>none</subcategory>
 </error>
+<error>
+<domain>OTHER</domain>
+<lang>Python 3</lang>
+<checker>UNREACHABLE</checker>
+<type>unreachable</type>
+<subtype>logic_error</subtype>
+<file>/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina/example/autodock_scripts/wet.py</file>
+<function>!wet.py!atom_coord</function>
+<functionMergeName>!wet.py!atom_coord</functionMergeName>
+<score>100</score>
+<ordered>false</ordered>
+<event>
+<main>true</main>
+<tag>unreachable</tag>
+<description>{CovLStrv2{{t{This code cannot be reached: {0}.}{{code{return {L}float(f[30:38:None]...}}}}}}</description>
+<line>126</line>
+<column>12</column>
+</event>
+<extra></extra>
+<subcategory>none</subcategory>
+</error>
+<error>
+<domain>OTHER</domain>
+<lang>Python 3</lang>
+<checker>UNREACHABLE</checker>
+<type>unreachable</type>
+<subtype>logic_error</subtype>
+<file>/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina/build/python/vina/vina.py</file>
+<function>!vina!vina.py!Vina:set_weights</function>
+<functionMergeName>!vina!vina.py!Vina:set_weights</functionMergeName>
+<score>100</score>
+<ordered>false</ordered>
+<event>
+<main>true</main>
+<tag>unreachable</tag>
+<description>{CovLStrv2{{t{This code cannot be reached: {0}.}{{code{if (self._sf_name == &quot;ad4&quot;)...}}}}}}</description>
+<line>225</line>
+<column>17</column>
+</event>
+<extra></extra>
+<subcategory>none</subcategory>
+</error>

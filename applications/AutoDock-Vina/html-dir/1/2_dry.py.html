@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
-<html><head><title>Coverity error reader: /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina-1.2.2/example/autodock_scripts/dry.py</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head>
+<html><head><title>Coverity error reader: /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/AutoDock-Vina/example/autodock_scripts/dry.py</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head>
 <body link="#000000" vlink="#000000"><pre>
 <b><a name="line1">1    </a></b>	#!/usr/bin/env python
 <b><a name="line2">2    </a></b>	
@@ -949,7 +949,23 @@
 <b><a name="line945">945  </a></b>	
 <b><a name="line946">946  </a></b>	if '-d' in opts:
 <b><a name="line947">947  </a></b>	  print(&quot;\n\n\t[ Debugging mode is *ON* ]\n\n&quot;)
-<b><a name="line948">948  </a></b>	  DEBUG = True
+</pre>
+<table summary="events" bgcolor=#e0e0e0>
+<tr><td><font color="red">
+<a name="error:0"></a>
+<a name="error"></a>
+<!-- merge-key 1c815b311395f3c22c853722e60220c5 -->
+<b>(1) Event debug_mode</b>: </font></td>
+<td><font color="red">The debug mode is enabled.</font></td>
+</tr>
+<tr><td><font color="red">
+<a name="error:1"></a>
+<!-- merge-key 1c815b311395f3c22c853722e60220c5 -->
+<b>(2) Event remediation</b>: </font></td>
+<td><font color="red">Disable the debug mode in the production code.</font></td>
+</tr>
+</table>
+<pre><b><a name="line948">948  </a></b>	  DEBUG = True
 <b><a name="line949">949  </a></b>	
 <b><a name="line950">950  </a></b>	if not QUIET: 
 <b><a name="line951">951  </a></b>	    print(&quot;&quot;&quot;
@@ -1304,18 +1320,7 @@
 <b><a name="line1300">1300 </a></b>	                experimental_in_3A_range_STRONG = []
 <b><a name="line1301">1301 </a></b>	                for x in distance_log:
 <b><a name="line1302">1302 </a></b>	                    experimental_in_3A_range_STRONG.append(x[1])
-</pre>
-<table summary="events" bgcolor=#e0e0e0>
-<tr><td><font color="red">
-<a name="error:0"></a>
-<!-- merge-key 7f1f7a52a0ed1d36ec5372d042670396 -->
-<b>(1) Event original</b>: </font></td>
-<td><font color="red">&quot;experimental_in_3A_range_STRONG&quot; looks like the original copy.</font></td>
-</tr>
-<tr><td><font color="red">Also see events: </font></td>
-<td><font color="red">[<a href="#error:1">copy_paste_error</a>][<a href="#error:2">remediation</a>]</font></td></tr>
-</table>
-<pre><b><a name="line1303">1303 </a></b>	                write_this(name+&quot;_DEBUG_matching_waters_3Amax_range.pdb&quot;, experimental_in_3A_range_STRONG)
+<b><a name="line1303">1303 </a></b>	                write_this(name+&quot;_DEBUG_matching_waters_3Amax_range.pdb&quot;, experimental_in_3A_range_STRONG)
 <b><a name="line1304">1304 </a></b>	
 <b><a name="line1305">1305 </a></b>	        if conserved_waters_w:
 <b><a name="line1306">1306 </a></b>	            calc_list = list(conserved_waters_w.keys())
@@ -1334,25 +1339,7 @@
 <b><a name="line1319">1319 </a></b>	                experimental_in_3A_range_WEAK = []
 <b><a name="line1320">1320 </a></b>	                for x in distance_log:
 <b><a name="line1321">1321 </a></b>	                    experimental_in_3A_range_WEAK.append(x[1])
-</pre>
-<table summary="events" bgcolor=#e0e0e0>
-<tr><td><font color="red">
-<a name="error:1"></a>
-<a name="error"></a>
-<!-- merge-key 7f1f7a52a0ed1d36ec5372d042670396 -->
-<b>(2) Event copy_paste_error</b>: </font></td>
-<td><font color="red">&quot;experimental_in_3A_range_STRONG&quot; looks like a copy-paste error.</font></td>
-</tr>
-<tr><td><font color="red">
-<a name="error:2"></a>
-<!-- merge-key 7f1f7a52a0ed1d36ec5372d042670396 -->
-<b>(3) Event remediation</b>: </font></td>
-<td><font color="red">Should it say &quot;experimental_in_3A_range_WEAK&quot; instead?</font></td>
-</tr>
-<tr><td><font color="red">Also see events: </font></td>
-<td><font color="red">[<a href="#error:0">original</a>]</font></td></tr>
-</table>
-<pre><b><a name="line1322">1322 </a></b>	                write_this(name+&quot;_DEBUG_matching_waters_3Amax_range_WEAK.pdb&quot;, experimental_in_3A_range_STRONG)
+<b><a name="line1322">1322 </a></b>	                write_this(name+&quot;_DEBUG_matching_waters_3Amax_range_WEAK.pdb&quot;, experimental_in_3A_range_STRONG)
 <b><a name="line1323">1323 </a></b>	        print(&quot;\n&quot;, end=' ')
 <b><a name="line1324">1324 </a></b>	
 <b><a name="line1325">1325 </a></b>	    else:

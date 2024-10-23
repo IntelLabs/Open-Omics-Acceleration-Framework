@@ -51,7 +51,7 @@ export OUTPUT_VINA=$PWD/5wlo_output
 ```
 Add the necessary permissions to the output folder so Docker can write to it:
 ```bash
-sudo chmod -R 777 $OUTPUT_VINA
+sudo chmod -R a+w $OUTPUT_VINA
 ```
 ### 4. Run the Docker Container
 Check if the Docker image was built successfully by listing Docker images:
