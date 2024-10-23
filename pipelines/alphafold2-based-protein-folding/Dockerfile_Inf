@@ -2,6 +2,13 @@ ARG FROM_IMAGE=ubuntu:22.04
 # Install Base miniconda image
 ARG BASE_IMAGE=condaforge/miniforge3:23.1.0-3
 FROM ${BASE_IMAGE} as conda_setup
+
+# Non-root user setup
+ENV SERVICE_NAME="alphafold2-inf-service"
+
+RUN groupadd --gid 1001 $SERVICE_NAME && \
+    useradd -m -g $SERVICE_NAME --shell /bin/false --uid 1001 $SERVICE_NAME
+
 # Install Anaconda and PIP dependency
 RUN conda update -n base conda
 RUN conda install python==3.9
@@ -35,31 +42,44 @@ WORKDIR /
 RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 WORKDIR /Open-Omics-Acceleration-Framework/applications/
 
+#RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
+#RUN cd jemalloc && bash autogen.sh --prefix=/opt/conda/ && make install
+#RUN cd .. && rm -rf jemalloc
+
 RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
-RUN cd jemalloc && bash autogen.sh --prefix=/opt/conda/ && make install
-RUN cd .. && rm -rf jemalloc
+WORKDIR /Open-Omics-Acceleration-Framework/jemalloc
+RUN bash autogen.sh --prefix=/opt/conda/ && make install
+WORKDIR /Open-Omics-Acceleration-Framework
+RUN rm -rf jemalloc
 
 ENV PATH="/usr/bin:$PATH"
 ENV PATH "/opt/conda/bin:$PATH"
 ENV LD_LIBRARY_PATH "/opt/conda/lib:$LD_LIBRARY_PATH"
 
 
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold/tpp/tpp-pytorch-extension
+RUN CC=gcc python setup.py install \
+    && python -c "from tpp_pytorch_extension.alphafold.Alpha_Attention import GatingAttentionOpti_forward"
 
-WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold/
-RUN cd tpp-pytorch-extension && CC=gcc && CXX=g++ && python setup.py install \
-    && python -c "from tpp_pytorch_extension.alphafold.Alpha_Attention import GatingAttentionOpti_forward" \
-    && cd ..
+#RUN cd tpp-pytorch-extension && CC=gcc && CXX=g++ && python setup.py install \
+#    && python -c "from tpp_pytorch_extension.alphafold.Alpha_Attention import GatingAttentionOpti_forward" \
+#    && cd ..
 
-
+COPY --from=conda_setup /Open-Omics-Acceleration-Framework /Open-Omics-Acceleration-Framework
 
 WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold/
 RUN wget -q -P ./alphafold/common/ https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt --no-check-certificate
 
+# Swith to Non-root user
+RUN chown -R $SERVICE_NAME:$SERVICE_NAME $WORKDIR
+USER $SERVICE_NAME
+
+HEALTHCHECK NONE
 
 ENV PATH "/opt/conda/bin:$PATH"
 ENV LD_LIBRARY_PATH "/opt/conda/lib:$LD_LIBRARY_PATH"
 
-CMD mkdir weights && mkdir weights/extracted && python extract_params.py --input /data/params/params_model_1.npz --output_dir ./weights/extracted/model_1 \
+CMD source ~/.bashrc && mkdir weights && mkdir weights/extracted && python extract_params.py --input /data/params/params_model_1.npz --output_dir ./weights/extracted/model_1 \
 && python extract_params.py --input /data/params/params_model_2.npz --output_dir ./weights/extracted/model_2 \
 && python extract_params.py --input /data/params/params_model_3.npz --output_dir ./weights/extracted/model_3 \
 && python extract_params.py --input /data/params/params_model_4.npz --output_dir ./weights/extracted/model_4 \
