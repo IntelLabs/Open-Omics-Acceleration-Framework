@@ -1,7 +1,0 @@
-[INFO] Emitting source group 1 of 3.
-[INFO] Emitting source group 2 of 3.
-[INFO] Emitting source group 3 of 3.
-[WARNING] Some source files failed to emit.
-        See the following log files for details:
-        "/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/cov-capture/2024-10-08_01_35_15/diagnostics/2024-10-08_01_35_21.555307,cov-translate,stdout"
-        "/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/cov-capture/2024-10-08_01_35_15/diagnostics/2024-10-08_01_35_21.555307,cov-translate,stderr"

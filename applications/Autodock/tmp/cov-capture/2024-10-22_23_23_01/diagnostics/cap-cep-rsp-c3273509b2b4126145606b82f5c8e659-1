@@ -1,9 +1,0 @@
---no-banner
---project-view
-tmp/cov-capture/2024-10-22_23_23_01/project-info/sources-info.json
---dir
-tmp
---logging-endpoint
-tmp/cov-capture/cov-internal-fluentd-port
---config
-/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/cov-capture/2024-10-22_23_23_01/compiler-config/sources/coverity_config.xml

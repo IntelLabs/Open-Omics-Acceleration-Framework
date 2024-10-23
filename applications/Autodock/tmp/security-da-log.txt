@@ -1,5 +1,0 @@
-/home/hgx/omics/srilekhx/coverity_scans/coverity/analysis/bin/cov-security-da --dir tmp --project-dirs . 
-cov-security-da version 2023.3.4 on Linux 4.15.0-166-generic x86_64
-Internal version numbers: 858be4c112 p-2023.3-push-67
-
-da: [WARNING] Failed to identify any likely projects. Aborting template-DA.

@@ -1,8 +1,0 @@
---config
-tmp/cov-capture/2024-10-08_01_35_15/compiler-config/sources/coverity_config.xml
---source-dir
-.
---output-file
-tmp/cov-capture/2024-10-08_01_35_15/project-info/sources-info.json
---logging-endpoint
-tmp/cov-capture/cov-internal-fluentd-port

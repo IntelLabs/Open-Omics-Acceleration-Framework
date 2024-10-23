@@ -1,3 +1,0 @@
-Native Compiler and extra args: ./ 
-Working directory: /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock
-Comptype: typescript
