@@ -1,0 +1,4 @@
+Native Compiler invocation: ./ /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/html-dir/index.html /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/html-dir/summary.html
+Working directory: /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock
+Comptype: html
+* Configuring JavaScript Filesystem Capture (html)

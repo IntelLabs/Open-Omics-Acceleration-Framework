@@ -447,7 +447,7 @@
         "__SQLI_BUDA_STATICS_WORMHOLING:report_nosink_errors"
       ]
     },
-    "time" : 7,
+    "time" : 4,
     "line-counts" : {
       "Apex" : {
         "blank-lines" : 0,
@@ -578,6 +578,10 @@
         "files" : 4,
         "total-bytes" : 4330
       },
+      "html" : {
+        "files" : 2,
+        "total-bytes" : 943
+      },
       "js" : {
         "files" : 7,
         "total-bytes" : 0
@@ -616,19 +620,19 @@
     "short-platform" : "linux64",
     "extver" : "2023.3.4",
     "intver" : "858be4c112 p-2023.3-push-67",
-    "aw-peak-mem-bytes" : 343949312,
-    "am+aw-peak-mem-bytes" : 644198400,
+    "aw-peak-mem-bytes" : 0,
+    "am+aw-peak-mem-bytes" : 0,
     "bytecode-functions" : 0,
     "concurrency" : true,
     "cxx" : true,
     "enable-parse-warnings" : false,
     "failures" : 0,
-    "files-analyzed" : 3,
+    "files-analyzed" : 5,
     "force" : false,
     "function-metrics-count" : 0,
     "functions-analyzed" : 0,
-    "incremental-hits" : 0,
-    "incremental-misses" : 7,
+    "incremental-hits" : 7,
+    "incremental-misses" : 0,
     "dyncg-sites-resolved" : 0,
     "dyncg-sites-total" : 0,
     "max-mem" : 2048,
@@ -636,9 +640,9 @@
     "pathout-count" : 0,
     "paths" : 5000,
     "paths-analyzed" : 0,
-    "peak-mem-bytes" : 1196404736,
+    "peak-mem-bytes" : 1263509504,
     "security" : true,
-    "tus-count" : 72,
+    "tus-count" : 74,
     "string-graph-nodes" : 0,
     "web-app-entry-points" : 0,
     "web-app-views-unused" : 0,
@@ -662,7 +666,7 @@
       "fortran" : 0,
       "go" : 0,
       "html" : 0,
-      "javascript" : 12070,
+      "javascript" : 0,
       "javascript-minified" : 0,
       "javascript-es6-module" : 0,
       "javascript-es6-module-minified" : 0,

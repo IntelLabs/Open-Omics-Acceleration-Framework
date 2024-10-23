@@ -1,0 +1,3 @@
+[COVERITY WARNING]: /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/emit/hgxsrv1/config/3e1f8549d2a258006d184c7d30fa377c/coverity_config.xml does not exist.  Ignoring the error and continuing.
+Could not find config file /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/emit/hgxsrv1/config/3e1f8549d2a258006d184c7d30fa377c/coverity_config.xml or the file is empty
+[ERROR] Could not instantiate template configuration.

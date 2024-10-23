@@ -1,0 +1,4 @@
+/home/hgx/omics/srilekhx/coverity_scans/coverity/analysis/bin/cov-configure
+--javafs
+-c
+tmp/cov-capture/2024-10-22_23_23_01/compiler-config/sources/coverity_config.xml

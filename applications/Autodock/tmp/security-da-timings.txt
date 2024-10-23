@@ -2,10 +2,10 @@
 # Command Line: /home/hgx/omics/srilekhx/coverity_scans/coverity/analysis/bin/cov-security-da --dir tmp --project-dirs .
 timer                                      ms      calls
 --------------------------------------------------------
-cov_security_da::run                       13          1
-  cov_security_da::doJSTemplateDA           6          1
+cov_security_da::run                       14          1
+  cov_security_da::doJSTemplateDA           9          1
 
 activity                                   ms      calls
 --------------------------------------------------------
-cov_security_da::run                       13          1
-cov_security_da::doJSTemplateDA             6          1
+cov_security_da::run                       14          1
+cov_security_da::doJSTemplateDA             9          1

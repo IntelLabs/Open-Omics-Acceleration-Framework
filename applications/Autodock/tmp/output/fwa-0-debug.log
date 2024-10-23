@@ -1,255 +1,255 @@
-2024-10-08 01:35:46,577 [plugins:INFO] Scanning plug-in dir = /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/code/plugins/builtin
-2024-10-08 01:35:46,577 [plugins:INFO] Scanning plug-in dir = /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/code/plugins/test
-2024-10-08 01:35:46,673 [plugins:INFO] Scan root = /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/README.md
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/Makefile.Cuda
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/Dockerfile
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/Makefile.OpenCL
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/device/auxiliary_genetic.cl
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/device/kernel2.cl
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/device/kernel_ad.cl
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/device/kernel4.cl
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/device/calcenergy.cl
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/device/calcgradient.cl
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/device/kernel_fire.cl
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/device/kernel1.cl
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/device/kernel_sd.cl
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/device/kernel3.cl
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/device/calcMergedEneGra.cl
-2024-10-08 01:35:46,674 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/host/inc/performdocking.h.OpenCL
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/host/inc/performdocking.h.Cuda
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/host/src/performdocking.cpp.Cuda
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/host/src/performdocking.cpp.OpenCL
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/7cpa/derived/running.xyz
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/7cpa/derived/7cpa_rotated.pdbqt
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/7cpa/derived/rec.maps.xyz
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/7cpa/derived/7cpa_protein.maps.fld
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/7cpa/derived/7cpa_ligand.pdbqt
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/7cpa/derived/rec.pdbqt
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/7cpa/derived/7cpa.gpf
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/7cpa/derived/7cpa.glg
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3tmn/derived/running.xyz
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3tmn/derived/3tmn_ligand.pdbqt
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3tmn/derived/3tmn.glg
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3tmn/derived/lig.json
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3tmn/derived/rot.pdbqt
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3tmn/derived/rec.pdbqt
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3tmn/derived/3tmn_protein.maps.fld
-2024-10-08 01:35:46,675 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3tmn/derived/rotated.pdbqt
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1ac8/.eval.py.swp
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1ac8/derived/1ac8_protein.maps.fld
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1ac8/derived/running.xyz
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1ac8/derived/1ac8.dpf
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1ac8/derived/1ac8_ligand.pdbqt
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1ac8/derived/rec.maps.xyz
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1ac8/derived/1ac8.gpf
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1ac8/derived/rec.pdbqt
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1ac8/derived/rotated.pdbqt
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1stp/derived/1stp_ligand.pdbqt
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1stp/derived/1stp.gpf
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1stp/derived/1stp_protein.maps.fld
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1stp/derived/1stp.dpf
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1stp/derived/1stp_protein.pdbqt
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1stp/derived/1stp_nrun10.dpf
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1stp/derived/1stp.glg
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1stp/derived/1stp_nrun100.dpf
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1stp/derived/1stp_protein.maps.xyz
-2024-10-08 01:35:46,676 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/1stp/derived/1stp_ligand_NOTORSIONS.pdbqt
-2024-10-08 01:35:46,677 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3ce3/derived/3ce3_protein.pdbqt
-2024-10-08 01:35:46,677 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3ce3/derived/3ce3_nrun10.dpf
-2024-10-08 01:35:46,677 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3ce3/derived/3ce3_protein.maps.xyz
-2024-10-08 01:35:46,677 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3ce3/derived/3ce3.dpf
-2024-10-08 01:35:46,677 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3ce3/derived/3ce3_nrun100.dpf
-2024-10-08 01:35:46,677 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3ce3/derived/3ce3.gpf
-2024-10-08 01:35:46,677 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3ce3/derived/3ce3.glg
-2024-10-08 01:35:46,677 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3ce3/derived/3ce3_ligand.pdbqt
-2024-10-08 01:35:46,677 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/input/3ce3/derived/3ce3_protein.maps.fld
-2024-10-08 01:35:46,677 [plugins:DEBUG]      * /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0/doc/presentation/.gitkeep
-2024-10-08 01:35:46,677 [plugins:INFO] Scan found 1 files
-2024-10-08 01:35:46,680 [plugins:INFO] -------------- Running plug-in JSP (priority=60) --------------
-2024-10-08 01:35:46,680 [plugins:DEBUG] JSP.main: Start
-2024-10-08 01:35:46,680 [plugins:DEBUG] JSP.main: webapp_root = /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0
-2024-10-08 01:35:46,680 [plugins:DEBUG] JSP.main: Num JSP files: 0
-2024-10-08 01:35:46,680 [plugins:INFO] -------------- Running plug-in Facelets2 (priority=50) --------------
-2024-10-08 01:35:46,680 [plugins:INFO] -------------- Running plug-in MyBatis (priority=50) --------------
-2024-10-08 01:35:46,680 [plugins:DEBUG] MyBatis.main: Start
-2024-10-08 01:35:46,682 [plugins:DEBUG] Skipping MyBatis analysis. Framework not detected.
-2024-10-08 01:35:46,682 [plugins:INFO] -------------- Running plug-in MyBatisXML (priority=50) --------------
-2024-10-08 01:35:46,682 [plugins:DEBUG] MyBatis.main: Start
-2024-10-08 01:35:46,682 [plugins:DEBUG] MyBatis.main: End
-2024-10-08 01:35:46,682 [plugins:INFO] -------------- Running plug-in SpringData (priority=50) --------------
-2024-10-08 01:35:46,682 [plugins:DEBUG] SpringData.main: Start
-2024-10-08 01:35:46,686 [plugins:DEBUG] Skipping SpringData analysis. Framework not detected.
-2024-10-08 01:35:46,686 [plugins:INFO] -------------- Running plug-in Struts2Xml (priority=50) --------------
-2024-10-08 01:35:46,686 [plugins:INFO] Struts2Xml.main: Start
-2024-10-08 01:35:46,686 [plugins:INFO] -------------- Skipping disabled plug-in: Test_BogusClassName
-2024-10-08 01:35:46,686 [plugins:INFO] -------------- Skipping disabled plug-in: Test_Failure
-2024-10-08 01:35:46,686 [plugins:INFO] -------------- Running plug-in Tiles (priority=50) --------------
-2024-10-08 01:35:46,687 [plugins:DEBUG] Tiles.main: Start
-2024-10-08 01:35:46,687 [plugins:DEBUG] Tiles.main: webapp_root='/tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0', working_dir='/tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0.tmp'
-2024-10-08 01:35:46,687 [plugins:DEBUG] Tiles.main: 0 JSPs, 0 XML files
-2024-10-08 01:35:46,687 [plugins:DEBUG] Tiles::consumeDefinitions- JSP files set:
+2024-10-22 23:23:18,820 [plugins:INFO] Scanning plug-in dir = /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/code/plugins/builtin
+2024-10-22 23:23:18,821 [plugins:INFO] Scanning plug-in dir = /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/code/plugins/test
+2024-10-22 23:23:18,892 [plugins:INFO] Scan root = /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/README.md
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/Makefile.Cuda
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/Dockerfile
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/Makefile.OpenCL
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/device/auxiliary_genetic.cl
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/device/kernel2.cl
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/device/kernel_ad.cl
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/device/kernel4.cl
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/device/calcenergy.cl
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/device/calcgradient.cl
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/device/kernel_fire.cl
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/device/kernel1.cl
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/device/kernel_sd.cl
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/device/kernel3.cl
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/device/calcMergedEneGra.cl
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/host/inc/performdocking.h.OpenCL
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/host/inc/performdocking.h.Cuda
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/host/src/performdocking.cpp.Cuda
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/host/src/performdocking.cpp.OpenCL
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/7cpa/derived/running.xyz
+2024-10-22 23:23:18,892 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/7cpa/derived/7cpa_rotated.pdbqt
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/7cpa/derived/rec.maps.xyz
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/7cpa/derived/7cpa_protein.maps.fld
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/7cpa/derived/7cpa_ligand.pdbqt
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/7cpa/derived/rec.pdbqt
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/7cpa/derived/7cpa.gpf
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/7cpa/derived/7cpa.glg
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3tmn/derived/running.xyz
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3tmn/derived/3tmn_ligand.pdbqt
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3tmn/derived/3tmn.glg
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3tmn/derived/lig.json
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3tmn/derived/rot.pdbqt
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3tmn/derived/rec.pdbqt
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3tmn/derived/3tmn_protein.maps.fld
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3tmn/derived/rotated.pdbqt
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1ac8/.eval.py.swp
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1ac8/derived/1ac8_protein.maps.fld
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1ac8/derived/running.xyz
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1ac8/derived/1ac8.dpf
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1ac8/derived/1ac8_ligand.pdbqt
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1ac8/derived/rec.maps.xyz
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1ac8/derived/1ac8.gpf
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1ac8/derived/rec.pdbqt
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1ac8/derived/rotated.pdbqt
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1stp/derived/1stp_ligand.pdbqt
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1stp/derived/1stp.gpf
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1stp/derived/1stp_protein.maps.fld
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1stp/derived/1stp.dpf
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1stp/derived/1stp_protein.pdbqt
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1stp/derived/1stp_nrun10.dpf
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1stp/derived/1stp.glg
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1stp/derived/1stp_nrun100.dpf
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1stp/derived/1stp_protein.maps.xyz
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/1stp/derived/1stp_ligand_NOTORSIONS.pdbqt
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3ce3/derived/3ce3_protein.pdbqt
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3ce3/derived/3ce3_nrun10.dpf
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3ce3/derived/3ce3_protein.maps.xyz
+2024-10-22 23:23:18,893 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3ce3/derived/3ce3.dpf
+2024-10-22 23:23:18,894 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3ce3/derived/3ce3_nrun100.dpf
+2024-10-22 23:23:18,894 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3ce3/derived/3ce3.gpf
+2024-10-22 23:23:18,894 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3ce3/derived/3ce3.glg
+2024-10-22 23:23:18,894 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3ce3/derived/3ce3_ligand.pdbqt
+2024-10-22 23:23:18,894 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/input/3ce3/derived/3ce3_protein.maps.fld
+2024-10-22 23:23:18,894 [plugins:DEBUG]      * /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0/doc/presentation/.gitkeep
+2024-10-22 23:23:18,894 [plugins:INFO] Scan found 1 files
+2024-10-22 23:23:18,896 [plugins:INFO] -------------- Running plug-in JSP (priority=60) --------------
+2024-10-22 23:23:18,896 [plugins:DEBUG] JSP.main: Start
+2024-10-22 23:23:18,896 [plugins:DEBUG] JSP.main: webapp_root = /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0
+2024-10-22 23:23:18,896 [plugins:DEBUG] JSP.main: Num JSP files: 0
+2024-10-22 23:23:18,896 [plugins:INFO] -------------- Running plug-in Facelets2 (priority=50) --------------
+2024-10-22 23:23:18,896 [plugins:INFO] -------------- Running plug-in MyBatis (priority=50) --------------
+2024-10-22 23:23:18,896 [plugins:DEBUG] MyBatis.main: Start
+2024-10-22 23:23:18,897 [plugins:DEBUG] Skipping MyBatis analysis. Framework not detected.
+2024-10-22 23:23:18,897 [plugins:INFO] -------------- Running plug-in MyBatisXML (priority=50) --------------
+2024-10-22 23:23:18,897 [plugins:DEBUG] MyBatis.main: Start
+2024-10-22 23:23:18,897 [plugins:DEBUG] MyBatis.main: End
+2024-10-22 23:23:18,897 [plugins:INFO] -------------- Running plug-in SpringData (priority=50) --------------
+2024-10-22 23:23:18,897 [plugins:DEBUG] SpringData.main: Start
+2024-10-22 23:23:18,900 [plugins:DEBUG] Skipping SpringData analysis. Framework not detected.
+2024-10-22 23:23:18,900 [plugins:INFO] -------------- Running plug-in Struts2Xml (priority=50) --------------
+2024-10-22 23:23:18,900 [plugins:INFO] Struts2Xml.main: Start
+2024-10-22 23:23:18,900 [plugins:INFO] -------------- Skipping disabled plug-in: Test_BogusClassName
+2024-10-22 23:23:18,900 [plugins:INFO] -------------- Skipping disabled plug-in: Test_Failure
+2024-10-22 23:23:18,900 [plugins:INFO] -------------- Running plug-in Tiles (priority=50) --------------
+2024-10-22 23:23:18,900 [plugins:DEBUG] Tiles.main: Start
+2024-10-22 23:23:18,900 [plugins:DEBUG] Tiles.main: webapp_root='/tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0', working_dir='/tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0.tmp'
+2024-10-22 23:23:18,900 [plugins:DEBUG] Tiles.main: 0 JSPs, 0 XML files
+2024-10-22 23:23:18,900 [plugins:DEBUG] Tiles::consumeDefinitions- JSP files set:
 []
-2024-10-08 01:35:46,687 [plugins:DEBUG] Ordered tiles ref: []
-2024-10-08 01:35:46,687 [plugins:DEBUG] After propagation: {}
-2024-10-08 01:35:46,687 [plugins:DEBUG] Tiles::main- Found 0 tiles
-2024-10-08 01:35:46,687 [plugins:DEBUG] Tiles::main- Generated tiles structure
+2024-10-22 23:23:18,900 [plugins:DEBUG] Ordered tiles ref: []
+2024-10-22 23:23:18,900 [plugins:DEBUG] After propagation: {}
+2024-10-22 23:23:18,900 [plugins:DEBUG] Tiles::main- Found 0 tiles
+2024-10-22 23:23:18,900 [plugins:DEBUG] Tiles::main- Generated tiles structure
 {}
-2024-10-08 01:35:46,687 [plugins:DEBUG] Tiles::addViewsToConfiguration- 0 tiles defs with 0 views
-2024-10-08 01:35:46,687 [plugins:INFO] -------------- Running plug-in SpringBeans (priority=20) --------------
-2024-10-08 01:35:46,687 [plugins:DEBUG] SpringBeans.main: Start
-2024-10-08 01:35:46,687 [plugins:INFO] -------------- Running plug-in Struts1Xml (priority=20) --------------
-2024-10-08 01:35:46,687 [plugins:INFO] Struts1Xml.main: Start
-2024-10-08 01:35:46,687 [plugins:INFO] -------------- Running plug-in DWR (priority=10) --------------
-2024-10-08 01:35:46,687 [plugins:INFO] DWR.main: Start
-2024-10-08 01:35:46,688 [plugins:INFO] -------------- Running plug-in JavaHttpServer (priority=10) --------------
-2024-10-08 01:35:46,688 [plugins:DEBUG] JavaHttpServer.main: Start
-2024-10-08 01:35:46,689 [plugins:INFO] -------------- Running plug-in Restlet (priority=10) --------------
-2024-10-08 01:35:46,689 [plugins:DEBUG] Restlet.main: Start
-2024-10-08 01:35:46,689 [plugins:DEBUG] Skipping Restlet. Framework not detected.
-2024-10-08 01:35:46,689 [plugins:INFO] -------------- Skipping disabled plug-in: Seam
-2024-10-08 01:35:46,689 [plugins:INFO] -------------- Running plug-in SpringBoot (priority=10) --------------
-2024-10-08 01:35:46,689 [plugins:DEBUG] SpringBoot.main: Start
-2024-10-08 01:35:46,690 [plugins:DEBUG] Skipping SpringBoot analysis. Framework not detected.
-2024-10-08 01:35:46,690 [plugins:INFO] -------------- Running plug-in SpringMVC3 (priority=10) --------------
-2024-10-08 01:35:46,690 [plugins:DEBUG] SpringMVC3.main: Start
-2024-10-08 01:35:46,693 [plugins:DEBUG] Skipping SpringMVC3 analysis. Framework not detected.
-2024-10-08 01:35:46,693 [plugins:INFO] -------------- Running plug-in SpringWS (priority=10) --------------
-2024-10-08 01:35:46,693 [plugins:DEBUG] SpringWS.main: Start
-2024-10-08 01:35:46,694 [plugins:DEBUG] Skipping SpringWS analysis. Framework not detected.
-2024-10-08 01:35:46,694 [plugins:INFO] -------------- Running plug-in Struts1 (priority=10) --------------
-2024-10-08 01:35:46,694 [plugins:DEBUG] Struts1.main: Start
-2024-10-08 01:35:46,694 [plugins:DEBUG] Struts1.mapActionsToForms: {}
-2024-10-08 01:35:46,695 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.action.Action
+2024-10-22 23:23:18,900 [plugins:DEBUG] Tiles::addViewsToConfiguration- 0 tiles defs with 0 views
+2024-10-22 23:23:18,900 [plugins:INFO] -------------- Running plug-in SpringBeans (priority=20) --------------
+2024-10-22 23:23:18,900 [plugins:DEBUG] SpringBeans.main: Start
+2024-10-22 23:23:18,900 [plugins:INFO] -------------- Running plug-in Struts1Xml (priority=20) --------------
+2024-10-22 23:23:18,900 [plugins:INFO] Struts1Xml.main: Start
+2024-10-22 23:23:18,900 [plugins:INFO] -------------- Running plug-in DWR (priority=10) --------------
+2024-10-22 23:23:18,900 [plugins:INFO] DWR.main: Start
+2024-10-22 23:23:18,901 [plugins:INFO] -------------- Running plug-in JavaHttpServer (priority=10) --------------
+2024-10-22 23:23:18,902 [plugins:DEBUG] JavaHttpServer.main: Start
+2024-10-22 23:23:18,902 [plugins:INFO] -------------- Running plug-in Restlet (priority=10) --------------
+2024-10-22 23:23:18,902 [plugins:DEBUG] Restlet.main: Start
+2024-10-22 23:23:18,902 [plugins:DEBUG] Skipping Restlet. Framework not detected.
+2024-10-22 23:23:18,903 [plugins:INFO] -------------- Skipping disabled plug-in: Seam
+2024-10-22 23:23:18,903 [plugins:INFO] -------------- Running plug-in SpringBoot (priority=10) --------------
+2024-10-22 23:23:18,903 [plugins:DEBUG] SpringBoot.main: Start
+2024-10-22 23:23:18,903 [plugins:DEBUG] Skipping SpringBoot analysis. Framework not detected.
+2024-10-22 23:23:18,903 [plugins:INFO] -------------- Running plug-in SpringMVC3 (priority=10) --------------
+2024-10-22 23:23:18,903 [plugins:DEBUG] SpringMVC3.main: Start
+2024-10-22 23:23:18,906 [plugins:DEBUG] Skipping SpringMVC3 analysis. Framework not detected.
+2024-10-22 23:23:18,906 [plugins:INFO] -------------- Running plug-in SpringWS (priority=10) --------------
+2024-10-22 23:23:18,906 [plugins:DEBUG] SpringWS.main: Start
+2024-10-22 23:23:18,907 [plugins:DEBUG] Skipping SpringWS analysis. Framework not detected.
+2024-10-22 23:23:18,907 [plugins:INFO] -------------- Running plug-in Struts1 (priority=10) --------------
+2024-10-22 23:23:18,907 [plugins:DEBUG] Struts1.main: Start
+2024-10-22 23:23:18,907 [plugins:DEBUG] Struts1.mapActionsToForms: {}
+2024-10-22 23:23:18,907 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.action.Action
 []
-2024-10-08 01:35:46,695 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.BaseAction
+2024-10-22 23:23:18,908 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.BaseAction
 []
-2024-10-08 01:35:46,695 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.DownloadAction
+2024-10-22 23:23:18,908 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.DownloadAction
 []
-2024-10-08 01:35:46,696 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.ForwardAction
+2024-10-22 23:23:18,909 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.ForwardAction
 []
-2024-10-08 01:35:46,696 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.IncludeAction
+2024-10-22 23:23:18,909 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.IncludeAction
 []
-2024-10-08 01:35:46,696 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.SwitchAction
+2024-10-22 23:23:18,909 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.SwitchAction
 []
-2024-10-08 01:35:46,697 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.LocaleAction
+2024-10-22 23:23:18,910 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: org.apache.struts.actions.LocaleAction
 []
-2024-10-08 01:35:46,697 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ActionEx
+2024-10-22 23:23:18,910 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ActionEx
 []
-2024-10-08 01:35:46,698 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.AbstractBLogicAction
+2024-10-22 23:23:18,910 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.AbstractBLogicAction
 []
-2024-10-08 01:35:46,698 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ClearSessionAction
+2024-10-22 23:23:18,911 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ClearSessionAction
 []
-2024-10-08 01:35:46,698 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.DispatchAction
+2024-10-22 23:23:18,911 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.DispatchAction
 []
-2024-10-08 01:35:46,699 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ForwardAction
+2024-10-22 23:23:18,912 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ForwardAction
 []
-2024-10-08 01:35:46,699 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.LogoffAction
+2024-10-22 23:23:18,912 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.LogoffAction
 []
-2024-10-08 01:35:46,699 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.MakeSessionDirectoryAction
+2024-10-22 23:23:18,912 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.MakeSessionDirectoryAction
 []
-2024-10-08 01:35:46,700 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ReloadCodeListAction
+2024-10-22 23:23:18,913 [plugins:DEBUG] findEntryPointViaImplicitMethod:: Class extending: jp.terasoluna.fw.web.struts.actions.ReloadCodeListAction
 []
-2024-10-08 01:35:46,702 [plugins:INFO] -------------- Running plug-in Terasoluna (priority=10) --------------
-2024-10-08 01:35:46,702 [plugins:DEBUG] Terasoluna::main- Start
-2024-10-08 01:35:46,702 [plugins:DEBUG] %s::main- Framework classes not found.
-2024-10-08 01:35:46,702 [plugins:INFO] -------------- Running plug-in Android (priority=5) --------------
-2024-10-08 01:35:46,702 [plugins:DEBUG] Android: main: Start
-2024-10-08 01:35:46,702 [plugins:DEBUG] Android: main: emit_app_root: '/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock'
-2024-10-08 01:35:46,702 [plugins:DEBUG] Android: main: unpacked_app_root='/tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0'
-2024-10-08 01:35:46,702 [plugins:DEBUG] Android: main: temp_dir='/tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0.tmp'
-2024-10-08 01:35:46,704 [plugins:DEBUG] Android: Module roots: []
-2024-10-08 01:35:46,704 [plugins:INFO] Working in fallback mode
-2024-10-08 01:35:46,704 [plugins:ERROR] Android: No valid manifests found!
-2024-10-08 01:35:46,704 [plugins:INFO] -------------- Running plug-in Axis1 (priority=5) --------------
-2024-10-08 01:35:46,704 [plugins:INFO] Axis1.main: Start
-2024-10-08 01:35:46,704 [plugins:INFO] -------------- Running plug-in Cordova (priority=5) --------------
-2024-10-08 01:35:46,723 [plugins:DEBUG] Cordova framelet.main: No Cordova project files (config.xml or package.json) present in emit.
-2024-10-08 01:35:46,723 [plugins:INFO] -------------- Running plug-in Deserialization (priority=5) --------------
-2024-10-08 01:35:46,723 [plugins:INFO] Deserialization.main: Start
-2024-10-08 01:35:46,724 [plugins:INFO] -------------- Running plug-in DotNetMVC (priority=5) --------------
-2024-10-08 01:35:46,724 [plugins:INFO] DotNetMVC.main: Start
-2024-10-08 01:35:46,724 [plugins:DEBUG] DotNetMVC.main: Phase: Setup
-2024-10-08 01:35:46,724 [plugins:DEBUG] DotNetMVC.main: Setup: Create type hierarchy
-2024-10-08 01:35:46,726 [plugins:DEBUG] DotNetMVC.main: Setup: Collapse 'AsyncController' into 'Controller'.
-2024-10-08 01:35:46,726 [plugins:DEBUG] DotNetMVC.main: Phase: Create Controller Entry Points
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Entry Point Methods: Compute which methods are Entry Points.
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 1)
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Inherited Entry Points: Compute entry points inherited from parent
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 2)
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: CSRF Protected Methods: Compute which methods are CSRF protected.
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Include/Exclude Paths: Compute taint paths (whitelists).
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Finish: Create EntryPoint Directives.
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.createEntryPointDirectives: Total controller entry points: 0
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Entry Point Methods: Compute which methods are Entry Points.
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 1)
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Inherited Entry Points: Compute entry points inherited from parent
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 2)
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: CSRF Protected Methods: Compute which methods are CSRF protected.
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Include/Exclude Paths: Compute taint paths (whitelists).
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Finish: Create EntryPoint Directives.
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.createEntryPointDirectives: Total controller entry points: 0
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.main: Phase: Create Razor Entry Points
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Detect Views: Heuristically Detect Whether Class Is View.
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Finish: Create Razor Entry Points for View Classes.
-2024-10-08 01:35:46,727 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Total Razor View entry points: 0
-2024-10-08 01:35:46,728 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Detect Views: Heuristically Detect Whether Class Is View.
-2024-10-08 01:35:46,728 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Finish: Create Razor Entry Points for View Classes.
-2024-10-08 01:35:46,728 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Total Razor View entry points: 0
-2024-10-08 01:35:46,728 [plugins:DEBUG] DotNetMVC.main: Phase: Create Views
-2024-10-08 01:35:46,728 [plugins:DEBUG] DotNetMVC.doMvcViews: Detect Views: Heuristically Detect Whether Class Is View.
-2024-10-08 01:35:46,728 [plugins:DEBUG] DotNetMVC.doMvcViews: Finish: Parse Class to Create View Directive.
-2024-10-08 01:35:46,728 [plugins:DEBUG] DotNetMVC.doMvcViews: Detect Views: Heuristically Detect Whether Class Is View.
-2024-10-08 01:35:46,728 [plugins:DEBUG] DotNetMVC.doMvcViews: Finish: Parse Class to Create View Directive.
-2024-10-08 01:35:46,728 [plugins:DEBUG] DotNetMVC.main: Phase: Create Filters
-2024-10-08 01:35:46,728 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
-2024-10-08 01:35:46,728 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
-2024-10-08 01:35:46,728 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
-2024-10-08 01:35:46,729 [plugins:INFO] -------------- Running plug-in DotNetWebServices (priority=5) --------------
-2024-10-08 01:35:46,729 [plugins:INFO] DotNetWebServices.main: Start
-2024-10-08 01:35:46,730 [plugins:DEBUG] DotNetWebServices.main: Web API 2 Controllers
-2024-10-08 01:35:46,730 [plugins:DEBUG] DotNetWebServices.main: WCF Services
-2024-10-08 01:35:46,731 [plugins:DEBUG] DotNetWebServices.doWcfServices: WCF operation impls = 0
-2024-10-08 01:35:46,731 [plugins:DEBUG] DotNetWebServices.main: ASMX Web Services
-2024-10-08 01:35:46,731 [plugins:DEBUG] DotNetWebServices.doAsmxServices: ASMX service methods = 0
-2024-10-08 01:35:46,731 [plugins:DEBUG] DotNetWebServices.main: Create Filters
-2024-10-08 01:35:46,732 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
-2024-10-08 01:35:46,732 [plugins:INFO] -------------- Running plug-in EJB (priority=5) --------------
-2024-10-08 01:35:46,732 [plugins:INFO] [WARN] EJB.main: Start
-2024-10-08 01:35:46,733 [plugins:INFO] [DEBUG] EJB - total entry points: 0
-2024-10-08 01:35:46,733 [plugins:INFO] -------------- Running plug-in GWTCallbacks (priority=5) --------------
-2024-10-08 01:35:46,733 [plugins:INFO] GWTCallbacks.main: Start
-2024-10-08 01:35:46,734 [plugins:DEBUG] GWTCallbacks::main- Types ('com.google.gwt.user.client.rpc.AsyncCallback', 'com.google.gwt.http.client.RequestCallback') not found.
-2024-10-08 01:35:46,734 [plugins:INFO] -------------- Running plug-in GWTRPC (priority=5) --------------
-2024-10-08 01:35:46,734 [plugins:INFO] GWTRPC.main: Start
-2024-10-08 01:35:46,735 [plugins:DEBUG] GWTRPC.processRemoteServiceServlets: found implementors of RemoteService but no extenders of RemoteServiceServlet. This might be a custom GWT RPC framework.
-2024-10-08 01:35:46,735 [plugins:DEBUG] GWTRPC.processRemoteServiceServlets: found implementors of RemoteService but no extenders of RemoteServiceServlet. This might be a custom GWT RPC framework.
-2024-10-08 01:35:46,736 [plugins:DEBUG] GWTRPC.processRemoteServiceServlets: found implementors of RemoteService but no extenders of RemoteServiceServlet. This might be a custom GWT RPC framework.
-2024-10-08 01:35:46,736 [plugins:INFO] GWTRPC - total entry points: 0
-2024-10-08 01:35:46,736 [plugins:INFO] -------------- Running plug-in GWTRequestFactory (priority=5) --------------
-2024-10-08 01:35:46,736 [plugins:INFO] GWTRequestFactory.main: Start
-2024-10-08 01:35:46,736 [plugins:INFO] -------------- Running plug-in JSF2 (priority=5) --------------
-2024-10-08 01:35:46,736 [plugins:INFO] JSF2.main: Start
-2024-10-08 01:35:46,737 [plugins:INFO] -------------- Running plug-in JaxRS (priority=5) --------------
-2024-10-08 01:35:46,745 [plugins:DEBUG] JaxRS::main- Types ('javax.ws.rs.Path', 'jakarta.ws.rs.Path', 'javax.ws.rs.Consumes', 'jakarta.ws.rs.Consumes', 'javax.ws.rs.Produces', 'jakarta.ws.rs.Produces', 'javax.ws.rs.GET', 'jakarta.ws.rs.GET', 'javax.ws.rs.PUT', 'jakarta.ws.rs.PUT', 'javax.ws.rs.HEAD', 'jakarta.ws.rs.HEAD', 'javax.ws.rs.POST', 'jakarta.ws.rs.POST', 'javax.ws.rs.OPTIONS', 'jakarta.ws.rs.OPTIONS', 'javax.ws.rs.DELETE', 'jakarta.ws.rs.DELETE', 'javax.ws.rs.Path', 'jakarta.ws.rs.Path', 'javax.ws.rs.CookieParam', 'jakarta.ws.rs.CookieParam', 'javax.ws.rs.FormParam', 'jakarta.ws.rs.FormParam', 'javax.ws.rs.HeaderParam', 'jakarta.ws.rs.HeaderParam', 'javax.ws.rs.MatrixParam', 'jakarta.ws.rs.MatrixParam', 'javax.ws.rs.PathParam', 'jakarta.ws.rs.PathParam', 'javax.ws.rs.QueryParam', 'jakarta.ws.rs.QueryParam', 'javax.ws.rs.BeanParam', 'jakarta.ws.rs.BeanParam') not found.
-2024-10-08 01:35:46,745 [plugins:INFO] -------------- Running plug-in JaxWS (priority=5) --------------
-2024-10-08 01:35:46,747 [plugins:DEBUG] JaxWS.main: Application does not contain WS annotations, exiting.
-2024-10-08 01:35:46,747 [plugins:INFO] -------------- Skipping disabled plug-in: Skeleton
-2024-10-08 01:35:46,747 [plugins:INFO] -------------- Running plug-in Struts2 (priority=5) --------------
-2024-10-08 01:35:46,747 [plugins:INFO] Struts2.main: Start
-2024-10-08 01:35:46,757 [plugins:INFO] -------------- Running plug-in Symfony (priority=5) --------------
-2024-10-08 01:35:46,757 [plugins:DEBUG] Symfony: main: Start
-2024-10-08 01:35:46,757 [plugins:DEBUG] Symfony: main: emit_app_root: '/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock'
-2024-10-08 01:35:46,757 [plugins:DEBUG] Symfony: main: unpacked_app_root='/tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0'
-2024-10-08 01:35:46,757 [plugins:DEBUG] Symfony: main: temp_dir='/tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0.tmp'
-2024-10-08 01:35:46,758 [plugins:DEBUG] Symfony: Handling Symfony YML Routes.
-2024-10-08 01:35:46,758 [plugins:DEBUG] Symfony: Handling Symfony Route Annotations.
-2024-10-08 01:35:46,768 [plugins:INFO] -------------- Running plug-in Vertx (priority=5) --------------
-2024-10-08 01:35:46,768 [plugins:INFO] Vertx.main: Start
-2024-10-08 01:35:46,769 [plugins:DEBUG] Vertx::main- Types ('io.vertx.core.AbstractVerticle', 'io.vertx.rxjava.ext.web.RoutingContext') not found.
-2024-10-08 01:35:46,769 [plugins:INFO] -------------- Skipping disabled plug-in: WSXmlRpc
-2024-10-08 01:35:46,769 [plugins:INFO] -------------- Running plug-in WebForms (priority=5) --------------
-2024-10-08 01:35:46,769 [plugins:INFO] WebForms.main: Start
-2024-10-08 01:35:46,770 [plugins:INFO] -------------- Running plug-in WebSockets (priority=5) --------------
-2024-10-08 01:35:46,771 [plugins:INFO] WebSockets.main: Start
-2024-10-08 01:35:46,773 [plugins:DEBUG] WebSockets::main- Types ('javax.websocket.server.ServerEndpoint', 'javax.websocket.ClientEndpoint', 'javax.websocket.OnMessage', 'jakarta.websocket.server.ServerEndpoint', 'jakarta.websocket.ClientEndpoint', 'jakarta.websocket.OnMessage') not found.
+2024-10-22 23:23:18,914 [plugins:INFO] -------------- Running plug-in Terasoluna (priority=10) --------------
+2024-10-22 23:23:18,914 [plugins:DEBUG] Terasoluna::main- Start
+2024-10-22 23:23:18,915 [plugins:DEBUG] %s::main- Framework classes not found.
+2024-10-22 23:23:18,915 [plugins:INFO] -------------- Running plug-in Android (priority=5) --------------
+2024-10-22 23:23:18,915 [plugins:DEBUG] Android: main: Start
+2024-10-22 23:23:18,915 [plugins:DEBUG] Android: main: emit_app_root: '/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock'
+2024-10-22 23:23:18,915 [plugins:DEBUG] Android: main: unpacked_app_root='/tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0'
+2024-10-22 23:23:18,915 [plugins:DEBUG] Android: main: temp_dir='/tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0.tmp'
+2024-10-22 23:23:18,917 [plugins:DEBUG] Android: Module roots: []
+2024-10-22 23:23:18,917 [plugins:INFO] Working in fallback mode
+2024-10-22 23:23:18,917 [plugins:ERROR] Android: No valid manifests found!
+2024-10-22 23:23:18,917 [plugins:INFO] -------------- Running plug-in Axis1 (priority=5) --------------
+2024-10-22 23:23:18,917 [plugins:INFO] Axis1.main: Start
+2024-10-22 23:23:18,917 [plugins:INFO] -------------- Running plug-in Cordova (priority=5) --------------
+2024-10-22 23:23:18,930 [plugins:DEBUG] Cordova framelet.main: No Cordova project files (config.xml or package.json) present in emit.
+2024-10-22 23:23:18,930 [plugins:INFO] -------------- Running plug-in Deserialization (priority=5) --------------
+2024-10-22 23:23:18,930 [plugins:INFO] Deserialization.main: Start
+2024-10-22 23:23:18,931 [plugins:INFO] -------------- Running plug-in DotNetMVC (priority=5) --------------
+2024-10-22 23:23:18,931 [plugins:INFO] DotNetMVC.main: Start
+2024-10-22 23:23:18,931 [plugins:DEBUG] DotNetMVC.main: Phase: Setup
+2024-10-22 23:23:18,931 [plugins:DEBUG] DotNetMVC.main: Setup: Create type hierarchy
+2024-10-22 23:23:18,932 [plugins:DEBUG] DotNetMVC.main: Setup: Collapse 'AsyncController' into 'Controller'.
+2024-10-22 23:23:18,932 [plugins:DEBUG] DotNetMVC.main: Phase: Create Controller Entry Points
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Entry Point Methods: Compute which methods are Entry Points.
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 1)
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Inherited Entry Points: Compute entry points inherited from parent
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 2)
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: CSRF Protected Methods: Compute which methods are CSRF protected.
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Include/Exclude Paths: Compute taint paths (whitelists).
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Finish: Create EntryPoint Directives.
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.createEntryPointDirectives: Total controller entry points: 0
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Entry Point Methods: Compute which methods are Entry Points.
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 1)
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Inherited Entry Points: Compute entry points inherited from parent
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.findEntryPointMethods: Filter: Remove methods that cannot be entry points (pass 2)
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: CSRF Protected Methods: Compute which methods are CSRF protected.
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Include/Exclude Paths: Compute taint paths (whitelists).
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doControllerEntryPoints: Finish: Create EntryPoint Directives.
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.createEntryPointDirectives: Total controller entry points: 0
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.main: Phase: Create Razor Entry Points
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Detect Views: Heuristically Detect Whether Class Is View.
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Finish: Create Razor Entry Points for View Classes.
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Total Razor View entry points: 0
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Detect Views: Heuristically Detect Whether Class Is View.
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Finish: Create Razor Entry Points for View Classes.
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doRazorEntryPoints: Total Razor View entry points: 0
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.main: Phase: Create Views
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doMvcViews: Detect Views: Heuristically Detect Whether Class Is View.
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doMvcViews: Finish: Parse Class to Create View Directive.
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doMvcViews: Detect Views: Heuristically Detect Whether Class Is View.
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.doMvcViews: Finish: Parse Class to Create View Directive.
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetMVC.main: Phase: Create Filters
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
+2024-10-22 23:23:18,933 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
+2024-10-22 23:23:18,934 [plugins:INFO] -------------- Running plug-in DotNetWebServices (priority=5) --------------
+2024-10-22 23:23:18,934 [plugins:INFO] DotNetWebServices.main: Start
+2024-10-22 23:23:18,934 [plugins:DEBUG] DotNetWebServices.main: Web API 2 Controllers
+2024-10-22 23:23:18,935 [plugins:DEBUG] DotNetWebServices.main: WCF Services
+2024-10-22 23:23:18,935 [plugins:DEBUG] DotNetWebServices.doWcfServices: WCF operation impls = 0
+2024-10-22 23:23:18,935 [plugins:DEBUG] DotNetWebServices.main: ASMX Web Services
+2024-10-22 23:23:18,935 [plugins:DEBUG] DotNetWebServices.doAsmxServices: ASMX service methods = 0
+2024-10-22 23:23:18,935 [plugins:DEBUG] DotNetWebServices.main: Create Filters
+2024-10-22 23:23:18,936 [plugins:DEBUG] DotNetUtils.doFilters: Number of Filter classes: 0
+2024-10-22 23:23:18,936 [plugins:INFO] -------------- Running plug-in EJB (priority=5) --------------
+2024-10-22 23:23:18,936 [plugins:INFO] [WARN] EJB.main: Start
+2024-10-22 23:23:18,937 [plugins:INFO] [DEBUG] EJB - total entry points: 0
+2024-10-22 23:23:18,937 [plugins:INFO] -------------- Running plug-in GWTCallbacks (priority=5) --------------
+2024-10-22 23:23:18,937 [plugins:INFO] GWTCallbacks.main: Start
+2024-10-22 23:23:18,937 [plugins:DEBUG] GWTCallbacks::main- Types ('com.google.gwt.user.client.rpc.AsyncCallback', 'com.google.gwt.http.client.RequestCallback') not found.
+2024-10-22 23:23:18,937 [plugins:INFO] -------------- Running plug-in GWTRPC (priority=5) --------------
+2024-10-22 23:23:18,937 [plugins:INFO] GWTRPC.main: Start
+2024-10-22 23:23:18,938 [plugins:DEBUG] GWTRPC.processRemoteServiceServlets: found implementors of RemoteService but no extenders of RemoteServiceServlet. This might be a custom GWT RPC framework.
+2024-10-22 23:23:18,938 [plugins:DEBUG] GWTRPC.processRemoteServiceServlets: found implementors of RemoteService but no extenders of RemoteServiceServlet. This might be a custom GWT RPC framework.
+2024-10-22 23:23:18,938 [plugins:DEBUG] GWTRPC.processRemoteServiceServlets: found implementors of RemoteService but no extenders of RemoteServiceServlet. This might be a custom GWT RPC framework.
+2024-10-22 23:23:18,938 [plugins:INFO] GWTRPC - total entry points: 0
+2024-10-22 23:23:18,938 [plugins:INFO] -------------- Running plug-in GWTRequestFactory (priority=5) --------------
+2024-10-22 23:23:18,938 [plugins:INFO] GWTRequestFactory.main: Start
+2024-10-22 23:23:18,939 [plugins:INFO] -------------- Running plug-in JSF2 (priority=5) --------------
+2024-10-22 23:23:18,939 [plugins:INFO] JSF2.main: Start
+2024-10-22 23:23:18,939 [plugins:INFO] -------------- Running plug-in JaxRS (priority=5) --------------
+2024-10-22 23:23:18,945 [plugins:DEBUG] JaxRS::main- Types ('javax.ws.rs.Path', 'jakarta.ws.rs.Path', 'javax.ws.rs.Consumes', 'jakarta.ws.rs.Consumes', 'javax.ws.rs.Produces', 'jakarta.ws.rs.Produces', 'javax.ws.rs.GET', 'jakarta.ws.rs.GET', 'javax.ws.rs.PUT', 'jakarta.ws.rs.PUT', 'javax.ws.rs.HEAD', 'jakarta.ws.rs.HEAD', 'javax.ws.rs.POST', 'jakarta.ws.rs.POST', 'javax.ws.rs.OPTIONS', 'jakarta.ws.rs.OPTIONS', 'javax.ws.rs.DELETE', 'jakarta.ws.rs.DELETE', 'javax.ws.rs.Path', 'jakarta.ws.rs.Path', 'javax.ws.rs.CookieParam', 'jakarta.ws.rs.CookieParam', 'javax.ws.rs.FormParam', 'jakarta.ws.rs.FormParam', 'javax.ws.rs.HeaderParam', 'jakarta.ws.rs.HeaderParam', 'javax.ws.rs.MatrixParam', 'jakarta.ws.rs.MatrixParam', 'javax.ws.rs.PathParam', 'jakarta.ws.rs.PathParam', 'javax.ws.rs.QueryParam', 'jakarta.ws.rs.QueryParam', 'javax.ws.rs.BeanParam', 'jakarta.ws.rs.BeanParam') not found.
+2024-10-22 23:23:18,945 [plugins:INFO] -------------- Running plug-in JaxWS (priority=5) --------------
+2024-10-22 23:23:18,947 [plugins:DEBUG] JaxWS.main: Application does not contain WS annotations, exiting.
+2024-10-22 23:23:18,947 [plugins:INFO] -------------- Skipping disabled plug-in: Skeleton
+2024-10-22 23:23:18,947 [plugins:INFO] -------------- Running plug-in Struts2 (priority=5) --------------
+2024-10-22 23:23:18,947 [plugins:INFO] Struts2.main: Start
+2024-10-22 23:23:18,957 [plugins:INFO] -------------- Running plug-in Symfony (priority=5) --------------
+2024-10-22 23:23:18,957 [plugins:DEBUG] Symfony: main: Start
+2024-10-22 23:23:18,957 [plugins:DEBUG] Symfony: main: emit_app_root: '/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock'
+2024-10-22 23:23:18,957 [plugins:DEBUG] Symfony: main: unpacked_app_root='/tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0'
+2024-10-22 23:23:18,957 [plugins:DEBUG] Symfony: main: temp_dir='/tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0.tmp'
+2024-10-22 23:23:18,958 [plugins:DEBUG] Symfony: Handling Symfony YML Routes.
+2024-10-22 23:23:18,958 [plugins:DEBUG] Symfony: Handling Symfony Route Annotations.
+2024-10-22 23:23:18,968 [plugins:INFO] -------------- Running plug-in Vertx (priority=5) --------------
+2024-10-22 23:23:18,968 [plugins:INFO] Vertx.main: Start
+2024-10-22 23:23:18,968 [plugins:DEBUG] Vertx::main- Types ('io.vertx.core.AbstractVerticle', 'io.vertx.rxjava.ext.web.RoutingContext') not found.
+2024-10-22 23:23:18,969 [plugins:INFO] -------------- Skipping disabled plug-in: WSXmlRpc
+2024-10-22 23:23:18,969 [plugins:INFO] -------------- Running plug-in WebForms (priority=5) --------------
+2024-10-22 23:23:18,969 [plugins:INFO] WebForms.main: Start
+2024-10-22 23:23:18,970 [plugins:INFO] -------------- Running plug-in WebSockets (priority=5) --------------
+2024-10-22 23:23:18,970 [plugins:INFO] WebSockets.main: Start
+2024-10-22 23:23:18,972 [plugins:DEBUG] WebSockets::main- Types ('javax.websocket.server.ServerEndpoint', 'javax.websocket.ClientEndpoint', 'javax.websocket.OnMessage', 'jakarta.websocket.server.ServerEndpoint', 'jakarta.websocket.ClientEndpoint', 'jakarta.websocket.OnMessage') not found.

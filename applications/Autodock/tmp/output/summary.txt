@@ -1,9 +1,10 @@
 cov-analyze --dir tmp --enable-default --security --webapp-security --enable-audit-checkers 
 Analysis summary report:
 ------------------------
-Files analyzed                 : 3 Total
+Files analyzed                 : 5 Total
+    HTML                       : 2
     Python 2                   : 1
     Text                       : 2
 Total LoC input to cov-analyze : 306
-Time taken by analysis         : 00:00:07
+Time taken by analysis         : 00:00:04
 Defect occurrences found       : 0

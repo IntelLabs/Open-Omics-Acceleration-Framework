@@ -7,7 +7,7 @@ cmdline:   { name: "webapp-security" },
 cmdline:   { name: "enable-audit-checkers" },
 cmdline:   { name: "config", args: [ "/home/hgx/omics/srilekhx/coverity_scans/coverity/analysis/config/coverity_config.xml" ] },
 cmdline: ]
-startup: am_pid=9606
+startup: am_pid=24851
 startup: detected platform: Linux 4.15.0-166-generic x86_64
 startup: target platform: linux64
 startup: Detected 80 logical cpus
@@ -15,13 +15,13 @@ startup: Detected 40 cpu cores
 startup: host name: hgxsrv1
 startup: user name: hgx
 startup: Analysis version: 2023.3.4 (858be4c112 p-2023.3-push-67)
-startup: temp directory: /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3
+startup: temp directory: /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229
 startup: enable_constraint_fpp=0
-startup: current time: 2024-Oct-08 01:35:44
+startup: current time: 2024-Oct-22 23:23:17
 startup: Detected amount of memory: 1056516940kb
 startup: Limiting memory to 950865246kb
 Sigma checker-properties info: Capturing Sigma checker properties...
-Sigma checker-properties info: Command line for sigma /home/hgx/omics/srilekhx/coverity_scans/coverity/analysis/sigma/bin/sigma internal-coverity-integration checker-properties --protocol-version 1 /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/sigma-checker-properties.json
+Sigma checker-properties info: Command line for sigma /home/hgx/omics/srilekhx/coverity_scans/coverity/analysis/sigma/bin/sigma internal-coverity-integration checker-properties --protocol-version 1 /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/sigma-checker-properties.json
 Sigma checker-properties info: Exit status: code 0
 Sigma checker-properties info: Loaded 3409 checker properties for Sigma.
 was: Web-app security infrastructure enabled by (JavaScript) BUDA_DIRECTIVES_TYPE_INFERENCE_CHECKER
@@ -123,13 +123,13 @@ emitdb: callgraph.cpp:2515 11111111
 emitdb: callgraph.cpp:2545 11000011
 emitdb: callgraph.cpp:2565 11000011
 fwa: Starting Framework Analysis
-aqs: Started server on 127.0.0.1:5508
-fwa: [INFO] Processing dir: /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0
+aqs: Started server on 127.0.0.1:5890
+fwa: [INFO] Processing dir: /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0
 fwa: [INFO] Framework Analyzer outputs
-fwa: [INFO]   Unpacked files at: /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0
-fwa: [INFO]   Temp files: /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0.tmp
+fwa: [INFO]   Unpacked files at: /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0
+fwa: [INFO]   Temp files: /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0.tmp
 fwa: [INFO] Executed command: 
-fwa: /home/hgx/omics/srilekhx/coverity_scans/coverity/analysis/python3.7/bin/python3.7 -E /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/code/Main.pyc --python-dir /tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/code @/tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa-argfile.txt 
+fwa: /home/hgx/omics/srilekhx/coverity_scans/coverity/analysis/python3.7/bin/python3.7 -E /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/code/Main.pyc --python-dir /tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/code @/tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa-argfile.txt 
 aqs: Cached 0 class annotation relations
 aqs: Cached 0 method annotation relations
 aqs: FunctionWithCommentResource
@@ -137,11 +137,11 @@ aqs: Cached 0 functions with route annotations
 aqs: Coverity Framework Analyzer
 aqs: (c) 2012-2022 Synopsys, Inc. All rights reserved worldwide.
 aqs: 
-aqs: Settings::opts = Namespace(app_root_path=['/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock'], aqs_key_file=['/tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/analysis-query-server.key'], aqs_port=['5508'], disable=None, disable_default=False, enable=None, framework_config=['/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/output/fwa-0-config.json'], list_plugins=None, log=['/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/output/fwa-0-debug.log'], max_filesize=None, python_dir=['/tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/code'], scan=['/tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0'], temp_dir=['/tmp/cov-hgx/906b2fdc9f189cce42eb36723233c4f3/fwa/dom-0.tmp'], webapp_id=['0'])
+aqs: Settings::opts = Namespace(app_root_path=['/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock'], aqs_key_file=['/tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/analysis-query-server.key'], aqs_port=['5890'], disable=None, disable_default=False, enable=None, framework_config=['/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/output/fwa-0-config.json'], list_plugins=None, log=['/home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/output/fwa-0-debug.log'], max_filesize=None, python_dir=['/tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/code'], scan=['/tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0'], temp_dir=['/tmp/cov-hgx/48263060140230de9b6c2443e1c3b229/fwa/dom-0.tmp'], webapp_id=['0'])
 fwa: [INFO] Registering framework configuration: /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/output/fwa-0-config.json
 fwa: Cumulative AQS stats: requests=181 out_bytes=0K
 http: Shutdown server: total requests=181 out_bytes=0K
-fwa: Framework analyzer time: 331 ms
+fwa: Framework analyzer time: 275 ms
 codexm: Initializing data gathered from CodeXM
 directives: ===== User directives:
 directives: === Language: apex
@@ -214,50 +214,51 @@ Sigma stdout:
 Sigma analysis info: Running sigma analysis...
 Sigma analysis info: Using Sigma version: 2023.2.0
 Sigma analysis info: Command line for sigma /home/hgx/omics/srilekhx/coverity_scans/coverity/analysis/sigma/bin/sigma --config /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/output/sigma-patch-config.json --config /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/output/sigma-config.json analyze --output /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/output/sigma-output.json /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/output/sigma
-Sigma analysis info: Files dumped: 65
+Sigma analysis info: Files dumped: 67
 Sigma analysis info: Exit status: 0
 Sigma stdout: Copyright (c) 2023 Synopsys, Inc.
 Sigma stdout: For documentation and support, visit https://community.synopsys.com/s/document-item?bundleId=sigma-ug
 Sigma stdout: By using this software, the user accepts the terms of Synopsys' end user software license and maintenance agreement found at: https://www.synopsys.com/company/legal/software-integrity.html
 Sigma stdout: 
-Sigma stdout: 2024-10-08 05:35:48 INFO Analysis done in 1 second
-Sigma stdout: 2024-10-08 05:35:48 INFO Found 0 defects
+Sigma stdout: 2024-10-23 03:23:20 INFO Analysis done in 1 second
+Sigma stdout: 2024-10-23 03:23:20 INFO Found 0 defects
 Sigma stdout: 
 Sigma stdout: Identified
 Sigma stdout: 
 Sigma stdout: │File Type │Occurrences│
 Sigma stdout: ├──────────┼───────────┤
-Sigma stdout: │Markdown  │          1│
+Sigma stdout: │HTML      │          2│
 Sigma stdout: │JSON      │          1│
-Sigma stdout: │Dockerfile│          1│
+Sigma stdout: │Markdown  │          1│
 Sigma stdout: │Python    │          1│
+Sigma stdout: │Dockerfile│          1│
 Sigma stdout: 
 Sigma stdout: 
 Sigma stdout: No issues found after 1 second
 Sigma stdout: 
-dm-access-lib: AM listening for DM at 127.0.0.1:43557
-dm-access-lib: AM starting DM with command line: /home/hgx/omics/srilekhx/coverity_scans/coverity/analysis/bin/cov-internal-dm --AM-port 43557 --log-file /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/output/distributor.log -j 48 --AW-timeout 36000 /home/hgx/omics/srilekhx/coverity_scans/coverity/analysis/bin/cov-analyze --worker --message-size-limit 104857600
-dm-access-lib: DM started: dm_pid=9703
-dm-access-lib: AM got connection from DM: (local) 127.0.0.1:43557 - 127.0.0.1:41054 (remote)
+dm-access-lib: AM listening for DM at 127.0.0.1:44717
+dm-access-lib: AM starting DM with command line: /home/hgx/omics/srilekhx/coverity_scans/coverity/analysis/bin/cov-internal-dm --AM-port 44717 --log-file /home/hgx/omics/srilekhx/TransOmics.OpenOmicsInternal/applications/Autodock/tmp/output/distributor.log -j 48 --AW-timeout 36000 /home/hgx/omics/srilekhx/coverity_scans/coverity/analysis/bin/cov-analyze --worker --message-size-limit 104857600
+dm-access-lib: DM started: dm_pid=24956
+dm-access-lib: AM got connection from DM: (local) 127.0.0.1:44717 - 127.0.0.1:40342 (remote)
 makeWUP: ENABLE_ONLY0
 makeWUP: stat0
 makeWUP: stat7
-makeWUP: BUDA_callgraph_0
-makeWUP: stat5
-makeWUP: stat4
 makeWUP: stat6
+makeWUP: BUDA_callgraph_0
+makeWUP: stat4
 makeWUP: stat3
-makeWUP: stat2
+makeWUP: stat5
 makeWUP: stat1
-makeWUP: stat8
 makeWUP: BUDA_callgraph_7
 makeWUP: BUDA_callgraph_6
+makeWUP: stat2
 makeWUP: BUDA_callgraph_5
+makeWUP: stat8
 makeWUP: BUDA_callgraph_4
 makeWUP: BUDA_callgraph_3
-makeWUP: gen0
 makeWUP: BUDA_callgraph_2
 makeWUP: BUDA_callgraph_1
+makeWUP: gen0
 makeWUP: gen7
 makeWUP: gen5
 makeWUP: gen6
@@ -340,51 +341,45 @@ makeWUP: PER_TU70
 makeWUP: PER_TU71
 makeWUP: PER_TU72
 makeWUP: PER_TU73
-wurlegend: <phase><n> dw_id wup_bytes dw_ms wur_bytes aw_ms [mem] paths (rest are labeled)
-wur: BUDA_callgraph_3 4 19985 1691 3479 575 mem=240390144 max=343281664 0 n: !%BUILTIN_fileapi!%SCRIPT in TU 67
-wur: BUDA_callgraph_5 5 24399 1694 4070 583 mem=240648192 max=343539712 0 n: !%BUILTIN_w3c_css!%SCRIPT in TU 69
-wur: BUDA_callgraph_6 1 19185 1697 3052 579 mem=240406528 max=343298048 0 n: !%BUILTIN_w3c_dom1!%SCRIPT in TU 70
-wur: BUDA_callgraph_2 3 11159 1703 1360 569 mem=240197632 max=343089152 0 n: !%BUILTIN_es5!%SCRIPT in TU 66
-wur: BUDA_callgraph_7 2 8884 1710 591 565 mem=240164864 max=343056384 0 n: !%BUILTIN_window!%SCRIPT in TU 71
-wur: BUDA_callgraph_1 6 34668 1751 8702 615 mem=240599040 max=343490560 0 n: !%BUILTIN_es3!%SCRIPT in TU 65
-wur: BUDA_callgraph_4 7 57640 1789 13444 655 mem=241057792 max=343949312 0 n: !%BUILTIN_html5!%SCRIPT in TU 68
+makeWUP: PER_TU74
+makeWUP: PER_TU75
 makeWUP: BUDA_callgraph_8
 makeWUP: Dynamic_BUDA_directives_type_inference_0
 makeWUP: Dynamic_BUDA_directives_type_inference_7
-makeWUP: Dynamic_BUDA_directives_type_inference_5
 makeWUP: Dynamic_BUDA_directives_type_inference_6
-makeWUP: Dynamic_BUDA_directives_type_inference_3
+makeWUP: Dynamic_BUDA_directives_type_inference_5
 makeWUP: Dynamic_BUDA_directives_type_inference_4
-makeWUP: Dynamic_BUDA_directives_type_inference_1
+makeWUP: Dynamic_BUDA_directives_type_inference_3
 makeWUP: Dynamic_BUDA_directives_type_inference_2
+makeWUP: Dynamic_BUDA_directives_type_inference_1
 makeWUP: Dynamic_BUDA_directives_type_inference_8
 makeWUP: Dynamic_BUDA_checkers3_0
-makeWUP: Dynamic_BUDA_checkers1_0
 makeWUP: Dynamic_BUDA_checkers2_0
+makeWUP: Dynamic_BUDA_checkers1_0
 makeWUP: Dynamic_BUDA_checkers3_7
-makeWUP: Dynamic_BUDA_checkers2_7
-makeWUP: Dynamic_BUDA_checkers1_7
-makeWUP: Dynamic_BUDA_checkers2_6
 makeWUP: Dynamic_BUDA_checkers3_6
-makeWUP: Dynamic_BUDA_checkers1_6
+makeWUP: Dynamic_BUDA_checkers2_7
+makeWUP: Dynamic_BUDA_checkers2_6
 makeWUP: Dynamic_BUDA_checkers3_5
 makeWUP: Dynamic_BUDA_checkers2_5
+makeWUP: Dynamic_BUDA_checkers1_7
+makeWUP: Dynamic_BUDA_checkers1_6
 makeWUP: Dynamic_BUDA_checkers1_5
 makeWUP: Dynamic_BUDA_checkers3_4
-makeWUP: Dynamic_BUDA_checkers2_4
 makeWUP: Dynamic_BUDA_checkers1_4
-makeWUP: Dynamic_BUDA_checkers1_3
+makeWUP: Dynamic_BUDA_checkers2_4
 makeWUP: Dynamic_BUDA_checkers3_3
+makeWUP: Dynamic_BUDA_checkers1_3
 makeWUP: Dynamic_BUDA_checkers2_3
 makeWUP: Dynamic_BUDA_checkers3_2
-makeWUP: Dynamic_BUDA_checkers1_2
 makeWUP: Dynamic_BUDA_checkers2_2
-makeWUP: Dynamic_BUDA_checkers1_1
+makeWUP: Dynamic_BUDA_checkers1_2
 makeWUP: Dynamic_BUDA_checkers2_1
 makeWUP: Dynamic_BUDA_checkers3_1
-makeWUP: Dynamic_BUDA_checkers1_8
+makeWUP: Dynamic_BUDA_checkers1_1
 makeWUP: Dynamic_BUDA_checkers2_8
 makeWUP: Dynamic_BUDA_checkers3_8
+makeWUP: Dynamic_BUDA_checkers1_8
 stats: AUTHZ_STAT: inferred 0 check requirements
 stats: AUTHZ_STAT: total checks : 0 / 0
 makeWUP: Post_dynamic_BUDA_directives_checkers_0
@@ -398,22 +393,23 @@ makeWUP: Post_dynamic_BUDA_directives_checkers_1
 makeWUP: Post_dynamic_BUDA_directives_checkers_8
 summary: Analysis summary report:
 summary: ------------------------
-summary: Files analyzed                 : 3 Total
+summary: Files analyzed                 : 5 Total
+summary:     HTML                       : 2
 summary:     Python 2                   : 1
 summary:     Text                       : 2
 summary: Total LoC input to cov-analyze : 306
-summary: Time taken by analysis         : 00:00:07
+summary: Time taken by analysis         : 00:00:04
 summary: Defect occurrences found       : 0
 summary: TU Language    Capture    TU Count
 summary: -----------    -------    --------
+summary: HTML           Filesystem    2
 summary: Python 2       Filesystem    1
 summary: Text data      Filesystem    2
 summary: Number of functions: 7
 summary: out_of_memory count: 0
 summary: paths_exceeded count: 0
 summary: recoverable failures: 0
-summary: javascript-wu-time-milliseconds: 12070
-summary: all-wu-time-milliseconds: 12070
-mem: AM peak mem bytes: 1196404736
+summary: all-wu-time-milliseconds: 0
+mem: AM peak mem bytes: 1263509504
 assert: suppressed asserts: workers=0, master=0
 failures: recoverable failures: workers=0, master=0

@@ -2,7 +2,7 @@
 # Command Line: cov-analyze --dir tmp --enable-default --security --webapp-security --enable-audit-checkers
 timer                                                                                     ms      calls
 -------------------------------------------------------------------------------------------------------
-allAnalysis                                                                             6770          1
+allAnalysis                                                                             4829          1
   LOCK_FINDER_BOTTOMUP                                                                     0          1
   THREAD_ENTRY_POINT                                                                       0          1
   RELAX_GETLOCK                                                                            0          1
@@ -282,8 +282,8 @@ allAnalysis                                                                     
   __XSS_BUDA                                                                               0          1
   SYMFONY_EL_INJECTION                                                                     0          1
   __TEMPLATE_INJECTION_BUDA_PYTHON                                                         0          1
-  CODEXM_BUDA_CHECKER                                                                    169          1
-    parseBuiltinCheckers                                                                 169          1
+  CODEXM_BUDA_CHECKER                                                                    167          1
+    parseBuiltinCheckers                                                                 167          1
   __HEADER_INJECTION_BUDA                                                                  0          1
   UNCHECKED_ORIGIN                                                                         0          1
   __SQLI_BUDA_DYNAMICS                                                                     0          1
@@ -445,10 +445,10 @@ allAnalysis                                                                     
   __BAD_CERT_VERIFICATION_CODEXM_GO                                                        0          1
   __BAD_CERT_VERIFICATION_CODEXM_PYTHON                                                    0          1
   __BAD_CERT_VERIFICATION_CODEXM_JS                                                        0          1
-  CONFIG.BEEGO_CSRF_PROTECTION_DISABLED                                                    0          1
+  CONFIG.BEEGO_CSRF_PROTECTION_DISABLED                                                    1          1
   __CONFIG.COOKIE_SIGNING_DISABLED_CODEXM_GO                                               0          1
   __CORS_MISCONFIGURATION_AUDIT_CS                                                         0          2
-  __CORS_MISCONFIGURATION_AUDIT_CODEXM_GO                                                  1          1
+  __CORS_MISCONFIGURATION_AUDIT_CODEXM_GO                                                  0          1
   __CORS_MISCONFIGURATION_CODEXM_CS                                                        0          2
   __CORS_MISCONFIGURATION_CODEXM_GO                                                        0          1
   CONFIG.DJANGO_CSRF_PROTECTION_DISABLED                                                   0          1
@@ -502,12 +502,12 @@ allAnalysis                                                                     
   CUDA.SYNCHRONIZE_CALLBACKS                                                               0          1
   CUDA.INITIATION_OBJECT_DEVICE_THREAD_BLOCK                                               0          1
   CUDA.COLLECTIVE_WARP_SHUFFLE_WIDTH                                                       0          1
-  CUDA.ERROR_INTERFACE                                                                     0          1
+  CUDA.ERROR_INTERFACE                                                                     1          1
   CUDA.ERROR_KERNEL_LAUNCH                                                                 0          1
   CUDA.DEVICE_DEPENDENT_CALLBACKS                                                          0          1
   CUDA.FORK                                                                                0          1
   CUDA.SYNCHRONIZE_TERMINATION                                                             0          1
-  CUDA.DEVICE_DEPENDENT                                                                    1          1
+  CUDA.DEVICE_DEPENDENT                                                                    0          1
   CUDA.CUDEVICE_HANDLES                                                                    0          1
   AUTO_CAUSES_COPY                                                                         0          1
   COPY_INSTEAD_OF_MOVE                                                                     0          1
@@ -599,21 +599,21 @@ allAnalysis                                                                     
   OAUTH2_MISCONFIGURATION                                                                  0          1
   UNSAFE_FUNCTIONALITY                                                                     0          1
   UNSAFE_XML_PARSE_CONFIG                                                                  0          1
-  sequential initialization                                                              657          1
-    Looking for translation units                                                          0          1
-    Computing links for translation units                                                  5          1
-    xfer symbol cache                                                                      2          1
-    Deduplication                                                                          3          1
+  sequential initialization                                                              597          1
+    Looking for translation units                                                          1          1
+    Computing links for translation units                                                  4          1
+    xfer symbol cache                                                                      1          1
+    Deduplication                                                                          5          1
     Computing virtual overrides for structural subtyping                                   0          1
     Computing virtual overrides                                                            0          1
-    Framework Analyzer                                                                   330          1
-    directive resolution pre-pass: master                                                270          2
-    Computing callgraph                                                                   15          1
+    Framework Analyzer                                                                   274          1
+    directive resolution pre-pass: master                                                267          2
+    Computing callgraph                                                                   14          1
     Topologically sorting functions                                                        0          1
-    (left over)                                                                           32
-  run_sigma                                                                              956          1
+    (left over)                                                                           31
+  run_sigma                                                                              936          1
   Computing node costs                                                                     0          1
-  Analysis run                                                                          3461          1
+  Analysis run                                                                          1615          1
     ANGULAR_ELEMENT_REFERENCE                                                              0          2
     ANGULAR_SCE_DISABLED                                                                   0          2
     BAD_CERT_VERIFICATION                                                                  0          2
@@ -661,8 +661,8 @@ allAnalysis                                                                     
     CHECKED_RETURN_STAT                                                                    0          2
     CODEXM_FUNCTIONS_STAT_PASS                                                             0          2
     IDENTIFIER_TYPO_STAT                                                                   0          2
-    DATAFLOW_CALLGRAPH_CHECKER                                                           814          9
-    loadFromEmit                                                                        4089          7
+    DATAFLOW_CALLGRAPH_CHECKER                                                           817          9
+    loadFromEmit                                                                        3972          7
       DATAFLOW_CALLGRAPH_CHECKER                                                           7          7
     CODEXM_FUNCTIONS_CHECKER_PASS_BEFORE_TUS                                               0          2
     CONSTANT_EXPRESSION_RESULT                                                             0          2
@@ -670,7 +670,7 @@ allAnalysis                                                                     
     DEADCODE                                                                               0          2
     EXTRACT_XREF_SUMMARY                                                                   2          2
     FORWARD_NULL                                                                           0          2
-    FUNCTION_METRICS                                                                       1          2
+    FUNCTION_METRICS                                                                       0          2
     IDENTICAL_BRANCHES                                                                     0          2
     IFACE_TRACKER                                                                          0          2
     MISSING_BREAK                                                                          0          2
@@ -687,21 +687,21 @@ allAnalysis                                                                     
     UNEXPECTED_CONTROL_FLOW                                                                0          2
     UNINTENDED_GLOBAL                                                                      0          2
     UNREACHABLE                                                                            0          2
-    CODEXM_TEXT_STAT_PASS                                                                 23         66
-      CONFIG.ANDROID_GRADLE_OBFUSCATION_NOT_ENABLED                                        7         64
-      CONFIG.BEEGO_CSRF_PROTECTION_DISABLED                                                1         64
-      CONFIG.COOKIE_SIGNING_DISABLED                                                       0         64
-      CORS_MISCONFIGURATION_AUDIT                                                          0         64
-      CORS_MISCONFIGURATION                                                                2         64
-      EXPOSED_DIRECTORY_LISTING                                                            0         64
-      CONFIG.HARDCODED_CREDENTIALS_AUDIT                                                   7        192
+    CODEXM_TEXT_STAT_PASS                                                                 28         66
+      CONFIG.ANDROID_GRADLE_OBFUSCATION_NOT_ENABLED                                        6         64
+      CONFIG.BEEGO_CSRF_PROTECTION_DISABLED                                                0         64
+      CONFIG.COOKIE_SIGNING_DISABLED                                                       1         64
+      CORS_MISCONFIGURATION_AUDIT                                                          2         64
+      CORS_MISCONFIGURATION                                                                0         64
+      EXPOSED_DIRECTORY_LISTING                                                            1         64
+      CONFIG.HARDCODED_CREDENTIALS_AUDIT                                                   1        192
       CONFIG.HARDCODED_TOKEN                                                               0         64
-      HOST_HEADER_VALIDATION_DISABLED                                                      0         64
+      HOST_HEADER_VALIDATION_DISABLED                                                      1         64
       INSECURE_COMMUNICATION                                                               0        128
-      INSECURE_COOKIE                                                                      0        192
+      INSECURE_COOKIE                                                                      7        192
       INSECURE_NETWORK_BIND                                                                0         64
       CONFIG.UNSAFE_SESSION_TIMEOUT                                                        0         64
-      (left over)                                                                          6
+      (left over)                                                                          9
     CONFIG.ASPNET_VERSION_HEADER                                                           0          2
     CONFIG.ASP_VIEWSTATE_MAC                                                               0          2
     CONFIG.CONNECTION_STRING_PASSWORD                                                      0          2
@@ -714,45 +714,45 @@ allAnalysis                                                                     
     __CONFIG.ENABLED_DEBUG_MODE_DOTNET                                                     0          2
     __CONFIG.UNSAFE_SESSION_TIMEOUT_JAVA                                                   0          2
     BUDA_DIRECTIVES_TYPE_INFERENCE_CHECKER                                                 0          2
-    CODEXM_BUDA_CHECKER                                                                   16          2
-    ANGULAR_EXPRESSION_INJECTION                                                           0          2
-    UNCHECKED_ORIGIN                                                                      13          2
-    CSS_INJECTION                                                                          0          2
-    MISSING_IFRAME_SANDBOX                                                                18          2
-    DOM_XSS                                                                                0          2
+    CODEXM_BUDA_CHECKER                                                                   19          2
+    UNCHECKED_ORIGIN                                                                      12          2
     __INSECURE_SALT_BUDA                                                                  12          2
-    UNRESTRICTED_MESSAGE_TARGET                                                           12          2
-    __CSRF_BUDA                                                                           12          2
-    __MISSING_AUTHZ_BUDA_STATS                                                            13          2
-    LOCALSTORAGE_MANIPULATION                                                              0          2
-    __HARDCODED_CREDENTIALS_BUDA_DYNAMICS                                                 13          2
-    SESSIONSTORAGE_MANIPULATION                                                            0          2
+    __MISSING_AUTHZ_BUDA_STATS                                                            14          2
     __RISKY_CRYPTO_BUDA                                                                   14          2
-    __INSECURE_RANDOM_BUDA_DYNAMICS                                                       14          2
     __SENSITIVE_DATA_LEAK_BUDA_DYNAMICS                                                   13          2
-    __INSUFFICIENT_LOGGING_BUDA_DYNAMICS                                                  13          2
-    __SQLI_BUDA_DYNAMICS                                                                  13          2
-    TANDEM_DATAFLOW_CHECKER_INFRASTRUCTURE_DYNAMICS_1                                    191          2
-      __REGEX_INJECTION_BUDA                                                              14          2
-      __HEADER_INJECTION_JS                                                               12          2
-      __COOKIE_INJECTION_BUDA_JS                                                          12          2
-      __PATH_MANIPULATION_BUDA_JS                                                         12          2
-      __OS_CMD_INJECTION_BUDA.TANDEM                                                      11          2
-      __SCRIPT_CODE_INJECTION_BUDA_JS                                                     11          2
-      __NOSQL_QUERY_INJECTION_BUDA.TANDEM                                                 10          2
-      DOM_XSS                                                                             13          2
-      LOCALSTORAGE_MANIPULATION                                                           13          2
-      SESSIONSTORAGE_MANIPULATION                                                         10          2
-      __URL_MANIPULATION_BUDA_DYNAMICS_JS                                                  9          2
-      __TAINTED_ENVIRONMENT_WITH_EXECUTION_BUDA                                           10          2
-      CSS_INJECTION                                                                        8          2
-      __XSS_BUDA.TANDEM                                                                   10          2
-      ANGULAR_EXPRESSION_INJECTION                                                         9          2
-      __UNSAFE_DESERIALIZATION_BUDA.TANDEM                                                10          2
-      __TEMPLATE_INJECTION_BUDA_JS                                                        17          2
-      (left over)                                                                          0
+    __SQLI_BUDA_DYNAMICS                                                                  15          2
     __XML_EXTERNAL_ENTITY_BUDA_DYNAMICS                                                   13          2
-    __OPEN_REDIRECT_BUDA_DYNAMICS                                                         13          2
+    MISSING_IFRAME_SANDBOX                                                                15          2
+    UNRESTRICTED_MESSAGE_TARGET                                                           11          2
+    __CSRF_BUDA                                                                           12          2
+    __HARDCODED_CREDENTIALS_BUDA_DYNAMICS                                                 13          2
+    __INSECURE_RANDOM_BUDA_DYNAMICS                                                       12          2
+    __INSUFFICIENT_LOGGING_BUDA_DYNAMICS                                                  11          2
+    __OPEN_REDIRECT_BUDA_DYNAMICS                                                         10          2
+    ANGULAR_EXPRESSION_INJECTION                                                           0          2
+    CSS_INJECTION                                                                          0          2
+    DOM_XSS                                                                                0          2
+    LOCALSTORAGE_MANIPULATION                                                              0          2
+    SESSIONSTORAGE_MANIPULATION                                                            0          2
+    TANDEM_DATAFLOW_CHECKER_INFRASTRUCTURE_DYNAMICS_1                                    211          2
+      __REGEX_INJECTION_BUDA                                                              18          2
+      __HEADER_INJECTION_JS                                                               13          2
+      __COOKIE_INJECTION_BUDA_JS                                                          12          2
+      __PATH_MANIPULATION_BUDA_JS                                                         14          2
+      __OS_CMD_INJECTION_BUDA.TANDEM                                                      14          2
+      __SCRIPT_CODE_INJECTION_BUDA_JS                                                     13          2
+      __NOSQL_QUERY_INJECTION_BUDA.TANDEM                                                 15          2
+      DOM_XSS                                                                             13          2
+      LOCALSTORAGE_MANIPULATION                                                           11          2
+      SESSIONSTORAGE_MANIPULATION                                                         12          2
+      __URL_MANIPULATION_BUDA_DYNAMICS_JS                                                 10          2
+      __TAINTED_ENVIRONMENT_WITH_EXECUTION_BUDA                                           11          2
+      CSS_INJECTION                                                                       12          2
+      __XSS_BUDA.TANDEM                                                                   10          2
+      ANGULAR_EXPRESSION_INJECTION                                                        11          2
+      __UNSAFE_DESERIALIZATION_BUDA.TANDEM                                                11          2
+      __TEMPLATE_INJECTION_BUDA_JS                                                        11          2
+      (left over)                                                                          0
     __COOKIE_INJECTION_BUDA_JS                                                             0          2
     __HEADER_INJECTION_JS                                                                  0          2
     __NOSQL_QUERY_INJECTION_BUDA.TANDEM                                                    0          2
@@ -765,16 +765,16 @@ allAnalysis                                                                     
     __UNSAFE_DESERIALIZATION_BUDA.TANDEM                                                   0          2
     __URL_MANIPULATION_BUDA_DYNAMICS_JS                                                    0          2
     __XSS_BUDA.TANDEM                                                                      0          2
-    __MISSING_AUTHZ_BUDA                                                                  11          2
-    (left over)                                                                        -1872
+    __MISSING_AUTHZ_BUDA                                                                  16          2
+    (left over)                                                                        -3627
   finish_jshint                                                                            0          1
   finish_detekt                                                                            0          1
   finish_pmd                                                                               0          1
-  (left over)                                                                           1524
+  (left over)                                                                           1511
 
 activity                                                                                  ms      calls
 -------------------------------------------------------------------------------------------------------
-allAnalysis                                                                             6770          1
+allAnalysis                                                                             4829          1
 CUDA.SPECIFIERS_INCONSISTENCY                                                              0          1
 OVERLAPPING_COPY                                                                           0          1
 LOCK_FINDER_BOTTOMUP                                                                       0          1
@@ -910,7 +910,7 @@ WRONG_METHOD                                                                    
 __XPATH_INJECTION_CPP                                                                      0          1
 __XML_EXTERNAL_ENTITY_GO                                                                   0          1
 EXTRACT_XREF_SUMMARY                                                                       2          3
-FUNCTION_METRICS                                                                           1          3
+FUNCTION_METRICS                                                                           0          3
 DC.PREDICTABLE_KEY_PASSWORD                                                                0          1
 DC.WEAK_CRYPTO                                                                             0          1
 DC.STREAM_BUFFER                                                                           0          1
@@ -920,11 +920,11 @@ CODEXM                                                                          
 CODEXM_FUNCTIONS_STAT_PASS                                                                 0          3
 CODEXM_CLASSES_STAT_PASS                                                                   0          1
 CODEXM_DECLS_STAT_PASS                                                                     0          1
-CODEXM_TEXT_STAT_PASS                                                                     23         67
+CODEXM_TEXT_STAT_PASS                                                                     28         67
 CODEXM_FUNCTIONS_CHECKER_PASS_BEFORE_TUS                                                   0          3
 CODEXM_FUNCTIONS_CHECKER_PASS_AFTER_TUS                                                    0          1
-CODEXM_BUDA_CHECKER                                                                      185          3
-CONFIG.ANDROID_GRADLE_OBFUSCATION_NOT_ENABLED                                              7         65
+CODEXM_BUDA_CHECKER                                                                      186          3
+CONFIG.ANDROID_GRADLE_OBFUSCATION_NOT_ENABLED                                              6         65
 ANGULAR_ELEMENT_REFERENCE                                                                  0          3
 ANGULAR_SCE_DISABLED                                                                       0          3
 __ANONYMOUS_DB_CONNECTION_CODEXM_GO                                                        0          1
@@ -936,7 +936,7 @@ __BAD_CERT_VERIFICATION_CODEXM_JS                                               
 CONFIG.BEEGO_CSRF_PROTECTION_DISABLED                                                      1         65
 __CONFIG.COOKIE_SIGNING_DISABLED_CODEXM_GO                                                 0          1
 __CORS_MISCONFIGURATION_AUDIT_CS                                                           0          2
-__CORS_MISCONFIGURATION_AUDIT_CODEXM_GO                                                    1          1
+__CORS_MISCONFIGURATION_AUDIT_CODEXM_GO                                                    0          1
 __CORS_MISCONFIGURATION_CODEXM_CS                                                          0          2
 __CORS_MISCONFIGURATION_CODEXM_GO                                                          0          1
 CONFIG.DJANGO_CSRF_PROTECTION_DISABLED                                                     0          1
@@ -952,7 +952,7 @@ __CONFIG.HARDCODED_CREDENTIALS_AUDIT_CODEXM_JAVA                                
 __HARDCODED_CREDENTIALS_URL                                                                0          3
 CONFIG.HARDCODED_TOKEN                                                                     0         67
 DNS_PREFETCHING                                                                            0          3
-HOST_HEADER_VALIDATION_DISABLED                                                            0         65
+HOST_HEADER_VALIDATION_DISABLED                                                            1         65
 __INSECURE_COMMUNICATION_CODEXM_GO                                                         0          1
 __INSECURE_COMMUNICATION_CODEXM_PYTHON                                                     0          1
 __INSECURE_COMMUNICATION_CODEXM_CS                                                         0          1
@@ -990,12 +990,12 @@ __WEAK_URL_SANITIZATION_CODEXM_JAVA                                             
 CUDA.SYNCHRONIZE_CALLBACKS                                                                 0          1
 CUDA.INITIATION_OBJECT_DEVICE_THREAD_BLOCK                                                 0          1
 CUDA.COLLECTIVE_WARP_SHUFFLE_WIDTH                                                         0          1
-CUDA.ERROR_INTERFACE                                                                       0          1
+CUDA.ERROR_INTERFACE                                                                       1          1
 CUDA.ERROR_KERNEL_LAUNCH                                                                   0          1
 CUDA.DEVICE_DEPENDENT_CALLBACKS                                                            0          1
 CUDA.FORK                                                                                  0          1
 CUDA.SYNCHRONIZE_TERMINATION                                                               0          1
-CUDA.DEVICE_DEPENDENT                                                                      1          1
+CUDA.DEVICE_DEPENDENT                                                                      0          1
 CUDA.CUDEVICE_HANDLES                                                                      0          1
 AUTO_CAUSES_COPY                                                                           0          1
 COPY_INSTEAD_OF_MOVE                                                                       0          1
@@ -1101,55 +1101,55 @@ ANDROID_CAPABILITY_LEAK                                                         
 __CSRF_JAVA_CSHARP                                                                         0          1
 __MISSING_AUTHZ_JAVA_CSHARP                                                                0          1
 __XSS_STRING_GRAPH                                                                         0          1
-DATAFLOW_CALLGRAPH_CHECKER                                                               821         17
+DATAFLOW_CALLGRAPH_CHECKER                                                               824         17
 BUDA_DIRECTIVES_TYPE_INFERENCE_CHECKER                                                     0          3
-__REGEX_INJECTION_BUDA                                                                    14          6
+__REGEX_INJECTION_BUDA                                                                    18          6
 __REGEX_INJECTION_BUDA_PYTHON                                                              0          1
-__HEADER_INJECTION_JS                                                                     12          6
+__HEADER_INJECTION_JS                                                                     13          6
 __COOKIE_INJECTION_BUDA_JS                                                                12          6
 __COOKIE_INJECTION_BUDA_PYTHON                                                             0          1
-__PATH_MANIPULATION_BUDA_JS                                                               12          6
+__PATH_MANIPULATION_BUDA_JS                                                               14          6
 __PATH_MANIPULATION_BUDA_NONJS                                                             0          1
 __OS_CMD_INJECTION_BUDA                                                                    0          1
-__OS_CMD_INJECTION_BUDA.TANDEM                                                            11          6
-__SCRIPT_CODE_INJECTION_BUDA_JS                                                           11          6
+__OS_CMD_INJECTION_BUDA.TANDEM                                                            14          6
+__SCRIPT_CODE_INJECTION_BUDA_JS                                                           13          6
 __SCRIPT_CODE_INJECTION_BUDA_NONJS                                                         0          1
 __NOSQL_QUERY_INJECTION_BUDA                                                               0          1
-__NOSQL_QUERY_INJECTION_BUDA.TANDEM                                                       10          6
+__NOSQL_QUERY_INJECTION_BUDA.TANDEM                                                       15          6
 DOM_XSS                                                                                   13          6
-LOCALSTORAGE_MANIPULATION                                                                 13          6
-SESSIONSTORAGE_MANIPULATION                                                               10          6
-__URL_MANIPULATION_BUDA_DYNAMICS_JS                                                        9          6
+LOCALSTORAGE_MANIPULATION                                                                 11          6
+SESSIONSTORAGE_MANIPULATION                                                               12          6
+__URL_MANIPULATION_BUDA_DYNAMICS_JS                                                       10          6
 __URL_MANIPULATION_BUDA_DYNAMICS_NOJS                                                      0          1
-__TAINTED_ENVIRONMENT_WITH_EXECUTION_BUDA                                                 10          6
-CSS_INJECTION                                                                              8          6
+__TAINTED_ENVIRONMENT_WITH_EXECUTION_BUDA                                                 11          6
+CSS_INJECTION                                                                             12          6
 __XSS_BUDA                                                                                 0          1
 __XSS_BUDA.TANDEM                                                                         10          6
-ANGULAR_EXPRESSION_INJECTION                                                               9          6
+ANGULAR_EXPRESSION_INJECTION                                                              11          6
 __UNSAFE_DESERIALIZATION_BUDA                                                              0          1
-__UNSAFE_DESERIALIZATION_BUDA.TANDEM                                                      10          6
+__UNSAFE_DESERIALIZATION_BUDA.TANDEM                                                      11          6
 SYMFONY_EL_INJECTION                                                                       0          1
-__TEMPLATE_INJECTION_BUDA_JS                                                              17          6
+__TEMPLATE_INJECTION_BUDA_JS                                                              11          6
 __TEMPLATE_INJECTION_BUDA_PYTHON                                                           0          1
 __HARDCODED_CREDENTIALS_BUDA_DYNAMICS                                                     13          3
 __HEADER_INJECTION_BUDA                                                                    0          1
-__OPEN_REDIRECT_BUDA_DYNAMICS                                                             13          3
-UNCHECKED_ORIGIN                                                                          13          3
-UNRESTRICTED_MESSAGE_TARGET                                                               12          3
-__SQLI_BUDA_DYNAMICS                                                                      13          3
-MISSING_IFRAME_SANDBOX                                                                    18          3
+__OPEN_REDIRECT_BUDA_DYNAMICS                                                             10          3
+UNCHECKED_ORIGIN                                                                          12          3
+UNRESTRICTED_MESSAGE_TARGET                                                               11          3
+__SQLI_BUDA_DYNAMICS                                                                      15          3
+MISSING_IFRAME_SANDBOX                                                                    15          3
 __SENSITIVE_DATA_LEAK_BUDA_DYNAMICS                                                       13          3
 __CSRF_BUDA                                                                               12          3
 __RISKY_CRYPTO_BUDA                                                                       14          3
-__INSECURE_RANDOM_BUDA_DYNAMICS                                                           14          3
+__INSECURE_RANDOM_BUDA_DYNAMICS                                                           12          3
 __INSECURE_SALT_BUDA                                                                      12          3
-__INSUFFICIENT_LOGGING_BUDA_DYNAMICS                                                      13          3
-__MISSING_AUTHZ_BUDA_STATS                                                                13          3
+__INSUFFICIENT_LOGGING_BUDA_DYNAMICS                                                      11          3
+__MISSING_AUTHZ_BUDA_STATS                                                                14          3
 __UNSAFE_REFLECTION_BUDA                                                                   0          1
 __XML_EXTERNAL_ENTITY_BUDA_DYNAMICS                                                       13          3
 __XML_INJECTION_BUDA_DYNAMICS                                                              0          1
-TANDEM_DATAFLOW_CHECKER_INFRASTRUCTURE_DYNAMICS_1                                        191          3
-__MISSING_AUTHZ_BUDA                                                                      11          3
+TANDEM_DATAFLOW_CHECKER_INFRASTRUCTURE_DYNAMICS_1                                        211          3
+__MISSING_AUTHZ_BUDA                                                                      16          3
 DATAFLOW_PREPASS_RESOLUTION_CHECKER                                                        0          1
 TANDEM_DATAFLOW_CHECKER_INFRASTRUCTURE_STATICS                                             0          1
 EL_INJECTION                                                                               0          2
@@ -1338,8 +1338,8 @@ NOSQL_QUERY_INJECTION                                                           
 SCRIPT_CODE_INJECTION                                                                      0          3
 XML_INJECTION                                                                              0          1
 SENSITIVE_DATA_LEAK                                                                        0          3
-INSECURE_COOKIE                                                                            0        193
-CONFIG.COOKIE_SIGNING_DISABLED                                                             0         65
+INSECURE_COOKIE                                                                            7        193
+CONFIG.COOKIE_SIGNING_DISABLED                                                             1         65
 RISKY_CRYPTO                                                                               0          3
 TAINT_ASSERT                                                                               0          1
 UNRESTRICTED_ACCESS_TO_FILE                                                                0          1
@@ -1356,35 +1356,35 @@ TAINTED_ENVIRONMENT_WITH_EXECUTION                                              
 MOBILE_ID_MISUSE                                                                           0          1
 REVERSE_TABNABBING                                                                         0          1
 CONFIG.UNSAFE_SESSION_TIMEOUT                                                              0         67
-CORS_MISCONFIGURATION                                                                      2         65
-CORS_MISCONFIGURATION_AUDIT                                                                0         65
+CORS_MISCONFIGURATION                                                                      0         65
+CORS_MISCONFIGURATION_AUDIT                                                                2         65
 CONFIG.ENABLED_DEBUG_MODE                                                                  0          3
-CONFIG.HARDCODED_CREDENTIALS_AUDIT                                                         7        195
+CONFIG.HARDCODED_CREDENTIALS_AUDIT                                                         1        195
 WEAK_URL_SANITIZATION                                                                      0          3
 INSECURE_REFERRER_POLICY                                                                   0          1
 JSONWEBTOKEN_UNTRUSTED_DECODE                                                              0          1
 UNSAFE_JNI                                                                                 0          1
 UNSAFE_BASIC_AUTH                                                                          0          1
-EXPOSED_DIRECTORY_LISTING                                                                  0         65
+EXPOSED_DIRECTORY_LISTING                                                                  1         65
 OAUTH2_MISCONFIGURATION                                                                    0          1
 UNSAFE_FUNCTIONALITY                                                                       0          1
 UNSAFE_XML_PARSE_CONFIG                                                                    0          1
-parseBuiltinCheckers                                                                     169          1
-sequential initialization                                                                657          1
-Looking for translation units                                                              0          1
-Computing links for translation units                                                      5          1
-xfer symbol cache                                                                          2          1
-Deduplication                                                                              3          1
+parseBuiltinCheckers                                                                     167          1
+sequential initialization                                                                597          1
+Looking for translation units                                                              1          1
+Computing links for translation units                                                      4          1
+xfer symbol cache                                                                          1          1
+Deduplication                                                                              5          1
 Computing virtual overrides for structural subtyping                                       0          1
 Computing virtual overrides                                                                0          1
-Framework Analyzer                                                                       330          1
-directive resolution pre-pass: master                                                    270          2
-Computing callgraph                                                                       15          1
+Framework Analyzer                                                                       274          1
+directive resolution pre-pass: master                                                    267          2
+Computing callgraph                                                                       14          1
 Topologically sorting functions                                                            0          1
-run_sigma                                                                                956          1
+run_sigma                                                                                936          1
 Computing node costs                                                                       0          1
-Analysis run                                                                            3461          1
-loadFromEmit                                                                            4089          7
+Analysis run                                                                            1615          1
+loadFromEmit                                                                            3972          7
 finish_jshint                                                                              0          1
 finish_detekt                                                                              0          1
 finish_pmd                                                                                 0          1
