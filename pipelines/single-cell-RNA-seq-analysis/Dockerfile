@@ -26,6 +26,12 @@
 ARG BASE_IMAGE=continuumio/miniconda3
 FROM ${BASE_IMAGE}
 
+# Non-root user setup
+ENV SERVICE_NAME="single-cell-RNA-service"
+
+RUN groupadd --gid 1001 $SERVICE_NAME && \
+    useradd -m -g $SERVICE_NAME --shell /bin/false --uid 1001 $SERVICE_NAME
+
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     git build-essential gcc curl gnupg gnupg2 gnupg1 sudo
 
@@ -64,18 +70,28 @@ COPY ./notebooks/ /workspace
 
 
 RUN pip uninstall -y umap-learn
+
+ENV OPEN_OMICS_HOME=/Open-Omics-Acceleration-Framework
+
 WORKDIR /
 RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-WORKDIR ./Open-Omics-Acceleration-Framework/lib/tal/applications/UMAP_fast/umap_extend/
+WORKDIR ${OPEN_OMICS_HOME}/lib/tal/application/UMAP_fast/umap_extend/
 RUN python setup.py install
 
-WORKDIR ../umap/
+WORKDIR ${OPEN_OMICS_HOME}/lib/tal/application/UMAP_fast/umap/
 RUN python setup.py install  
 
 # ENV NUMEXPR_MAX_THREADS=64
 # ENV NUMBA_NUM_THREADS=64
 
 WORKDIR /workspace
+
+# Swith to Non-root user
+RUN chown -R $SERVICE_NAME:$SERVICE_NAME $WORKDIR
+USER $SERVICE_NAME
+
+HEALTHCHECK NONE
+
 CMD jupyter notebook \
 		--no-browser \
 		--allow-root \
