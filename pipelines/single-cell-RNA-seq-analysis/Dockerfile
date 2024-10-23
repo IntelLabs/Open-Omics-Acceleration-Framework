@@ -75,10 +75,10 @@ ENV OPEN_OMICS_HOME=/Open-Omics-Acceleration-Framework
 
 WORKDIR /
 RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-WORKDIR ${OPEN_OMICS_HOME}/lib/tal/application/UMAP_fast/umap_extend/
+WORKDIR ${OPEN_OMICS_HOME}/lib/tal/applications/UMAP_fast/umap_extend/
 RUN python setup.py install
 
-WORKDIR ${OPEN_OMICS_HOME}/lib/tal/application/UMAP_fast/umap/
+WORKDIR ${OPEN_OMICS_HOME}/lib/tal/applications/UMAP_fast/umap/
 RUN python setup.py install  
 
 # ENV NUMEXPR_MAX_THREADS=64
