@@ -46,9 +46,10 @@ ls $OUTPUT_SYCL_CPU/rand-0.dlg
 ls $OUTPUT_SYCL_CPU/rand-0.xml
 ```
 These files contain the docking results in both `.dlg` and `.xml` formats.
+
 ---
 
-The original README content of AutoDock as follows:
+## The original README content of AutoDock as follows:
 
 AutoDock-GPU: AutoDock for GPUs and other accelerators
 ======================================================
