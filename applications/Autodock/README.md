@@ -107,60 +107,6 @@ After successful compilation, the host binary **autodock_&lt;type&gt;_&lt;N&gt;w
 | **&lt;type&gt;**    | Accelerator chosen           | `cpu`, `gpu`                                      |
 | **&lt;N&gt;**       | work-group/thread block size | `1`, `2`, `4`, `8`,`16`, `32`, `64`, `128`, `256` |
 
-# Instructions for DockerSetup
-
-## 1. Clone the Repository
-First, clone the repository:
-```zsh
-git clone git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
-cd TransOmics.OpenOmicsInternal/applications
-```
-
-## 2. Build the Docker Image
-Go to the Autodock directory where the Dockerfile is located and build the Docker image:
-```zsh
-cd Autodock/
-docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t autodock-sycl-cpu .
-```
-This will build the image with the tag `autodock-sycl-cpu`
-## 3. Prepare Input and Output Directories
-Set up input and output directories that will be mounted to the Docker container for easy access to molecular files and docking results.
-
-Create the directories on your host machine:
-```zsh
-mkdir -p  <protein_name_input>
-mkdir -p <protein_name_output>
-```
-For example, We have provided a folder named `4fev`, which contains all the necessary map files and required `.pdbqt`. So create a folder to store the output.
-```zsh
-mkdir -p 4fev_output_autodock_sycl_cpu
-```
-Now, export the input and output directory paths as environment variables for easy reference:
-```zsh
-export INPUT_SYCL_CPU=$PWD/4fev
-export OUTPUT_SYCL_CPU=$PWD/4fev_output_autodock_sycl_cpu
-```
-
-## 4. Running the Docker Container
-
-Run the docker container with the following command:
-
-```zsh
-docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output autodock-sycl-cpu:latest autodock_cpu_64wi --ffile protein.maps.fld --lfile rand-0.pdbqt --nrun 100 --lsmet sw --seed 11,23 --nev 2048000 --resnam /output/rand-0
-```
-In this command:
-
-* `-v $INPUT_SYCL_CPU:/input` mounts your local input directory to the container's /input directory. 
-* `-v $OUTPUT_SYCL_CPU:/output` mounts your local output directory to the container's /output directory.
-* Replace `autodock_cpu_64wi` with the appropriate executable if the name differs. 
-
-## 5. Accessing the Results
-After the container finishes running, the results will be available in your output directory:
-```zsh
-ls $OUTPUT_SYCL_CPU/rand-0.dlg
-ls $OUTPUT_SYCL_CPU/rand-0.xml
-```
-These files contain the docking results in both `.dlg` and `.xml` formats.
 # Usage
 
 ## Basic command
