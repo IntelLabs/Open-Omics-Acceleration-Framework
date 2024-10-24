@@ -1,25 +1,25 @@
 # Instructions for DockerSetup
 ## 1. Clone the Repository
  First, clone the repository:
- ```zsh
-  git clone git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
-  cd TransOmics.OpenOmicsInternal/applications
-  ```
+```zsh
+git clone git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
+cd TransOmics.OpenOmicsInternal/applications
+```
 ## 2. Build the Docker Image
-  Go to the Autodock directory where the Dockerfile is located and build the Docker image:
-  ```zsh
-  cd Autodock/
-  docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t autodock-sycl-cpu .
-  ```
+Go to the Autodock directory where the Dockerfile is located and build the Docker image:
+```zsh
+cd Autodock/
+docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t autodock-sycl-cpu .
+```
 This will build the image with the tag `autodock-sycl-cpu`
 ## 3. Prepare Input and Output Directories                                                                                      
-  Set up input and output directories that will be mounted to the Docker container for easy access to molecular files and docking results.
- Create the directories on your host machine:
-  ```zsh
- mkdir -p  <protein_name_input>
- mkdir -p <protein_name_output>                                                                                                 
- ```
- For example, We have provided a folder named `4fev`, which contains all the necessary map files and required `.pdbqt`. So create a folder to store the output.
+Set up input and output directories that will be mounted to the Docker container for easy access to molecular files and docking results.
+Create the directories on your host machine:
+```zsh
+mkdir -p  <protein_name_input>
+mkdir -p <protein_name_output>                                                                                                 
+```
+For example, We have provided a folder named `4fev`, which contains all the necessary map files and required `.pdbqt`. So create a folder to store the output.
 
 ```zsh
 mkdir -p 4fev_output_autodock_sycl_cpu
