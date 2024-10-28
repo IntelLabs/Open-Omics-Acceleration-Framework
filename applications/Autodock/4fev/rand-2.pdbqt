@@ -1,0 +1,37 @@
+REMARK  3 active torsions:
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK    1  A    between atoms: N1_1  and  C28_18 
+REMARK    2  A    between atoms: C6_6  and  N10_10 
+REMARK    3  A    between atoms: C9_9  and  C11_11 
+ROOT
+HETATM    1  N1  PP1 A 302      -3.290  -2.047  -7.480  0.92 16.71    -0.242 N 
+HETATM    2  C2  PP1 A 302      -5.815   0.051  -6.007  0.92 11.71     0.237 A 
+HETATM    3  N3  PP1 A 302      -4.657  -0.232  -6.572  0.92 18.59    -0.222 NA
+HETATM    4  C4  PP1 A 302      -4.365  -1.499  -6.919  0.92 13.49     0.164 A 
+HETATM    5  C5  PP1 A 302      -5.274  -2.524  -6.698  0.92 11.01     0.088 A 
+HETATM    6  C6  PP1 A 302      -6.493  -2.173  -6.098  0.92 17.53     0.139 A 
+HETATM    7  N7  PP1 A 302      -6.705  -0.898  -5.779  0.92 10.73    -0.224 NA
+HETATM    8  N8  PP1 A 302      -3.414  -3.270  -7.634  0.92  8.36    -0.168 NA
+HETATM    9  C9  PP1 A 302      -4.624  -3.660  -7.209  0.92 14.10     0.105 A 
+ENDROOT
+BRANCH   9  10
+HETATM   10  C11 PP1 A 302      -5.051  -4.995  -7.197  0.92 24.48    -0.005 A 
+HETATM   11  C12 PP1 A 302      -4.947  -5.835  -6.094  0.92 70.57     0.014 A 
+HETATM   12  C13 PP1 A 302      -5.394  -7.151  -6.135  0.92 39.13     0.007 A 
+HETATM   13  C14 PP1 A 302      -5.965  -7.643  -7.297  0.92 50.02    -0.062 A 
+HETATM   14  C15 PP1 A 302      -6.088  -6.815  -8.410  0.92 75.48     0.007 A 
+HETATM   15  C24 PP1 A 302      -6.459  -9.089  -7.344  0.92 66.90     0.048 C 
+HETATM   16  C16 PP1 A 302      -5.646  -5.496  -8.352  0.92 68.06     0.014 A 
+ENDBRANCH   9  10
+BRANCH   6  17
+HETATM   17  N10 PP1 A 302      -7.483  -3.021  -5.814  0.92 11.99    -0.383 N 
+HETATM   18  H03 PP1 A 302      -8.365  -2.949  -6.302  0.92 11.99     0.157 HD
+HETATM   19  H12 PP1 A 302      -7.351  -3.734  -5.111  0.92 11.99     0.157 HD
+ENDBRANCH   6  17
+BRANCH   1  20
+HETATM   20  C28 PP1 A 302      -2.075  -1.288  -7.898  0.92 21.24     0.047 C 
+HETATM   21  C29 PP1 A 302      -1.554  -0.554  -6.662  0.92 20.66     0.040 C 
+HETATM   22  C33 PP1 A 302      -1.016  -2.288  -8.397  0.92 15.35     0.040 C 
+HETATM   23  C37 PP1 A 302      -2.446  -0.296  -9.007  0.92  6.00     0.040 C 
+ENDBRANCH   1  20
+TORSDOF 3
