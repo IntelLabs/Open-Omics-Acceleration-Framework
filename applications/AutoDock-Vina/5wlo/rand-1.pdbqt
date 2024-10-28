@@ -1,0 +1,82 @@
+REMARK  10 active torsions:
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK    1  A    between atoms: C1_1  and  O38_38 
+REMARK    2  A    between atoms: N10_10  and  C15_15 
+REMARK    3  A    between atoms: C15_15  and  C16_16 
+REMARK    4  A    between atoms: C16_16  and  O17_17 
+REMARK    5  A    between atoms: C16_16  and  C18_18 
+REMARK    6  A    between atoms: C18_18  and  N19_19 
+REMARK    7  A    between atoms: C18_18  and  C31_31 
+REMARK       I    between atoms: N19_19  and  C20_20 
+REMARK    8  A    between atoms: C20_20  and  O22_22 
+REMARK    9  A    between atoms: O22_22  and  C23_23 
+REMARK   10  A    between atoms: C31_31  and  C37_37 
+ROOT
+HETATM    1  C16 GR7 B 201       7.020  -5.286  -4.706  0.65 11.09     0.160 C 
+ENDROOT
+BRANCH   1   2
+HETATM    2  C15 GR7 B 201       5.826  -4.327  -4.703  0.65 12.50     0.169 C 
+BRANCH   2   3
+HETATM    3  N10 GR7 B 201       6.251  -2.957  -4.530  0.65 15.26    -0.304 N 
+HETATM    4  S7  GR7 B 201       6.497  -1.964  -5.766  0.65 15.90     0.261 S 
+HETATM    5  C4  GR7 B 201       5.011  -1.169  -6.303  0.65 13.42     0.088 A 
+HETATM    6  O8  GR7 B 201       6.837  -2.873  -6.971  0.65 15.29    -0.200 OA
+HETATM    7  O9  GR7 B 201       7.470  -0.924  -5.453  0.65 16.57    -0.200 OA
+HETATM    8  C3  GR7 B 201       4.582   0.095  -5.936  0.65 13.99    -0.009 A 
+HETATM    9  C5  GR7 B 201       4.181  -1.865  -7.182  0.65 13.26     0.028 A 
+HETATM   10  C2  GR7 B 201       3.370   0.631  -6.432  0.65 14.14     0.047 A 
+HETATM   11  C40 GR7 B 201       5.282   0.944  -5.063  0.65 16.21     0.207 C 
+HETATM   12  C1  GR7 B 201       2.560  -0.082  -7.305  0.65 14.73     0.068 A 
+HETATM   13  C6  GR7 B 201       3.000  -1.347  -7.668  0.65 13.78     0.038 A 
+HETATM   14  O41 GR7 B 201       4.388   1.018  -3.886  0.65 19.51    -0.387 OA
+HETATM   15  C42 GR7 B 201       4.872   1.708  -2.724  0.65 20.26     0.168 C 
+HETATM   16  C43 GR7 B 201       5.335   0.797  -1.765  0.65 20.30     0.026 C 
+HETATM   17  C44 GR7 B 201       6.632   0.423  -1.563  0.65 20.47     0.002 C 
+HETATM   18  C14 GR7 B 201       7.190  -0.502  -0.709  0.65 20.92     0.000 C 
+HETATM   19  C13 GR7 B 201       7.450  -1.896  -1.144  0.65 19.92     0.002 C 
+HETATM   20  C12 GR7 B 201       7.583  -2.093  -2.631  0.65 18.52     0.021 C 
+HETATM   21  C11 GR7 B 201       6.211  -2.365  -3.229  0.65 16.50     0.135 C 
+BRANCH  12  22
+HETATM   22  O38 GR7 B 201       1.382   0.380  -7.817  0.65 14.38    -0.356 OA
+HETATM   23  C39 GR7 B 201       0.253  -0.251  -7.228  0.65 19.75     0.210 C 
+ENDBRANCH  12  22
+ENDBRANCH   2   3
+ENDBRANCH   1   2
+BRANCH   1  24
+HETATM   24  O17 GR7 B 201       7.968  -4.894  -3.692  0.65 11.94    -0.392 OA
+HETATM   25  H11 GR7 B 201       7.915  -3.946  -3.554  0.65 11.94     0.210 HD
+ENDBRANCH   1  24
+BRANCH   1  26
+HETATM   26  C18 GR7 B 201       6.617  -6.739  -4.482  0.65 11.44     0.121 C 
+BRANCH  26  27
+HETATM   27  N19 GR7 B 201       6.796  -7.482  -5.738  0.65 12.38    -0.329 N 
+HETATM   28  C20 GR7 B 201       6.236  -7.169  -6.900  0.65 12.57     0.361 C 
+HETATM   29  O21 GR7 B 201       5.452  -6.226  -7.185  0.65 12.86    -0.238 OA
+HETATM   30  H13 GR7 B 201       7.394  -8.296  -5.714  0.65 12.38     0.165 HD
+BRANCH  28  31
+HETATM   31  O22 GR7 B 201       6.627  -7.971  -7.914  0.65 12.10    -0.296 OA
+BRANCH  31  32
+HETATM   32  C23 GR7 B 201       7.542  -7.382  -8.850  0.65 12.33     0.166 C 
+HETATM   33  C24 GR7 B 201       8.630  -8.453  -9.094  0.65 11.72     0.204 C 
+HETATM   34  O25 GR7 B 201       7.941  -9.399  -9.939  0.65 12.04    -0.358 OA
+HETATM   35  C26 GR7 B 201       7.082  -8.695 -10.836  0.65 13.46     0.266 C 
+HETATM   36  O27 GR7 B 201       5.796  -9.315 -10.833  0.65 12.98    -0.361 OA
+HETATM   37  C30 GR7 B 201       6.905  -7.310 -10.238  0.65 12.55     0.075 C 
+HETATM   38  C28 GR7 B 201       4.824  -8.475 -10.197  0.65 12.99     0.171 C 
+HETATM   39  C29 GR7 B 201       5.408  -7.076 -10.329  0.65 13.37     0.038 C 
+ENDBRANCH  31  32
+ENDBRANCH  28  31
+ENDBRANCH  26  27
+BRANCH  26  40
+HETATM   40  C31 GR7 B 201       7.469  -7.420  -3.400  0.65 12.46     0.066 C 
+BRANCH  40  41
+HETATM   41  C37 GR7 B 201       6.970  -8.851  -3.146  0.65 13.02    -0.056 C 
+HETATM   42  C32 GR7 B 201       6.215  -9.145  -2.017  0.65 14.03     0.007 C 
+HETATM   43  C33 GR7 B 201       5.786 -10.452  -1.733  0.65 13.26     0.001 C 
+HETATM   44  C34 GR7 B 201       6.253 -11.468  -2.556  0.65 13.23     0.000 C 
+HETATM   45  C35 GR7 B 201       6.955 -11.200  -3.719  0.65 13.71     0.001 C 
+HETATM   46  C36 GR7 B 201       7.400  -9.903  -3.990  0.65 12.94     0.007 C 
+ENDBRANCH  40  41
+ENDBRANCH  26  40
+ENDBRANCH   1  26
+TORSDOF 10
