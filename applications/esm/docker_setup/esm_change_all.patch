@@ -1,8 +1,8 @@
 diff --git a/environment.yml b/environment.yml
-index 2d1b70d..160ed5d 100644
+index 2d1b70d..59604d5 100644
 --- a/environment.yml
 +++ b/environment.yml
-@@ -2,25 +2,24 @@ name: esmfold
+@@ -2,25 +2,23 @@ name: esmfold
  channels:
    - conda-forge
    - bioconda
@@ -14,14 +14,14 @@ index 2d1b70d..160ed5d 100644
 +  - conda-forge::pip=24.0
    - conda-forge::openmm=7.5.1
 -  - conda-forge::pdbfixer
-+  - conda-forge::pdbfixer=1.7
-   - conda-forge::cudatoolkit==11.3.*
+-  - conda-forge::cudatoolkit==11.3.*
 -  - conda-forge::einops
 -  - conda-forge::fairscale
 -  - conda-forge::omegaconf
 -  - conda-forge::hydra-core
 -  - conda-forge::pandas
 -  - conda-forge::pytest
++  - conda-forge::pdbfixer=1.7
 +  - conda-forge::einops==0.3.2
 +  - conda-forge::fairscale==0.4.6
 +  - conda-forge::omegaconf=2.3.0
@@ -37,7 +37,7 @@ index 2d1b70d..160ed5d 100644
        - biopython==1.79
        - deepspeed==0.5.9
        - dm-tree==0.1.6
-@@ -33,4 +32,6 @@ dependencies:
+@@ -33,4 +31,6 @@ dependencies:
        - typing-extensions==3.10.0.2
        - pytorch_lightning==1.5.10
        - wandb==0.12.21
@@ -61,15 +61,18 @@ index 76b8e74..5c37d82 100644
      final_atom_mask = output["atom37_atom_exists"]
      pdbs = []
 diff --git a/examples/inverse_folding/sample_sequences.py b/examples/inverse_folding/sample_sequences.py
-index 3a12693..4e53b28 100644
+index 3a12693..fd22f54 100644
 --- a/examples/inverse_folding/sample_sequences.py
 +++ b/examples/inverse_folding/sample_sequences.py
-@@ -18,7 +18,8 @@ import esm.inverse_folding
+@@ -16,9 +16,10 @@ import torch
+ import esm
+ import esm.inverse_folding
  
- 
+-
++nogpu = True
++noipex = True
  def sample_seq_singlechain(model, alphabet, args):
 -    if torch.cuda.is_available() and not args.nogpu:
-+    nogpu = True
 +    if torch.cuda.is_available() and not nogpu:
          model = model.cuda()
          print("Transferred model to GPU")
@@ -92,7 +95,7 @@ index 3a12693..4e53b28 100644
          model = model.cuda()
          print("Transferred model to GPU")
      structure = esm.inverse_folding.util.load_structure(args.pdbfile)
-@@ -107,17 +108,33 @@ def main():
+@@ -107,17 +108,32 @@ def main():
              action='store_false',
              help='use the backbone of only target chain in the input for conditioning'
      )
@@ -104,13 +107,11 @@ index 3a12693..4e53b28 100644
  
      model, alphabet = esm.pretrained.esm_if1_gvp4_t16_142M_UR50()
      model = model.eval()
--
+ 
 -    if args.multichain_backbone:
 -        sample_seq_multichain(model, alphabet, args)
 -    else:
 -        sample_seq_singlechain(model, alphabet, args)
-+    nogpu = True
-+    noipex = True
 +    if not noipex:
 +        dtype = torch.bfloat16 if args.bf16 else torch.float32
 +        import intel_extension_for_pytorch as ipex
@@ -134,15 +135,19 @@ index 3a12693..4e53b28 100644
  
  if __name__ == '__main__':
 diff --git a/examples/inverse_folding/score_log_likelihoods.py b/examples/inverse_folding/score_log_likelihoods.py
-index cd81951..9c0064c 100644
+index cd81951..ccefd28 100644
 --- a/examples/inverse_folding/score_log_likelihoods.py
 +++ b/examples/inverse_folding/score_log_likelihoods.py
-@@ -21,7 +21,8 @@ import esm.inverse_folding
+@@ -18,10 +18,11 @@ from tqdm import tqdm
  
+ import esm
+ import esm.inverse_folding
+-
++nogpu = True
++noipex = True
  
  def score_singlechain_backbone(model, alphabet, args):
 -    if torch.cuda.is_available() and not args.nogpu:
-+    nogpu = True
 +    if torch.cuda.is_available() and not nogpu:
          model = model.cuda()
          print("Transferred model to GPU")

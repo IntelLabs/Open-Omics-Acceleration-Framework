@@ -18,7 +18,8 @@ from tqdm import tqdm
 
 import esm
 import esm.inverse_folding
-
+nogpu = True
+noipex = True
 
 def score_singlechain_backbone(model, alphabet, args):
     if torch.cuda.is_available() and not nogpu:
@@ -119,8 +120,6 @@ def main():
 
     model, alphabet = esm.pretrained.esm_if1_gvp4_t16_142M_UR50()
     model = model.eval()
-    nogpu = True
-    noipex = True
     if not noipex:
         dtype = torch.bfloat16 if args.bf16 else torch.float32
         import intel_extension_for_pytorch as ipex
