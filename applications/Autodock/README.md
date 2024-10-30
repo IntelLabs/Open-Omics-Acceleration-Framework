@@ -11,7 +11,7 @@ Navigate to the AutoDock directory containing the Dockerfile and build the Docke
 cd Autodock/
 docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t autodock-sycl-cpu .
 ```
-# Note: This will build the docker image with the tag `autodock-sycl-cpu`
+#### Note: This will build the docker image with the tag `autodock-sycl-cpu`
 ## 3. Prepare Input and Output Directories                                                                                      
 You can use any one protein complex from 140 complexes available on (https://zenodo.org/records/4031961/files/data.zip?download=1). Let us work with the `4fev` protein.
 
