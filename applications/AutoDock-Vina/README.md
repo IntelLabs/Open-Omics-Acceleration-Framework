@@ -1,40 +1,47 @@
-## Docker Setup
-This guide will help you clone the repository, build the Docker image, set up input/output directories, and run AutoDock Vina (v1.2.2) inside a Docker container.
+## Docker Setup for AutoDock-Vina
+This guide will help you clone the repository, build the Docker image, set up input/output directories, and run AutoDock Vina inside a Docker container.
 ### 1. Clone the Repository
-First, clone the repository and navigate to the AutoDock Vina folder:
+First, clone the repository and navigate to the AutoDock-Vina folder:
 ```bash
 git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
 cd TransOmics.OpenOmicsInternal/applications/AutoDock-Vina
 ```
 ### 2. Build the Docker Image                                                                                                   
-Build the Docker image using the following command:
+Build the Docker image by running the following command:
 ```bash
 docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t docker_vina .
 ```
-Make sure Docker is installed and properly set up on your system.
-
-### 3. Setup Input and Output Directories
-Create directories for input and output on your local machine that will be mounted to the Docker container during execution:    
+This command creates an image with the tag `docker_vina`. Confirm the image is built by listing Docker images:
 ```bash
-mkdir -p <input_dir>
-mkdir -p <output_dir>
+docker images | grep docker_vina
 ```
-Add your receptor (`.pdbqt`), ligand (`.pdbqt`) and grid map files to the input directory of your protein.     
-We have provided a sample protein `5wlo` with all the necessary files (receptor, ligand, grid maps). Create an output directory for storing results specific to `5wlo`: 
+
+### 3. Choose and Download Protein Complex Data
+Select any protein complex from the available dataset of **140 protein** complexes which you can download from (https://zenodo.org/records/4031961/files/data.zip?download=1). This guide uses the **5wlo** protein as an example.
+
+To download the dataset for `5wlo`, make the provided download script executable, then run it:
+
+```bash
+chmod +x data_download_script.sh
+bash data_download_script.sh 5wlo
+```
+Create an output directory to store results specific to `5wlo`:
 ```bash
 mkdir 5wlo_output                                                                                                               
 ```
-Set the environment variables for the `5wlo` protein:
+
+Set the environment variables for the `5wlo` protein as follows:
 ```bash                                                                                                                         
 export INPUT_VINA=$PWD/5wlo
 export OUTPUT_VINA=$PWD/5wlo_output
 ```
-Add the necessary permissions to the output folder so Docker can write to it:
+Add the necessary permissions to output folder for Docker to write to it:
 ```bash
 sudo chmod -R a+w $OUTPUT_VINA
 ```
+
 ### 4. Run the Docker Container
-Check if the Docker image was built successfully by listing Docker images:
+Verify that the Docker image was built successfully by listing Docker images:
 ```bash
 docker images | grep docker_vina                                                                                                
 ```
@@ -44,10 +51,10 @@ docker run -it -v $INPUT_VINA:/input -v $OUTPUT_VINA:/output docker_vina:latest 
 ```
 This command will process your receptor and ligand files and place the results in the specified output directory.
 ### 5. Expected Output                                                                                                           
-After running the above command, you should find the output file (`rand-1_out.pdbqt`) in the output directory (e.g `5wlo_output`for the 5wlo example).
+After running the above command, you should find the output file (`rand-1_out.pdbqt`) in the output directory, such as `5wlo_output` for this example.
 
 ---
-# The original README content of AutoDock-Vina follows:
+The original README content of AutoDock-Vina follows:
 
 ## AutoDock Vina: Docking and virtual screening program
 
