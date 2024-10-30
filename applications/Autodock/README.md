@@ -1,17 +1,17 @@
 # Docker Setup Instructions for AutoDock SYCL CPU
 ## 1. Clone the Repository
- Begin by cloning the repository:
+First, clone the repository and navigate to the applications directory:
 ```zsh
 git clone git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
 cd TransOmics.OpenOmicsInternal/applications
 ```
 ## 2. Build the Docker Image
-Navigate to the AutoDock directory containing the Dockerfile and build the Docker image:
+Navigate to the AutoDock directory containing the Dockerfile and build the Docker image with proxy settings if needed:
 ```zsh
 cd Autodock/
 docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t autodock-sycl-cpu .
 ```
-This will build the docker image with the tag `autodock-sycl-cpu`
+# Note: This will build the docker image with the tag `autodock-sycl-cpu`
 ## 3. Prepare Input and Output Directories                                                                                      
 You can use any one protein complex from 140 complexes available on (https://zenodo.org/records/4031961/files/data.zip?download=1). Let us work with the `4fev` protein.
 
