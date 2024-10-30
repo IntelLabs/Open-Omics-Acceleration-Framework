@@ -17,32 +17,31 @@ docker images | grep docker_vina
 ```
 
 ### 3. Choose and Download Protein Complex Data
-You may choose any protein complex from a dataset of **140 protein** complexes available on (https://zenodo.org/records/4031961/files/data.zip?download=1). The example in this guide uses `5wlo`.
+Select any protein complex from the available dataset of **140 protein** complexes which you can download from (https://zenodo.org/records/4031961/files/data.zip?download=1). This guide uses the **5wlo** protein as an example.
 
-To download the 5wlo dataset, make the provided script executable and run it:
+To download the dataset for `5wlo`, make the provided download script executable, then run it:
 
 ```bash
 chmod +x data_download_script.sh
 bash data_download_script.sh 5wlo
 ```
-
-
-Add your receptor (`.pdbqt`), ligand (`.pdbqt`) and grid map files to the input directory of your protein.     
-We have provided a sample protein `5wlo` with all the necessary files (receptor, ligand, grid maps). Create an output directory for storing results specific to `5wlo`: 
+Create an output directory to store results specific to `5wlo`:
 ```bash
 mkdir 5wlo_output                                                                                                               
 ```
-Set the environment variables for the `5wlo` protein:
+
+Set the environment variables for the `5wlo` protein as follows:
 ```bash                                                                                                                         
 export INPUT_VINA=$PWD/5wlo
 export OUTPUT_VINA=$PWD/5wlo_output
 ```
-Add the necessary permissions to the output folder so Docker can write to it:
+Add the necessary permissions to output folder for Docker to write to it:
 ```bash
 sudo chmod -R a+w $OUTPUT_VINA
 ```
+
 ### 4. Run the Docker Container
-Check if the Docker image was built successfully by listing Docker images:
+Verify that the Docker image was built successfully by listing Docker images:
 ```bash
 docker images | grep docker_vina                                                                                                
 ```
@@ -52,7 +51,7 @@ docker run -it -v $INPUT_VINA:/input -v $OUTPUT_VINA:/output docker_vina:latest 
 ```
 This command will process your receptor and ligand files and place the results in the specified output directory.
 ### 5. Expected Output                                                                                                           
-After running the above command, you should find the output file (`rand-1_out.pdbqt`) in the output directory (e.g `5wlo_output`for the 5wlo example).
+After running the above command, you should find the output file (`rand-1_out.pdbqt`) in the output directory, such as `5wlo_output` for this example.
 
 ---
 The original README content of AutoDock-Vina follows:
