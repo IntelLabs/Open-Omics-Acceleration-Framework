@@ -1,5 +1,5 @@
 ## Docker Setup for AutoDock-Vina
-This guide will help you clone the repository, build the Docker image, set up input/output directories, and run AutoDock Vina (v1.2.2) inside a Docker container.
+This guide will help you clone the repository, build the Docker image, set up input/output directories, and run AutoDock Vina inside a Docker container.
 ### 1. Clone the Repository
 First, clone the repository and navigate to the AutoDock-Vina folder:
 ```bash
