@@ -26,7 +26,7 @@ Next, export the input and output directory paths:
 export INPUT_SYCL_CPU=$PWD/4fev
 export OUTPUT_SYCL_CPU=$PWD/4fev_output_autodock_sycl_cpu
 ```
-## Give write permissions to the output directory for Docker to access it:
+Give write permissions to the output directory for Docker to access it:
 ```zsh 
 sudo chmod -R a+w $OUTPUT_SYCL_CPU
 ```
