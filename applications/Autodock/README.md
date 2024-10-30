@@ -18,18 +18,25 @@ You can choose any protein complex from 140 complexes available on (https://zeno
 
 Let us work with the `4fev` protein.
 
-Run the below script to download the `4fev` dataset, then create an output directory for docking results:
+1) Run the below script to download the `4fev` dataset
 ```zsh
 chmod +x data_download_script.sh
 bash data_download_script.sh
+```
+
+2) Create an output directory for docking results:
+```zsh
 mkdir -p 4fev_output
 ```
-Next, set environment variables for the input and output directory paths:
+
+3) Set environment variables for easy access to input and output directories:
 ```zsh
 export INPUT_SYCL_CPU=$PWD/4fev
 export OUTPUT_SYCL_CPU=$PWD/4fev_output
 ```
-Add write permissions to the output directory for Docker:
+
+4) Add write permissions to the output directory for Docker access:
+
 ```zsh 
 sudo chmod -R a+w $OUTPUT_SYCL_CPU
 ```
