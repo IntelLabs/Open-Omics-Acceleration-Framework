@@ -16,33 +16,33 @@ docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_p
 ## 3. Prepare Input and Output Directories                                                                                      
 You can use any one protein complex from 140 complexes available on (https://zenodo.org/records/4031961/files/data.zip?download=1). Let us work with the `4fev` protein.
 
-Run below script to download the `4fev` dataset and then create an output directory:
+Run the below script to download the `4fev` dataset, then create an output directory for docking results:
 ```zsh
 chmod +x data_download_script.sh
 bash data_download_script.sh
-mkdir -p 4fev_output_autodock_sycl_cpu
+mkdir -p 4fev_output
 ```
-Next, export the input and output directory paths:
+Next, set environment variables for the input and output directory paths:
 ```zsh
 export INPUT_SYCL_CPU=$PWD/4fev
-export OUTPUT_SYCL_CPU=$PWD/4fev_output_autodock_sycl_cpu
+export OUTPUT_SYCL_CPU=$PWD/4fev_output
 ```
-Give write permissions to the output directory for Docker to access it:
+Add write permissions to the output directory for Docker:
 ```zsh 
 sudo chmod -R a+w $OUTPUT_SYCL_CPU
 ```
 ## 4. Running the Docker Container               
 Run the docker container with the following command:
 ```zsh
-docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output autodock-sycl-cpu:latest autodock_cpu_64wi --ffile 1ac8_protein.maps.fld --lfile 1ac8_ligand.pdbqt --nrun 100 --lsmet sw --seed 11,23 --nev 2048000 --resnam /output/rand-0
+docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output autodock-sycl-cpu:latest autodock_cpu_64wi --ffile protein.maps.fld --lfile rand-0.pdbqt --nrun 100 --lsmet sw --seed 11,23 --nev 2048000 --resnam /output/rand-0
 ```
 In this command:
  * `-v $INPUT_SYCL_CPU:/input` mounts your local input directory to the container's /input directory.
  * `-v $OUTPUT_SYCL_CPU:/output` mounts your local output directory to the container's /output directory. 
- * Replace `autodock_cpu_64wi` with the appropriate executable if the name differs.
+ **Note: Replace** `autodock_cpu_64wi` **with the correct executable name if it differs.**
 
-## 5. Accessing the Results                                                                                                     
-After the container finishes running, the results will be available in your output directory:
+## 5. Accessing the Results                                                                                                    
+After the container completes the run, your results will be available in the output directory: 
 ```zsh
 ls $OUTPUT_SYCL_CPU/rand-0.dlg
 ls $OUTPUT_SYCL_CPU/rand-0.xml
