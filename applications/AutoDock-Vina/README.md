@@ -47,7 +47,7 @@ This command will process your receptor and ligand files and place the results i
 After running the above command, you should find the output file (`rand-1_out.pdbqt`) in the output directory (e.g `5wlo_output`for the 5wlo example).
 
 ---
-# The original README content of AutoDock-Vina follows:
+The original README content of AutoDock-Vina follows:
 
 ## AutoDock Vina: Docking and virtual screening program
 
