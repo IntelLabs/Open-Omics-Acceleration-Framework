@@ -13,18 +13,13 @@ docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_p
 ```
 This will build the docker image with the tag `autodock-sycl-cpu`
 ## 3. Prepare Input and Output Directories                                                                                      
-Set up input and output directories for your molecular files and docking results.
-Create directories on your host machine:
-```zsh
-mkdir -p  <protein_name_input>
-mkdir -p <protein_name_output>                                                                                                 
-```
-## Example: Preparing 1ac8 Protein Data
-## I. Download the 1ac8 data with the provided script:
-Download the 1ac8 data with the provided script:
+You can use any one protein complex from a dataset of 140 available on (https://zenodo.org/records/4031961). The full dataset can be downloaded from here (https://zenodo.org/records/4031961/files/data.zip?download=1). Let us work with the `4fev` protein.
+
+Run below below script to download the `4fev` dataset and then create an output directory:
 ```zsh
 chmod +x data_download_script.sh
 bash data_download_script.sh
+mkdir -p 4fev_output_autodock_sycl_cpu
 ```
 ## II. Rename the receptor file:
 ```zsh
