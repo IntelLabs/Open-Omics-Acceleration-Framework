@@ -6,7 +6,7 @@ git clone git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInterna
 cd TransOmics.OpenOmicsInternal/applications
 ```
 ## 2. Build the Docker Image
-Navigate to the AutoDock directory containing the Dockerfile and build the Docker image with proxy settings if needed:
+Navigate to the Autodock directory containing the Dockerfile and build the Docker image with proxy settings if needed:
 ```zsh
 cd Autodock/
 docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t autodock-sycl-cpu .
