@@ -19,20 +19,25 @@ Create the directories on your host machine:
 mkdir -p  <protein_name_input>
 mkdir -p <protein_name_output>                                                                                                 
 ```
-For example, We have provided a folder named `4fev`, which contains all the necessary map files and required `.pdbqt`. So create a folder to store the output.
-
+We will show one of the example data given in the original repo that is `1ac8`. 
+Run the below script to download the `1ac8` data. After download, rename `rec.pdbqt` to `1ac8_rec.pdbqt`:
+```zsh
+bash data_download_script.sh
+mv 1ac8/rec.pdbqt 1ac8/1ac8_rec.pdbqt
+```
+craete the directory to store the output for `1ac8` protein
 ```zsh
 mkdir -p 4fev_output_autodock_sycl_cpu
 ```
 Now, export the input and output directory paths as environment variables for easy reference:                                   
 ```zsh
-export INPUT_SYCL_CPU=$PWD/4fev
-export OUTPUT_SYCL_CPU=$PWD/4fev_output_autodock_sycl_cpu
+export INPUT_SYCL_CPU=$PWD/1ac8
+export OUTPUT_SYCL_CPU=$PWD/1ac8_output_autodock_sycl_cpu
 ```                                                                                                                              
 ## 4. Running the Docker Container               
 Run the docker container with the following command:
 ```zsh
-docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output autodock-sycl-cpu:latest autodock_cpu_64wi --ffile protein.maps.fld --lfile rand-0.pdbqt --nrun 100 --lsmet sw --seed 11,23 --nev 2048000 --resnam /output/rand-0                      
+docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output 7803db113116 autodock_cpu_64wi --ffile 1ac8_protein.maps.fld --lfile 1ac8_ligand.pdbqt --nrun 100 --lsmet sw --seed 11,23 --nev 2048000 --resnam /output/rand-0                      
 ```
 In this command:
  * `-v $INPUT_SYCL_CPU:/input` mounts your local input directory to the container's /input directory.

@@ -1,9 +1,0 @@
-/home/ubuntu/AutoDock-GPU/input/4fev/protein.maps.fld
-/home/ubuntu/AutoDock-GPU/input/4fev/rand-0.pdbqt
-Ligand 1
-/home/ubuntu/AutoDock-GPU/input/4fev/protein.maps.fld
-/home/ubuntu/AutoDock-GPU/input/4fev/rand-1.pdbqt
-Ligand 2
-/home/ubuntu/AutoDock-GPU/input/4fev/protein.maps.fld
-/home/ubuntu/AutoDock-GPU/input/4fev/rand-2.pdbqt
-Ligand 3
