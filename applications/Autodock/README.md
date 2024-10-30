@@ -27,7 +27,7 @@ chmod +x data_download_script.sh
 bash data_download_script.sh
 ```
 ## II. Rename the receptor file:
-``zsh
+```zsh
 mv 1ac8/rec.pdbqt 1ac8/1ac8_rec.pdbqt
 ```
 ## III. Create the output directory for the 1ac8 protein:
@@ -46,7 +46,7 @@ sudo chmod -R a+w $OUTPUT_SYCL_CPU
 ## 4. Running the Docker Container               
 Run the docker container with the following command:
 ```zsh
-docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output autodock-sycl-cpu:latest autodock_cpu_64wi --ffile 1ac8_protein.maps.fld --lfile 1ac8_ligand.pdbqt --nrun 100 --lsmet sw --seed 11,23 --nev 2048000 --resnam /output/rand-0                      
+docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output autodock-sycl-cpu:latest autodock_cpu_64wi --ffile 1ac8_protein.maps.fld --lfile 1ac8_ligand.pdbqt --nrun 100 --lsmet sw --seed 11,23 --nev 2048000 --resnam /output/rand-0
 ```
 In this command:
  * `-v $INPUT_SYCL_CPU:/input` mounts your local input directory to the container's /input directory.
@@ -60,7 +60,6 @@ ls $OUTPUT_SYCL_CPU/rand-0.dlg
 ls $OUTPUT_SYCL_CPU/rand-0.xml
 ```
 These files contain the docking results in both `.dlg` and `.xml` formats.
-
 ---
 
 ## The original README content of AutoDock as follows:
