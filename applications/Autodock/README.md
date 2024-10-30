@@ -21,20 +21,12 @@ chmod +x data_download_script.sh
 bash data_download_script.sh
 mkdir -p 4fev_output_autodock_sycl_cpu
 ```
-## II. Rename the receptor file:
+Next, export the input and output directory paths:
 ```zsh
-mv 1ac8/rec.pdbqt 1ac8/1ac8_rec.pdbqt
+export INPUT_SYCL_CPU=$PWD/4fev
+export OUTPUT_SYCL_CPU=$PWD/4fev_output_autodock_sycl_cpu
 ```
-## III. Create the output directory for the 1ac8 protein:
-```zsh
-mkdir -p 1ac8_output_autodock_sycl_cpu
-```
-## IV. Export the input and output directory paths as environment variables for easy access:
-```zsh
-export INPUT_SYCL_CPU=$PWD/1ac8
-export OUTPUT_SYCL_CPU=$PWD/1ac8_output_autodock_sycl_cpu
-```
-## V. Give write permissions to the output directory for Docker to access it:
+## Give write permissions to the output directory for Docker to access it:
 ```zsh 
 sudo chmod -R a+w $OUTPUT_SYCL_CPU
 ```
