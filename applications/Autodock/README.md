@@ -25,9 +25,9 @@ Run the below script to download the `1ac8` data. After download, rename `rec.pd
 bash data_download_script.sh
 mv 1ac8/rec.pdbqt 1ac8/1ac8_rec.pdbqt
 ```
-craete the directory to store the output for `1ac8` protein
+create the directory to store the output for `1ac8` protein
 ```zsh
-mkdir -p 4fev_output_autodock_sycl_cpu
+mkdir -p 1ac8_output_autodock_sycl_cpu
 ```
 Now, export the input and output directory paths as environment variables for easy reference:                                   
 ```zsh
