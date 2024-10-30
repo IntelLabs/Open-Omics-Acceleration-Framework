@@ -34,12 +34,12 @@ mv 1ac8/rec.pdbqt 1ac8/1ac8_rec.pdbqt
 ```zsh
 mkdir -p 1ac8_output_autodock_sycl_cpu
 ```
-Export the input and output directory paths as environment variables for easy access:
+## IV. Export the input and output directory paths as environment variables for easy access:
 ```zsh
 export INPUT_SYCL_CPU=$PWD/1ac8
 export OUTPUT_SYCL_CPU=$PWD/1ac8_output_autodock_sycl_cpu
 ```
-Give write permissions to the output directory for Docker to access it:
+## V. Give write permissions to the output directory for Docker to access it:
 ```zsh 
 sudo chmod -R a+w $OUTPUT_SYCL_CPU
 ```
