@@ -1,24 +1,32 @@
-## Docker Setup
+## Docker Setup for AutoDock-Vina
 This guide will help you clone the repository, build the Docker image, set up input/output directories, and run AutoDock Vina (v1.2.2) inside a Docker container.
 ### 1. Clone the Repository
-First, clone the repository and navigate to the AutoDock Vina folder:
+First, clone the repository and navigate to the AutoDock-Vina folder:
 ```bash
 git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
 cd TransOmics.OpenOmicsInternal/applications/AutoDock-Vina
 ```
 ### 2. Build the Docker Image                                                                                                   
-Build the Docker image using the following command:
+Build the Docker image by running the following command:
 ```bash
 docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t docker_vina .
 ```
-Make sure Docker is installed and properly set up on your system.
-
-### 3. Setup Input and Output Directories
-Create directories for input and output on your local machine that will be mounted to the Docker container during execution:    
+This command creates an image with the tag `docker_vina`. Confirm the image is built by listing Docker images:
 ```bash
-mkdir -p <input_dir>
-mkdir -p <output_dir>
+docker images | grep docker_vina
 ```
+
+### 3. Choose and Download Protein Complex Data
+You may choose any protein complex from a dataset of **140 protein** complexes available on (https://zenodo.org/records/4031961/files/data.zip?download=1). The example in this guide uses `5wlo`.
+
+To download the 5wlo dataset, make the provided script executable and run it:
+
+```bash
+chmod +x data_download_script.sh
+bash data_download_script.sh 5wlo
+```
+
+
 Add your receptor (`.pdbqt`), ligand (`.pdbqt`) and grid map files to the input directory of your protein.     
 We have provided a sample protein `5wlo` with all the necessary files (receptor, ligand, grid maps). Create an output directory for storing results specific to `5wlo`: 
 ```bash
