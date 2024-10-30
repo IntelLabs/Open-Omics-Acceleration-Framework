@@ -22,6 +22,7 @@ mkdir -p <protein_name_output>
 We will show one of the example data given in the original repo that is `1ac8`. 
 Run the below script to download the `1ac8` data. After download, rename `rec.pdbqt` to `1ac8_rec.pdbqt`:
 ```zsh
+chmod +x data_download_script.sh
 bash data_download_script.sh
 mv 1ac8/rec.pdbqt 1ac8/1ac8_rec.pdbqt
 ```
@@ -33,7 +34,12 @@ Now, export the input and output directory paths as environment variables for ea
 ```zsh
 export INPUT_SYCL_CPU=$PWD/1ac8
 export OUTPUT_SYCL_CPU=$PWD/1ac8_output_autodock_sycl_cpu
-```                                                                                                                              
+```                             
+Add the necessary permissions to the output folder so Docker can write to it:
+```zsh
+sudo chmod -R a+w $OUTPUT_SYCL_CPU
+```
+
 ## 4. Running the Docker Container               
 Run the docker container with the following command:
 ```zsh
