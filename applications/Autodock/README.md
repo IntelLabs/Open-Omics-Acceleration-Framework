@@ -13,16 +13,17 @@ docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_p
 ```
 **Note: This will build the docker image with the tag** `autodock-sycl-cpu`
 
-## 3. Prepare Input and Output Directories                                                                                      
-We can choose any protein complex from 140 complexes available on (https://zenodo.org/records/4031961) (dataset download link here https://zenodo.org/records/4031961/files/data.zip?download=1).
+## 3. Prepare Input and Output Directories                                                                                     
+We can choose any protein complex from 140 protein-ligand complexes available on (https://zenodo.org/records/4031961) (dataset can be downloaded as a zip file from the link here https://zenodo.org/records/4031961/files/data.zip?download=1).
 
-Let us work with the `4fev` protein.
+For demonstration purposes, we will work with the `4fev` protein complex.
 
-1) Run the below script to download the `4fev` dataset
+1) Make the data download script executable and download the selected protein complex (`4fev`):
 ```zsh
 chmod +x data_download_script.sh
-bash data_download_script.sh
+bash data_download_script.sh 4fev
 ```
+**Note: You can replace 4fev with any other complex name from the dataset.** 
 
 2) Create an output directory for docking results:
 ```zsh

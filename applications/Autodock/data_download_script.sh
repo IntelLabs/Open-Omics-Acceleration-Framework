@@ -1,6 +1,6 @@
 url="https://zenodo.org/records/4031961/files/data.zip?download=1"
 download_dir="./data_new"
-target_folder="4fev"
+target_folder="$1"
 mkdir -p "$download_dir"
 echo "Downloading data.zip..."
 wget -O "$download_dir/data.zip" "$url"
