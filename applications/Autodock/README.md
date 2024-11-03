@@ -23,7 +23,7 @@ For demonstration purposes, we will work with the `4fev` protein complex.
 chmod +x data_download_script.sh
 bash data_download_script.sh 4fev
 ```
-# Note: You can replace 4fev with any other complex name from the dataset. 
+**Note: You can replace 4fev with any other complex name from the dataset.** 
 
 2) Create an output directory for docking results:
 ```zsh
