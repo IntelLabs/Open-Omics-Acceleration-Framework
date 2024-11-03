@@ -18,12 +18,12 @@ We can choose any protein complex from 140 protein-ligand complexes available on
 
 For demonstration purposes, we will work with the `4fev` protein complex.
 
-1) Make the data download script executable and download the selected protein complex (e.g. 4fev):
+1) Make the data download script executable and download the selected protein complex (`4fev`):
 ```zsh
 chmod +x data_download_script.sh
 bash data_download_script.sh 4fev
 ```
-Note: You can replace 4fev with any other complex name from the dataset. 
+# Note: You can replace 4fev with any other complex name from the dataset. 
 
 2) Create an output directory for docking results:
 ```zsh
