@@ -23,7 +23,8 @@ Let us work with the `4fev` protein.
 chmod +x data_download_script.sh
 bash data_download_script.sh 4fev
 ```
-You can replace any other complex from 140 complexes in place of 4fev here
+You can replace any other complex from 140 complexes in place of 4fev in above 
+
 2) Create an output directory for docking results:
 ```zsh
 mkdir -p 4fev_output
