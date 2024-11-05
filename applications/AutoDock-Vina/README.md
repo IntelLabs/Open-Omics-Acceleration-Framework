@@ -1,12 +1,12 @@
 ## Openomics-Autodock-Vina
-This guide will help you clone the repository, build the Docker image, set up input/output directories, and run AutoDock Vina inside a Docker container.
+
 ## Docker Setup Instructions
 ### 1. Build the Docker Image                                                                                                   
 Build the Docker image by running the following command:
 ```bash
 docker build -t docker_vina .
 ```
-This command creates an image with the tag `docker_vina`. Confirm the image is built by listing Docker images:
+This command creates an image with the tag `docker_vina`. 
 ```bash
 docker images | grep docker_vina
 ```
@@ -20,6 +20,7 @@ Select any protein complex from the available dataset of **140 protein** complex
 chmod +x data_download_script.sh
 bash data_download_script.sh 5wlo
 ```
+**Note: You can replace 5wlo with any other complex name from the complete dataset available in** `data_original`.
 
 2) Create an output directory to store results specific to `5wlo`:
 ```bash
