@@ -10,7 +10,7 @@ docker build -t docker_vina .
 ```
 
 ### 2. Choose and Download Protein Complex Data
-Select any protein complex from the available dataset of **140** protein complexes(https://zenodo.org/records/4031961) which you can download from (https://zenodo.org/records/4031961/files/data.zip?download=1). This guide uses the **5wlo** protein as an example.
+Select any protein complex from the available dataset of **140** protein-ligand complexes(https://zenodo.org/records/4031961) which you can download from (https://zenodo.org/records/4031961/files/data.zip?download=1). This guide uses the **5wlo** protein as an example.
 
 1) Run the below commands to make data download script executable, download the complete dataset and extract the data for `5wlo`:
 
