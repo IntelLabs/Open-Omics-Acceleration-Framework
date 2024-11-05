@@ -1,26 +1,23 @@
 ## Openomics-Autodock-Vina
 
 ## Docker Setup Instructions
+
 ### 1. Build the Docker Image                                                                                                   
-Build the Docker image by running the following command:
+Build the Docker image with the tag `docker_vina` by running the following command:
 ```bash
 docker build -t docker_vina .
-```
-This command creates an image with the tag `docker_vina`. 
-```bash
-docker images | grep docker_vina
 ```
 
 ### 2. Choose and Download Protein Complex Data
 Select any protein complex from the available dataset of **140 protein** complexes which you can download from (https://zenodo.org/records/4031961/files/data.zip?download=1). This guide uses the **5wlo** protein as an example.
 
-1) Run the below commnads to make data download script executable, download the complete dataset and extract the data for `5wlo`:
+1) Run the below commands to make data download script executable, download the complete dataset and extract the data for `5wlo`:
 
 ```bash
 chmod +x data_download_script.sh
 bash data_download_script.sh 5wlo
 ```
-**Note: You can replace 5wlo with any other complex name from the complete dataset available in** `data_original`.
+**Note: You can replace 5wlo with any other complex name from the complete dataset available in** `data_original` directory.
 
 2) Create an output directory to store results specific to `5wlo`:
 ```bash
@@ -38,7 +35,7 @@ export OUTPUT_VINA=$PWD/5wlo_output
 sudo chmod -R a+w $OUTPUT_VINA
 ```
 
-### 3. Run the Docker Container
+### 2. Run the Docker Container
 Verify that the Docker image was built successfully by listing Docker images:
 ```bash
 docker images | grep docker_vina                                                                                                
@@ -48,7 +45,7 @@ If the image is listed, run AutoDock Vina with the following command:
 docker run -it -v $INPUT_VINA:/input -v $OUTPUT_VINA:/output docker_vina:latest vina --receptor protein.pdbqt --ligand rand-1.pdbqt --out /output/rand-1_out.pdbqt --center_x 16.459 --center_y -19.946 --center_z -5.850 --size_x 18 --size_y 18 --size_z 18 --seed 1234 --exhaustiveness 64
 ```
 This command will process your receptor and ligand files and place the results in the specified output directory.
-### 4. Expected Output                                                                                                           
+### 3. Expected Output                                                                                                           
 After running the above command, you should find the output file (`rand-1_out.pdbqt`) in the output directory, such as `5wlo_output` for this example.
 
 ---
