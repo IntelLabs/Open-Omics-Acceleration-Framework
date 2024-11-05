@@ -1,4 +1,4 @@
-## Openomics-Autodock-Vina
+## OpenOmics-Autodock-Vina
 OpenOmics-Autodock-Vina is a fast, efficient molecular docking software used to predict ligand-protein binding poses and affinities. It features a refined scoring function, parallel execution on multicore CPUs and user-friendly configuration.
 
 ## Docker Setup Instructions
