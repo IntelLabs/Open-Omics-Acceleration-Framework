@@ -1,29 +1,21 @@
 # Docker Setup Instructions for AutoDock SYCL CPU
-## 1. Clone the Repository
-First, clone the repository and navigate to the applications directory:
+## 1. Build the Docker Image
 ```zsh
-git clone git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
-cd TransOmics.OpenOmicsInternal/applications
-```
-## 2. Build the Docker Image
-Navigate to the Autodock directory containing the Dockerfile and build the Docker image with proxy settings if needed:
-```zsh
-cd Autodock/
-docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t autodock-sycl-cpu .
+docker build -t autodock-sycl-cpu .
 ```
 **Note: This will build the docker image with the tag** `autodock-sycl-cpu`
 
-## 3. Prepare Input and Output Directories                                                                                     
+## 2. Prepare Input and Output Directories                                                                                     
 We can choose any protein complex from 140 protein-ligand complexes available on (https://zenodo.org/records/4031961) (dataset can be downloaded as a zip file from the link here https://zenodo.org/records/4031961/files/data.zip?download=1).
 
 For demonstration purposes, we will work with the `4fev` protein complex.
 
-1) Make the data download script executable and download the selected protein complex (`4fev`):
+1) Make the data download script executable and download complete data and extract the selected protein complex (`4fev`):
 ```zsh
 chmod +x data_download_script.sh
 bash data_download_script.sh 4fev
 ```
-**Note: You can replace 4fev with any other complex name from the dataset.** 
+**Note: You can replace 4fev with any other complex name from the complete dataset available in** `data_original`. 
 
 2) Create an output directory for docking results:
 ```zsh
@@ -41,7 +33,7 @@ export OUTPUT_SYCL_CPU=$PWD/4fev_output
 ```zsh 
 sudo chmod -R a+w $OUTPUT_SYCL_CPU
 ```
-## 4. Running the Docker Container               
+## 3. Running the Docker Container               
 Run the docker container with the following command:
 ```zsh
 docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output autodock-sycl-cpu:latest autodock_cpu_64wi --ffile protein.maps.fld --lfile rand-0.pdbqt --nrun 100 --lsmet sw --seed 11,23 --nev 2048000 --resnam /output/rand-0
@@ -52,7 +44,7 @@ In this command:
  
  **Note: Replace** `autodock_cpu_64wi` **with the correct executable name if it differs.**
 
-## 5. Accessing the Results                                                                                                    
+## 4. Accessing the Results                                                                                                    
 Once the container completes its run, you can access the docking results in your output directory:
 ```zsh
 ls $OUTPUT_SYCL_CPU/rand-0.dlg
