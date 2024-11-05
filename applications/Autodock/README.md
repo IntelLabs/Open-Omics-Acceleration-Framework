@@ -1,5 +1,5 @@
 # Open-Omics-Autodock
-Open-Omics-Autodock is an optimized, multithreaded version of the original AutoDock for high-performance molecular docking, enabling efficient protein-ligand interaction predictions through scalable CPU parallelization across SYCL-compatible hardware.
+Open-Omics-Autodock is an optimized, multithreaded SYCL CPU version of the original AutoDock for high-performance molecular docking, enabling efficient protein-ligand interaction predictions.
 # Docker Setup Instructions
 ## 1. Build the Docker Image
 To build the Docker image with the tag `autodock-sycl-cpu`, run the below command:
