@@ -2,16 +2,16 @@
 Open-Omics-Autodock is an optimized, multithreaded version of the original AutoDock for high-performance molecular docking, enabling efficient protein-ligand interaction predictions through scalable CPU parallelization across SYCL-compatible hardware.
 # Docker Setup Instructions
 ## 1. Build the Docker Image
-To build the Docker image with the tag autodock-sycl-cpu, run:
+To build the Docker image with the tag `autodock-sycl-cpu`, run the below command:
 ```zsh
 docker build -t autodock-sycl-cpu .
 ```
 ## 2. Prepare Input and Output Directories                                                                                     
-We can choose any protein complex from 140 protein-ligand complexes available on (https://zenodo.org/records/4031961) (dataset can be downloaded as a zip file from the link here https://zenodo.org/records/4031961/files/data.zip?download=1).
+We can choose any protein complex from **140** protein-ligand complexes available on (https://zenodo.org/records/4031961) (dataset can be downloaded as a zip file from the link here https://zenodo.org/records/4031961/files/data.zip?download=1).
 
 For demonstration purposes, we will work with the `4fev` protein complex.
 
-1) Make the data download script executable, download complete data and extract the selected protein complex (`4fev`):
+1) Make the data download script executable, download complete dataset and extract the selected protein complex (`4fev`):
 ```zsh
 chmod +x data_download_script.sh
 bash data_download_script.sh 4fev
