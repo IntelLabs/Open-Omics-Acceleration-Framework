@@ -1,46 +1,42 @@
-## Docker Setup for AutoDock-Vina
-This guide will help you clone the repository, build the Docker image, set up input/output directories, and run AutoDock Vina inside a Docker container.
-### 1. Clone the Repository
-First, clone the repository and navigate to the AutoDock-Vina folder:
+## Open-Omics-Autodock-Vina
+Open-Omics-Autodock-Vina is a fast, efficient molecular docking software used to predict ligand-protein binding poses and affinities. It features a refined scoring function, parallel execution on multicore CPUs and user-friendly configuration.
+
+## Docker Setup Instructions
+
+### 1. Build the Docker Image                                                                                                   
+Build the Docker image with the tag `docker_vina` by running the following command:
 ```bash
-git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
-cd TransOmics.OpenOmicsInternal/applications/AutoDock-Vina
-```
-### 2. Build the Docker Image                                                                                                   
-Build the Docker image by running the following command:
-```bash
-docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t docker_vina .
-```
-This command creates an image with the tag `docker_vina`. Confirm the image is built by listing Docker images:
-```bash
-docker images | grep docker_vina
+docker build -t docker_vina .
 ```
 
-### 3. Choose and Download Protein Complex Data
+### 2. Choose and Download Protein Complex Data
 Select any protein complex from the available dataset of **140 protein** complexes which you can download from (https://zenodo.org/records/4031961/files/data.zip?download=1). This guide uses the **5wlo** protein as an example.
 
-To download the dataset for `5wlo`, make the provided download script executable, then run it:
+1) Run the below commands to make data download script executable, download the complete dataset and extract the data for `5wlo`:
 
 ```bash
 chmod +x data_download_script.sh
 bash data_download_script.sh 5wlo
 ```
-Create an output directory to store results specific to `5wlo`:
+**Note: You can replace 5wlo with any other complex name from the complete dataset available in** `data_original` directory.
+
+2) Create an output directory to store results specific to `5wlo`:
 ```bash
 mkdir 5wlo_output                                                                                                               
 ```
 
-Set the environment variables for the `5wlo` protein as follows:
+3) Set the environment variables for the `5wlo` protein as follows:
 ```bash                                                                                                                         
 export INPUT_VINA=$PWD/5wlo
 export OUTPUT_VINA=$PWD/5wlo_output
 ```
-Add the necessary permissions to output folder for Docker to write to it:
+
+4) Add the necessary permissions to output folder for Docker to write to it:
 ```bash
 sudo chmod -R a+w $OUTPUT_VINA
 ```
 
-### 4. Run the Docker Container
+### 3. Run the Docker Container
 Verify that the Docker image was built successfully by listing Docker images:
 ```bash
 docker images | grep docker_vina                                                                                                
@@ -50,7 +46,7 @@ If the image is listed, run AutoDock Vina with the following command:
 docker run -it -v $INPUT_VINA:/input -v $OUTPUT_VINA:/output docker_vina:latest vina --receptor protein.pdbqt --ligand rand-1.pdbqt --out /output/rand-1_out.pdbqt --center_x 16.459 --center_y -19.946 --center_z -5.850 --size_x 18 --size_y 18 --size_z 18 --seed 1234 --exhaustiveness 64
 ```
 This command will process your receptor and ligand files and place the results in the specified output directory.
-### 5. Expected Output                                                                                                           
+### 4. Expected Output                                                                                                           
 After running the above command, you should find the output file (`rand-1_out.pdbqt`) in the output directory, such as `5wlo_output` for this example.
 
 ---
