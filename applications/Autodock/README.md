@@ -34,8 +34,12 @@ export OUTPUT_SYCL_CPU=$PWD/4fev_output
 ```zsh 
 sudo chmod -R a+w $OUTPUT_SYCL_CPU
 ```
-## 3. Running the Docker Container               
-Run the docker container with the following command:
+## 3. Running the Docker Container
+Verify that the Docker image was built successfully by listing Docker images:
+```zsh
+docker images | grep autodock-sycl-cpu
+```
+If the image is listed, then run the docker container with the following command:
 ```zsh
 docker run -it -v $INPUT_SYCL_CPU:/input -v $OUTPUT_SYCL_CPU:/output autodock-sycl-cpu:latest autodock_cpu_64wi --ffile protein.maps.fld --lfile rand-0.pdbqt --nrun 100 --lsmet sw --seed 11,23 --nev 2048000 --resnam /output/rand-0
 ```
