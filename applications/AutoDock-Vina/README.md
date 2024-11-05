@@ -18,7 +18,7 @@ Select any protein complex from the available dataset of **140 protein** complex
 chmod +x data_download_script.sh
 bash data_download_script.sh 5wlo
 ```
-**Note: You can replace 5wlo with any other complex name from the complete dataset available in `data_original` directory.**
+**Note: You can replace 5wlo with any other complex name from the complete dataset available in `data_original/data` directory.**
 
 2) Create an output directory to store results specific to `5wlo`:
 ```bash
