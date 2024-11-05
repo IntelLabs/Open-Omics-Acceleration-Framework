@@ -1,4 +1,5 @@
 ## Openomics-Autodock-Vina
+OpenOmics-Autodock-Vina is a fast, efficient molecular docking software used to predict ligand-protein binding poses and affinities. It features a refined scoring function, parallel execution on multicore CPUs and user-friendly configuration.
 
 ## Docker Setup Instructions
 
@@ -35,7 +36,7 @@ export OUTPUT_VINA=$PWD/5wlo_output
 sudo chmod -R a+w $OUTPUT_VINA
 ```
 
-### 2. Run the Docker Container
+### 3. Run the Docker Container
 Verify that the Docker image was built successfully by listing Docker images:
 ```bash
 docker images | grep docker_vina                                                                                                
@@ -45,7 +46,7 @@ If the image is listed, run AutoDock Vina with the following command:
 docker run -it -v $INPUT_VINA:/input -v $OUTPUT_VINA:/output docker_vina:latest vina --receptor protein.pdbqt --ligand rand-1.pdbqt --out /output/rand-1_out.pdbqt --center_x 16.459 --center_y -19.946 --center_z -5.850 --size_x 18 --size_y 18 --size_z 18 --seed 1234 --exhaustiveness 64
 ```
 This command will process your receptor and ligand files and place the results in the specified output directory.
-### 3. Expected Output                                                                                                           
+### 4. Expected Output                                                                                                           
 After running the above command, you should find the output file (`rand-1_out.pdbqt`) in the output directory, such as `5wlo_output` for this example.
 
 ---
