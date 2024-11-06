@@ -5,10 +5,10 @@ bwa:
 dataset:
   index: GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
   input: /input/
-  outfile: short.se.sam
+  outfile: out.short.sam
   output: /out/
   read1: HG001.novaseq.pcr-free.30x.R1_10M.fastq.gz
-  read2: ''    ##HG001.novaseq.pcr-free.30x.R2_10M.fastq.gz
+  read2: HG001.novaseq.pcr-free.30x.R2_10M.fastq.gz
   read_type: short
   refdir: /refdir/
   tempdir:  ""
