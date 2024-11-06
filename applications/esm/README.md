@@ -1,7 +1,7 @@
 
 # Open-Omics-ESM
 
-Open-Omics-ESM is an optimized version of the Evolutionary Scale Modeling (ESM) toolkit, tailored for modern CPUs. It enhances the performance of key ESM modules—such as ESM-embeddings, LM-Design, InverseFolding, and ESMFold—by leveraging the latest PyTorch and using lower precision (bf16) for computations.
+Open-Omics-ESM is an optimized version of the Evolutionary Scale Modeling (ESM) toolkit, tailored for modern CPUs. It enhances the performance of key ESM modules—such as ESM-embeddings, LM-Design, InverseFolding, and ESMFold—by leveraging the Intel Extension for PyTorch (IPEX), the latest version of PyTorch, and lower-precision (bf16) computations.
 
 ## Installation
 ### Step 1: Run the script to create the Docker images
