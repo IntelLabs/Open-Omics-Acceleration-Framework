@@ -1,11 +1,11 @@
 ARG FROM_IMAGE=ubuntu:22.04
-
 # Install Base miniconda image
 ARG BASE_IMAGE=condaforge/miniforge3:24.3.0-0
 FROM ${BASE_IMAGE} as conda_setup
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Non-root user setup
-ENV SERVICE_NAME="alphafold2-bpf-service"
+ENV SERVICE_NAME="alphafold2-pre-service"
 
 RUN groupadd --gid 1001 $SERVICE_NAME && \
     useradd -m -g $SERVICE_NAME --shell /bin/false --uid 1001 $SERVICE_NAME
@@ -22,7 +22,9 @@ RUN python -m pip install absl-py==2.0.0 biopython==1.81 chex==0.1.84 dm-haiku==
 RUN python -m pip install jax==0.4.21 jaxlib==0.4.21
 RUN python -m pip install intel-extension-for-pytorch==2.0.100 intel-openmp==2024.2.0
 
+
 FROM ${FROM_IMAGE} as builder
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     git build-essential cmake wget tzdata gcc curl gnupg gnupg2 gnupg1 sudo kalign autoconf numactl time vim tar ca-certificates -y \
     && rm -rf /var/lib/apt/lists/* \
@@ -39,53 +41,34 @@ CMD source ~/.bashrc
 WORKDIR /
 RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 
-ENV ALPHA_FOLD_DIR=/Open-Omics-Acceleration-Framework/applications/alphafold
-WORKDIR ${ALPHA_FOLD_DIR}
-#WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
-
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
 ENV LD_LIBRARY_PATH "/opt/conda/lib:$LD_LIBRARY_PATH"
 ENV PATH "/opt/conda/bin:$PATH"
 # Compile HHsuite from source.
 #
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
 RUN git clone --recursive https://github.com/IntelLabs/hh-suite.git
-WORKDIR ${ALPHA_FOLD_DIR}/hh-suite/build
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold/hh-suite
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold/hh-suite/build
 RUN cmake -DCMAKE_INSTALL_PREFIX=`pwd`/release -DCMAKE_CXX_COMPILER="icpx" -DCMAKE_CXX_FLAGS_RELEASE="-O3 -mavx512bw" .. \
-	&& ./release/bin/hhblits -h
-#RUN git clone --recursive https://github.com/IntelLabs/hh-suite.git \
-#    && cd hh-suite \
-#    && mkdir build && cd build \
-#    && cmake -DCMAKE_INSTALL_PREFIX=`pwd`/release -DCMAKE_CXX_COMPILER="icpx" -DCMAKE_CXX_FLAGS_RELEASE="-O3 -mavx512bw" .. \
-#    && make -j 4 && make install \
-#    && ./release/bin/hhblits -h \
-#    && cd ../..
+    && make -j 4 && make install \
+    && ./release/bin/hhblits -h
 
-WORKDIR ${ALPHA_FOLD_DIR}
-#WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
 # Compile Hmmer from source.
 RUN git clone --recursive https://github.com/IntelLabs/hmmer.git
-#RUN git clone --recursive https://github.com/IntelLabs/hmmer.git \
-#    && cd hmmer \
-#    && cp easel_makefile.in easel/Makefile.in \
-#    && cd easel && autoconf && ./configure --prefix=`pwd` && cd .. \
-#    && autoconf && CC=icx CFLAGS="-O3 -mavx512bw -fPIC" ./configure --prefix=`pwd`/release \
-#    && make -j 4 && make install \
-#    && ./release/bin/jackhmmer -h \
-#    && cd ..
-
-WORKDIR ${ALPHA_FOLD_DIR}/Hmmer
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold/hmmer
 RUN cp easel_makefile.in easel/Makefile.in
-WORKDIR ${ALPHA_FOLD_DIR}/Hmmer/easel
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold/hmmer/easel
 RUN autoconf && ./configure --prefix=`pwd`
-WORKDIR WORKDIR ${ALPHA_FOLD_DIR}/Hmmer/
-RUN autoconf && CC=icx CFLAGS="-O3 -march=native -fPIC" ./configure --prefix=`pwd`/release \
-	 && ./release/bin/jackhmmer -h
-#WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold/hmmer
+RUN autoconf && CC=icx CFLAGS="-O3 -mavx512bw -fPIC" ./configure --prefix=`pwd`/release \
+    && make -j 4 && make install \
+    && ./release/bin/jackhmmer -h
 
-COPY --from=conda_setup /Open-Omics-Acceleration-Framework /Open-Omics-Acceleration-Framework
-WORKDIR ${ALPHA_FOLD_DIR}
-
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
 # Swith to Non-root user
-RUN chown -R $SERVICE_NAME:$SERVICE_NAME $WORKDIR
+RUN chown -R $SERVICE_NAME:$SERVICE_NAME /Open-Omics-Acceleration-Framework
 USER $SERVICE_NAME
 
 HEALTHCHECK NONE
@@ -94,5 +77,5 @@ RUN echo "source /opt/conda/bin/activate " > ~/.bashrc
 CMD source ~/.bashrc
 ENV PATH "/opt/conda/bin:$PATH"
 ENV LD_LIBRARY_PATH "/opt/conda/lib:$LD_LIBRARY_PATH"
-CMD  source ~/.bashrc && mkdir weights && mkdir weights/extracted && python extract_params.py --input /data/params/params_model_1.npz --output_dir ./weights/extracted/model_1 \
+CMD  mkdir weights && mkdir weights/extracted && python extract_params.py --input /data/params/params_model_1.npz --output_dir ./weights/extracted/model_1 \
   && python run_multiprocess_pre.py --root_home=/Open-Omics-Acceleration-Framework/applications/alphafold --data_dir=/data --input_dir=/samples --output_dir=/output --model_name=model_1
