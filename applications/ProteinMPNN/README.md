@@ -5,7 +5,30 @@ Execute the script using the following command:
 ```bash
 docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t protein_mpnn .
 ```
+---------------------------------------------------------------------------------------------------
+## Run a docker container
+```
+cd ~/TransOmics.OpenOmicsInternal/applications/ProteinMPNN
+mkdir -p outputs
+export OUTPUT_DIR=$PWD/outputs
+export INPUT_FILE=<full-path of input pdb file>
+docker run -it -v $OUTPUT_DIR:/outputs -v $INPUT_FILE:/data protein_mpnn:latest python script_example_1.py --input /data --num_seq_per_target <int> --sampling_temp <float> --seed <int> --batch_size <int> --precision <float32/bfloat16>
+```
+--------------------------------------------------------------------------------------------------
 
+```
+#example
+cd ~/TransOmics.OpenOmicsInternal/applications/ProteinMPNN
+mkdir -p outputs
+export OUTPUT_DIR=$PWD/outputs
+export INPUT_FILE=$PWD/inputs/PDB_monomers/pdbs
+docker run -it -v $OUTPUT_DIR:/outputs -v $INPUT_FILE:/data proteinmpnn:latest python script_example_1.py --input /data --num_seq_per_target 10 --sampling_temp 0.1 --seed 37 --batch_size 1 --precision float32
+```
+
+## Note: All use case scripts are available inside the python_scripts folder.
+```
+cd python_scripts
+```
 These are provided `python_scripts/`:
 * `script_example_1.sh` - simple monomer example 
 * `script_example_2.sh` - simple multi-chain example
