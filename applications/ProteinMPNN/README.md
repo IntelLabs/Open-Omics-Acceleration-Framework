@@ -1,3 +1,27 @@
+## Installation
+### Step 1: Run the script to create the Docker images
+Execute the script using the following command:
+
+```bash
+docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t protein_mpnn .
+```
+
+These are provided `python_scripts/`:
+* `script_example_1.sh` - simple monomer example 
+* `script_example_2.sh` - simple multi-chain example
+* `script_example_3.sh` - directly from the .pdb path
+* `script_example_3_score_only.sh` - return score only (model's uncertainty)
+* `script_example_3_score_only_from_fasta.sh` - return score only (model's uncertainty) loading sequence from fasta files
+* `script_example_4.sh` - fix some residue positions
+* `script_example_4_non_fixed.sh` - specify which positions to design
+* `script_example_5.sh` - tie some positions together (symmetry)
+* `script_example_6.sh` - homooligomer example
+* `script_example_7.sh` - return sequence unconditional probabilities (PSSM like)
+* `script_example_8.sh` - add amino acid bias
+* `script_example_pssm.sh` - use PSSM bias when designing sequences
+----------------------------------------------------------------------------------------------------
+
+## Original ProteinMPNN
 # ProteinMPNN
 ![ProteinMPNN](https://docs.google.com/drawings/d/e/2PACX-1vTtnMBDOq8TpHIctUfGN8Vl32x5ISNcPKlxjcQJF2q70PlaH2uFlj2Ac4s3khnZqG1YxppdMr0iTyk-/pub?w=889&h=358)
 Read [ProteinMPNN paper](https://www.biorxiv.org/content/10.1101/2022.06.03.494563v1).
