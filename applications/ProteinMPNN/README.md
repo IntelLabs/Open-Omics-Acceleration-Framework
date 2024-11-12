@@ -27,21 +27,22 @@ docker run -it -v $OUTPUT_DIR:/outputs -v $INPUT_FILE:/data proteinmpnn:latest p
 
 ## Note: All use case scripts are available inside the python_scripts folder.
 ```
+cd ~/TransOmics.OpenOmicsInternal/applications/ProteinMPNN
 cd python_scripts
 ```
 These are provided `python_scripts/`:
-* `script_example_1.sh` - simple monomer example 
-* `script_example_2.sh` - simple multi-chain example
-* `script_example_3.sh` - directly from the .pdb path
-* `script_example_3_score_only.sh` - return score only (model's uncertainty)
-* `script_example_3_score_only_from_fasta.sh` - return score only (model's uncertainty) loading sequence from fasta files
-* `script_example_4.sh` - fix some residue positions
-* `script_example_4_non_fixed.sh` - specify which positions to design
-* `script_example_5.sh` - tie some positions together (symmetry)
-* `script_example_6.sh` - homooligomer example
-* `script_example_7.sh` - return sequence unconditional probabilities (PSSM like)
-* `script_example_8.sh` - add amino acid bias
-* `script_example_pssm.sh` - use PSSM bias when designing sequences
+* `script_example_1.py` - simple monomer example 
+* `script_example_2.py` - simple multi-chain example
+* `script_example_3.py` - directly from the .pdb path
+* `script_example_3_score_only.py` - return score only (model's uncertainty)
+* `script_example_3_score_only_from_fasta.py` - return score only (model's uncertainty) loading sequence from fasta files
+* `script_example_4.py` - fix some residue positions
+* `script_example_4_non_fixed.py` - specify which positions to design
+* `script_example_5.py` - tie some positions together (symmetry)
+* `script_example_6.py` - homooligomer example
+* `script_example_7.py` - return sequence unconditional probabilities (PSSM like)
+* `script_example_8.py` - add amino acid bias
+* `script_example_pssm.py` - use PSSM bias when designing sequences
 ----------------------------------------------------------------------------------------------------
 
 ## Original ProteinMPNN
