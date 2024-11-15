@@ -35,9 +35,6 @@ RUN git apply ProteinMPNN.patch
 
 ENV PATH="/opt/conda/bin:$PATH"
 
-# Initialize Conda for interactive shells
-#RUN /opt/conda/bin/conda init bash
-
 # Copy Conda installation from the conda_setup stage
 COPY --from=conda_setup /opt/conda /opt/conda
 
@@ -62,15 +59,16 @@ RUN rm -rf jemalloc
 # Set up environment activation and PATH
 RUN echo "source /opt/conda/bin/activate p_mpnn" >> ~/.bashrc
 ENV PATH="/opt/conda/envs/p_mpnn/bin:/opt/conda/bin:$PATH"
-CMD source ~/.bashrc
+#CMD source ~/.bashrc
+
 # Ensure all scripts inside ProteinMPNN/examples are executable
 RUN chmod +x /app/ProteinMPNN/examples/*.py
 RUN mkdir /outputs
 
 WORKDIR /app/ProteinMPNN/examples
 # Change ownership of the app directory
-RUN chown -R $SERVICE_NAME:$SERVICE_NAME /app
-RUN chown -R $SERVICE_NAME:$SERVICE_NAME /outputs
+RUN chown -R $SERVICE_NAME:$SERVICE_NAME /app /outputs
+
 # Switch to non-root user
 USER $SERVICE_NAME
 
@@ -81,4 +79,4 @@ HEALTHCHECK NONE
 ENV LD_PRELOAD "/opt/conda/envs/p_mpnn/lib/libjemalloc.so:$LD_PRELOAD"
 ENV MALLOC_CONF "oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms:-1,muzzy_decay_ms:-1"
 # Set the default command to run the application
-CMD ["/bin/bash", "python"] 
+CMD source ~/.bashrc && ["/bin/bash", "python"] 
