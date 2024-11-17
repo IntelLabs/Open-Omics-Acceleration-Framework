@@ -14,7 +14,7 @@ def main(argv):
     parser.add_argument('--seed', type=int, default=37, help="Random seed")
     parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
     parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
-    parser.add_argument('--use_ipex', action='store_true', help="Enable IPEX optimizations")  # IPEX flag
+    parser.add_argument('--use_ipex', action='store_true', help="Enable IPEX optimizations")
     args = parser.parse_args()
 
     # Check and create output directory if it doesn't exist
