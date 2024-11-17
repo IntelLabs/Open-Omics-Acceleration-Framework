@@ -19,7 +19,7 @@ def main(argv):
     parser.add_argument('--pssm_multi', type=float, default=0.3, help="PSSM multiplier")
     parser.add_argument('--pssm_bias_flag', type=int, default=1, help="PSSM bias flag")
     parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
-    parser.add_argument('--use_ipex', action='store_true', help="Enable IPEX optimizations")  # IPEX flag
+    parser.add_argument('--use_ipex', action='store_true', help="Enable IPEX optimizations")
     args = parser.parse_args()
 
     # Check and create output directory if it doesn't exist
