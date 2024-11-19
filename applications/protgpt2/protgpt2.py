@@ -25,16 +25,19 @@ def main():
     parser.add_argument('--eos_token_id', type=int, default=0, help='The id of the end of sequence token')
     parser.add_argument('--dtype', type=str, choices=['float32', 'bfloat16'], default='float32', help='Data type for model optimization')
     parser.add_argument('--iterations', type=int, default=5, help='Number of iterations to run')
-    parser.add_argument('--model_dir', type=str, required=True, help='Directory to save or load the model')
-    parser.add_argument('--output_file', type=str, default='output_sequences.txt', help='File to save the generated sequences')
+    parser.add_argument('--model_dir', type=str, default="None", help='Directory to load the protgpt2 model')
+    parser.add_argument('--output_file', type=str, default='protgpt2_generated_sequences.txt', help='File to save the generated sequences')
     args = parser.parse_args()
 
     make_deterministic()
     # Setting dtype
     dtype = torch.float32 if args.dtype == 'float32' else torch.bfloat16
     model_dir = args.model_dir
+    if args.model_dir=="None":
+        protgpt2 = pipeline('text-generation', model="nferruz/ProtGPT2", torch_dtype=dtype)
+    else:
+        protgpt2 = pipeline('text-generation', model=model_dir, torch_dtype=dtype)
     # Generate sequences using ProtGPT2 with IPEX optimization
-    protgpt2 = pipeline('text-generation', model=model_dir, torch_dtype=dtype)
     protgpt2.model = ipex.optimize(protgpt2.model, dtype=dtype)
     tic = time.time()
     for i in range(args.iterations):
@@ -55,7 +58,7 @@ def main():
     print('Time taken for', args.iterations, 'iterations:', toc - tic, 'seconds')
     print('Average time per iteration:', (toc - tic) / args.iterations, 'seconds')
 
-    # Printing the first two sequences after all iterations
+    # Printing the sequences and storing to the output file
     with open(args.output_file, 'w') as f:
         for seq in sequences:
             f.write(seq['generated_text'] + "\n")

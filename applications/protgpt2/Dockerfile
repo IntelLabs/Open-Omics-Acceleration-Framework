@@ -12,6 +12,15 @@ FROM ${FROM_IMAGE} as builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+ARG http_proxy
+ENV http_proxy=${http_proxy}
+
+ARG https_proxy
+ENV https_proxy=${https_proxy}
+
+ARG no_proxy
+ENV no_proxy=${no_proxy}
+
 # Install necessary build tools and clean up
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates git build-essential vim numactl autoconf automake make && \
@@ -46,6 +55,11 @@ RUN rm -rf jemalloc
 # Set up environment activation and PATH
 RUN echo "source /opt/conda/bin/activate protgpt2" >> ~/.bashrc
 ENV PATH="/opt/conda/envs/protgpt2/bin:/opt/conda/bin:$PATH"
+
+RUN mkdir -p /home/protgpt2-service/.cache/huggingface/hub && \
+    chown -R $SERVICE_NAME:$SERVICE_NAME /home/protgpt2-service/.cache/huggingface && \
+    rm -rf /home/protgpt2-service/.cache/huggingface/hub/models--nferruz--ProtGPT2 && \
+    ln -s /model_dir /home/protgpt2-service/.cache/huggingface/hub/models--nferruz--ProtGPT2
 
 # Swith to Non-root user
 RUN chown -R $SERVICE_NAME:$SERVICE_NAME /app
