@@ -29,7 +29,7 @@ def main():
     parser.add_argument('--output_file', type=str, default='protgpt2_generated_sequences.txt', help='File to save the generated sequences')
     args = parser.parse_args()
 
-    make_deterministic()
+    #make_deterministic()
     # Setting dtype
     dtype = torch.float32 if args.dtype == 'float32' else torch.bfloat16
     model_dir = args.model_dir
@@ -58,7 +58,7 @@ def main():
     print('Time taken for', args.iterations, 'iterations:', toc - tic, 'seconds')
     print('Average time per iteration:', (toc - tic) / args.iterations, 'seconds')
 
-    # Printing the sequences and storing to the output file
+    # Printing the sequences and saveing them to the output folder.
     with open(args.output_file, 'w') as f:
         for seq in sequences:
             f.write(seq['generated_text'] + "\n")
