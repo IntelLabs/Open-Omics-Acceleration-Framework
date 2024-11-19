@@ -1,9 +1,6 @@
 # OpenOmics RF*diffusion*
 
-## Description
-
-RFdiffusion is an open source method for structure generation, with or without conditional information (a motif, target etc). It can perform a whole range of protein design challenges as we have outlined in [the RFdiffusion paper](https://www.biorxiv.org/content/10.1101/2022.12.09.519842v1).
-This repository includes several modifications to enhance its functionality and performance, particularly focusing on integrating Intel's IPEX for bfloat16 precision and adapting the code to run on CPU.
+Open-Omics-RFdiffusion is an optimized version of RFdiffusion for protein structure generation, designed to run efficiently on modern CPUs. It leverages Intel Extension for PyTorch (IPEX) to enhance performance and utilizes bfloat16 (bf16) precision for faster computations without compromising accuracy.
 
 **Things Diffusion can do**
 - Motif Scaffolding
@@ -21,37 +18,7 @@ run_inference.py Removed the CUDA device configuration and added support for CPU
 base.yml Added precision settings.
 ```
 
-# Table of contents
-
-- [RF*diffusion*](#rfdiffusion)
-  - [Description](#description)
-- [Table of contents](#table-of-contents)
-- [Getting started / installation](#getting-started--installation)
-    - [Conda Install SE3-Transformer](#conda-install-se3-transformer)
-    - [Get PPI Scaffold Examples](#get-ppi-scaffold-examples)
-- [Usage](#usage)
-    - [Running the diffusion script](#running-the-diffusion-script)
-    - [Basic execution - an unconditional monomer](#basic-execution---an-unconditional-monomer)
-    - [Motif Scaffolding](#motif-scaffolding)
-    - [The "active site" model holds very small motifs in place](#the-active-site-model-holds-very-small-motifs-in-place)
-    - [The `inpaint_seq` flag](#the-inpaint_seq-flag)
-    - [A note on `diffuser.T`](#a-note-on-diffusert)
-    - [Partial diffusion](#partial-diffusion)
-    - [Binder Design](#binder-design)
-    - [Practical Considerations for Binder Design](#practical-considerations-for-binder-design)
-    - [Fold Conditioning](#fold-conditioning)
-    - [Generation of Symmetric Oligomers](#generation-of-symmetric-oligomers)
-    - [Using Auxiliary Potentials](#using-auxiliary-potentials)
-    - [Symmetric Motif Scaffolding.](#symmetric-motif-scaffolding)
-    - [A Note on Model Weights](#a-note-on-model-weights)
-    - [Things you might want to play with at inference time](#things-you-might-want-to-play-with-at-inference-time)
-    - [Understanding the output files](#understanding-the-output-files)
-    - [Docker](#docker)
-    - [Conclusion](#conclusion)
-
 ## Getting started / installation
-
-If you want to set up OpenOmics RFdiffusion, follow the steps below:
 
 To get started using RFdiffusion:
 
@@ -68,8 +35,13 @@ cd ~/TransOmics.OpenOmicsInternal/applications/RFdiffusion
 docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t rfdiffusion .
 ```
 
+## Running
+### Information on flags
+Performance optimization with bfloat16 and Intel Extension for PyTorch
+
+ `--bf16` flag accelerates performance by utilizing bfloat16 precision, which enhances computational efficiency without compromising accuracy.
+
 ## Run a docker container
-Note: Precision is optional for optimization. By default, we use float32. If you want to run with float32 or bfloat16, set precision=bfloat16 or precision=float32 accordingly.
 
 ```bash
 cd ~/TransOmics.OpenOmicsInternal/applications/RFdiffusion
@@ -93,6 +65,9 @@ chmod a+w $OUTPUT_DIR
 
 docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/design_motifscaffolding inference.input_pdb=/data 'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=1 inference.precision=float32
 ```
+## All steps are ended here for optimized RFdiffusion.
+
+## The following lines are stock information of the Original RFdiffusion repo:
 
 # Original RF*diffusion*
 
