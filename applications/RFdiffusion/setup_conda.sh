@@ -69,7 +69,8 @@ else
 fi
 
 # Create and activate the Conda environment using the YAML file, disabling plugins to avoid errors
-CONDA_NO_PLUGINS=true conda env create -f env/SE3nv.yml 
+#CONDA_NO_PLUGINS=true 
+conda env create -f env/SE3nv.yml 
 
 conda activate SE3nv
 

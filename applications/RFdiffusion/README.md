@@ -27,10 +27,25 @@ To get started using RFdiffusion:
 ```bash
 source setup_conda.sh
 ```
+## Install jemalloc
+
+```bash
+git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
+cd jemalloc && bash autogen.sh --prefix=$CONDA_PREFIX && make install 
+cd ..
+export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:$LD_LIBRARY_PATH"
+```
+## example script
+
+```bash
+./scripts/run_inference.py 'contigmap.contigs=<[150-150]>' inference.output_prefix=test_outputs/test inference.num_designs=<Int> inference.precision=<bfloat16/float32>
+```
+
 ## Note: All use case scripts are available inside the examples folder.
 
 ## How to use Docker
 ```bash
+git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
 cd ~/TransOmics.OpenOmicsInternal/applications/RFdiffusion
 docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t rfdiffusion .
 ```
