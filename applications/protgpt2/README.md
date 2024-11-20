@@ -16,6 +16,8 @@ conda activate protgpt2
 ```
 
 ```bash
+export OUTPUT_FOLDER=$PWD
+chmod a+w $OUTPUT_FOLDER
 python protgpt2.py --model_dir ./model_dir --max_length <Integer> --do_sample True --top_k 950 --repetition_penalty 1.2 --num_return_sequences <Integer> --eos_token_id 0  --dtype <float32/bfloat16> --iterations <Integer> --output_file <output_seq.txt>
 ```
 
