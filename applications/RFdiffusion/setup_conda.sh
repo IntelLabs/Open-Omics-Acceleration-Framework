@@ -53,7 +53,7 @@ wget https://files.ipd.uw.edu/pub/RFdiffusion/f572d396fae9206628714fb2ce00f72e/C
 # original structure prediction weights
 wget https://files.ipd.uw.edu/pub/RFdiffusion/1befcb9b28e2f778f53d47f18b7597fa/RF_structure_prediction_weights.pt
 cd ../
-PATCH_FILE="$ABS_DIRECTORY/new_changes.patch"
+PATCH_FILE="$ABS_DIRECTORY/RFdiffusion.patch"
 echo $PATCH_FILE
 if [ -f "$PATCH_FILE" ]; then
   # Check if the patch is already applied
