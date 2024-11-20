@@ -44,7 +44,7 @@ def sampler_selector(conf: DictConfig):
             raise ValueError(f"Unrecognized sampler {conf.model_runner}")
     return sampler
 
-def make_deterministic(seed=37):
+def make_deterministic(seed=0):
     torch.manual_seed(seed)
     np.random.seed(seed)
     random.seed(seed)

@@ -1,13 +1,8 @@
 diff --git a/config/inference/base.yaml b/config/inference/base.yaml
-index fac858e..4741605 100644
+index fac858e..80ff699 100644
 --- a/config/inference/base.yaml
 +++ b/config/inference/base.yaml
-@@ -17,10 +17,11 @@ inference:
-   align_motif: True
-   symmetric_self_cond: True
-   final_step: 1
--  deterministic: False
-+  deterministic: True
+@@ -21,6 +21,7 @@ inference:
    trb_save_ckpt_path: null
    schedule_directory_path: null
    model_directory_path: null
@@ -136,10 +131,10 @@ index fcc163b..0000000
 -ENV DGLBACKEND=pytorch
 -ENV OMP_NUM_THREADS=1
 diff --git a/env/SE3nv.yml b/env/SE3nv.yml
-index a51bcce..c79c4f7 100644
+index a51bcce..ab28e9c 100644
 --- a/env/SE3nv.yml
 +++ b/env/SE3nv.yml
-@@ -1,18 +1,17 @@
+@@ -1,18 +1,16 @@
  name: SE3nv
  channels:
 -  - defaults
@@ -156,7 +151,6 @@ index a51bcce..c79c4f7 100644
 -  - dgl-cuda11.1
 -  - pip
 +  - python=3.11.0
-+  - jemalloc=5.3.0
 +  - pip=24.0
    - pip:
 -    - hydra-core
@@ -640,18 +634,16 @@ index 864a5ab..463363b 100644
  
              # Move identity to be the first rotation
 diff --git a/scripts/run_inference.py b/scripts/run_inference.py
-index 2a3bf36..abf0d0b 100755
+index 2a3bf36..db95f84 100755
 --- a/scripts/run_inference.py
 +++ b/scripts/run_inference.py
-@@ -27,9 +27,24 @@ from hydra.core.hydra_config import HydraConfig
+@@ -27,7 +27,22 @@ from hydra.core.hydra_config import HydraConfig
  import numpy as np
  import random
  import glob
 +from omegaconf import DictConfig
 +from rfdiffusion.inference import model_runners
  
--
--def make_deterministic(seed=0):
 +def sampler_selector(conf: DictConfig):
 +    if conf.scaffoldguided.scaffoldguided:
 +        sampler = model_runners.ScaffoldedSampler(conf)
@@ -665,11 +657,9 @@ index 2a3bf36..abf0d0b 100755
 +        else:
 +            raise ValueError(f"Unrecognized sampler {conf.model_runner}")
 +    return sampler
-+
-+def make_deterministic(seed=37):
+ 
+ def make_deterministic(seed=0):
      torch.manual_seed(seed)
-     np.random.seed(seed)
-     random.seed(seed)
 @@ -38,6 +53,7 @@ def make_deterministic(seed=0):
  @hydra.main(version_base=None, config_path="../config/inference", config_name="base")
  def main(conf: HydraConfig) -> None:
