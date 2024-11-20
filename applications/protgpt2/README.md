@@ -14,6 +14,14 @@ conda env create -f env.yml
 
 conda activate protgpt2
 ```
+## Install jemalloc
+```bash
+git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
+cd jemalloc && bash autogen.sh --prefix=$CONDA_PREFIX && make install
+cd ..
+export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:$LD_LIBRARY_PATH"
+```
+
 
 ```bash
 export OUTPUT_FOLDER=$PWD
