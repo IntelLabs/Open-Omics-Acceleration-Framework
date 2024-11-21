@@ -1,106 +1,63 @@
-## Open-Omics-Protgpt2
-Open-Omics-Acceleration ProtGPT2 is an optimized tool for protein design and engineering. It uses Intel Extension for PyTorch (IPEX) to run efficiently on modern CPUs and performs calculations in bfloat16 (bf16) for faster performance. ProtGPT2 generates protein sequences that mimic natural proteins' key features, like structure and amino acid composition, while also exploring new possibilities in protein design.
+## Overview: OpenOmics ProtGPT2
+ProtGPT2 is a popular deep language model for Protein Design. ProtpGPT2, trained on known proteins, generates de novo proteins sequences, hence has the potential to revolutionize domains such as healthcare, agriculture, evironmental, etc. OpenOmics ProtGPT2 is a highly optimized version of the original ProtGPT2 for modern CPUs. It maintains the exact same accuracy level as original ProtGPT2.    
 
-## Downloading the Model
+### New features
+- Acceleration using Intel OneAPI libraries
+- Supports bfloat16 precision for faster computation
+
+## Build from source
 ```bash
 git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
 cd TransOmics.OpenOmicsInternal/applications/protgpt2
-bash model_script.sh
-```
-## Run a Protgpt2 Standalone 
-
-```bash 
-conda env create -f env.yml
-
+conda env create -f env.yml            ## Needs anaconda or miniconda or similar distributions for Python
 conda activate protgpt2
 ```
-## Install jemalloc
+#### Install jemalloc for better performance
 ```bash
 git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
 cd jemalloc && bash autogen.sh --prefix=$CONDA_PREFIX && make install
 cd ..
-export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:$LD_LIBRARY_PATH"  
 ```
 
-
+## Run  
 ```bash
-export OUTPUT_FOLDER=$PWD
-chmod a+w $OUTPUT_FOLDER
-python protgpt2.py --model_dir ./model_dir --max_length <Integer> --do_sample True --top_k 950 --repetition_penalty 1.2 --num_return_sequences <Integer> --eos_token_id 0  --dtype <float32/bfloat16> --iterations <Integer> --output_file <output_seq.txt>
+python protgpt2.py --max_length <max_seq_len> --do_sample <True/False> --top_k <value> --repetition_penalty <value> --num_return_sequences <number_output_sequences> --eos_token_id 0  --dtype <float32/bfloat16> --iterations <num_iters> --output_file <output_seq_file>  
 ```
 
+Example:   
 ```bash
-python protgpt2.py --model_dir ./model_dir --max_length 100 --do_sample True --top_k 950 --repetition_penalty 1.2 --num_return_sequences 10 --eos_token_id 0  --dtype float32 --iterations 5 --output_file output_seq.txt
+python protgpt2.py --max_length 100 --do_sample True --top_k 950 --repetition_penalty 1.2 --num_return_sequences 10 --eos_token_id 0  --dtype float32 --iterations 5 --output_file protgpt2_output.txt   
 ```
 
-## How to use Docker
-
-## Model Management
-The Docker setup provides two ways to handle the required model files:
-
-## Mount Pre-Downloaded Models:
-If you already have the model files downloaded on your local machine, you can mount the directory into the Docker container.
-
-## Download Models During Build:
-The models can be downloaded directly inside the Docker container during the image build process.
+Notes:  
+- OpenOmics ProtGPT2 supports all the parameters supported by original ProtGPT2 (please refer to original PrtoGPT2 readme below)  
+- Additionly, OpenOmics ProtGPT2 provides three more parameters:  
+  - `--dtype` : <float32/bfloat16>   
+  - `--model_dir` : \<directory path of user provided model files>  
+  - `--output_file` : \<output file path>  
+- OpenOmics ProtGPT2 by default downloads the model parameters; user can provide his/her models through `--model_dir` input parameter  
 
 
+## Using Docker  
+### Build  
+```bash  
+git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git  
+cd TransOmics.OpenOmicsInternal/applications/protgpt2  
+docker build --build-arg http_proxy=<proxy_url> --build-arg https_proxy=<proxy_url> -t protgpt2 .  
+```
+
+## Run
 ```bash
-git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
-cd TransOmics.OpenOmicsInternal/applications/protgpt2
+export OUTPUT_DIR=<output_dir_path>   
+docker run -it -v $OUTPUT_DIR:/app protgpt2:latest python protgpt2.py --max_length <max_seq_len> --do_sample <True/False> --top_k <value> --repetition_penalty <value> --num_return_sequences <num_output_seqs> --eos_token_id <0>  --dtype <float32/bfloat16> --iterations <num_iters> --output_file /app/<output_file_name>   
 ```
-## Downloading the model
-```bash
-bash model_script.sh
-```
-## build the docker image
-```bash
-docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t protgpt2 . 
-```
-## Run a docker container
-
-## Running
-### Information on flags
-Performance optimization with bfloat16 and Intel Extension for PyTorch
-
- `--bf16` flag accelerates performance by utilizing bfloat16 precision, which enhances computational efficiency without compromising accuracy.
-
-When you run the Docker command, the models will automatically be downloaded during the first run. The user will need to wait for the download to complete, but from the second run onward, the inference will run directly without downloading the models again.
-
-```bash
-mkdir -p model_dir
-
-export MODELS=$PWD/model_dir
-export OUTPUT_FOLDER=$PWD
-
-docker run -it -v $OUTPUT_FOLDER:/app protgpt2:latest python protgpt2.py  --model_dir ./model_dir --max_length <Integer> --do_sample <True> --top_k <950> --repetition_penalty <1.2> --num_return_sequences <Integer> --eos_token_id <0>  --dtype <float32/bfloat16> --iterations <Integer> --output_file <output_seq.txt>
+**fix this: Note: OpenOmics ProtGPT2 models will automatically be downloaded during the first run, the inference will run directly without downloading the models again. **
 
 
-```
+## OpenOmics Protgpt2 README ends here
 
-## Pre-Downloaded Models docker commnad:
-
-```bash
-export OUTPUT_FOLDER=$PWD
-chmod a+w $OUTPUT_FOLDER
-
-docker run -it -v $OUTPUT_FOLDER:/app protgpt2_1:latest python protgpt2.py  --model_dir ./model_dir --max_length 100 --do_sample True --top_k 950 --repetition_penalty 1.2 --num_return_sequences 10 --eos_token_id 0  --dtype float32 --iterations 5 --output_file /app/output_seq.txt
-```
-
-## Download Models During Build
-
-```bash
-mkdir -p model_dir
-export MODELS=$PWD/model_dir
-export OUTPUT_FOLDER=$PWD
-chmod a+w $MODELS $OUTPUT_FOLDER
-
-docker run -it -v $MODELS:/model_dir -v $OUTPUT_FOLDER:/app protgpt2_1:latest python protgpt2.py --max_length 100 --do_sample True --top_k 950 --repetition_penalty 1.2 --num_return_sequences 5 --eos_token_id 0  --dtype float32 --iterations 5 --output_file /app/output_seq.txt
-```
-
-# All steps are ended here for optimized Protgpt2.
-
-# The following lines are stock information of the Original Protgpt2 repo:
+# Original Protgpt2 README:
 
 # **ProtGPT2**
 
