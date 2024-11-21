@@ -77,5 +77,13 @@ RUN echo "source /opt/conda/bin/activate " > ~/.bashrc
 CMD source ~/.bashrc
 ENV PATH "/opt/conda/bin:$PATH"
 ENV LD_LIBRARY_PATH "/opt/conda/lib:$LD_LIBRARY_PATH"
-CMD  mkdir weights && mkdir weights/extracted && python extract_params.py --input /data/params/params_model_1.npz --output_dir ./weights/extracted/model_1 \
-  && python run_multiprocess_pre.py --root_home=/Open-Omics-Acceleration-Framework/applications/alphafold --data_dir=/data --input_dir=/samples --output_dir=/output --model_name=model_1
+
+COPY ./entrypoint_pre.sh /
+RUN chmod +x /entrypoint_pre.sh
+
+ENTRYPOINT ["/entrypoint_pre.sh"]
+
+# Default command
+CMD ["default"]
+# CMD  mkdir weights && mkdir weights/extracted && python extract_params.py --input /data/params/params_model_1.npz --output_dir ./weights/extracted/model_1 \
+#   && python run_multiprocess_pre.py --root_home=/Open-Omics-Acceleration-Framework/applications/alphafold --data_dir=/data --input_dir=/samples --output_dir=/output --model_name=model_1

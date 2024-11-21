@@ -75,12 +75,20 @@ HEALTHCHECK NONE
 ENV PATH "/opt/conda/bin:$PATH"
 ENV LD_LIBRARY_PATH "/opt/conda/lib:$LD_LIBRARY_PATH"
 
-CMD mkdir weights && mkdir weights/extracted && python extract_params.py --input /data/params/params_model_1.npz --output_dir ./weights/extracted/model_1 \
-&& python extract_params.py --input /data/params/params_model_2.npz --output_dir ./weights/extracted/model_2 \
-&& python extract_params.py --input /data/params/params_model_3.npz --output_dir ./weights/extracted/model_3 \
-&& python extract_params.py --input /data/params/params_model_4.npz --output_dir ./weights/extracted/model_4 \
-&& python extract_params.py --input /data/params/params_model_5.npz --output_dir ./weights/extracted/model_5 \
-&& LD_PRELOAD=/opt/conda/lib/libiomp5.so:/opt/conda/lib/libjemalloc.so:$LD_PRELOAD \
-MALLOC_CONF="oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms:-1,muzzy_decay_ms:-1" \
-python run_multiprocess_infer.py --root_condaenv=/opt/conda --root_home=/Open-Omics-Acceleration-Framework/applications/alphafold --input_dir=/samples --output_dir=/output --model_names="model_1,model_2,model_3,model_4,model_5" \
-&& python run_multiprocess_relax.py --root_home=/Open-Omics-Acceleration-Framework/applications/alphafold --input_dir=/samples --output_dir=/output --model_names="model_1,model_2,model_3,model_4,model_5" --model_preset=monomer
+COPY ./entrypoint_inf.sh /
+RUN chmod +x /entrypoint_inf.sh
+
+ENTRYPOINT ["/entrypoint_inf.sh"]
+
+# Default command
+CMD ["default"]
+
+# CMD mkdir weights && mkdir weights/extracted && python extract_params.py --input /data/params/params_model_1.npz --output_dir ./weights/extracted/model_1 \
+# && python extract_params.py --input /data/params/params_model_2.npz --output_dir ./weights/extracted/model_2 \
+# && python extract_params.py --input /data/params/params_model_3.npz --output_dir ./weights/extracted/model_3 \
+# && python extract_params.py --input /data/params/params_model_4.npz --output_dir ./weights/extracted/model_4 \
+# && python extract_params.py --input /data/params/params_model_5.npz --output_dir ./weights/extracted/model_5 \
+# && LD_PRELOAD=/opt/conda/lib/libjemalloc.so:$LD_PRELOAD \
+# MALLOC_CONF="oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms:-1,muzzy_decay_ms:-1" \
+# python run_multiprocess_infer.py --root_condaenv=/opt/conda --root_home=/Open-Omics-Acceleration-Framework/applications/alphafold --input_dir=/samples --output_dir=/output --model_names="model_1,model_2,model_3,model_4,model_5" \
+# && python run_multiprocess_relax.py --root_home=/Open-Omics-Acceleration-Framework/applications/alphafold --input_dir=/samples --output_dir=/output --model_names="model_1,model_2,model_3,model_4,model_5" --model_preset=monomer
