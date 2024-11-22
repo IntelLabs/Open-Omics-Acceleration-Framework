@@ -1,14 +1,25 @@
-## Installation
-### Step 1: Run the script to create the Docker images
-Execute the script using the following command:
+ProteinMPNN is a widely used deep learning-based method for protein sequence design. OpenOmics ProteinMPNN is a highly optimized version tailored for modern CPUs, delivering the same level of accuracy as the original ProteinMPNN.
 
-```bash
-docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t protein_mpnn .
+### New features
+- Supports bfloat16 precision for faster computation
+
+Notes:  
+- OpenOmics ProteinMPNN supports all the parameters supported by original ProteinMPNN (please refer to original ProteinMPNN readme below)  
+- Additionly, OpenOmics ProteinMPNN provides two more parameters:  
+  - `--dtype` : <float32/bfloat16>     
+  - `--output_file` : \<output file path>  
+- OpenOmics ProteinMPNN, by default, downloads the model named v_48_020.pt. Users can provide their own custom model if desired. For more details, please refer to the original README.
+
+## Using Docker  
+### Build  
+```bash  
+git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git  
+cd TransOmics.OpenOmicsInternal/applications/ProteinMPNN  
+docker build --build-arg http_proxy=<proxy_url> --build-arg https_proxy=<proxy_url> -t proteinmpnn .
 ```
 ---------------------------------------------------------------------------------------------------
 ## Run a docker container
 ```
-cd ~/TransOmics.OpenOmicsInternal/applications/ProteinMPNN
 mkdir -p outputs
 export OUTPUT_DIR=$PWD/outputs
 export INPUT_FILE=<full-path of input pdb file>
