@@ -31,7 +31,8 @@ from sklearn.linear_model import LinearRegression
 import time
 import functools
 print = functools.partial(print, flush=True)
-
+import os
+import subprocess
 
 class MoFlowProp(nn.Module):
     def __init__(self, model:MoFlow, hidden_size):
@@ -685,7 +686,6 @@ if __name__ == '__main__':
     parser.add_argument('--hidden', type=str, default="",
                         help='Hidden dimension list for output regression')
     parser.add_argument('-x', '--max_epochs', type=int, default=5, help='How many epochs to run in total?')
-    parser.add_argument('-g', '--gpu', type=int, default=0, help='GPU Id to use')
 
     parser.add_argument("--delta", type=float, default=0.01)
     parser.add_argument("--img_format", type=str, default='svg')
@@ -702,19 +702,29 @@ if __name__ == '__main__':
     #
     parser.add_argument('--topscore', action='store_true', default=False, help='To find top score')
     parser.add_argument('--consopt', action='store_true', default=False, help='To do constrained optimization')
-
+    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
     args = parser.parse_args()
 
     # Device configuration
     device = -1
-    if args.gpu >= 0:
-        # device = args.gpu
-        device = torch.device('cuda:' + str(args.gpu) if torch.cuda.is_available() else 'cpu')
+    gpu=-1
+    noipex=True
+    bf16=False
+    if gpu >= 0:
+        # device = gpu
+        #device = torch.device('cuda:' + str(gpu) if torch.cuda.is_available() else 'cpu')
+        device = torch.device('cuda')
     else:
         device = torch.device('cpu')
 
     property_name = args.property_name.lower()
     # chainer.config.train = False
+    if not os.path.exists(args.model_dir) or not os.listdir(args.model_dir):
+        print(f"{args.model_dir} is empty. Downloading model...")
+        subprocess.run(['gdown', 'https://drive.google.com/uc?export=download&id=1GpXHrfP1vyzKu97aCReygLT7lg47pMi7'], check=True)
+        results_dir = '/'+args.model_dir.split("/")[-2]
+        os.makedirs(results_dir, exist_ok=True)
+        subprocess.run(['unzip', 'results.zip', '-d', results_dir], check=True)
     snapshot_path = os.path.join(args.model_dir, args.snapshot_path)
     hyperparams_path = os.path.join(args.model_dir, args.hyperparams_path)
     model_params = Hyperparameters(path=hyperparams_path)
@@ -742,7 +752,15 @@ if __name__ == '__main__':
         # smile_cvs_to_property('zinc250k')
     else:
         raise ValueError("Wrong data_name{}".format(args.data_name))
-
+    file_path = os.path.join(args.data_dir, molecule_file)
+    # Run preprocessing if the file doesn't exist
+    if not os.path.exists(file_path):
+        print(f"{molecule_file} not found. Running data_preprocess.py...")
+        preprocessing_script_path = '../data/data_preprocess.py'
+        if os.path.exists(preprocessing_script_path):
+            subprocess.run(['python', preprocessing_script_path, '--data_name', args.data_name,'--data_dir',args.data_dir], cwd=os.path.dirname(preprocessing_script_path))
+        else:
+            print(f"Error: {preprocessing_script_path} not found."); exit(1)
     # dataset = NumpyTupleDataset(os.path.join(args.data_dir, molecule_file), transform=transform_fn)  # 133885
     dataset = NumpyTupleDataset.load(os.path.join(args.data_dir, molecule_file), transform=transform_fn)
 
@@ -787,6 +805,12 @@ if __name__ == '__main__':
 
         model.to(device)
         model.eval()
+        if not noipex:
+            dtype = torch.bfloat16 if bf16 else torch.float32
+            import intel_extension_for_pytorch as ipex
+            model = ipex.optimize(model, dtype=dtype)
+        if noipex and bf16:
+            model.bfloat16()
 
         # mol_smiles = r'C1=CC=C(C=C1)CCCCCCCCCCCCCCCCCCCCCCCCCCCCC'
         # #'CC(C)(C)c1ccc2occ(CC(=O)Nc3ccccc3F)c2c1' #'CC(C)N1N=CC2=N[C@H](c3ccc(-c4ccccn4)cc3)N[C@@H]21'
@@ -808,15 +832,24 @@ if __name__ == '__main__':
         #
         # print(start)
         # print(results)
-
-        if args.topscore:
-            print('Finding top score:')
-            find_top_score_smiles(model, device, args.data_name, property_name, train_prop, args.topk, atomic_num_list, args.debug)
-
-        if args.consopt:
-            print('Constrained optimization:')
-            constrain_optimization_smiles(model, device, args.data_name, property_name, train_prop, args.topk,   # train_prop
-                                      atomic_num_list, args.debug, sim_cutoff=args.sim_cutoff)
-
+        enable_autocast = bf16
+        device_type ="cpu" if gpu >=0 else "cuda"
+        with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
+            if args.topscore:
+                if args.timing:
+                    import time
+                    start_time = time.time()
+                print('Finding top score:')
+                find_top_score_smiles(model, device, args.data_name, property_name, train_prop, args.topk, atomic_num_list, args.debug)
+                if args.timing:
+                    print(f"Finding top score - Total Inference Time = {time.time() - start_time} seconds")
+            if args.consopt:
+                if args.timing:
+                    import time
+                    start_time = time.time()
+                print('Constrained optimization:')
+                constrain_optimization_smiles(model, device, args.data_name, property_name, train_prop, args.topk,   # train_prop
+                                        atomic_num_list, args.debug, sim_cutoff=args.sim_cutoff)
+                if args.timing:
+                    print(f"Constrained optimization - Total Inference Time = {time.time() - start_time} seconds")
         print('Total Time {:.2f} seconds'.format(time.time() - start))
-

@@ -33,7 +33,8 @@ import time
 from mflow.utils.timereport import TimeReport
 import functools
 print = functools.partial(print, flush=True)
-
+import os
+import subprocess
 # def _to_numpy_array(a):
 #     if isinstance(a, chainer.Variable):
 #         a = a.array
@@ -56,7 +57,7 @@ def generate_mols(model, temp=0.7, z_mu=None, batch_size=20, true_adj=None, devi
         pass
     elif isinstance(device, int):
         if device >= 0:
-            # device = args.gpu
+            # device = gpu
             device = torch.device('cuda' if torch.cuda.is_available() else 'cpu', int(device))
         else:
             device = torch.device('cpu')
@@ -79,13 +80,14 @@ def generate_mols(model, temp=0.7, z_mu=None, batch_size=20, true_adj=None, devi
     sigma = temp * sigma_diag
 
     with torch.no_grad():
-        if z_mu is not None:
-            mu = z_mu
-            sigma = 0.01 * np.eye(z_dim)
-        # mu: (369,), sigma: (369,), batch_size: 100, z_dim: 369
-        z = np.random.normal(mu, sigma, (batch_size, z_dim))  # .astype(np.float32)
-        z = torch.from_numpy(z).float().to(device)
-        adj, x = model.reverse(z, true_adj=true_adj)
+        with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
+            if z_mu is not None:
+                mu = z_mu
+                sigma = 0.01 * np.eye(z_dim)
+            # mu: (369,), sigma: (369,), batch_size: 100, z_dim: 369
+            z = np.random.normal(mu, sigma, (batch_size, z_dim))  # .astype(np.float32)
+            z = torch.from_numpy(z).float().to(device)
+            adj, x = model.reverse(z, true_adj=true_adj)
         # if len(x.shape)==4 and x.shape[1]==2:
         #     # x1, x2 = x.chunk(2, 1)
         #     # x = x2.squeeze(dim=1).contiguous()
@@ -145,31 +147,34 @@ def visualize_interpolation(filepath, model, mol_smiles=None, mols_per_row=13,
         raise NotImplementedError
     else:
         with torch.no_grad():
-            np.random.seed(seed)
-            mol_index = np.random.randint(0, len(true_data))  # from [0, len(true_data)133885] select one int
-            adj = np.expand_dims(true_data[mol_index][1], axis=0)  # (4,9,9) --> (1,4,9,9)
-            x = np.expand_dims(true_data[mol_index][0], axis=0)  # (9, 5) --> (1, 9, 5)
-            adj = torch.from_numpy(adj)
-            x = torch.from_numpy(x)
-            smile0 = adj_to_smiles(adj, x, atomic_num_list)[0]
-            mol0 = Chem.MolFromSmiles(smile0)
-            fp0 = AllChem.GetMorganFingerprint(mol0, 2)
+            with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
+                np.random.seed(seed)
+                mol_index = np.random.randint(0, len(true_data))  # from [0, len(true_data)133885] select one int
+                adj = np.expand_dims(true_data[mol_index][1], axis=0)  # (4,9,9) --> (1,4,9,9)
+                x = np.expand_dims(true_data[mol_index][0], axis=0)  # (9, 5) --> (1, 9, 5)
+                adj = torch.from_numpy(adj)
+                x = torch.from_numpy(x)
+                smile0 = adj_to_smiles(adj, x, atomic_num_list)[0]
+                mol0 = Chem.MolFromSmiles(smile0)
+                fp0 = AllChem.GetMorganFingerprint(mol0, 2)
 
-            print('seed smile: {}'.format(smile0))
-            adj_normalized = rescale_adj(adj)
-            if device:
-                adj = adj.to(device)
-                x = x.to(device)
-                adj_normalized = adj_normalized.to(device)
-            z0, _ = model(adj, x, adj_normalized)  # [h:(1,45), adj:(1,324)], [sum_log_det_jacs_x: (1,), sum_log_det_jacs_adj: (1,)]
-            # z0 = np.hstack((z0[0][0].data, z0[0][1].data)).squeeze(0)
-            z0[0] = z0[0].reshape(z0[0].shape[0], -1)
-            z0[1] = z0[1].reshape(z0[1].shape[0], -1)
-            # z0 = torch.cat((z0[0][0], z0[0][1]), dim=1).squeeze(dim=0) # h:(1,45), adj:(1,324) -> (1, 369) -> (369,)
-            z0 = torch.cat((z0[0], z0[1]), dim=1).squeeze(dim=0)  # h:(1,45), adj:(1,324) -> (1, 369) -> (369,)
-            z0 = _to_numpy_array(z0)
+                print('seed smile: {}'.format(smile0))
+                adj_normalized = rescale_adj(adj)
+                if device:
+                    adj = adj.to(device)
+                    x = x.to(device)
+                    adj_normalized = adj_normalized.to(device)
+                z0, _ = model(adj, x, adj_normalized)  # [h:(1,45), adj:(1,324)], [sum_log_det_jacs_x: (1,), sum_log_det_jacs_adj: (1,)]
+                # z0 = np.hstack((z0[0][0].data, z0[0][1].data)).squeeze(0)
+                z0[0] = z0[0].reshape(z0[0].shape[0], -1)
+                z0[1] = z0[1].reshape(z0[1].shape[0], -1)
+                # z0 = torch.cat((z0[0][0], z0[0][1]), dim=1).squeeze(dim=0) # h:(1,45), adj:(1,324) -> (1, 369) -> (369,)
+                z0 = torch.cat((z0[0], z0[1]), dim=1).squeeze(dim=0)  # h:(1,45), adj:(1,324) -> (1, 369) -> (369,)
+                z0 = _to_numpy_array(z0)
 
     adjm, xm = generate_mols_interpolation_grid(model, z0=z0, mols_per_row=mols_per_row, delta=delta, seed=seed, device=device)
+    if enable_autocast:
+        adjm=adjm.to(dtype=torch.float32)
     adjm = _to_numpy_array(adjm)
     xm = _to_numpy_array(xm)
 
@@ -246,53 +251,54 @@ def visualize_interpolation_between_2_points(filepath, model, mol_smiles=None, m
         raise NotImplementedError
     else:
         with torch.no_grad():
-            np.random.seed(seed)
-            mol_index = np.random.randint(0, len(true_data), 2)  # from [0, len(true_data)133885] select one int
+            with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
+                np.random.seed(seed)
+                mol_index = np.random.randint(0, len(true_data), 2)  # from [0, len(true_data)133885] select one int
 
-            adj0 = np.expand_dims(true_data[mol_index[0]][1], axis=0)  # (4,9,9) --> (1,4,9,9)
-            x0 = np.expand_dims(true_data[mol_index[0]][0], axis=0)  # (9, 5) --> (1, 9, 5)
-            adj0 = torch.from_numpy(adj0)
-            x0 = torch.from_numpy(x0)
-            smile0 = adj_to_smiles(adj0, x0, atomic_num_list)[0]
-            mol0 = Chem.MolFromSmiles(smile0)
-            fp0 = AllChem.GetMorganFingerprint(mol0, 2)
+                adj0 = np.expand_dims(true_data[mol_index[0]][1], axis=0)  # (4,9,9) --> (1,4,9,9)
+                x0 = np.expand_dims(true_data[mol_index[0]][0], axis=0)  # (9, 5) --> (1, 9, 5)
+                adj0 = torch.from_numpy(adj0)
+                x0 = torch.from_numpy(x0)
+                smile0 = adj_to_smiles(adj0, x0, atomic_num_list)[0]
+                mol0 = Chem.MolFromSmiles(smile0)
+                fp0 = AllChem.GetMorganFingerprint(mol0, 2)
 
-            adj1 = np.expand_dims(true_data[mol_index[1]][1], axis=0)  # (4,9,9) --> (1,4,9,9)
-            x1 = np.expand_dims(true_data[mol_index[1]][0], axis=0)  # (9, 5) --> (1, 9, 5)
-            adj1 = torch.from_numpy(adj1)
-            x1 = torch.from_numpy(x1)
-            smile1 = adj_to_smiles(adj1, x1, atomic_num_list)[0]
-            mol1 = Chem.MolFromSmiles(smile1)
+                adj1 = np.expand_dims(true_data[mol_index[1]][1], axis=0)  # (4,9,9) --> (1,4,9,9)
+                x1 = np.expand_dims(true_data[mol_index[1]][0], axis=0)  # (9, 5) --> (1, 9, 5)
+                adj1 = torch.from_numpy(adj1)
+                x1 = torch.from_numpy(x1)
+                smile1 = adj_to_smiles(adj1, x1, atomic_num_list)[0]
+                mol1 = Chem.MolFromSmiles(smile1)
 
-            print('seed smile0: {}'.format(smile0))
-            print('seed smile1: {}'.format(smile1))
+                print('seed smile0: {}'.format(smile0))
+                print('seed smile1: {}'.format(smile1))
 
-            adj_normalized0 = rescale_adj(adj0)
-            if device:
-                adj0 = adj0.to(device)
-                x0 = x0.to(device)
-                adj_normalized0 = adj_normalized0.to(device)
-            z0, _ = model(adj0, x0, adj_normalized0)  # [h:(1,45), adj:(1,324)], [sum_log_det_jacs_x: (1,), sum_log_det_jacs_adj: (1,)]
-            # z0 = np.hstack((z0[0][0].data, z0[0][1].data)).squeeze(0)
-            z0[0] = z0[0].reshape(z0[0].shape[0], -1)
-            z0[1] = z0[1].reshape(z0[1].shape[0], -1)
-            # z0 = torch.cat((z0[0][0], z0[0][1]), dim=1).squeeze(dim=0) # h:(1,45), adj:(1,324) -> (1, 369) -> (369,)
-            z0 = torch.cat((z0[0], z0[1]), dim=1).squeeze(dim=0)  # h:(1,45), adj:(1,324) -> (1, 369) -> (369,)
-            z0 = _to_numpy_array(z0)
+                adj_normalized0 = rescale_adj(adj0)
+                if device:
+                    adj0 = adj0.to(device)
+                    x0 = x0.to(device)
+                    adj_normalized0 = adj_normalized0.to(device)
+                z0, _ = model(adj0, x0, adj_normalized0)  # [h:(1,45), adj:(1,324)], [sum_log_det_jacs_x: (1,), sum_log_det_jacs_adj: (1,)]
+                # z0 = np.hstack((z0[0][0].data, z0[0][1].data)).squeeze(0)
+                z0[0] = z0[0].reshape(z0[0].shape[0], -1)
+                z0[1] = z0[1].reshape(z0[1].shape[0], -1)
+                # z0 = torch.cat((z0[0][0], z0[0][1]), dim=1).squeeze(dim=0) # h:(1,45), adj:(1,324) -> (1, 369) -> (369,)
+                z0 = torch.cat((z0[0], z0[1]), dim=1).squeeze(dim=0)  # h:(1,45), adj:(1,324) -> (1, 369) -> (369,)
+                z0 = _to_numpy_array(z0)
 
-            adj_normalized1 = rescale_adj(adj1)
-            if device:
-                adj1 = adj1.to(device)
-                x1 = x1.to(device)
-                adj_normalized1 = adj_normalized1.to(device)
-            z1, _ = model(adj1, x1,
-                          adj_normalized1)  # [h:(1,45), adj:(1,324)], [sum_log_det_jacs_x: (1,), sum_log_det_jacs_adj: (1,)]
-            # z0 = np.hstack((z0[0][0].data, z0[0][1].data)).squeeze(0)
-            z1[0] = z1[0].reshape(z1[0].shape[0], -1)
-            z1[1] = z1[1].reshape(z1[1].shape[0], -1)
-            # z0 = torch.cat((z0[0][0], z0[0][1]), dim=1).squeeze(dim=0) # h:(1,45), adj:(1,324) -> (1, 369) -> (369,)
-            z1 = torch.cat((z1[0], z1[1]), dim=1).squeeze(dim=0)  # h:(1,45), adj:(1,324) -> (1, 369) -> (369,)
-            z1 = _to_numpy_array(z1)
+                adj_normalized1 = rescale_adj(adj1)
+                if device:
+                    adj1 = adj1.to(device)
+                    x1 = x1.to(device)
+                    adj_normalized1 = adj_normalized1.to(device)
+                z1, _ = model(adj1, x1,
+                            adj_normalized1)  # [h:(1,45), adj:(1,324)], [sum_log_det_jacs_x: (1,), sum_log_det_jacs_adj: (1,)]
+                # z0 = np.hstack((z0[0][0].data, z0[0][1].data)).squeeze(0)
+                z1[0] = z1[0].reshape(z1[0].shape[0], -1)
+                z1[1] = z1[1].reshape(z1[1].shape[0], -1)
+                # z0 = torch.cat((z0[0][0], z0[0][1]), dim=1).squeeze(dim=0) # h:(1,45), adj:(1,324) -> (1, 369) -> (369,)
+                z1 = torch.cat((z1[0], z1[1]), dim=1).squeeze(dim=0)  # h:(1,45), adj:(1,324) -> (1, 369) -> (369,)
+                z1 = _to_numpy_array(z1)
 
     d = z1 - z0
     z_list = [z0 + i*1.0/(n_interpolation+1) * d for i in range(n_interpolation + 2)]
@@ -302,7 +308,8 @@ def visualize_interpolation_between_2_points(filepath, model, mol_smiles=None, m
         z_array = z_array.to(device)
 
     adjm, xm = model.reverse(z_array)
-
+    if enable_autocast:
+        adjm=adjm.to(dtype=torch.float32)
     adjm = _to_numpy_array(adjm)
     xm = _to_numpy_array(xm)
     interpolation_mols = [valid_mol(construct_mol(x_elem, adj_elem, atomic_num_list))
@@ -396,7 +403,6 @@ if __name__ == "__main__":
     #                     help='path to molecule dataset')
     parser.add_argument("--snapshot-path", "-snapshot", type=str, required=True)
     parser.add_argument("--hyperparams-path", type=str, default='moflow-params.json', required=True)
-    parser.add_argument("--gpu", type=int, default=-1)
     parser.add_argument("--batch-size", type=int, default=100)
     parser.add_argument('--additive_transformations', type=strtobool, default='false',
                         help='apply only additive coupling layers')
@@ -420,11 +426,20 @@ if __name__ == "__main__":
 
     parser.add_argument('--correct_validity', type=strtobool, default='true',
                         help='if apply validity correction after the generation')
+
+    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
+
     args = parser.parse_args()
 
     start = time.time()
     print("Start at Time: {}".format(time.ctime()))
     # chainer.config.train = False
+    if not os.path.exists(args.model_dir) or not os.listdir(args.model_dir):
+        print(f"{args.model_dir} is empty. Downloading model...")
+        subprocess.run(['gdown', 'https://drive.google.com/uc?export=download&id=1GpXHrfP1vyzKu97aCReygLT7lg47pMi7'], check=True)
+        results_dir = '/'+args.model_dir.split("/")[-2]
+        os.makedirs(results_dir, exist_ok=True)
+        subprocess.run(['unzip', 'results.zip', '-d', results_dir], check=True)
     snapshot_path = os.path.join(args.model_dir, args.snapshot_path)
     hyperparams_path = os.path.join(args.model_dir, args.hyperparams_path)
     print("loading hyperparamaters from {}".format(hyperparams_path))
@@ -434,180 +449,222 @@ if __name__ == "__main__":
         print('model.ln_var: {:.2f}'.format(model.ln_var.item()))
     elif len(model.ln_var) == 2:
         print('model.ln_var[0]: {:.2f}, model.ln_var[1]: {:.2f}'.format(model.ln_var[0].item(), model.ln_var[1].item()))
-
-    if args.gpu >= 0:
-        # device = args.gpu
-        device = torch.device('cuda:'+str(args.gpu) if torch.cuda.is_available() else 'cpu')
+    gpu=-1
+    noipex=True
+    bf16=False
+    if gpu >= 0:
+        # device = gpu
+        #device = torch.device('cuda:'+str(gpu) if torch.cuda.is_available() else 'cpu')
+        device = torch.device('cuda')
     else:
         device = torch.device('cpu')
     model.to(device)
     model.eval()  # Set model for evaluation
-
+    if not noipex:
+        dtype = torch.bfloat16 if bf16 else torch.float32
+        import intel_extension_for_pytorch as ipex
+        model = ipex.optimize(model, dtype=dtype)
+    if noipex and bf16:
+        model.bfloat16()
     # true_data = NumpyTupleDataset.load(os.path.join(args.data_dir, args.molecule_file))
+    enable_autocast = bf16
+    device_type ="cuda" if gpu >=0 else "cpu"
+    with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
+        if args.data_name == 'qm9':
+            atomic_num_list = [6, 7, 8, 9, 0]
+            transform_fn = transform_qm9.transform_fn
+            # true_data = TransformDataset(true_data, transform_qm9.transform_fn)
+            valid_idx = transform_qm9.get_val_ids()
+            molecule_file = 'qm9_relgcn_kekulized_ggnp.npz'
+        elif args.data_name == 'zinc250k':
+            atomic_num_list = zinc250_atomic_num_list
+            # transform_fn = transform_qm9.transform_fn
+            transform_fn = transform_zinc250k.transform_fn_zinc250k
+            # true_data = TransformDataset(true_data, transform_fn_zinc250k)
+            valid_idx = transform_zinc250k.get_val_ids()
+            molecule_file = 'zinc250k_relgcn_kekulized_ggnp.npz'
+        file_path = os.path.join(args.data_dir, molecule_file)
+        # Run preprocessing if the file doesn't exist
+        if not os.path.exists(file_path):
+            print(f"{molecule_file} not found. Running data_preprocess.py...")
+            preprocessing_script_path = '../data/data_preprocess.py'
+            if os.path.exists(preprocessing_script_path):
+                subprocess.run(['python', preprocessing_script_path, '--data_name', args.data_name,'--data_dir',args.data_dir], cwd=os.path.dirname(preprocessing_script_path))
+            else:
+                print(f"Error: {preprocessing_script_path} not found."); exit(1)
+        batch_size = args.batch_size
+        dataset = NumpyTupleDataset.load(os.path.join(args.data_dir, molecule_file), transform=transform_fn)
+        # dataset = NumpyTupleDataset(os.path.join(args.data_dir, molecule_file), transform=transform_fn)  # 133885
+        # dataset = TransformDataset(dataset, transform_fn)
 
-    if args.data_name == 'qm9':
-        atomic_num_list = [6, 7, 8, 9, 0]
-        transform_fn = transform_qm9.transform_fn
-        # true_data = TransformDataset(true_data, transform_qm9.transform_fn)
-        valid_idx = transform_qm9.get_val_ids()
-        molecule_file = 'qm9_relgcn_kekulized_ggnp.npz'
-    elif args.data_name == 'zinc250k':
-        atomic_num_list = zinc250_atomic_num_list
-        # transform_fn = transform_qm9.transform_fn
-        transform_fn = transform_zinc250k.transform_fn_zinc250k
-        # true_data = TransformDataset(true_data, transform_fn_zinc250k)
-        valid_idx = transform_zinc250k.get_val_ids()
-        molecule_file = 'zinc250k_relgcn_kekulized_ggnp.npz'
+        assert len(valid_idx) > 0
+        train_idx = [t for t in range(len(dataset)) if t not in valid_idx]  # 120803 = 133885-13082
+        n_train = len(train_idx)  # 120803
+        # train_idx.extend(valid_idx) # 120803 + last 13082 for validation = 133885 intotal
+        # train, test = chainer.datasets.split_dataset(dataset, n_train, train_idx)
+        train = torch.utils.data.Subset(dataset, train_idx)  # 120803
+        test = torch.utils.data.Subset(dataset, valid_idx)  # 13082  not used for generation
 
-    batch_size = args.batch_size
-    dataset = NumpyTupleDataset.load(os.path.join(args.data_dir, molecule_file), transform=transform_fn)
-    # dataset = NumpyTupleDataset(os.path.join(args.data_dir, molecule_file), transform=transform_fn)  # 133885
-    # dataset = TransformDataset(dataset, transform_fn)
+        print('{} in total, {}  training data, {}  testing data, {} batchsize, train/batchsize {}'.format(
+            len(dataset),
+            len(train),
+            len(test),
+            batch_size,
+            len(train)/batch_size)
+        )
+        # 1. Reconstruction
+        if args.reconstruct:
+            if args.timing:
+                import time
+                start_time = time.time()
+            train_dataloader = torch.utils.data.DataLoader(train, batch_size=batch_size)
 
-    assert len(valid_idx) > 0
-    train_idx = [t for t in range(len(dataset)) if t not in valid_idx]  # 120803 = 133885-13082
-    n_train = len(train_idx)  # 120803
-    # train_idx.extend(valid_idx) # 120803 + last 13082 for validation = 133885 intotal
-    # train, test = chainer.datasets.split_dataset(dataset, n_train, train_idx)
-    train = torch.utils.data.Subset(dataset, train_idx)  # 120803
-    test = torch.utils.data.Subset(dataset, valid_idx)  # 13082  not used for generation
+            reconstruction_rate_list = []
+            max_iter = len(train_dataloader)
+            for i, batch in enumerate(train_dataloader):
+                x = batch[0].to(device)  # (256,9,5)
+                adj = batch[1].to(device)  # (256,4,9, 9)
+                adj_normalized = rescale_adj(adj).to(device)
+                z, sum_log_det_jacs = model(adj, x, adj_normalized)
+                z0 = z[0].reshape(z[0].shape[0], -1)
+                z1 = z[1].reshape(z[1].shape[0], -1)
+                adj_rev, x_rev = model.reverse(torch.cat([z0,z1], dim=1))
+                # val_res = check_validity(adj_rev, x_rev, atomic_num_list)
+                adj_rev=adj_rev.to(dtype=torch.float32)
+                reverse_smiles = adj_to_smiles(adj_rev.cpu(), x_rev.cpu(), atomic_num_list)
+                train_smiles = adj_to_smiles(adj.cpu(), x.cpu(), atomic_num_list)
+                lb = np.array([int(a!=b) for a, b in zip(train_smiles, reverse_smiles)])
+                idx = np.where(lb)[0]
+                if len(idx) > 0:
+                    for k in idx:
+                        print(i*batch_size+k, 'train: ', train_smiles[k], ' reverse: ', reverse_smiles[k])
+                reconstruction_rate = 1.0 - lb.mean()
+                reconstruction_rate_list.append(reconstruction_rate)
+                # novel_r, abs_novel_r = check_novelty(val_res['valid_smiles'], train_smiles, x.shape[0])
+                print("iter/total: {}/{}, reconstruction_rate:{}".format(i, max_iter, reconstruction_rate))
+            reconstruction_rate_total = np.array(reconstruction_rate_list).mean()
+            print("reconstruction_rate for all the train data:{} in {}".format(reconstruction_rate_total, len(train)))
+            if args.timing:
+                print(f"Reconstruction - Total Inference Time = {time.time() - start_time} seconds")
 
-    print('{} in total, {}  training data, {}  testing data, {} batchsize, train/batchsize {}'.format(
-        len(dataset),
-        len(train),
-        len(test),
-        batch_size,
-        len(train)/batch_size)
-    )
-    # 1. Reconstruction
-    if args.reconstruct:
-        train_dataloader = torch.utils.data.DataLoader(train, batch_size=batch_size)
+            exit(0)
 
-        reconstruction_rate_list = []
-        max_iter = len(train_dataloader)
-        for i, batch in enumerate(train_dataloader):
-            x = batch[0].to(device)  # (256,9,5)
-            adj = batch[1].to(device)  # (256,4,9, 9)
-            adj_normalized = rescale_adj(adj).to(device)
-            z, sum_log_det_jacs = model(adj, x, adj_normalized)
-            z0 = z[0].reshape(z[0].shape[0], -1)
-            z1 = z[1].reshape(z[1].shape[0], -1)
-            adj_rev, x_rev = model.reverse(torch.cat([z0,z1], dim=1))
-            # val_res = check_validity(adj_rev, x_rev, atomic_num_list)
-            reverse_smiles = adj_to_smiles(adj_rev.cpu(), x_rev.cpu(), atomic_num_list)
-            train_smiles = adj_to_smiles(adj.cpu(), x.cpu(), atomic_num_list)
-            lb = np.array([int(a!=b) for a, b in zip(train_smiles, reverse_smiles)])
-            idx = np.where(lb)[0]
-            if len(idx) > 0:
-                for k in idx:
-                    print(i*batch_size+k, 'train: ', train_smiles[k], ' reverse: ', reverse_smiles[k])
-            reconstruction_rate = 1.0 - lb.mean()
-            reconstruction_rate_list.append(reconstruction_rate)
-            # novel_r, abs_novel_r = check_novelty(val_res['valid_smiles'], train_smiles, x.shape[0])
-            print("iter/total: {}/{}, reconstruction_rate:{}".format(i, max_iter, reconstruction_rate))
-        reconstruction_rate_total = np.array(reconstruction_rate_list).mean()
-        print("reconstruction_rate for all the train data:{} in {}".format(reconstruction_rate_total, len(train)))
-        exit(0)
-
-    # 2. interpolation generation
-    ### interpolate 2 points
-    if args.int2point:
-        mol_smiles = None
-        gen_dir = os.path.join(args.model_dir, 'generated')
-        print('Dump figure in {}'.format(gen_dir))
-        if not os.path.exists(gen_dir):
-            os.makedirs(gen_dir)
-        for seed in range(args.inter_times):
-            # filepath = os.path.join(gen_dir, 'generated_interpolation_molecules_seed{}'.format(seed))
-            # print('saving {}'.format(filepath))
-            filepath = os.path.join(gen_dir, '2points_interpolation-2point_molecules_seed{}'.format(seed))
-            visualize_interpolation_between_2_points(filepath, model, mol_smiles=mol_smiles, mols_per_row=15,
-                                                     n_interpolation=50,
-                                                     atomic_num_list=atomic_num_list, seed=seed, true_data=train,
-                                                     device=device, data_name=args.data_name)
-        exit(0)
-
-    ### interpolate in 2d grid
-    if args.intgrid:
-        mol_smiles = None
-        gen_dir = os.path.join(args.model_dir, 'generated')
-        print('Dump figure in {}'.format(gen_dir))
-        if not os.path.exists(gen_dir):
-            os.makedirs(gen_dir)
-        for seed in range(args.inter_times):
-            filepath = os.path.join(gen_dir, 'generated_interpolation-grid_molecules_seed{}'.format(seed))
-            print('saving {}'.format(filepath))
-            visualize_interpolation(filepath, model, mol_smiles=mol_smiles, mols_per_row=9, delta=args.delta,
-                                    atomic_num_list=atomic_num_list, seed=seed, true_data=train,
-                                    device=device, data_name=args.data_name, keep_duplicate=True)
-
-            filepath = os.path.join(gen_dir, 'generated_interpolation-grid_molecules_seed{}_unique'.format(seed))
-            visualize_interpolation(filepath, model, mol_smiles=mol_smiles, mols_per_row=9, delta=args.delta,
-                                    atomic_num_list=atomic_num_list, seed=seed, true_data=train,
-                                    device=device, data_name=args.data_name, keep_duplicate=False)
-
-
-        exit(0)
-
-    # 3. Random generation
-    train_x = [a[0] for a in train]
-    train_adj = [a[1] for a in train]
-    train_smiles = adj_to_smiles(train_adj, train_x, atomic_num_list)
-    print('Load trained model and data done! Time {:.2f} seconds'.format(time.time() - start))
-
-    save_fig = args.save_fig
-    valid_ratio = []
-    unique_ratio = []
-    novel_ratio = []
-    abs_unique_ratio = []
-    abs_novel_ratio = []
-    for i in range(args.n_experiments):
-        # 1. Random generation
-        adj, x = generate_mols(model, batch_size=batch_size, true_adj=None, temp=args.temperature,
-                               device=device)
-        val_res = check_validity(adj, x, atomic_num_list, correct_validity=args.correct_validity)
-        novel_r, abs_novel_r = check_novelty(val_res['valid_smiles'], train_smiles, x.shape[0])
-        novel_ratio.append(novel_r)
-        abs_novel_ratio.append(abs_novel_r)
-
-        unique_ratio.append(val_res['unique_ratio'])
-        abs_unique_ratio.append(val_res['abs_unique_ratio'])
-        valid_ratio.append(val_res['valid_ratio'])
-        n_valid = len(val_res['valid_mols'])
-
-        if args.save_score:
-            assert len(val_res['valid_smiles']) == len(val_res['valid_mols'])
-            smiles_qed_plogp = [(sm, env.qed(mol), env.penalized_logp(mol))
-                                for sm, mol in zip(val_res['valid_smiles'], val_res['valid_mols'])]
-            smiles_qed_plogp.sort(key=lambda tup: tup[2], reverse=True)
+        # 2. interpolation generation
+        ### interpolate 2 points
+        if args.int2point:
+            if args.timing:
+                import time
+                start_time = time.time()
+            mol_smiles = None
             gen_dir = os.path.join(args.model_dir, 'generated')
-            os.makedirs(gen_dir, exist_ok=True)
-            filepath = os.path.join(gen_dir, 'smiles_qed_plogp_{}_RankedByPlogp.csv'.format(i))
-            df = pd.DataFrame(smiles_qed_plogp, columns =['Smiles', 'QED', 'Penalized_logp'])
-            df.to_csv(filepath, index=None, header=True)
+            print('Dump figure in {}'.format(gen_dir))
+            if not os.path.exists(gen_dir):
+                os.makedirs(gen_dir)
+            for seed in range(args.inter_times):
+                # filepath = os.path.join(gen_dir, 'generated_interpolation_molecules_seed{}'.format(seed))
+                # print('saving {}'.format(filepath))
+                filepath = os.path.join(gen_dir, '2points_interpolation-2point_molecules_seed{}'.format(seed))
+                visualize_interpolation_between_2_points(filepath, model, mol_smiles=mol_smiles, mols_per_row=15,
+                                                        n_interpolation=50,
+                                                        atomic_num_list=atomic_num_list, seed=seed, true_data=train,
+                                                        device=device, data_name=args.data_name)
+            if args.timing:
+                print(f"interpolate 2 points - Total Inference Time = {time.time() - start_time} seconds")
+            exit(0)
 
-            smiles_qed_plogp.sort(key=lambda tup: tup[1], reverse=True)
-            filepath2 = os.path.join(gen_dir, 'smiles_qed_plogp_{}_RankedByQED.csv'.format(i))
-            df2 = pd.DataFrame(smiles_qed_plogp, columns=['Smiles', 'QED', 'Penalized_logp'])
-            df2.to_csv(filepath2, index=None, header=True)
-
-        # saves a png image of all generated molecules
-        if save_fig:
+        ### interpolate in 2d grid
+        if args.intgrid:
+            if args.timing:
+                import time
+                start_time = time.time()
+            mol_smiles = None
             gen_dir = os.path.join(args.model_dir, 'generated')
-            os.makedirs(gen_dir, exist_ok=True)
-            filepath = os.path.join(gen_dir, 'generated_mols_{}.png'.format(i))
-            img = Draw.MolsToGridImage(val_res['valid_mols'], legends=val_res['valid_smiles'],
-                                       molsPerRow=20, subImgSize=(300, 300))  # , useSVG=True
-            img.save(filepath)
+            print('Dump figure in {}'.format(gen_dir))
+            if not os.path.exists(gen_dir):
+                os.makedirs(gen_dir)
+            for seed in range(args.inter_times):
+                filepath = os.path.join(gen_dir, 'generated_interpolation-grid_molecules_seed{}'.format(seed))
+                print('saving {}'.format(filepath))
+                visualize_interpolation(filepath, model, mol_smiles=mol_smiles, mols_per_row=9, delta=args.delta,
+                                        atomic_num_list=atomic_num_list, seed=seed, true_data=train,
+                                        device=device, data_name=args.data_name, keep_duplicate=True)
 
-    print("validity: mean={:.2f}%, sd={:.2f}%, vals={}".format(np.mean(valid_ratio), np.std(valid_ratio), valid_ratio))
-    print("novelty: mean={:.2f}%, sd={:.2f}%, vals={}".format(np.mean(novel_ratio), np.std(novel_ratio), novel_ratio))
-    print("uniqueness: mean={:.2f}%, sd={:.2f}%, vals={}".format(np.mean(unique_ratio), np.std(unique_ratio),
-                                                                 unique_ratio))
-    print("abs_novelty: mean={:.2f}%, sd={:.2f}%, vals={}".
-          format(np.mean(abs_novel_ratio), np.std(abs_novel_ratio), abs_novel_ratio))
-    print("abs_uniqueness: mean={:.2f}%, sd={:.2f}%, vals={}".
-          format(np.mean(abs_unique_ratio), np.std(abs_unique_ratio),
-                                                                 abs_unique_ratio))
-    print('Task random generation done! Time {:.2f} seconds, Data: {}'.format(time.time() - start, time.ctime()))
+                filepath = os.path.join(gen_dir, 'generated_interpolation-grid_molecules_seed{}_unique'.format(seed))
+                visualize_interpolation(filepath, model, mol_smiles=mol_smiles, mols_per_row=9, delta=args.delta,
+                                        atomic_num_list=atomic_num_list, seed=seed, true_data=train,
+                                        device=device, data_name=args.data_name, keep_duplicate=False)
 
+
+            if args.timing:
+                print(f"interpolate in 2d grid - Total Inference Time = {time.time() - start_time} seconds")
+            exit(0)
+
+        # 3. Random generation
+        if args.timing:
+            import time
+            start_time = time.time()
+        train_x = [a[0] for a in train]
+        train_adj = [a[1] for a in train]
+        train_smiles = adj_to_smiles(train_adj, train_x, atomic_num_list)
+        print('Load trained model and data done! Time {:.2f} seconds'.format(time.time() - start))
+
+        save_fig = args.save_fig
+        valid_ratio = []
+        unique_ratio = []
+        novel_ratio = []
+        abs_unique_ratio = []
+        abs_novel_ratio = []
+        for i in range(args.n_experiments):
+            # 1. Random generation
+            adj, x = generate_mols(model, batch_size=batch_size, true_adj=None, temp=args.temperature,
+                                device=device)
+            adj=adj.to(dtype=torch.float32)
+            val_res = check_validity(adj, x, atomic_num_list, correct_validity=args.correct_validity)
+            novel_r, abs_novel_r = check_novelty(val_res['valid_smiles'], train_smiles, x.shape[0])
+            novel_ratio.append(novel_r)
+            abs_novel_ratio.append(abs_novel_r)
+
+            unique_ratio.append(val_res['unique_ratio'])
+            abs_unique_ratio.append(val_res['abs_unique_ratio'])
+            valid_ratio.append(val_res['valid_ratio'])
+            n_valid = len(val_res['valid_mols'])
+
+            if args.save_score:
+                assert len(val_res['valid_smiles']) == len(val_res['valid_mols'])
+                smiles_qed_plogp = [(sm, env.qed(mol), env.penalized_logp(mol))
+                                    for sm, mol in zip(val_res['valid_smiles'], val_res['valid_mols'])]
+                smiles_qed_plogp.sort(key=lambda tup: tup[2], reverse=True)
+                gen_dir = os.path.join(args.model_dir, 'generated')
+                os.makedirs(gen_dir, exist_ok=True)
+                filepath = os.path.join(gen_dir, 'smiles_qed_plogp_{}_RankedByPlogp.csv'.format(i))
+                df = pd.DataFrame(smiles_qed_plogp, columns =['Smiles', 'QED', 'Penalized_logp'])
+                df.to_csv(filepath, index=None, header=True)
+
+                smiles_qed_plogp.sort(key=lambda tup: tup[1], reverse=True)
+                filepath2 = os.path.join(gen_dir, 'smiles_qed_plogp_{}_RankedByQED.csv'.format(i))
+                df2 = pd.DataFrame(smiles_qed_plogp, columns=['Smiles', 'QED', 'Penalized_logp'])
+                df2.to_csv(filepath2, index=None, header=True)
+
+            # saves a png image of all generated molecules
+            if save_fig:
+                #print("val_res['valid_mols']",val_res['valid_mols'])
+                gen_dir = os.path.join(args.model_dir, 'generated')
+                os.makedirs(gen_dir, exist_ok=True)
+                filepath = os.path.join(gen_dir, 'generated_mols_{}.png'.format(i))
+                print("filepath",filepath)
+                img = Draw.MolsToGridImage(val_res['valid_mols'], legends=val_res['valid_smiles'],
+                                        molsPerRow=20, subImgSize=(300, 300))  # , useSVG=True
+                img.save(filepath)
+
+        print("validity: mean={:.2f}%, sd={:.2f}%, vals={}".format(np.mean(valid_ratio), np.std(valid_ratio), valid_ratio))
+        print("novelty: mean={:.2f}%, sd={:.2f}%, vals={}".format(np.mean(novel_ratio), np.std(novel_ratio), novel_ratio))
+        print("uniqueness: mean={:.2f}%, sd={:.2f}%, vals={}".format(np.mean(unique_ratio), np.std(unique_ratio),
+                                                                    unique_ratio))
+        print("abs_novelty: mean={:.2f}%, sd={:.2f}%, vals={}".
+            format(np.mean(abs_novel_ratio), np.std(abs_novel_ratio), abs_novel_ratio))
+        print("abs_uniqueness: mean={:.2f}%, sd={:.2f}%, vals={}".
+            format(np.mean(abs_unique_ratio), np.std(abs_unique_ratio),
+                                                                    abs_unique_ratio))
+        print('Task random generation done! Time {:.2f} seconds, Data: {}'.format(time.time() - start, time.ctime()))
+        if args.timing:
+                print(f"random generation - Total Inference Time = {time.time() - start_time} seconds")

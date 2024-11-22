@@ -1,3 +1,222 @@
+# Open-Omics-Moflow
+
+Open-Omics-MoFlow is a streamlined and optimized version of the MoFlow toolkit, designed to harness the full potential of modern CPUs. It enhances usability through Docker integration and boosts performance with the latest software packages.
+
+## Building the Docker Image
+Run the following command to build the Docker image:
+
+```bash
+ cd docker_setup
+ docker build --build-arg htthp_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy=$no_proxy  -t moflow .
+```
+## Setting Up Environment Variables and Directories
+To ensure the application runs smoothly, set up the necessary directories and environment variables. Follow these steps:
+### Step 1: Export Environment Variables  
+Define environment variables for your folder paths. Replace `<your output folder>`, `<your Model folder>`, and `<your Data Preprocessing folder>` with the desired paths:
+```bash
+export OUTPUT=$PWD/<your output folder>
+export MODELS=$PWD/<your Model folder>
+export DATA_PREPROCESSING=$PWD/<your Data Preprocessing folder>
+```
+### Step 2: Create the Required Directories
+Here’s an example using standardized folder names. These commands will create the directories, set the environment variables, and adjust permissions:
+
+```bash
+mkdir -p output models data_preprocessing
+export OUTPUT=$PWD/output     
+export MODELS=$PWD/models 
+export DATA_PREPROCESSING=$PWD/data_preprocessing
+chmod a+w $MODELS $OUTPUT $DATA_PREPROCESSING
+```
+## Workflow Overview: Data Preprocessing, Model Training, and Experiments
+This section outlines the key steps for using the toolkit, including data preprocessing, model training, and running experiments.
+### 1. Data Preprocessing
+To generate molecular graphs from SMILES strings
+
+qm9
+```bash
+#example
+docker run -it \
+  -v $MODELS:/results \
+  -v $DATA_PREPROCESSING:/data_preprocessing \
+  moflow:latest bash -c \
+  "cd data &&  python data_preprocess.py --data_name qm9 --data_dir /data_preprocessing"
+```
+zinc250k
+```bash
+docker run -it \
+  -v $MODELS:/results \
+  -v $DATA_PREPROCESSING:/data_preprocessing \
+  moflow:latest bash -c \
+  "cd data &&  python data_preprocess.py --data_name zinc250k --data_dir /data_preprocessing"
+```
+<br />
+
+### 2. Model Training
+You can train the model by following the instructions provided in the original MoFlow documentation below.
+
+Alternatively, you can skip training and use a pre-trained model. Download the pre-trained model from the following link:
+
+```
+https://drive.google.com/drive/folders/1runxQnF3K_VzzJeWQZUH8VRazAGjZFNF 
+```
+After downloading, unzip the pre-trained model file and move it to the `$MODELS` directory.
+
+```
+mv <downloaded_model_file> $MODELS/
+```
+### 3. Experiments
+
+#### 3.1-Experiment: reconstruction  
+##### To reconstruct QM9 dataset:
+
+```bash
+#example
+docker run -it \
+-v $MODELS:/results \
+-v $DATA_PREPROCESSING:/data_preprocessing \
+-v $OUTPUT:/output \
+moflow:latest bash -c \
+  "cd mflow && python generate.py --model_dir /results/qm9_64gnn_128-64lin_1-1mask_0d6noise_convlu1 -snapshot model_snapshot_epoch_200 --data_name qm9 --data_dir /data_preprocessing  --hyperparams-path moflow-params.json --batch-size 256 --reconstruct  2>&1 | tee /output/qm9_reconstruct_results.txt"
+```
+
+##### To reconstruct zinc250k dataset:
+```bash
+#example
+docker run -it \
+-v $MODELS:/results \
+-v $DATA_PREPROCESSING:/data_preprocessing \
+-v $OUTPUT:/output \
+moflow:latest bash -c \
+"cd mflow && python generate.py --model_dir /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask  -snapshot model_snapshot_epoch_200  --data_name zinc250k --data_dir /data_preprocessing --hyperparams-path moflow-params.json --batch-size 256  --reconstruct   2>&1 | tee /output/zinc250k_reconstruct_results.txt"
+```
+
+#### 3.2-Experiment: Random generation  
+
+##### Random Generation from sampling from latent space, QM9 model
+10000 samples * 5 times:
+```bash
+#example
+docker run -it \
+-v $MODELS:/results \
+-v $DATA_PREPROCESSING:/data_preprocessing \
+-v $OUTPUT:/output \
+moflow:latest bash -c \
+"cd mflow && python generate.py --model_dir /results/qm9_64gnn_128-64lin_1-1mask_0d6noise_convlu1 -snapshot model_snapshot_epoch_200  --data_name qm9 --data_dir /data_preprocessing --hyperparams-path moflow-params.json --batch-size 10000 --temperature 0.85 --delta 0.05 --n_experiments 5 --save_fig false --correct_validity true 2>&1 | tee /output/qm9_random_generation.log"
+```
+
+
+##### Random Generation from sampling from latent space, zinc250k model
+10000 samples * 5 times:
+```bash
+#example
+docker run -it \
+-v $MODELS:/results \
+-v $DATA_PREPROCESSING:/data_preprocessing \
+-v $OUTPUT:/output \
+moflow:latest bash -c \
+"cd mflow && python generate.py --model_dir /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask  -snapshot model_snapshot_epoch_200 --data_name zinc250k  --data_dir /data_preprocessing --hyperparams-path moflow-params.json   --temperature 0.85  --batch-size 10000 --n_experiments 5  --save_fig false --correct_validity true 2>&1 | tee /output/zinc250k_random_generation.log"
+```
+
+
+#### 3.3-Experiment: Interpolation generation & visualization
+
+##### Interpolation in the latent space, QM9 model
+interpolation between 2 molecules (molecular graphs)
+```bash
+#example
+docker run -it \
+-v $MODELS:/results \
+-v $DATA_PREPROCESSING:/data_preprocessing \
+-v $OUTPUT:/output \
+moflow:latest bash -c \
+"cd mflow && python generate.py --model_dir /results/qm9_64gnn_128-64lin_1-1mask_0d6noise_convlu1 -snapshot model_snapshot_epoch_200 --data_name qm9 --data_dir /data_preprocessing   --hyperparams-path moflow-params.json --batch-size 1000  --temperature 0.65   --int2point --inter_times 50  --correct_validity true 2>&1 | tee /output/qm9_visualization_int2point.log"
+```
+interpolation in a grid of molecules (molecular graphs)
+```bash
+#example
+docker run -it \
+-v $MODELS:/results \
+-v $DATA_PREPROCESSING:/data_preprocessing \
+-v $OUTPUT:/output \
+moflow:latest bash -c \
+"cd mflow && python generate.py --model_dir /results/qm9_64gnn_128-64lin_1-1mask_0d6noise_convlu1 -snapshot model_snapshot_epoch_200  --data_name qm9 --data_dir /data_preprocessing  --hyperparams-path moflow-params.json --batch-size 1000  --temperature 0.65 --delta 5  --intgrid  --inter_times 40  --correct_validity true 2>&1 | tee /output/qm9_visualization_intgrid.log"
+```
+
+##### Interpolation in the latent space, zinc250k model
+interpolation between 2 molecules (molecular graphs)
+```bash
+#example
+docker run -it \
+-v $MODELS:/results \
+-v $DATA_PREPROCESSING:/data_preprocessing \
+-v $OUTPUT:/output \
+moflow:latest bash -c \
+"cd mflow && python generate.py --model_dir /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask  -snapshot model_snapshot_epoch_200  --data_name zinc250k  --data_dir /data_preprocessing --hyperparams-path moflow-params.json --batch-size 1000  --temperature 0.8 --delta 0.5  --n_experiments 0 --correct_validity true   --int2point  --inter_times 10  2>&1 | tee zinc250k_visualization_int2point.log"
+```
+interpolation in a grid of molecules (molecular graphs)
+```bash
+#example
+docker run -it \
+-v $MODELS:/results \
+-v $DATA_PREPROCESSING:/data_preprocessing \
+-v $OUTPUT:/output \
+moflow:latest bash -c \
+"cd mflow && python generate.py --model_dir /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask  -snapshot model_snapshot_epoch_200 --data_name zinc250k --data_dir /data_preprocessing --hyperparams-path moflow-params.json --batch-size 1000  --temperature 0.8 --delta 5  --n_experiments 0 --correct_validity true   --intgrid --inter_times 2  2>&1 | tee /output/zinc250k_visualization_intgrid.log"
+```
+
+#### 3.4-Experiment: Molecular optimization & constrained optimization
+##### Optimizing zinc250k w.r.t QED property
+
+##### To optimize existing molecules to get novel molecules with optimized QED scores - qm9
+```bash
+#example
+docker run -it \
+-v $MODELS:/results \
+-v $DATA_PREPROCESSING:/data_preprocessing \
+-v $OUTPUT:/output \
+moflow:latest bash -c \
+"cd mflow && python optimize_property.py -snapshot model_snapshot_epoch_200  --hyperparams_path moflow-params.json --batch_size 256 --model_dir /results/qm9_64gnn_128-64lin_1-1mask_0d6noise_convlu1  --data_name qm9 --data_dir /data_preprocessing --property_name qed --topk 2000  --property_model_path qed_model.pt --debug false  --topscore 2>&1 | tee  /output/qm9_top_qed_optimized.log"
+```
+
+##### To optimize existing molecules to get novel molecules with optimized QED scores - zinc250k
+```bash
+#example
+docker run -it \
+-v $MODELS:/results \
+-v $DATA_PREPROCESSING:/data_preprocessing \
+-v $OUTPUT:/output \
+moflow:latest bash -c \
+"cd mflow && python optimize_property.py -snapshot model_snapshot_epoch_200  --hyperparams_path moflow-params.json --batch_size 256 --model_dir /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask --data_name zinc250k  --data_dir /data_preprocessing  --property_name plogp --topk 800 --property_model_path qed_model.pt   --consopt  --sim_cutoff 0 2>&1 | tee  zinc250k_constrain_optimize_plogp.log"
+```
+##### Illustrations of molecules with top QED
+
+##### Constrained Optimizing zinc250k w.r.t plogp(or qed) + similarity property
+##### To optimize existing molecules to get novel molecules with optimized plogp scores and constrained similarity - qm9
+```bash
+#example
+docker run -it \
+-v $MODELS:/results \
+-v $DATA_PREPROCESSING:/data_preprocessing \
+-v $OUTPUT:/output \
+moflow:latest bash -c \
+"cd mflow && python optimize_property.py -snapshot model_snapshot_epoch_200  --hyperparams_path moflow-params.json --batch_size 256 --model_dir /results/qm9_64gnn_128-64lin_1-1mask_0d6noise_convlu1  --data_name qm9 --data_dir /data_preprocessing   --property_name plogp --topk 800 --property_model_path qed_model.pt   --consopt  --sim_cutoff 0 2>&1 | tee  /output/qm9_constrain_optimize_plogp.log"
+```
+##### To optimize existing molecules to get novel molecules with optimized plogp scores and constrained similarity - zinc250k
+```bash
+#example
+docker run -it \
+-v $MODELS:/results \
+-v $DATA_PREPROCESSING:/data_preprocessing \
+-v $OUTPUT:/output \
+moflow:latest bash -c \
+"cd mflow && python optimize_property.py -snapshot model_snapshot_epoch_200  --hyperparams_path moflow-params.json --batch_size 256 --model_dir /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask --data_name zinc250k  --data_dir /data_preprocessing  --property_name plogp --topk 800 --property_model_path qed_model.pt   --consopt  --sim_cutoff 0 2>&1 | tee  /output/zinc250k_constrain_optimize_plogp.log"
+```
+
+---
+The original README content of Moflow follows.
+#
+
 # moflow
 
 Please refer to our paper:
