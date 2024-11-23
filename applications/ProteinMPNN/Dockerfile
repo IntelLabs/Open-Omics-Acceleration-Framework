@@ -22,15 +22,13 @@ ENV SERVICE_NAME="proteinmpnn-service"
 RUN groupadd --gid 1001 $SERVICE_NAME && \
     useradd -m -g $SERVICE_NAME --shell /bin/false --uid 1001 $SERVICE_NAME
 
-WORKDIR /app
+WORKDIR /
 RUN git clone https://github.com/dauparas/ProteinMPNN.git
-WORKDIR /app/ProteinMPNN
+WORKDIR /ProteinMPNN
 RUN git checkout 8907e6671bfbfc92303b5f79c4b5e6ce47cdef57
 
-WORKDIR /app/ProteinMPNN
-
 # Apply the patch file
-COPY ProteinMPNN.patch /app/ProteinMPNN/ProteinMPNN.patch
+COPY ProteinMPNN.patch /ProteinMPNN/ProteinMPNN.patch
 RUN git apply ProteinMPNN.patch
 
 ENV PATH="/opt/conda/bin:$PATH"
@@ -42,18 +40,17 @@ RUN conda create -n p_mpnn python=3.11 pip=24.0
 
 # Install PyTorch, Torchvision, Torchaudio
 RUN conda install -n p_mpnn -y pytorch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 -c pytorch
-
 # Install Intel PyTorch extension
 RUN /opt/conda/envs/p_mpnn/bin/python -m pip install intel-extension-for-pytorch==2.3.100 oneccl-bind-pt==2.3.0 --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/cpu/us/
 RUN /opt/conda/envs/p_mpnn/bin/python -m pip install numpy==1.26.0
 
-COPY . /app
+COPY . /
 # Clone jemalloc source for building
-WORKDIR /app/ProteinMPNN
+WORKDIR /ProteinMPNN
 RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
-WORKDIR /app/ProteinMPNN/jemalloc
+WORKDIR /ProteinMPNN/jemalloc
 RUN bash autogen.sh --prefix=/opt/conda/envs/p_mpnn/ && make install
-WORKDIR /app/ProteinMPNN
+WORKDIR /ProteinMPNN
 RUN rm -rf jemalloc
 
 # Set up environment activation and PATH
@@ -62,12 +59,12 @@ ENV PATH="/opt/conda/envs/p_mpnn/bin:/opt/conda/bin:$PATH"
 #CMD source ~/.bashrc
 
 # Ensure all scripts inside ProteinMPNN/examples are executable
-RUN chmod +x /app/ProteinMPNN/examples/*.py
+RUN chmod +x /ProteinMPNN/python_scripts/*.py
 RUN mkdir /outputs
 
-WORKDIR /app/ProteinMPNN/examples
-# Change ownership of the app directory
-RUN chown -R $SERVICE_NAME:$SERVICE_NAME /app /outputs
+WORKDIR /ProteinMPNN/python_scripts
+# Change ownership of the directory
+RUN chown -R $SERVICE_NAME:$SERVICE_NAME /ProteinMPNN /outputs
 
 # Switch to non-root user
 USER $SERVICE_NAME
