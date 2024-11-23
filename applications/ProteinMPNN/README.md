@@ -1,7 +1,7 @@
 ProteinMPNN is a widely used deep learning-based method for protein sequence design. OpenOmics ProteinMPNN is a highly optimized version tailored for modern CPUs, delivering the same level of accuracy as the original ProteinMPNN.
 
 ### New features
-- Supports bfloat16 precision for faster computation
+- Supports float32 and bfloat16 precision for faster computation
 
 Notes:  
 - OpenOmics ProteinMPNN supports all the parameters supported by original ProteinMPNN (please refer to original ProteinMPNN readme below)  
@@ -15,7 +15,7 @@ Notes:
 ```bash  
 git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git  
 cd TransOmics.OpenOmicsInternal/applications/ProteinMPNN  
-docker build --build-arg http_proxy=<proxy_url> --build-arg https_proxy=<proxy_url> -t proteinmpnn .
+docker build --build-arg http_proxy=<proxy_url> --build-arg https_proxy=<proxy_url> -t pmpnn .
 ```
 ---------------------------------------------------------------------------------------------------
 ## Run a docker container
@@ -105,6 +105,8 @@ docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_pssm.p
 ---------------------------------------------------------------------------------------------------
 ## User can provide his/her own input 
 ```bash
+git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git  
+cd TransOmics.OpenOmicsInternal/applications/ProteinMPNN
 mkdir -p outputs
 export OUTPUT_DIR=<output_dir_path> 
 export INPUT_FILE=<full-path of input pdb file>
@@ -124,6 +126,7 @@ docker run -it -v $OUTPUT_DIR:/outputs -v $INPUT_FILE:/data pmpnn:latest python 
 ## Note: All use case scripts are available inside the python_scripts folder.
 ```
 cd ~/TransOmics.OpenOmicsInternal/applications/ProteinMPNN
+cd TransOmics.OpenOmicsInternal/applications/ProteinMPNN
 cd python_scripts
 ```
 These are provided `python_scripts/`:
@@ -140,8 +143,9 @@ These are provided `python_scripts/`:
 * `script_example_8.py` - add amino acid bias
 * `script_example_pssm.py` - use PSSM bias when designing sequences
 ----------------------------------------------------------------------------------------------------
+## OpenOmics ProteinMPNN README ends here
 
-## Original ProteinMPNN
+## Original ProteinMPNN README:
 # ProteinMPNN
 ![ProteinMPNN](https://docs.google.com/drawings/d/e/2PACX-1vTtnMBDOq8TpHIctUfGN8Vl32x5ISNcPKlxjcQJF2q70PlaH2uFlj2Ac4s3khnZqG1YxppdMr0iTyk-/pub?w=889&h=358)
 Read [ProteinMPNN paper](https://www.biorxiv.org/content/10.1101/2022.06.03.494563v1).
