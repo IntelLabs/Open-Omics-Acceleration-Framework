@@ -7,7 +7,7 @@ Notes:
 - OpenOmics ProteinMPNN supports all the parameters supported by original ProteinMPNN (please refer to original ProteinMPNN readme below)  
 - Additionly, OpenOmics ProteinMPNN provides two more parameters:  
   - `--dtype` : <float32/bfloat16>     
-  - `--output_file` : \<output file path>  
+  - `--output_dir` : \<output dir path>  
 - OpenOmics ProteinMPNN, by default, downloads the model named v_48_020.pt. Users can provide their own custom model if desired. For more details, please refer to the original README.
 
 ## Using Docker  
@@ -19,11 +19,96 @@ docker build --build-arg http_proxy=<proxy_url> --build-arg https_proxy=<proxy_u
 ```
 ---------------------------------------------------------------------------------------------------
 ## Run a docker container
-```
+## simple monomer example
+```bash
 mkdir -p outputs
 export OUTPUT_DIR=$PWD/outputs
+docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_1.py --precision float32
+```
+--------------------------------------------------------------------------------------------------
+## simple multi-chain example
+```bash
+mkdir -p outputs
+export OUTPUT_DIR=$PWD/outputs
+docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_2.py --precision float32
+```
+--------------------------------------------------------------------------------------------------
+### directly from the .pdb path
+```bash
+mkdir -p outputs
+export OUTPUT_DIR=$PWD/outputs
+docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_3.py --precision float32
+```
+--------------------------------------------------------------------------------------------------
+### return score only (model's uncertainty)
+```bash
+mkdir -p outputs
+export OUTPUT_DIR=$PWD/outputs
+docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_3_score_only.py --precision float32
+```
+--------------------------------------------------------------------------------------------------
+## return score only (model's uncertainty) loading sequence from fasta files
+```bash
+mkdir -p outputs
+export OUTPUT_DIR=$PWD/outputs
+docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_3_score_only_from_fasta.py --precision float32
+```
+---------------------------------------------------------------------------------------------------
+## fix some residue positions
+```bash
+mkdir -p outputs
+export OUTPUT_DIR=$PWD/outputs
+docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_4.py --precision float32
+```
+--------------------------------------------------------------------------------------------------
+## specify which positions to design
+```bash
+mkdir -p outputs
+export OUTPUT_DIR=$PWD/outputs
+docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_4_non_fixed.py --precision float32
+```
+---------------------------------------------------------------------------------------------------
+## tie some positions together (symmetry)
+```bash
+mkdir -p outputs
+export OUTPUT_DIR=$PWD/outputs
+docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_5.py --precision float32
+```
+--------------------------------------------------------------------------------------------------
+## homooligomer example
+```bash
+mkdir -p outputs
+export OUTPUT_DIR=$PWD/outputs
+docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_6.py --precision float32
+```
+-------------------------------------------------------------------------------------------------
+## return sequence unconditional probabilities (PSSM like)
+```bash
+mkdir -p outputs
+export OUTPUT_DIR=$PWD/outputs
+docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_7.py --precision float32
+```
+--------------------------------------------------------------------------------------------------
+## add amino acid bias
+```bash
+mkdir -p outputs
+export OUTPUT_DIR=$PWD/outputs
+docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_8.py --precision float32
+```
+--------------------------------------------------------------------------------------------------
+## use PSSM bias when designing sequences
+```bash
+mkdir -p outputs
+export OUTPUT_DIR=$PWD/outputs
+docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_pssm.py --precision float32
+```
+---------------------------------------------------------------------------------------------------
+## User can provide his/her own input 
+```bash
+mkdir -p outputs
+export OUTPUT_DIR=<output_dir_path> 
 export INPUT_FILE=<full-path of input pdb file>
-docker run -it -v $OUTPUT_DIR:/outputs -v $INPUT_FILE:/data protein_mpnn:latest python script_example_1.py --input /data --num_seq_per_target <int> --sampling_temp <float> --seed <int> --batch_size <int> --precision <float32/bfloat16>
+docker run -it -v $OUTPUT_DIR:/outputs -v $INPUT_FILE:/data pmpnn:latest python script_example_1.py --input /data --num_seq_per_target <int> --sampling_temp <float> --seed <int> --batch_size <int> --precision <float32/bfloat16>
 ```
 --------------------------------------------------------------------------------------------------
 
@@ -33,7 +118,7 @@ cd ~/TransOmics.OpenOmicsInternal/applications/ProteinMPNN
 mkdir -p outputs
 export OUTPUT_DIR=$PWD/outputs
 export INPUT_FILE=$PWD/inputs/PDB_monomers/pdbs
-docker run -it -v $OUTPUT_DIR:/outputs -v $INPUT_FILE:/data proteinmpnn:latest python script_example_1.py --input /data --num_seq_per_target 10 --sampling_temp 0.1 --seed 37 --batch_size 1 --precision float32
+docker run -it -v $OUTPUT_DIR:/outputs -v $INPUT_FILE:/data pmpnn:latest python script_example_1.py --input /data --num_seq_per_target 10 --sampling_temp 0.1 --seed 37 --batch_size 1 --precision float32
 ```
 
 ## Note: All use case scripts are available inside the python_scripts folder.
