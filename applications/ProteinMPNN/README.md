@@ -1,14 +1,9 @@
-ProteinMPNN is a widely used deep learning-based method for protein sequence design. OpenOmics ProteinMPNN is a highly optimized version tailored for modern CPUs, delivering the same level of accuracy as the original ProteinMPNN.
+## OpenOmics ProteinMPNN
+ProteinMPNN is a widely used deep learning-based method for protein sequence design. It generates the amino acid sequences given protein structure backbone, enable design of de novo proteins and optimizations of existing ones.  
+Here, we present OpenOmics ProteinMPNN, a highly optimized version for modern CPUs with exact same functionality and accuracy as the original ProteinMPNN. Across benchmark datasets ProteinMPNN is xx - yy faster than the original one.  
 
 ### New features
-- Supports float32 and bfloat16 precision for faster computation
-
-Notes:  
-- OpenOmics ProteinMPNN supports all the parameters supported by original ProteinMPNN (please refer to original ProteinMPNN readme below)  
-- Additionly, OpenOmics ProteinMPNN provides two more parameters:  
-  - `--dtype` : <float32/bfloat16>     
-  - `--output_dir` : \<output dir path>  
-- OpenOmics ProteinMPNN, by default, downloads the model named v_48_020.pt. Users can provide their own custom model if desired. For more details, please refer to the original README.
+- Supports bfloat16 precision for faster computation, using ```--precision <float32/bfloat16>```
 
 ## Using Docker  
 ### Build  
@@ -18,131 +13,74 @@ cd TransOmics.OpenOmicsInternal/applications/ProteinMPNN
 docker build --build-arg http_proxy=<proxy_url> --build-arg https_proxy=<proxy_url> -t pmpnn .
 ```
 ---------------------------------------------------------------------------------------------------
-## Run a docker container
-## simple monomer example
+## Run
+The main script for ProteinMPNN ```protein_mpnn_run.py``` can be run as
 ```bash
-mkdir -p outputs
-export OUTPUT_DIR=$PWD/outputs
-docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_1.py --precision float32
+docker run -it -v <output_dir>:/outputs -v <input_dir>:/input pmpnn:latest python protein_mpnn_run.py
 ```
---------------------------------------------------------------------------------------------------
-## simple multi-chain example
-```bash
-mkdir -p outputs
-export OUTPUT_DIR=$PWD/outputs
-docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_2.py --precision float32
-```
---------------------------------------------------------------------------------------------------
-### directly from the .pdb path
-```bash
-mkdir -p outputs
-export OUTPUT_DIR=$PWD/outputs
-docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_3.py --precision float32
-```
---------------------------------------------------------------------------------------------------
-### return score only (model's uncertainty)
-```bash
-mkdir -p outputs
-export OUTPUT_DIR=$PWD/outputs
-docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_3_score_only.py --precision float32
-```
---------------------------------------------------------------------------------------------------
-## return score only (model's uncertainty) loading sequence from fasta files
-```bash
-mkdir -p outputs
-export OUTPUT_DIR=$PWD/outputs
-docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_3_score_only_from_fasta.py --precision float32
-```
----------------------------------------------------------------------------------------------------
-## fix some residue positions
-```bash
-mkdir -p outputs
-export OUTPUT_DIR=$PWD/outputs
-docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_4.py --precision float32
-```
---------------------------------------------------------------------------------------------------
-## specify which positions to design
-```bash
-mkdir -p outputs
-export OUTPUT_DIR=$PWD/outputs
-docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_4_non_fixed.py --precision float32
-```
----------------------------------------------------------------------------------------------------
-## tie some positions together (symmetry)
-```bash
-mkdir -p outputs
-export OUTPUT_DIR=$PWD/outputs
-docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_5.py --precision float32
-```
---------------------------------------------------------------------------------------------------
-## homooligomer example
-```bash
-mkdir -p outputs
-export OUTPUT_DIR=$PWD/outputs
-docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_6.py --precision float32
-```
--------------------------------------------------------------------------------------------------
-## return sequence unconditional probabilities (PSSM like)
-```bash
-mkdir -p outputs
-export OUTPUT_DIR=$PWD/outputs
-docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_7.py --precision float32
-```
---------------------------------------------------------------------------------------------------
-## add amino acid bias
-```bash
-mkdir -p outputs
-export OUTPUT_DIR=$PWD/outputs
-docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_8.py --precision float32
-```
---------------------------------------------------------------------------------------------------
-## use PSSM bias when designing sequences
-```bash
-mkdir -p outputs
-export OUTPUT_DIR=$PWD/outputs
-docker run -it -v $OUTPUT_DIR:/outputs pmpnn:latest python script_example_pssm.py --precision float32
-```
----------------------------------------------------------------------------------------------------
-## User can provide his/her own input 
-```bash
-git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git  
-cd TransOmics.OpenOmicsInternal/applications/ProteinMPNN
-mkdir -p outputs
-export OUTPUT_DIR=<output_dir_path> 
-export INPUT_FILE=<full-path of input pdb file>
-docker run -it -v $OUTPUT_DIR:/outputs -v $INPUT_FILE:/data pmpnn:latest python script_example_1.py --input /data --num_seq_per_target <int> --sampling_temp <float> --seed <int> --batch_size <int> --precision <float32/bfloat16>
-```
---------------------------------------------------------------------------------------------------
+**Note: Various Input parameters to protein_mpnn_run.py are described in the original readme below**
 
+Examples:
+Various ProteinMPNN example scripts are present in examples/ and can be run as follows:
+
+### Simple monomer example
+```bash
+docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_1.py
 ```
-#example
-cd ~/TransOmics.OpenOmicsInternal/applications/ProteinMPNN
-mkdir -p outputs
-export OUTPUT_DIR=$PWD/outputs
-export INPUT_FILE=$PWD/inputs/PDB_monomers/pdbs
-docker run -it -v $OUTPUT_DIR:/outputs -v $INPUT_FILE:/data pmpnn:latest python script_example_1.py --input /data --num_seq_per_target 10 --sampling_temp 0.1 --seed 37 --batch_size 1 --precision float32
+### Simple multi-chain example
+```bash
+docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_2.py
+```
+### Directly from the .pdb path
+```bash
+docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_3.py
 ```
 
-## Note: All use case scripts are available inside the python_scripts folder.
+### Return score only (model's uncertainty)
+```bash
+docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_3_score_only.py
 ```
-cd ~/TransOmics.OpenOmicsInternal/applications/ProteinMPNN
-cd TransOmics.OpenOmicsInternal/applications/ProteinMPNN
-cd python_scripts
+### Return score only (model's uncertainty) loading sequence from fasta files
+```bash
+docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_3_score_only_from_fasta.py 
 ```
-These are provided `python_scripts/`:
-* `script_example_1.py` - simple monomer example 
-* `script_example_2.py` - simple multi-chain example
-* `script_example_3.py` - directly from the .pdb path
-* `script_example_3_score_only.py` - return score only (model's uncertainty)
-* `script_example_3_score_only_from_fasta.py` - return score only (model's uncertainty) loading sequence from fasta files
-* `script_example_4.py` - fix some residue positions
-* `script_example_4_non_fixed.py` - specify which positions to design
-* `script_example_5.py` - tie some positions together (symmetry)
-* `script_example_6.py` - homooligomer example
-* `script_example_7.py` - return sequence unconditional probabilities (PSSM like)
-* `script_example_8.py` - add amino acid bias
-* `script_example_pssm.py` - use PSSM bias when designing sequences
-----------------------------------------------------------------------------------------------------
+
+### Fix some residue positions
+```bash
+docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_4.py  
+```
+### Specify which positions to design
+```bash
+docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_4_non_fixed.py  
+```
+### Tie some positions together (symmetry)
+```bash
+docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_5.py  
+```
+### Homooligomer example
+```bash
+docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_6.py 
+```
+### Return sequence unconditional probabilities (PSSM like)
+```bash
+docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_7.py 
+```
+### Add amino acid bias
+```bash
+docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_8.py  
+```
+### Use PSSM bias when designing sequences
+```bash
+docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_pssm.py  
+```
+
+All the above scripts are parameterizable, for example:
+```bash
+mkdir -p ./outputs
+docker run -it -v ./output:/outputs -v ./inputs/PDB_monomers/pdbs/:/input pmpnn:latest python examples/script_example_1.py --input /input --num_seq_per_target 10 --sampling_temp 0.1 --seed 37 --batch_size 1 --precision bfloat16
+```
+
+
 ## OpenOmics ProteinMPNN README ends here
 
 ## Original ProteinMPNN README:
