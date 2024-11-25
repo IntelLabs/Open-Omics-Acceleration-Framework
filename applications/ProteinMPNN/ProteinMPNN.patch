@@ -1,3 +1,879 @@
+diff --git a/examples/script_example_1.py b/examples/script_example_1.py
+new file mode 100644
+index 0000000..93d04ac
+--- /dev/null
++++ b/examples/script_example_1.py
+@@ -0,0 +1,52 @@
++#!/usr/bin/env python
++# encoding: utf-8
++import os
++from subprocess import run
++from argparse import ArgumentParser
++
++def main(argv):
++    # Argument parsing
++    parser = ArgumentParser(description="Run protein folding scripts")
++    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_monomers/pdbs")
++    parser.add_argument('--output', help="Output directory", default="/outputs/example_1_outputs")
++    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
++    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
++    parser.add_argument('--seed', type=int, default=37, help="Random seed")
++    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
++    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
++    args = parser.parse_args()
++
++    # Print the input arguments for visibility
++    print(f"Input directory: {args.input}")
++    # Check and create output directory if it doesn't exist
++    output_dir = args.output
++    if not os.path.exists(output_dir):
++        os.makedirs(output_dir)
++
++    folder_with_pdbs = args.input
++    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
++
++    # Run parsing script
++    a = run([
++        'python', '../helper_scripts/parse_multiple_chains.py',
++        '--input_path', folder_with_pdbs,
++        '--output_path', path_for_parsed_chains
++    ])
++    assert a.returncode == 0, "Error parsing multiple chains"
++
++    # Run protein folding script
++    a = run([
++        'python', '../protein_mpnn_run.py',
++        '--jsonl_path', path_for_parsed_chains,
++        '--out_folder', output_dir,
++        '--num_seq_per_target', str(args.num_seq_per_target),
++        '--sampling_temp', str(args.sampling_temp),
++        '--seed', str(args.seed),
++        '--batch_size', str(args.batch_size),
++        '--precision', args.precision
++    ])
++    assert a.returncode == 0, "Error running protein folding script"
++
++if __name__ == "__main__":
++    import sys
++    main(sys.argv)
+diff --git a/examples/script_example_2.py b/examples/script_example_2.py
+new file mode 100644
+index 0000000..dc43474
+--- /dev/null
++++ b/examples/script_example_2.py
+@@ -0,0 +1,66 @@
++#!/usr/bin/env python
++# encoding: utf-8
++import os
++from subprocess import run
++from argparse import ArgumentParser
++
++def main(argv):
++    # Argument parsing
++    parser = ArgumentParser(description="Run protein folding with assigned chains")
++    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
++    parser.add_argument('--output', help="Output directory", default="/outputs/example_2_outputs")
++    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A B")
++    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
++    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
++    parser.add_argument('--seed', type=int, default=37, help="Random seed")
++    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
++    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
++    args = parser.parse_args()
++
++    # Print the input arguments for visibility
++    print(f"Input data directory: {args.input}")
++    print(f"Chains to design: {args.chains_to_design}")
++    # Check and create output directory if it doesn't exist
++    output_dir = args.output
++    if not os.path.exists(output_dir):
++        os.makedirs(output_dir)
++
++    folder_with_pdbs = args.input
++    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
++    path_for_assigned_chains = os.path.join(output_dir, "assigned_pdbs.jsonl")
++
++    # Run parsing script
++    a = run([
++        'python', '../helper_scripts/parse_multiple_chains.py',
++        '--input_path', folder_with_pdbs,
++        '--output_path', path_for_parsed_chains
++    ])
++    assert a.returncode == 0, "Error parsing multiple chains"
++
++    # Run chain assignment script
++    a = run([
++        'python', '../helper_scripts/assign_fixed_chains.py',
++        '--input_path', path_for_parsed_chains,
++        '--output_path', path_for_assigned_chains,
++        '--chain_list', args.chains_to_design
++    ])
++    assert a.returncode == 0, "Error assigning fixed chains"
++
++    # Run protein folding script
++    a = run([
++        'python', '../protein_mpnn_run.py',
++        '--jsonl_path', path_for_parsed_chains,
++        '--chain_id_jsonl', path_for_assigned_chains,
++        '--out_folder', output_dir,
++        '--num_seq_per_target', str(args.num_seq_per_target),
++        '--sampling_temp', str(args.sampling_temp),
++        '--seed', str(args.seed),
++        '--batch_size', str(args.batch_size),
++        '--precision', args.precision
++    ])
++    assert a.returncode == 0, "Error running protein folding script"
++
++if __name__ == "__main__":
++    import sys
++    main(sys.argv)
++
+diff --git a/examples/script_example_3.py b/examples/script_example_3.py
+new file mode 100644
+index 0000000..83a21d3
+--- /dev/null
++++ b/examples/script_example_3.py
+@@ -0,0 +1,47 @@
++#!/usr/bin/env python
++# encoding: utf-8
++import os
++from subprocess import run
++from argparse import ArgumentParser
++
++def main(argv):
++    # Argument parsing
++    parser = ArgumentParser(description="Run protein folding on specific PDB and chains")
++    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/3HTN.pdb")
++    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A")
++    parser.add_argument('--output', help="Output directory", default="/outputs/example_3_outputs")
++    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
++    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
++    parser.add_argument('--seed', type=int, default=37, help="Random seed")
++    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
++    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
++    args = parser.parse_args()
++
++    # Print the input arguments for visibility
++    print(f"Path to the PDB file: {args.pdb_path}")
++    print(f"Chains to design: {args.chains_to_design}")
++    # Check and create output directory if it doesn't exist
++    output_dir = args.output
++    if not os.path.exists(output_dir):
++        os.makedirs(output_dir)
++
++    pdb_path = args.pdb_path
++
++    # Run protein folding script
++    a = run([
++        'python', '../protein_mpnn_run.py',
++        '--pdb_path', pdb_path,
++        '--pdb_path_chains', args.chains_to_design,
++        '--out_folder', output_dir,
++        '--num_seq_per_target', str(args.num_seq_per_target),
++        '--sampling_temp', str(args.sampling_temp),
++        '--seed', str(args.seed),
++        '--batch_size', str(args.batch_size),
++        '--precision', args.precision
++    ])
++    assert a.returncode == 0, "Error running protein folding script"
++
++if __name__ == "__main__":
++    import sys
++    main(sys.argv)
++
+diff --git a/examples/script_example_3_score_only.py b/examples/script_example_3_score_only.py
+new file mode 100644
+index 0000000..6308b96
+--- /dev/null
++++ b/examples/script_example_3_score_only.py
+@@ -0,0 +1,50 @@
++#!/usr/bin/env python
++# encoding: utf-8
++import os
++from subprocess import run
++from argparse import ArgumentParser
++
++def main(argv):
++    # Argument parsing
++    parser = ArgumentParser(description="Run protein folding and scoring on specific PDB and chains")
++    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/3HTN.pdb")
++    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A")
++    parser.add_argument('--output', help="Output directory", default="/outputs/example_3_score_only_outputs")
++    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
++    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
++    parser.add_argument('--score_only', type=int, default=1, help="Score only without sequence generation")
++    parser.add_argument('--seed', type=int, default=37, help="Random seed")
++    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
++    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
++    args = parser.parse_args()
++
++    # Print the input arguments for visibility
++    print(f"Path to the PDB file: {args.pdb_path}")
++    print(f"Chains to design: {args.chains_to_design}")
++
++    # Check and create output directory if it doesn't exist
++    output_dir = args.output
++    if not os.path.exists(output_dir):
++        os.makedirs(output_dir)
++
++    pdb_path = args.pdb_path
++
++    # Run protein folding script with scoring only
++    a = run([
++        'python', '../protein_mpnn_run.py',
++        '--pdb_path', pdb_path,
++        '--pdb_path_chains', args.chains_to_design,
++        '--out_folder', output_dir,
++        '--num_seq_per_target', str(args.num_seq_per_target),
++        '--sampling_temp', str(args.sampling_temp),
++        '--score_only', str(args.score_only),
++        '--seed', str(args.seed),
++        '--batch_size', str(args.batch_size),
++        '--precision', args.precision
++    ])
++    assert a.returncode == 0, "Error running protein folding script"
++
++if __name__ == "__main__":
++    import sys
++    main(sys.argv)
++
+diff --git a/examples/script_example_3_score_only_from_fasta.py b/examples/script_example_3_score_only_from_fasta.py
+new file mode 100644
+index 0000000..4bcaa23
+--- /dev/null
++++ b/examples/script_example_3_score_only_from_fasta.py
+@@ -0,0 +1,57 @@
++#!/usr/bin/env python
++# encoding: utf-8
++
++import os
++from subprocess import run
++from argparse import ArgumentParser
++
++def main(argv):
++    # Argument parsing
++    parser = ArgumentParser(description="Run protein folding and scoring from a FASTA file on specific PDB and chains")
++    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/3HTN.pdb")
++    parser.add_argument('--path_to_fasta', help="Path to the FASTA file", default="/ProteinMPNN/outputs/example_3_outputs/seqs/3HTN.fa")
++    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A")
++    parser.add_argument('--output', help="Output directory", default="/outputs/example_3_score_only_from_fasta_outputs")
++    parser.add_argument('--num_seq_per_target', type=int, default=5, help="Number of sequences per target")
++    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
++    parser.add_argument('--score_only', type=int, default=1, help="Score only without sequence generation")
++    parser.add_argument('--seed', type=int, default=13, help="Random seed")
++    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
++    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
++    args = parser.parse_args()
++
++    # Print the input arguments for visibility
++    print(f"Path to the PDB file: {args.pdb_path}")
++    print(f"Path to the FASTA file: {args.path_to_fasta}")
++    print(f"Chains to design: {args.chains_to_design}")
++
++    # Print the input arguments for visibility
++    print(f"Path to the PDB file: {args.pdb_path}")
++    print(f"Path to the FASTA file: {args.path_to_fasta}")
++    # Check and create output directory if it doesn't exist
++    output_dir = args.output
++    if not os.path.exists(output_dir):
++        os.makedirs(output_dir)
++
++    pdb_path = args.pdb_path
++    path_to_fasta = args.path_to_fasta
++
++    # Run protein folding script with scoring only from FASTA
++    a = run([
++        'python', '../protein_mpnn_run.py',
++        '--path_to_fasta', path_to_fasta,
++        '--pdb_path', pdb_path,
++        '--pdb_path_chains', args.chains_to_design,
++        '--out_folder', output_dir,
++        '--num_seq_per_target', str(args.num_seq_per_target),
++        '--sampling_temp', str(args.sampling_temp),
++        '--score_only', str(args.score_only),
++        '--seed', str(args.seed),
++        '--batch_size', str(args.batch_size),
++        '--precision', args.precision
++    ])
++    assert a.returncode == 0, "Error running protein folding script"
++
++if __name__ == "__main__":
++    import sys
++    main(sys.argv)
+diff --git a/examples/script_example_4.py b/examples/script_example_4.py
+new file mode 100644
+index 0000000..96b211d
+--- /dev/null
++++ b/examples/script_example_4.py
+@@ -0,0 +1,80 @@
++#!/usr/bin/env python
++# encoding: utf-8
++import os
++from subprocess import run
++from argparse import ArgumentParser
++
++def main(argv):
++    # Argument parsing
++    parser = ArgumentParser(description="Run protein folding with fixed positions on specific chains")
++    parser.add_argument('--input', help="Input folder with PDBs", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
++    parser.add_argument('--output', help="Output directory", default="/outputs/example_4_outputs")
++    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A C")
++    parser.add_argument('--fixed_positions', help="Fixed positions for the chains", default="1 2 3 4 5 6 7 8 23 25, 10 11 12 13 14 15 16 17 18 19 20 40")
++    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
++    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
++    parser.add_argument('--seed', type=int, default=37, help="Random seed")
++    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
++    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
++    args = parser.parse_args()
++
++    # Print the input arguments for visibility
++    print(f"Input folder with PDBs : {args.input}")
++    print(f"Chains to design: {args.chains_to_design}")
++
++    # Check and create output directory if it doesn't exist
++    output_dir = args.output
++    if not os.path.exists(output_dir):
++        os.makedirs(output_dir)
++
++    folder_with_pdbs = args.input
++    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
++    path_for_assigned_chains = os.path.join(output_dir, "assigned_pdbs.jsonl")
++    path_for_fixed_positions = os.path.join(output_dir, "fixed_pdbs.jsonl")
++
++    # Run parsing script
++    a = run([
++        'python', '../helper_scripts/parse_multiple_chains.py',
++        '--input_path', folder_with_pdbs,
++        '--output_path', path_for_parsed_chains
++    ])
++    assert a.returncode == 0, "Error parsing multiple chains"
++
++    # Assign chains to design
++    a = run([
++        'python', '../helper_scripts/assign_fixed_chains.py',
++        '--input_path', path_for_parsed_chains,
++        '--output_path', path_for_assigned_chains,
++        '--chain_list', args.chains_to_design
++    ])
++    assert a.returncode == 0, "Error assigning fixed chains"
++
++    # Make fixed positions dictionary
++    a = run([
++        'python', '../helper_scripts/make_fixed_positions_dict.py',
++        '--input_path', path_for_parsed_chains,
++        '--output_path', path_for_fixed_positions,
++        '--chain_list', args.chains_to_design,
++        '--position_list', args.fixed_positions
++    ])
++    assert a.returncode == 0, "Error making fixed positions dictionary"
++
++    # Run protein folding script
++    a = run([
++        'python', '../protein_mpnn_run.py',
++        '--jsonl_path', path_for_parsed_chains,
++        '--chain_id_jsonl', path_for_assigned_chains,
++        '--fixed_positions_jsonl', path_for_fixed_positions,
++        '--out_folder', output_dir,
++        '--num_seq_per_target', str(args.num_seq_per_target),
++        '--sampling_temp', str(args.sampling_temp),
++        '--seed', str(args.seed),
++        '--batch_size', str(args.batch_size),
++        '--precision', args.precision
++    ])
++    assert a.returncode == 0, "Error running protein folding script"
++
++if __name__ == "__main__":
++    import sys
++    main(sys.argv)
++
+diff --git a/examples/script_example_4_non_fixed.py b/examples/script_example_4_non_fixed.py
+new file mode 100644
+index 0000000..6674ad6
+--- /dev/null
++++ b/examples/script_example_4_non_fixed.py
+@@ -0,0 +1,80 @@
++#!/usr/bin/env python
++# encoding: utf-8
++import os
++from subprocess import run
++from argparse import ArgumentParser
++
++def main(argv):
++    # Argument parsing
++    parser = ArgumentParser(description="Run protein folding with non-fixed positions on specific chains")
++    parser.add_argument('--input', help="Input folder with PDBs", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
++    parser.add_argument('--output', help="Output directory", default="/outputs/example_4_non_fixed_outputs")
++    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A C")
++    parser.add_argument('--design_only_positions', help="Design only these positions", default="1 2 3 4 5 6 7 8 9 10, 3 4 5 6 7 8")
++    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
++    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
++    parser.add_argument('--seed', type=int, default=37, help="Random seed")
++    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
++    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
++    args = parser.parse_args()
++
++    # Print the input arguments for visibility
++    print(f"Input data directory: {args.input}")
++    print(f"Chains to design: {args.chains_to_design}")
++    # Check and create output directory if it doesn't exist
++    output_dir = args.output
++    if not os.path.exists(output_dir):
++        os.makedirs(output_dir)
++
++    folder_with_pdbs = args.input
++    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
++    path_for_assigned_chains = os.path.join(output_dir, "assigned_pdbs.jsonl")
++    path_for_fixed_positions = os.path.join(output_dir, "fixed_pdbs.jsonl")
++
++    # Run parsing script
++    a = run([
++        'python', '../helper_scripts/parse_multiple_chains.py',
++        '--input_path', folder_with_pdbs,
++        '--output_path', path_for_parsed_chains
++    ])
++    assert a.returncode == 0, "Error parsing multiple chains"
++
++    # Assign chains to design
++    a = run([
++        'python', '../helper_scripts/assign_fixed_chains.py',
++        '--input_path', path_for_parsed_chains,
++        '--output_path', path_for_assigned_chains,
++        '--chain_list', args.chains_to_design
++    ])
++    assert a.returncode == 0, "Error assigning fixed chains"
++
++    # Make non-fixed positions dictionary
++    a = run([
++        'python', '../helper_scripts/make_fixed_positions_dict.py',
++        '--input_path', path_for_parsed_chains,
++        '--output_path', path_for_fixed_positions,
++        '--chain_list', args.chains_to_design,
++        '--position_list', args.design_only_positions,
++        '--specify_non_fixed'
++    ])
++    assert a.returncode == 0, "Error making non-fixed positions dictionary"
++
++    # Run protein folding script
++    a = run([
++        'python', '../protein_mpnn_run.py',
++        '--jsonl_path', path_for_parsed_chains,
++        '--chain_id_jsonl', path_for_assigned_chains,
++        '--fixed_positions_jsonl', path_for_fixed_positions,
++        '--out_folder', output_dir,
++        '--num_seq_per_target', str(args.num_seq_per_target),
++        '--sampling_temp', str(args.sampling_temp),
++        '--seed', str(args.seed),
++        '--batch_size', str(args.batch_size),
++        '--precision', args.precision
++    ])
++    assert a.returncode == 0, "Error running protein folding script"
++
++if __name__ == "__main__":
++    import sys
++    main(sys.argv)
++
+diff --git a/examples/script_example_5.py b/examples/script_example_5.py
+new file mode 100644
+index 0000000..487fbfe
+--- /dev/null
++++ b/examples/script_example_5.py
+@@ -0,0 +1,94 @@
++#!/usr/bin/env python
++# encoding: utf-8
++
++import os
++from subprocess import run
++from argparse import ArgumentParser
++
++def main(argv):
++    # Argument parsing
++    parser = ArgumentParser(description="Run ProteinMPNN pipeline with multiple chains and positions")
++    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
++    parser.add_argument('--output', help="Output directory", default="/outputs/example_5_outputs")
++    parser.add_argument('--chains_to_design', default="A C", help="Chains to design")
++    parser.add_argument('--fixed_positions', default="9 10 11 12 13 14 15 16 17 18 19 20 21 22 23, 10 11 18 19 20 22", help="Fixed positions for the chains")
++    parser.add_argument('--tied_positions', default="1 2 3 4 5 6 7 8, 1 2 3 4 5 6 7 8", help="Tied positions for the chains")
++    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
++    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
++    parser.add_argument('--seed', type=int, default=37, help="Random seed")
++    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
++    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
++    args = parser.parse_args()
++
++    # Print the input arguments for visibility
++    print(f"Input directory: {args.input}")
++    print(f"Chains to design: {args.chains_to_design}")
++    # Check and create output directory if it doesn't exist
++    output_dir = args.output
++    if not os.path.exists(output_dir):
++        os.makedirs(output_dir)
++
++    # Paths for output files
++    folder_with_pdbs = args.input
++    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
++    path_for_assigned_chains = os.path.join(output_dir, "assigned_pdbs.jsonl")
++    path_for_fixed_positions = os.path.join(output_dir, "fixed_pdbs.jsonl")
++    path_for_tied_positions = os.path.join(output_dir, "tied_pdbs.jsonl")
++
++    # Run the parsing script
++    a = run([
++        'python', '../helper_scripts/parse_multiple_chains.py',
++        '--input_path', folder_with_pdbs,
++        '--output_path', path_for_parsed_chains
++    ])
++    assert a.returncode == 0, "Error parsing multiple chains"
++
++    # Run the chain assignment script
++    a = run([
++        'python', '../helper_scripts/assign_fixed_chains.py',
++        '--input_path', path_for_parsed_chains,
++        '--output_path', path_for_assigned_chains,
++        '--chain_list', args.chains_to_design
++    ])
++    assert a.returncode == 0, "Error assigning fixed chains"
++
++    # Run the fixed positions script
++    a = run([
++        'python', '../helper_scripts/make_fixed_positions_dict.py',
++        '--input_path', path_for_parsed_chains,
++        '--output_path', path_for_fixed_positions,
++        '--chain_list', args.chains_to_design,
++        '--position_list', args.fixed_positions
++    ])
++    assert a.returncode == 0, "Error making fixed positions dict"
++
++    # Run the tied positions script
++    a = run([
++        'python', '../helper_scripts/make_tied_positions_dict.py',
++        '--input_path', path_for_parsed_chains,
++        '--output_path', path_for_tied_positions,
++        '--chain_list', args.chains_to_design,
++        '--position_list', args.tied_positions
++    ])
++    assert a.returncode == 0, "Error making tied positions dict"
++
++    # Run the main ProteinMPNN script
++    a = run([
++        'python', '../protein_mpnn_run.py',
++        '--jsonl_path', path_for_parsed_chains,
++        '--chain_id_jsonl', path_for_assigned_chains,
++        '--fixed_positions_jsonl', path_for_fixed_positions,
++        '--tied_positions_jsonl', path_for_tied_positions,
++        '--out_folder', output_dir,
++        '--num_seq_per_target', str(args.num_seq_per_target),
++        '--sampling_temp', str(args.sampling_temp),
++        '--seed', str(args.seed),
++        '--batch_size', str(args.batch_size),
++        '--precision', args.precision
++    ])
++    assert a.returncode == 0, "Error running protein folding script"
++
++if __name__ == "__main__":
++    import sys
++    main(sys.argv)
++
+diff --git a/examples/script_example_6.py b/examples/script_example_6.py
+new file mode 100644
+index 0000000..3e0c614
+--- /dev/null
++++ b/examples/script_example_6.py
+@@ -0,0 +1,68 @@
++#!/usr/bin/env python
++# encoding: utf-8
++
++import os
++from subprocess import run
++from argparse import ArgumentParser
++
++def main(argv):
++    # Argument parsing
++    parser = ArgumentParser(description="Run ProteinMPNN pipeline with homooligomers and tied positions")
++    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_homooligomers/pdbs/")
++    parser.add_argument('--output', help="Output directory", default="/outputs/example_6_outputs")
++    parser.add_argument('--homooligomer', type=int, default=1, help="Homooligomer flag")
++    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
++    parser.add_argument('--sampling_temp', type=float, default=0.2, help="Sampling temperature")
++    parser.add_argument('--seed', type=int, default=37, help="Random seed")
++    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
++    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
++    args = parser.parse_args()
++
++    # Print the input arguments for visibility
++    print(f"Input data directory: {args.input}")
++    # Check and create output directory if it doesn't exist
++    output_dir = args.output
++    if not os.path.exists(output_dir):
++        os.makedirs(output_dir)
++
++    # Paths for output files
++    folder_with_pdbs = args.input
++    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
++    path_for_tied_positions = os.path.join(output_dir, "tied_pdbs.jsonl")
++    path_for_designed_sequences = os.path.join(output_dir, "temp_0.1")
++
++    # Run the parsing script
++    a = run([
++        'python', '../helper_scripts/parse_multiple_chains.py',
++        '--input_path', folder_with_pdbs,
++        '--output_path', path_for_parsed_chains
++    ])
++    assert a.returncode == 0, "Error parsing multiple chains"
++
++    # Run the tied positions script
++    a = run([
++        'python', '../helper_scripts/make_tied_positions_dict.py',
++        '--input_path', path_for_parsed_chains,
++        '--output_path', path_for_tied_positions,
++        '--homooligomer', str(args.homooligomer)
++    ])
++    assert a.returncode == 0, "Error making tied positions dict"
++
++    # Run the main ProteinMPNN script
++    a = run([
++        'python', '../protein_mpnn_run.py',
++        '--jsonl_path', path_for_parsed_chains,
++        '--tied_positions_jsonl', path_for_tied_positions,
++        '--out_folder', output_dir,
++        '--num_seq_per_target', str(args.num_seq_per_target),
++        '--sampling_temp', str(args.sampling_temp),
++        '--seed', str(args.seed),
++        '--batch_size', str(args.batch_size),
++        '--precision', args.precision
++    ])
++    assert a.returncode == 0, "Error running protein folding script"
++
++if __name__ == "__main__":
++    import sys
++    main(sys.argv)
++
+diff --git a/examples/script_example_7.py b/examples/script_example_7.py
+new file mode 100644
+index 0000000..6dda7fb
+--- /dev/null
++++ b/examples/script_example_7.py
+@@ -0,0 +1,57 @@
++#!/usr/bin/env python
++# encoding: utf-8
++
++import os
++from subprocess import run
++from argparse import ArgumentParser
++
++def main(argv):
++    # Argument parsing
++    parser = ArgumentParser(description="Run ProteinMPNN pipeline for monomers")
++    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_monomers/pdbs/")
++    parser.add_argument('--output', help="Output directory", default="/outputs/example_7_outputs")
++    parser.add_argument('--num_seq_per_target', type=int, default=1, help="Number of sequences per target")
++    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
++    parser.add_argument('--unconditional_probs_only', type=int, default=1, help="Use unconditional probabilities only")
++    parser.add_argument('--seed', type=int, default=37, help="Random seed")
++    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
++    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
++    args = parser.parse_args()
++
++    # Print the input arguments for visibility
++    print(f"Input data directory: {args.input}")
++    # Check and create output directory if it doesn't exist
++    output_dir = args.output
++    if not os.path.exists(output_dir):
++        os.makedirs(output_dir)
++
++    # Paths for output files
++    folder_with_pdbs = args.input
++    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
++
++    # Run the parsing script
++    a = run([
++        'python', '../helper_scripts/parse_multiple_chains.py',
++        '--input_path', folder_with_pdbs,
++        '--output_path', path_for_parsed_chains
++    ])
++    assert a.returncode == 0, "Error parsing multiple chains"
++
++    # Run the main ProteinMPNN script
++    a = run([
++        'python', '../protein_mpnn_run.py',
++        '--jsonl_path', path_for_parsed_chains,
++        '--out_folder', output_dir,
++        '--num_seq_per_target', str(args.num_seq_per_target),
++        '--sampling_temp', str(args.sampling_temp),
++        '--unconditional_probs_only', str(args.unconditional_probs_only),
++        '--seed', str(args.seed),
++        '--batch_size', str(args.batch_size),
++        '--precision', args.precision
++    ])
++    assert a.returncode == 0, "Error running protein folding script"
++
++if __name__ == "__main__":
++    import sys
++    main(sys.argv)
++
+diff --git a/examples/script_example_8.py b/examples/script_example_8.py
+new file mode 100644
+index 0000000..0c3b518
+--- /dev/null
++++ b/examples/script_example_8.py
+@@ -0,0 +1,68 @@
++#!/usr/bin/env python
++# encoding: utf-8
++
++import os
++from subprocess import run
++from argparse import ArgumentParser
++
++def main(argv):
++    # Argument parsing
++    parser = ArgumentParser(description="Run ProteinMPNN pipeline with amino acid bias")
++    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_monomers/pdbs/")
++    parser.add_argument('--output', help="Output directory", default="/outputs/example_8_outputs")
++    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
++    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
++    parser.add_argument('--seed', type=int, default=37, help="Random seed")
++    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
++    parser.add_argument('--AA_list', default="D E H K N Q R S T W Y", help="List of amino acids")
++    parser.add_argument('--bias_list', default="1.39 1.39 1.39 1.39 1.39 1.39 1.39 1.39 1.39 1.39 1.39", help="Bias list for amino acids")
++    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
++    args = parser.parse_args()
++
++    # Print the input arguments for visibility
++    print(f"Input data directory: {args.input}")
++    # Check and create output directory if it doesn't exist
++    output_dir = args.output
++    if not os.path.exists(output_dir):
++        os.makedirs(output_dir)
++
++    # Paths for output files
++    folder_with_pdbs = args.input
++    path_for_bias = os.path.join(output_dir, "bias_pdbs.jsonl")
++    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
++
++    # Run the script to create amino acid bias
++    a = run([
++        'python', '../helper_scripts/make_bias_AA.py',
++        '--output_path', path_for_bias,
++        '--AA_list', args.AA_list,
++        '--bias_list', args.bias_list
++    ])
++    assert a.returncode == 0, "Error creating bias amino acid list"
++
++    # Run the parsing script
++    a = run([
++        'python', '../helper_scripts/parse_multiple_chains.py',
++        '--input_path', folder_with_pdbs,
++        '--output_path', path_for_parsed_chains
++    ])
++    assert a.returncode == 0, "Error parsing multiple chains"
++
++    # Run the main ProteinMPNN script
++    a = run([
++        'python', '../protein_mpnn_run.py',
++        '--jsonl_path', path_for_parsed_chains,
++        '--out_folder', output_dir,
++        '--bias_AA_jsonl', path_for_bias,
++        '--num_seq_per_target', str(args.num_seq_per_target),
++        '--sampling_temp', str(args.sampling_temp),
++        '--seed', str(args.seed),
++        '--batch_size', str(args.batch_size),
++        '--precision', args.precision
++    ])
++    assert a.returncode == 0, "Error running protein folding script"
++
++if __name__ == "__main__":
++    import sys
++    main(sys.argv)
++
+diff --git a/examples/script_example_pssm.py b/examples/script_example_pssm.py
+new file mode 100644
+index 0000000..2be1b93
+--- /dev/null
++++ b/examples/script_example_pssm.py
+@@ -0,0 +1,85 @@
++#!/usr/bin/env python
++# encoding: utf-8
++
++import os
++from subprocess import run
++from argparse import ArgumentParser
++
++def main(argv):
++    # Argument parsing
++    parser = ArgumentParser(description="Run ProteinMPNN pipeline with PSSM inputs")
++    parser.add_argument('--pssm_input', help="PSSM input directory", default="/ProteinMPNN/inputs/PSSM_inputs")
++    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
++    parser.add_argument('--output', help="Output directory", default="/outputs/example_pssm_outputs")
++    parser.add_argument('--chains_to_design', default="A B", help="Chains to design")
++    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
++    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
++    parser.add_argument('--seed', type=int, default=37, help="Random seed")
++    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
++    parser.add_argument('--pssm_multi', type=float, default=0.3, help="PSSM multiplier")
++    parser.add_argument('--pssm_bias_flag', type=int, default=1, help="PSSM bias flag")
++    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
++    args = parser.parse_args()
++
++    # Print the input arguments for visibility
++    print(f"PSSM Input directory: {args.pssm_input}")
++    print(f"Input data directory: {args.input}")
++    # Check and create output directory if it doesn't exist
++    output_dir = args.output
++    if not os.path.exists(output_dir):
++        os.makedirs(output_dir)
++
++    # Paths for output files
++    folder_with_pdbs = args.input
++    pssm_input_path = args.pssm_input
++    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
++    path_for_assigned_chains = os.path.join(output_dir, "assigned_pdbs.jsonl")
++    pssm_output_path = os.path.join(output_dir, "pssm.jsonl")
++
++    # Run parsing script
++    a = run([
++        'python', '../helper_scripts/parse_multiple_chains.py',
++        '--input_path', folder_with_pdbs,
++        '--output_path', path_for_parsed_chains
++    ])
++    assert a.returncode == 0, "Error parsing multiple chains"
++
++    # Run assign fixed chains script
++    a = run([
++        'python', '../helper_scripts/assign_fixed_chains.py',
++        '--input_path', path_for_parsed_chains,
++        '--output_path', path_for_assigned_chains,
++        '--chain_list', args.chains_to_design
++    ])
++    assert a.returncode == 0, "Error assigning fixed chains"
++
++    # Run make PSSM input dictionary script
++    a = run([
++        'python', '../helper_scripts/make_pssm_input_dict.py',
++        '--jsonl_input_path', path_for_parsed_chains,
++        '--PSSM_input_path', pssm_input_path,
++        '--output_path', pssm_output_path
++    ])
++    assert a.returncode == 0, "Error creating PSSM input dictionary"
++
++    # Run the main ProteinMPNN script with PSSM
++    a = run([
++        'python', '../protein_mpnn_run.py',
++        '--jsonl_path', path_for_parsed_chains,
++        '--chain_id_jsonl', path_for_assigned_chains,
++        '--out_folder', output_dir,
++        '--num_seq_per_target', str(args.num_seq_per_target),
++        '--sampling_temp', str(args.sampling_temp),
++        '--seed', str(args.seed),
++        '--batch_size', str(args.batch_size),
++        '--pssm_jsonl', pssm_output_path,
++        '--pssm_multi', str(args.pssm_multi),
++        '--pssm_bias_flag', str(args.pssm_bias_flag),
++        '--precision', args.precision
++    ])
++    assert a.returncode == 0, "Error running protein folding script"
++
++if __name__ == "__main__":
++    import sys
++    main(sys.argv)
++
 diff --git a/protein_mpnn_run.py b/protein_mpnn_run.py
 index 27816ee..e76aa36 100644
 --- a/protein_mpnn_run.py
@@ -343,879 +1219,3 @@ index 27816ee..e76aa36 100644
 +
 +    args = argparser.parse_args()
 +    main(args)
-diff --git a/python_scripts/script_example_1.py b/python_scripts/script_example_1.py
-new file mode 100644
-index 0000000..93d04ac
---- /dev/null
-+++ b/python_scripts/script_example_1.py
-@@ -0,0 +1,52 @@
-+#!/usr/bin/env python
-+# encoding: utf-8
-+import os
-+from subprocess import run
-+from argparse import ArgumentParser
-+
-+def main(argv):
-+    # Argument parsing
-+    parser = ArgumentParser(description="Run protein folding scripts")
-+    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_monomers/pdbs")
-+    parser.add_argument('--output', help="Output directory", default="/outputs/example_1_outputs")
-+    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
-+    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
-+    parser.add_argument('--seed', type=int, default=37, help="Random seed")
-+    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
-+    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
-+    args = parser.parse_args()
-+
-+    # Print the input arguments for visibility
-+    print(f"Input directory: {args.input}")
-+    # Check and create output directory if it doesn't exist
-+    output_dir = args.output
-+    if not os.path.exists(output_dir):
-+        os.makedirs(output_dir)
-+
-+    folder_with_pdbs = args.input
-+    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
-+
-+    # Run parsing script
-+    a = run([
-+        'python', '../helper_scripts/parse_multiple_chains.py',
-+        '--input_path', folder_with_pdbs,
-+        '--output_path', path_for_parsed_chains
-+    ])
-+    assert a.returncode == 0, "Error parsing multiple chains"
-+
-+    # Run protein folding script
-+    a = run([
-+        'python', '../protein_mpnn_run.py',
-+        '--jsonl_path', path_for_parsed_chains,
-+        '--out_folder', output_dir,
-+        '--num_seq_per_target', str(args.num_seq_per_target),
-+        '--sampling_temp', str(args.sampling_temp),
-+        '--seed', str(args.seed),
-+        '--batch_size', str(args.batch_size),
-+        '--precision', args.precision
-+    ])
-+    assert a.returncode == 0, "Error running protein folding script"
-+
-+if __name__ == "__main__":
-+    import sys
-+    main(sys.argv)
-diff --git a/python_scripts/script_example_2.py b/python_scripts/script_example_2.py
-new file mode 100644
-index 0000000..dc43474
---- /dev/null
-+++ b/python_scripts/script_example_2.py
-@@ -0,0 +1,66 @@
-+#!/usr/bin/env python
-+# encoding: utf-8
-+import os
-+from subprocess import run
-+from argparse import ArgumentParser
-+
-+def main(argv):
-+    # Argument parsing
-+    parser = ArgumentParser(description="Run protein folding with assigned chains")
-+    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
-+    parser.add_argument('--output', help="Output directory", default="/outputs/example_2_outputs")
-+    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A B")
-+    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
-+    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
-+    parser.add_argument('--seed', type=int, default=37, help="Random seed")
-+    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
-+    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
-+    args = parser.parse_args()
-+
-+    # Print the input arguments for visibility
-+    print(f"Input data directory: {args.input}")
-+    print(f"Chains to design: {args.chains_to_design}")
-+    # Check and create output directory if it doesn't exist
-+    output_dir = args.output
-+    if not os.path.exists(output_dir):
-+        os.makedirs(output_dir)
-+
-+    folder_with_pdbs = args.input
-+    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
-+    path_for_assigned_chains = os.path.join(output_dir, "assigned_pdbs.jsonl")
-+
-+    # Run parsing script
-+    a = run([
-+        'python', '../helper_scripts/parse_multiple_chains.py',
-+        '--input_path', folder_with_pdbs,
-+        '--output_path', path_for_parsed_chains
-+    ])
-+    assert a.returncode == 0, "Error parsing multiple chains"
-+
-+    # Run chain assignment script
-+    a = run([
-+        'python', '../helper_scripts/assign_fixed_chains.py',
-+        '--input_path', path_for_parsed_chains,
-+        '--output_path', path_for_assigned_chains,
-+        '--chain_list', args.chains_to_design
-+    ])
-+    assert a.returncode == 0, "Error assigning fixed chains"
-+
-+    # Run protein folding script
-+    a = run([
-+        'python', '../protein_mpnn_run.py',
-+        '--jsonl_path', path_for_parsed_chains,
-+        '--chain_id_jsonl', path_for_assigned_chains,
-+        '--out_folder', output_dir,
-+        '--num_seq_per_target', str(args.num_seq_per_target),
-+        '--sampling_temp', str(args.sampling_temp),
-+        '--seed', str(args.seed),
-+        '--batch_size', str(args.batch_size),
-+        '--precision', args.precision
-+    ])
-+    assert a.returncode == 0, "Error running protein folding script"
-+
-+if __name__ == "__main__":
-+    import sys
-+    main(sys.argv)
-+
-diff --git a/python_scripts/script_example_3.py b/python_scripts/script_example_3.py
-new file mode 100644
-index 0000000..83a21d3
---- /dev/null
-+++ b/python_scripts/script_example_3.py
-@@ -0,0 +1,47 @@
-+#!/usr/bin/env python
-+# encoding: utf-8
-+import os
-+from subprocess import run
-+from argparse import ArgumentParser
-+
-+def main(argv):
-+    # Argument parsing
-+    parser = ArgumentParser(description="Run protein folding on specific PDB and chains")
-+    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/3HTN.pdb")
-+    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A")
-+    parser.add_argument('--output', help="Output directory", default="/outputs/example_3_outputs")
-+    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
-+    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
-+    parser.add_argument('--seed', type=int, default=37, help="Random seed")
-+    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
-+    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
-+    args = parser.parse_args()
-+
-+    # Print the input arguments for visibility
-+    print(f"Path to the PDB file: {args.pdb_path}")
-+    print(f"Chains to design: {args.chains_to_design}")
-+    # Check and create output directory if it doesn't exist
-+    output_dir = args.output
-+    if not os.path.exists(output_dir):
-+        os.makedirs(output_dir)
-+
-+    pdb_path = args.pdb_path
-+
-+    # Run protein folding script
-+    a = run([
-+        'python', '../protein_mpnn_run.py',
-+        '--pdb_path', pdb_path,
-+        '--pdb_path_chains', args.chains_to_design,
-+        '--out_folder', output_dir,
-+        '--num_seq_per_target', str(args.num_seq_per_target),
-+        '--sampling_temp', str(args.sampling_temp),
-+        '--seed', str(args.seed),
-+        '--batch_size', str(args.batch_size),
-+        '--precision', args.precision
-+    ])
-+    assert a.returncode == 0, "Error running protein folding script"
-+
-+if __name__ == "__main__":
-+    import sys
-+    main(sys.argv)
-+
-diff --git a/python_scripts/script_example_3_score_only.py b/python_scripts/script_example_3_score_only.py
-new file mode 100644
-index 0000000..6308b96
---- /dev/null
-+++ b/python_scripts/script_example_3_score_only.py
-@@ -0,0 +1,50 @@
-+#!/usr/bin/env python
-+# encoding: utf-8
-+import os
-+from subprocess import run
-+from argparse import ArgumentParser
-+
-+def main(argv):
-+    # Argument parsing
-+    parser = ArgumentParser(description="Run protein folding and scoring on specific PDB and chains")
-+    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/3HTN.pdb")
-+    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A")
-+    parser.add_argument('--output', help="Output directory", default="/outputs/example_3_score_only_outputs")
-+    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
-+    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
-+    parser.add_argument('--score_only', type=int, default=1, help="Score only without sequence generation")
-+    parser.add_argument('--seed', type=int, default=37, help="Random seed")
-+    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
-+    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
-+    args = parser.parse_args()
-+
-+    # Print the input arguments for visibility
-+    print(f"Path to the PDB file: {args.pdb_path}")
-+    print(f"Chains to design: {args.chains_to_design}")
-+
-+    # Check and create output directory if it doesn't exist
-+    output_dir = args.output
-+    if not os.path.exists(output_dir):
-+        os.makedirs(output_dir)
-+
-+    pdb_path = args.pdb_path
-+
-+    # Run protein folding script with scoring only
-+    a = run([
-+        'python', '../protein_mpnn_run.py',
-+        '--pdb_path', pdb_path,
-+        '--pdb_path_chains', args.chains_to_design,
-+        '--out_folder', output_dir,
-+        '--num_seq_per_target', str(args.num_seq_per_target),
-+        '--sampling_temp', str(args.sampling_temp),
-+        '--score_only', str(args.score_only),
-+        '--seed', str(args.seed),
-+        '--batch_size', str(args.batch_size),
-+        '--precision', args.precision
-+    ])
-+    assert a.returncode == 0, "Error running protein folding script"
-+
-+if __name__ == "__main__":
-+    import sys
-+    main(sys.argv)
-+
-diff --git a/python_scripts/script_example_3_score_only_from_fasta.py b/python_scripts/script_example_3_score_only_from_fasta.py
-new file mode 100644
-index 0000000..4bcaa23
---- /dev/null
-+++ b/python_scripts/script_example_3_score_only_from_fasta.py
-@@ -0,0 +1,57 @@
-+#!/usr/bin/env python
-+# encoding: utf-8
-+
-+import os
-+from subprocess import run
-+from argparse import ArgumentParser
-+
-+def main(argv):
-+    # Argument parsing
-+    parser = ArgumentParser(description="Run protein folding and scoring from a FASTA file on specific PDB and chains")
-+    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/3HTN.pdb")
-+    parser.add_argument('--path_to_fasta', help="Path to the FASTA file", default="/ProteinMPNN/outputs/example_3_outputs/seqs/3HTN.fa")
-+    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A")
-+    parser.add_argument('--output', help="Output directory", default="/outputs/example_3_score_only_from_fasta_outputs")
-+    parser.add_argument('--num_seq_per_target', type=int, default=5, help="Number of sequences per target")
-+    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
-+    parser.add_argument('--score_only', type=int, default=1, help="Score only without sequence generation")
-+    parser.add_argument('--seed', type=int, default=13, help="Random seed")
-+    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
-+    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
-+    args = parser.parse_args()
-+
-+    # Print the input arguments for visibility
-+    print(f"Path to the PDB file: {args.pdb_path}")
-+    print(f"Path to the FASTA file: {args.path_to_fasta}")
-+    print(f"Chains to design: {args.chains_to_design}")
-+
-+    # Print the input arguments for visibility
-+    print(f"Path to the PDB file: {args.pdb_path}")
-+    print(f"Path to the FASTA file: {args.path_to_fasta}")
-+    # Check and create output directory if it doesn't exist
-+    output_dir = args.output
-+    if not os.path.exists(output_dir):
-+        os.makedirs(output_dir)
-+
-+    pdb_path = args.pdb_path
-+    path_to_fasta = args.path_to_fasta
-+
-+    # Run protein folding script with scoring only from FASTA
-+    a = run([
-+        'python', '../protein_mpnn_run.py',
-+        '--path_to_fasta', path_to_fasta,
-+        '--pdb_path', pdb_path,
-+        '--pdb_path_chains', args.chains_to_design,
-+        '--out_folder', output_dir,
-+        '--num_seq_per_target', str(args.num_seq_per_target),
-+        '--sampling_temp', str(args.sampling_temp),
-+        '--score_only', str(args.score_only),
-+        '--seed', str(args.seed),
-+        '--batch_size', str(args.batch_size),
-+        '--precision', args.precision
-+    ])
-+    assert a.returncode == 0, "Error running protein folding script"
-+
-+if __name__ == "__main__":
-+    import sys
-+    main(sys.argv)
-diff --git a/python_scripts/script_example_4.py b/python_scripts/script_example_4.py
-new file mode 100644
-index 0000000..96b211d
---- /dev/null
-+++ b/python_scripts/script_example_4.py
-@@ -0,0 +1,80 @@
-+#!/usr/bin/env python
-+# encoding: utf-8
-+import os
-+from subprocess import run
-+from argparse import ArgumentParser
-+
-+def main(argv):
-+    # Argument parsing
-+    parser = ArgumentParser(description="Run protein folding with fixed positions on specific chains")
-+    parser.add_argument('--input', help="Input folder with PDBs", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
-+    parser.add_argument('--output', help="Output directory", default="/outputs/example_4_outputs")
-+    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A C")
-+    parser.add_argument('--fixed_positions', help="Fixed positions for the chains", default="1 2 3 4 5 6 7 8 23 25, 10 11 12 13 14 15 16 17 18 19 20 40")
-+    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
-+    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
-+    parser.add_argument('--seed', type=int, default=37, help="Random seed")
-+    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
-+    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
-+    args = parser.parse_args()
-+
-+    # Print the input arguments for visibility
-+    print(f"Input folder with PDBs : {args.input}")
-+    print(f"Chains to design: {args.chains_to_design}")
-+
-+    # Check and create output directory if it doesn't exist
-+    output_dir = args.output
-+    if not os.path.exists(output_dir):
-+        os.makedirs(output_dir)
-+
-+    folder_with_pdbs = args.input
-+    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
-+    path_for_assigned_chains = os.path.join(output_dir, "assigned_pdbs.jsonl")
-+    path_for_fixed_positions = os.path.join(output_dir, "fixed_pdbs.jsonl")
-+
-+    # Run parsing script
-+    a = run([
-+        'python', '../helper_scripts/parse_multiple_chains.py',
-+        '--input_path', folder_with_pdbs,
-+        '--output_path', path_for_parsed_chains
-+    ])
-+    assert a.returncode == 0, "Error parsing multiple chains"
-+
-+    # Assign chains to design
-+    a = run([
-+        'python', '../helper_scripts/assign_fixed_chains.py',
-+        '--input_path', path_for_parsed_chains,
-+        '--output_path', path_for_assigned_chains,
-+        '--chain_list', args.chains_to_design
-+    ])
-+    assert a.returncode == 0, "Error assigning fixed chains"
-+
-+    # Make fixed positions dictionary
-+    a = run([
-+        'python', '../helper_scripts/make_fixed_positions_dict.py',
-+        '--input_path', path_for_parsed_chains,
-+        '--output_path', path_for_fixed_positions,
-+        '--chain_list', args.chains_to_design,
-+        '--position_list', args.fixed_positions
-+    ])
-+    assert a.returncode == 0, "Error making fixed positions dictionary"
-+
-+    # Run protein folding script
-+    a = run([
-+        'python', '../protein_mpnn_run.py',
-+        '--jsonl_path', path_for_parsed_chains,
-+        '--chain_id_jsonl', path_for_assigned_chains,
-+        '--fixed_positions_jsonl', path_for_fixed_positions,
-+        '--out_folder', output_dir,
-+        '--num_seq_per_target', str(args.num_seq_per_target),
-+        '--sampling_temp', str(args.sampling_temp),
-+        '--seed', str(args.seed),
-+        '--batch_size', str(args.batch_size),
-+        '--precision', args.precision
-+    ])
-+    assert a.returncode == 0, "Error running protein folding script"
-+
-+if __name__ == "__main__":
-+    import sys
-+    main(sys.argv)
-+
-diff --git a/python_scripts/script_example_4_non_fixed.py b/python_scripts/script_example_4_non_fixed.py
-new file mode 100644
-index 0000000..6674ad6
---- /dev/null
-+++ b/python_scripts/script_example_4_non_fixed.py
-@@ -0,0 +1,80 @@
-+#!/usr/bin/env python
-+# encoding: utf-8
-+import os
-+from subprocess import run
-+from argparse import ArgumentParser
-+
-+def main(argv):
-+    # Argument parsing
-+    parser = ArgumentParser(description="Run protein folding with non-fixed positions on specific chains")
-+    parser.add_argument('--input', help="Input folder with PDBs", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
-+    parser.add_argument('--output', help="Output directory", default="/outputs/example_4_non_fixed_outputs")
-+    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A C")
-+    parser.add_argument('--design_only_positions', help="Design only these positions", default="1 2 3 4 5 6 7 8 9 10, 3 4 5 6 7 8")
-+    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
-+    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
-+    parser.add_argument('--seed', type=int, default=37, help="Random seed")
-+    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
-+    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
-+    args = parser.parse_args()
-+
-+    # Print the input arguments for visibility
-+    print(f"Input data directory: {args.input}")
-+    print(f"Chains to design: {args.chains_to_design}")
-+    # Check and create output directory if it doesn't exist
-+    output_dir = args.output
-+    if not os.path.exists(output_dir):
-+        os.makedirs(output_dir)
-+
-+    folder_with_pdbs = args.input
-+    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
-+    path_for_assigned_chains = os.path.join(output_dir, "assigned_pdbs.jsonl")
-+    path_for_fixed_positions = os.path.join(output_dir, "fixed_pdbs.jsonl")
-+
-+    # Run parsing script
-+    a = run([
-+        'python', '../helper_scripts/parse_multiple_chains.py',
-+        '--input_path', folder_with_pdbs,
-+        '--output_path', path_for_parsed_chains
-+    ])
-+    assert a.returncode == 0, "Error parsing multiple chains"
-+
-+    # Assign chains to design
-+    a = run([
-+        'python', '../helper_scripts/assign_fixed_chains.py',
-+        '--input_path', path_for_parsed_chains,
-+        '--output_path', path_for_assigned_chains,
-+        '--chain_list', args.chains_to_design
-+    ])
-+    assert a.returncode == 0, "Error assigning fixed chains"
-+
-+    # Make non-fixed positions dictionary
-+    a = run([
-+        'python', '../helper_scripts/make_fixed_positions_dict.py',
-+        '--input_path', path_for_parsed_chains,
-+        '--output_path', path_for_fixed_positions,
-+        '--chain_list', args.chains_to_design,
-+        '--position_list', args.design_only_positions,
-+        '--specify_non_fixed'
-+    ])
-+    assert a.returncode == 0, "Error making non-fixed positions dictionary"
-+
-+    # Run protein folding script
-+    a = run([
-+        'python', '../protein_mpnn_run.py',
-+        '--jsonl_path', path_for_parsed_chains,
-+        '--chain_id_jsonl', path_for_assigned_chains,
-+        '--fixed_positions_jsonl', path_for_fixed_positions,
-+        '--out_folder', output_dir,
-+        '--num_seq_per_target', str(args.num_seq_per_target),
-+        '--sampling_temp', str(args.sampling_temp),
-+        '--seed', str(args.seed),
-+        '--batch_size', str(args.batch_size),
-+        '--precision', args.precision
-+    ])
-+    assert a.returncode == 0, "Error running protein folding script"
-+
-+if __name__ == "__main__":
-+    import sys
-+    main(sys.argv)
-+
-diff --git a/python_scripts/script_example_5.py b/python_scripts/script_example_5.py
-new file mode 100644
-index 0000000..487fbfe
---- /dev/null
-+++ b/python_scripts/script_example_5.py
-@@ -0,0 +1,94 @@
-+#!/usr/bin/env python
-+# encoding: utf-8
-+
-+import os
-+from subprocess import run
-+from argparse import ArgumentParser
-+
-+def main(argv):
-+    # Argument parsing
-+    parser = ArgumentParser(description="Run ProteinMPNN pipeline with multiple chains and positions")
-+    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
-+    parser.add_argument('--output', help="Output directory", default="/outputs/example_5_outputs")
-+    parser.add_argument('--chains_to_design', default="A C", help="Chains to design")
-+    parser.add_argument('--fixed_positions', default="9 10 11 12 13 14 15 16 17 18 19 20 21 22 23, 10 11 18 19 20 22", help="Fixed positions for the chains")
-+    parser.add_argument('--tied_positions', default="1 2 3 4 5 6 7 8, 1 2 3 4 5 6 7 8", help="Tied positions for the chains")
-+    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
-+    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
-+    parser.add_argument('--seed', type=int, default=37, help="Random seed")
-+    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
-+    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
-+    args = parser.parse_args()
-+
-+    # Print the input arguments for visibility
-+    print(f"Input directory: {args.input}")
-+    print(f"Chains to design: {args.chains_to_design}")
-+    # Check and create output directory if it doesn't exist
-+    output_dir = args.output
-+    if not os.path.exists(output_dir):
-+        os.makedirs(output_dir)
-+
-+    # Paths for output files
-+    folder_with_pdbs = args.input
-+    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
-+    path_for_assigned_chains = os.path.join(output_dir, "assigned_pdbs.jsonl")
-+    path_for_fixed_positions = os.path.join(output_dir, "fixed_pdbs.jsonl")
-+    path_for_tied_positions = os.path.join(output_dir, "tied_pdbs.jsonl")
-+
-+    # Run the parsing script
-+    a = run([
-+        'python', '../helper_scripts/parse_multiple_chains.py',
-+        '--input_path', folder_with_pdbs,
-+        '--output_path', path_for_parsed_chains
-+    ])
-+    assert a.returncode == 0, "Error parsing multiple chains"
-+
-+    # Run the chain assignment script
-+    a = run([
-+        'python', '../helper_scripts/assign_fixed_chains.py',
-+        '--input_path', path_for_parsed_chains,
-+        '--output_path', path_for_assigned_chains,
-+        '--chain_list', args.chains_to_design
-+    ])
-+    assert a.returncode == 0, "Error assigning fixed chains"
-+
-+    # Run the fixed positions script
-+    a = run([
-+        'python', '../helper_scripts/make_fixed_positions_dict.py',
-+        '--input_path', path_for_parsed_chains,
-+        '--output_path', path_for_fixed_positions,
-+        '--chain_list', args.chains_to_design,
-+        '--position_list', args.fixed_positions
-+    ])
-+    assert a.returncode == 0, "Error making fixed positions dict"
-+
-+    # Run the tied positions script
-+    a = run([
-+        'python', '../helper_scripts/make_tied_positions_dict.py',
-+        '--input_path', path_for_parsed_chains,
-+        '--output_path', path_for_tied_positions,
-+        '--chain_list', args.chains_to_design,
-+        '--position_list', args.tied_positions
-+    ])
-+    assert a.returncode == 0, "Error making tied positions dict"
-+
-+    # Run the main ProteinMPNN script
-+    a = run([
-+        'python', '../protein_mpnn_run.py',
-+        '--jsonl_path', path_for_parsed_chains,
-+        '--chain_id_jsonl', path_for_assigned_chains,
-+        '--fixed_positions_jsonl', path_for_fixed_positions,
-+        '--tied_positions_jsonl', path_for_tied_positions,
-+        '--out_folder', output_dir,
-+        '--num_seq_per_target', str(args.num_seq_per_target),
-+        '--sampling_temp', str(args.sampling_temp),
-+        '--seed', str(args.seed),
-+        '--batch_size', str(args.batch_size),
-+        '--precision', args.precision
-+    ])
-+    assert a.returncode == 0, "Error running protein folding script"
-+
-+if __name__ == "__main__":
-+    import sys
-+    main(sys.argv)
-+
-diff --git a/python_scripts/script_example_6.py b/python_scripts/script_example_6.py
-new file mode 100644
-index 0000000..3e0c614
---- /dev/null
-+++ b/python_scripts/script_example_6.py
-@@ -0,0 +1,68 @@
-+#!/usr/bin/env python
-+# encoding: utf-8
-+
-+import os
-+from subprocess import run
-+from argparse import ArgumentParser
-+
-+def main(argv):
-+    # Argument parsing
-+    parser = ArgumentParser(description="Run ProteinMPNN pipeline with homooligomers and tied positions")
-+    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_homooligomers/pdbs/")
-+    parser.add_argument('--output', help="Output directory", default="/outputs/example_6_outputs")
-+    parser.add_argument('--homooligomer', type=int, default=1, help="Homooligomer flag")
-+    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
-+    parser.add_argument('--sampling_temp', type=float, default=0.2, help="Sampling temperature")
-+    parser.add_argument('--seed', type=int, default=37, help="Random seed")
-+    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
-+    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
-+    args = parser.parse_args()
-+
-+    # Print the input arguments for visibility
-+    print(f"Input data directory: {args.input}")
-+    # Check and create output directory if it doesn't exist
-+    output_dir = args.output
-+    if not os.path.exists(output_dir):
-+        os.makedirs(output_dir)
-+
-+    # Paths for output files
-+    folder_with_pdbs = args.input
-+    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
-+    path_for_tied_positions = os.path.join(output_dir, "tied_pdbs.jsonl")
-+    path_for_designed_sequences = os.path.join(output_dir, "temp_0.1")
-+
-+    # Run the parsing script
-+    a = run([
-+        'python', '../helper_scripts/parse_multiple_chains.py',
-+        '--input_path', folder_with_pdbs,
-+        '--output_path', path_for_parsed_chains
-+    ])
-+    assert a.returncode == 0, "Error parsing multiple chains"
-+
-+    # Run the tied positions script
-+    a = run([
-+        'python', '../helper_scripts/make_tied_positions_dict.py',
-+        '--input_path', path_for_parsed_chains,
-+        '--output_path', path_for_tied_positions,
-+        '--homooligomer', str(args.homooligomer)
-+    ])
-+    assert a.returncode == 0, "Error making tied positions dict"
-+
-+    # Run the main ProteinMPNN script
-+    a = run([
-+        'python', '../protein_mpnn_run.py',
-+        '--jsonl_path', path_for_parsed_chains,
-+        '--tied_positions_jsonl', path_for_tied_positions,
-+        '--out_folder', output_dir,
-+        '--num_seq_per_target', str(args.num_seq_per_target),
-+        '--sampling_temp', str(args.sampling_temp),
-+        '--seed', str(args.seed),
-+        '--batch_size', str(args.batch_size),
-+        '--precision', args.precision
-+    ])
-+    assert a.returncode == 0, "Error running protein folding script"
-+
-+if __name__ == "__main__":
-+    import sys
-+    main(sys.argv)
-+
-diff --git a/python_scripts/script_example_7.py b/python_scripts/script_example_7.py
-new file mode 100644
-index 0000000..6dda7fb
---- /dev/null
-+++ b/python_scripts/script_example_7.py
-@@ -0,0 +1,57 @@
-+#!/usr/bin/env python
-+# encoding: utf-8
-+
-+import os
-+from subprocess import run
-+from argparse import ArgumentParser
-+
-+def main(argv):
-+    # Argument parsing
-+    parser = ArgumentParser(description="Run ProteinMPNN pipeline for monomers")
-+    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_monomers/pdbs/")
-+    parser.add_argument('--output', help="Output directory", default="/outputs/example_7_outputs")
-+    parser.add_argument('--num_seq_per_target', type=int, default=1, help="Number of sequences per target")
-+    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
-+    parser.add_argument('--unconditional_probs_only', type=int, default=1, help="Use unconditional probabilities only")
-+    parser.add_argument('--seed', type=int, default=37, help="Random seed")
-+    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
-+    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
-+    args = parser.parse_args()
-+
-+    # Print the input arguments for visibility
-+    print(f"Input data directory: {args.input}")
-+    # Check and create output directory if it doesn't exist
-+    output_dir = args.output
-+    if not os.path.exists(output_dir):
-+        os.makedirs(output_dir)
-+
-+    # Paths for output files
-+    folder_with_pdbs = args.input
-+    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
-+
-+    # Run the parsing script
-+    a = run([
-+        'python', '../helper_scripts/parse_multiple_chains.py',
-+        '--input_path', folder_with_pdbs,
-+        '--output_path', path_for_parsed_chains
-+    ])
-+    assert a.returncode == 0, "Error parsing multiple chains"
-+
-+    # Run the main ProteinMPNN script
-+    a = run([
-+        'python', '../protein_mpnn_run.py',
-+        '--jsonl_path', path_for_parsed_chains,
-+        '--out_folder', output_dir,
-+        '--num_seq_per_target', str(args.num_seq_per_target),
-+        '--sampling_temp', str(args.sampling_temp),
-+        '--unconditional_probs_only', str(args.unconditional_probs_only),
-+        '--seed', str(args.seed),
-+        '--batch_size', str(args.batch_size),
-+        '--precision', args.precision
-+    ])
-+    assert a.returncode == 0, "Error running protein folding script"
-+
-+if __name__ == "__main__":
-+    import sys
-+    main(sys.argv)
-+
-diff --git a/python_scripts/script_example_8.py b/python_scripts/script_example_8.py
-new file mode 100644
-index 0000000..0c3b518
---- /dev/null
-+++ b/python_scripts/script_example_8.py
-@@ -0,0 +1,68 @@
-+#!/usr/bin/env python
-+# encoding: utf-8
-+
-+import os
-+from subprocess import run
-+from argparse import ArgumentParser
-+
-+def main(argv):
-+    # Argument parsing
-+    parser = ArgumentParser(description="Run ProteinMPNN pipeline with amino acid bias")
-+    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_monomers/pdbs/")
-+    parser.add_argument('--output', help="Output directory", default="/outputs/example_8_outputs")
-+    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
-+    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
-+    parser.add_argument('--seed', type=int, default=37, help="Random seed")
-+    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
-+    parser.add_argument('--AA_list', default="D E H K N Q R S T W Y", help="List of amino acids")
-+    parser.add_argument('--bias_list', default="1.39 1.39 1.39 1.39 1.39 1.39 1.39 1.39 1.39 1.39 1.39", help="Bias list for amino acids")
-+    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
-+    args = parser.parse_args()
-+
-+    # Print the input arguments for visibility
-+    print(f"Input data directory: {args.input}")
-+    # Check and create output directory if it doesn't exist
-+    output_dir = args.output
-+    if not os.path.exists(output_dir):
-+        os.makedirs(output_dir)
-+
-+    # Paths for output files
-+    folder_with_pdbs = args.input
-+    path_for_bias = os.path.join(output_dir, "bias_pdbs.jsonl")
-+    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
-+
-+    # Run the script to create amino acid bias
-+    a = run([
-+        'python', '../helper_scripts/make_bias_AA.py',
-+        '--output_path', path_for_bias,
-+        '--AA_list', args.AA_list,
-+        '--bias_list', args.bias_list
-+    ])
-+    assert a.returncode == 0, "Error creating bias amino acid list"
-+
-+    # Run the parsing script
-+    a = run([
-+        'python', '../helper_scripts/parse_multiple_chains.py',
-+        '--input_path', folder_with_pdbs,
-+        '--output_path', path_for_parsed_chains
-+    ])
-+    assert a.returncode == 0, "Error parsing multiple chains"
-+
-+    # Run the main ProteinMPNN script
-+    a = run([
-+        'python', '../protein_mpnn_run.py',
-+        '--jsonl_path', path_for_parsed_chains,
-+        '--out_folder', output_dir,
-+        '--bias_AA_jsonl', path_for_bias,
-+        '--num_seq_per_target', str(args.num_seq_per_target),
-+        '--sampling_temp', str(args.sampling_temp),
-+        '--seed', str(args.seed),
-+        '--batch_size', str(args.batch_size),
-+        '--precision', args.precision
-+    ])
-+    assert a.returncode == 0, "Error running protein folding script"
-+
-+if __name__ == "__main__":
-+    import sys
-+    main(sys.argv)
-+
-diff --git a/python_scripts/script_example_pssm.py b/python_scripts/script_example_pssm.py
-new file mode 100644
-index 0000000..2be1b93
---- /dev/null
-+++ b/python_scripts/script_example_pssm.py
-@@ -0,0 +1,85 @@
-+#!/usr/bin/env python
-+# encoding: utf-8
-+
-+import os
-+from subprocess import run
-+from argparse import ArgumentParser
-+
-+def main(argv):
-+    # Argument parsing
-+    parser = ArgumentParser(description="Run ProteinMPNN pipeline with PSSM inputs")
-+    parser.add_argument('--pssm_input', help="PSSM input directory", default="/ProteinMPNN/inputs/PSSM_inputs")
-+    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
-+    parser.add_argument('--output', help="Output directory", default="/outputs/example_pssm_outputs")
-+    parser.add_argument('--chains_to_design', default="A B", help="Chains to design")
-+    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
-+    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
-+    parser.add_argument('--seed', type=int, default=37, help="Random seed")
-+    parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
-+    parser.add_argument('--pssm_multi', type=float, default=0.3, help="PSSM multiplier")
-+    parser.add_argument('--pssm_bias_flag', type=int, default=1, help="PSSM bias flag")
-+    parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
-+    args = parser.parse_args()
-+
-+    # Print the input arguments for visibility
-+    print(f"PSSM Input directory: {args.pssm_input}")
-+    print(f"Input data directory: {args.input}")
-+    # Check and create output directory if it doesn't exist
-+    output_dir = args.output
-+    if not os.path.exists(output_dir):
-+        os.makedirs(output_dir)
-+
-+    # Paths for output files
-+    folder_with_pdbs = args.input
-+    pssm_input_path = args.pssm_input
-+    path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
-+    path_for_assigned_chains = os.path.join(output_dir, "assigned_pdbs.jsonl")
-+    pssm_output_path = os.path.join(output_dir, "pssm.jsonl")
-+
-+    # Run parsing script
-+    a = run([
-+        'python', '../helper_scripts/parse_multiple_chains.py',
-+        '--input_path', folder_with_pdbs,
-+        '--output_path', path_for_parsed_chains
-+    ])
-+    assert a.returncode == 0, "Error parsing multiple chains"
-+
-+    # Run assign fixed chains script
-+    a = run([
-+        'python', '../helper_scripts/assign_fixed_chains.py',
-+        '--input_path', path_for_parsed_chains,
-+        '--output_path', path_for_assigned_chains,
-+        '--chain_list', args.chains_to_design
-+    ])
-+    assert a.returncode == 0, "Error assigning fixed chains"
-+
-+    # Run make PSSM input dictionary script
-+    a = run([
-+        'python', '../helper_scripts/make_pssm_input_dict.py',
-+        '--jsonl_input_path', path_for_parsed_chains,
-+        '--PSSM_input_path', pssm_input_path,
-+        '--output_path', pssm_output_path
-+    ])
-+    assert a.returncode == 0, "Error creating PSSM input dictionary"
-+
-+    # Run the main ProteinMPNN script with PSSM
-+    a = run([
-+        'python', '../protein_mpnn_run.py',
-+        '--jsonl_path', path_for_parsed_chains,
-+        '--chain_id_jsonl', path_for_assigned_chains,
-+        '--out_folder', output_dir,
-+        '--num_seq_per_target', str(args.num_seq_per_target),
-+        '--sampling_temp', str(args.sampling_temp),
-+        '--seed', str(args.seed),
-+        '--batch_size', str(args.batch_size),
-+        '--pssm_jsonl', pssm_output_path,
-+        '--pssm_multi', str(args.pssm_multi),
-+        '--pssm_bias_flag', str(args.pssm_bias_flag),
-+        '--precision', args.precision
-+    ])
-+    assert a.returncode == 0, "Error running protein folding script"
-+
-+if __name__ == "__main__":
-+    import sys
-+    main(sys.argv)
-+
