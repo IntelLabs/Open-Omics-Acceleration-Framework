@@ -75,13 +75,13 @@ export INPUT_FILE=<full-path of input pdb file>
 
 docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/<prefix> inference.input_pdb=/data 'contigmap.contigs=<contigs>' inference.num_designs=<Integer> inference.precision=<float32/bfloat16>
 ```
-## examples/design_unconditional.sh
+## examples/design_unconditional
 ```bash
 mkdir -p output
 export OUTPUT_DIR=$PWD/output
 docker run -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/design_unconditional 'contigmap.contigs=[100-200]' inference.num_designs=1
 ```
-## examples/design_motifscaffolding.sh
+## examples/design_motifscaffolding
 ```bash
 mkdir -p output
 export OUTPUT_DIR=$PWD/output
@@ -89,6 +89,82 @@ export INPUT_FILE=$PWD/examples/input_pdbs/5TPN.pdb
 chmod a+w $OUTPUT_DIR
 docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/design_motifscaffolding inference.input_pdb=/data 'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=1 inference.precision=float32
 ```
+## examples/design_motifscaffolding_inpaintseq
+```bash
+mkdir -p output
+export OUTPUT_DIR=$PWD/output
+export INPUT_FILE=$PWD/examples/input_pdbs/5TPN.pdb
+
+docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion_latest:latest python run_inference.py inference.output_prefix=/output/design_motifscaffolding_inpaintseq inference.input_pdb=/data 'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=1 'contigmap.inpaint_seq=[A163-168/A170-171/A179]' inference.precision=float32
+```
+## examples/design_motifscaffolding_with_target
+```bash
+mkdir -p output
+export OUTPUT_DIR=$PWD/output
+export INPUT_FILE=$PWD/examples/input_pdbs/1YCR.pdb
+
+docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion_latest:latest python run_inference.py inference.output_prefix=/output/design_motifscaffolding_with_target inference.input_pdb=/data 'contigmap.contigs=[A25-109/0 0-70/B17-29/0-70]' contigmap.length=70-120 inference.num_designs=1 inference.precision=float32 inference.ckpt_override_path=../models/Complex_base_ckpt.pt
+```
+## examples/design_partialdiffusion
+```bash
+mkdir -p output
+export OUTPUT_DIR=$PWD/output
+export INPUT_FILE=$PWD/examples/input_pdbs/2KL8.pdb
+
+docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion_latest:latest python run_inference.py  inference.output_prefix=/output/design_partialdiffusion inference.input_pdb=/data 'contigmap.contigs=[79-79]' inference.num_designs=1 diffuser.partial_T=10 inference.precision=float32
+```
+## examples/design_partialdiffusion_multipleseq
+```bash
+mkdir -p output
+export OUTPUT_DIR=$PWD/output
+export INPUT_FILE=$PWD/examples/input_pdbs/peptide_complex_ideal_helix.pdb
+
+docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion_latest:latest python run_inference.py   inference.output_prefix=/output/design_partialdiffusion_peptidewithmultiplesequence inference.input_pdb=/data  'contigmap.contigs=["172-172/0 34-34"]' diffuser.partial_T=10 inference.num_designs=1 'contigmap.provide_seq=[172-177,200-205]' inference.precision=float32
+```
+## examples/design_partialdiffusion_withseq
+```bash
+mkdir -p output
+export OUTPUT_DIR=$PWD/output
+export INPUT_FILE=$PWD/examples/input_pdbs/peptide_complex_ideal_helix.pdb
+
+docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion_latest:latest python run_inference.py inference.output_prefix=/output/design_partialdiffusion_peptidewithsequence inference.input_pdb=/data 'contigmap.contigs=["172-172/0 34-34"]' diffuser.partial_T=10 inference.num_designs=1 'contigmap.provide_seq=[172-205]' inference.precision=float32
+```
+## examples(Binder)/design_ppi
+```bash
+mkdir -p output
+export OUTPUT_DIR=$PWD/output
+export INPUT_FILE=$PWD/examples/input_pdbs/insulin_target.pdb
+docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion_latest:latest python run_inference.py inference.output_prefix=/output/design_ppi inference.input_pdb=/data 'contigmap.contigs=[A1-150/0 70-100]' 'ppi.hotspot_res=[A59,A83,A91]' inference.num_designs=1 denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.precision=float32
+```
+## examples(Foldcondition)/design_ppi_flexible_peptide
+```bash
+mkdir -p output
+export OUTPUT_DIR=$PWD/output
+export INPUT_FILE=$PWD/examples/input_pdbs/3IOL.pdb
+
+docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion_latest:latest python run_inference.py inference.output_prefix=/output/design_ppi_flexible_peptide inference.input_pdb=/data 'contigmap.contigs=[B10-35/0 70-100]' 'ppi.hotspot_res=[B28,B29]' inference.num_designs=1 'contigmap.inpaint_str=[B10-35]' inference.precision=float32
+```
+## examples(Foldcondition)/design_ppi_scaffolded
+```bash
+mkdir -p output
+export OUTPUT_DIR=$PWD/output
+export INPUT_FILE=$PWD/examples/input_pdbs/insulin_target.pdb
+
+docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion_latest:latest python run_inference.py  scaffoldguided.target_path=/data inference.output_prefix=/output/design_ppi_scaffolded scaffoldguided.scaffoldguided=True 'ppi.hotspot_res=[A59,A83,A91]' scaffoldguided.target_pdb=True scaffoldguided.target_ss=../examples/target_folds/insulin_target_ss.pt scaffoldguided.target_adj=../examples/target_folds/insulin_target_adj.pt scaffoldguided.scaffold_dir=../examples/ppi_scaffolds/ inference.num_designs=1 denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.precision=float32
+```
+## examples/design_cyclic_oligos
+```bash
+docker run -v $OUTPUT_DIR:/output rfdiffusion_latest:latest python run_inference.py --config-name=symmetnference.symmetry="C6" inference.num_designs=1 inference.output_prefix=/output/C6_oligo 'potentials.guiding_potentials=["type:olig_contacts,weight_intra:1,weight_inter:0.1"]' potentials.olig_intra_all=True potentials.olig_inter_all=True potentials.guide_scale=2.0 potentials.guide_decay="quadratic" 'contigmap.contigs=[480-480]' inference.precision=float32
+```
+## examples/design_dihedral_oligos
+```bash
+docker run -v $OUTPUT_DIR:/output rfdiffusion_latest:latest python run_inference.py --config-name=symmetry inference.symmetry="D2" inference.num_designs=1 inference.output_prefix=/output/D2_oligo 'potentials.guiding_potentials=["type:olig_contacts,weight_intra:1,weight_inter:0.1"]' potentials.olig_intra_all=True potentials.olig_inter_all=True potentials.guide_scale=2.0 potentials.guide_decay="quadratic" 'contigmap.contigs=[320-320]' inference.precision=float32
+```
+## examples/design_tetrahedral_oligos
+```bash
+docker run -v $OUTPUT_DIR:/output rfdiffusion_latest:latest python run_inference.py --config-name=symmetry inference.symmetry="tetrahedral" inference.num_designs=1 inference.output_prefix=/output/tetrahedral_oligo 'potentials.guiding_potentials=["type:olig_contacts,weight_intra:1,weight_inter:0.1"]' potentials.olig_intra_all=True potentials.olig_inter_all=True potentials.guide_scale=2.0 potentials.guide_decay="quadratic" 'contigmap.contigs=[1200-1200]'
+```
+
 ## All steps are ended here for optimized RFdiffusion.
 
 ## The following lines are stock information of the Original RFdiffusion repo:
