@@ -66,7 +66,7 @@ ENV PATH="/opt/conda/envs/p_mpnn/bin:/opt/conda/bin:$PATH"
 #CMD source ~/.bashrc
 
 # Ensure all scripts inside ProteinMPNN/examples are executable
-RUN chmod +x /ProteinMPNN/python_scripts/*.py
+RUN chmod +x /ProteinMPNN/examples/*.py
 RUN mkdir /outputs
 
 #WORKDIR /ProteinMPNN/python_scripts
