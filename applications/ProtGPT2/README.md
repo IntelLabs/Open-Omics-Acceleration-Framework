@@ -1,9 +1,6 @@
-## Overview: OpenOmics ProtGPT2
-ProtGPT2 is a popular deep language model for Protein Design. ProtpGPT2, trained on known proteins, generates de novo proteins sequences, hence has the potential to revolutionize domains such as healthcare, agriculture, evironmental, etc. OpenOmics ProtGPT2 is a highly optimized version of the original ProtGPT2 for modern CPUs. It maintains the exact same accuracy level as original ProtGPT2.    
+# OpenOmics ProtGPT2
+ProtGPT2 is a popular deep language model for Protein Design. ProtpGPT2, trained on known proteins, generates de novo proteins sequences, hence has the potential to revolutionize domains such as healthcare, agriculture, evironmental, etc. OpenOmics ProtGPT2 is a highly optimized version of the original ProtGPT2 for modern CPUs, with support for lower precision computations. It maintains the exact same accuracy level as original ProtGPT2.    
 
-### New features
-- Acceleration using Intel OneAPI libraries
-- Supports bfloat16 precision for faster computation
 
 ## Build from source
 ```bash
@@ -49,11 +46,10 @@ docker build --build-arg http_proxy=<proxy_url> --build-arg https_proxy=<proxy_u
 
 ## Run
 ```bash
-export OUTPUT_DIR=<output_dir_path>   
-docker run -it -v $OUTPUT_DIR:/app protgpt2:latest python protgpt2.py --max_length <max_seq_len> --do_sample <True/False> --top_k <value> --repetition_penalty <value> --num_return_sequences <num_output_seqs> --eos_token_id <0>  --dtype <float32/bfloat16> --iterations <num_iters> --output_file /app/<output_file_name>   
+export OUTPUT_DIR=<output_dir_path>     ## needs a+w permission on the dir  
+docker run -it -v $OUTPUT_DIR:/output protgpt2:latest python protgpt2.py --max_length <max_seq_len> --do_sample <True/False> --top_k <value> --repetition_penalty <value> --num_return_sequences <num_output_seqs> --eos_token_id <0>  --dtype <float32/bfloat16> --iterations <num_iters> --output_file /output/<output_file_name>   
 ```
-**fix this: Note: OpenOmics ProtGPT2 models will automatically be downloaded during the first run, the inference will run directly without downloading the models again. **
-
+Note: external models can be provided using ```--model_dir``` parameter.  
 
 ## OpenOmics Protgpt2 README ends here
 

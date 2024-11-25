@@ -38,9 +38,9 @@ RUN groupadd --gid 1001 $SERVICE_NAME && \
 COPY --from=conda_setup /opt/conda /opt/conda
 
 # Copy application code                                                                #COPY . /app
-RUN git clone https://vasimuddin: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@github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git  ## change the repo to public oo main
-WORKDIR TransOmics.OpenOmicsInternal                       
-RUN git checkout ea71596                                 ## update the commit
+RUN git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
+WORKDIR /app/TransOmics.OpenOmicsInternal                       
+RUN git checkout e3c2a2f
 #RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 #WORKDIR Open-Omics-Acceleration-Framework
 #RUN git checkout <commit-id>
@@ -51,6 +51,8 @@ ENV PATH="/opt/conda/bin:$PATH"
 # Copy environment.yml and create Conda environment
 #COPY env.yml /app/env.yml
 RUN cp TransOmics.OpenOmicsInternal/applications/ProtGPT2/env.yml .
+RUN cp TransOmics.OpenOmicsInternal/applications/ProtGPT2/protgpt2.py .
+RUN cp TransOmics.OpenOmicsInternal/applications/ProtGPT2/model_script.sh .
 RUN rm -rf TransOmics.OpenOmicsInternal
 RUN conda env create -f env.yml
 
