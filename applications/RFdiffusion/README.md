@@ -9,7 +9,7 @@ Here, we present OpenOmics RFdiffusion, a highly optimized version of RFdiffusio
 ## Using source code
 ### Installation
 ```bash
-source setup_conda.sh
+source RFdiffusion_setup.sh
 ```
 #### Install jemalloc for better performance
 ```bash
