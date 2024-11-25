@@ -1,15 +1,13 @@
-# Overview: OpenOmics RFdiffusion
+# OpenOmics RFdiffusion
 RFdiffusion is a deep learning based computational tool for designing novel protein strcutures and functions. It is based on diffusion models, a type of generative model that has been successfully applied in fields like image generation. RFdiffusion adapts this approach to generate protein backbone structures that meet desired constraints, such as binding desing, motif scaffolding, or other functional properties. RFDiffusion has gained traction owing to its accuracy in modelling novel proteins.  
 
 Here, we present OpenOmics RFdiffusion, a highly optimized version of RFdiffusion (inference) for modern CPUs, while keeping the exact same functionality (including command line parameters) and accuracy as the original. OpenOmics RFdiffusion also supports lower precision inference for faster execution w/o compromizing the accuracy. OpenOmics RFdiffusion achieves xx - yy speedup over the original RFdiffusion on Intel's fifth generation Xeon Scalable server processors. 
 
-## New features
-- Supports bfloat16 precision, the model can be executed in either float32 or bfloat16 precision using inference.precision input parameter
 
 ## Using source code
 ### Installation
 ```bash
-source RFdiffusion_setup.sh
+source setup_rfdiffusion.sh
 ```
 #### Install jemalloc for better performance
 ```bash
@@ -27,7 +25,8 @@ python run_inference.py 'contigmap.contigs=<[150-150]>' inference.output_prefix=
 ```
 Note: 
 - Please refer to the original RFdiffusion README below for information on the input/output parameters
-- Also, original RFdiffusion provides example run scripts for all the modes in ./example folder   
+- Also, original RFdiffusion provides example run scripts for all the modes (binder design, motif scaffolding, etc) in ./example folder   
+
 
 ## Using Docker
 ### Docker build
@@ -39,7 +38,7 @@ cd TransOmics.OpenOmicsInternal/applications/RFdiffusion
 docker build --build-arg http_proxy=<http_proxy> --build-arg https_proxy=<https_proxy> --build-arg no_proxy=<no_proxy_ip> -t rfdiffusion .
 ```
 
-## Docker Run
+### Docker Run
 ```bash
 cd TransOmics.OpenOmicsInternal/applications/RFdiffusion/
 export OUTPUT_DIR=<path_to_output_dir>  
@@ -52,8 +51,6 @@ docker run -v $INPUT_DIR:/infile.pdb -v $OUTPUT_DIR:/output rfdiffusion:latest p
 
 Example, Motif Scaffolding:    
 ```bash
-cd TransOmics.OpenOmicsInternal/applications/RFdiffusion
-
 mkdir -p ./output
 export OUTPUT_DIR=./output/ 
 export INPUT_FILE=./examples/input_pdbs/5TPN.pdb
@@ -68,13 +65,15 @@ Example, Partial Diffusion:
 mkdir -p ./output
 export OUTPUT_DIR=./output/
 export INPUT_FILE=./examples/input_pdbs/2KL8.pdb
+```
 
+```bash
 docker run -v $INPUT_FILE:/infile.pdb -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py  inference.output_prefix=/output/design_partialdiffusion inference.input_pdb=/infile.pdb 'contigmap.contigs=[79-79]' inference.num_designs=1 diffuser.partial_T=10 inference.precision=bfloat16
 ```
 
 Note: 
 - Please refer to the original readme below for various modes like unconditional monomer, binder design, etc supported by RFdiffusion and its input/output parameters
-- Also, user can refer original RFdiffusion provides example run scripts (non docker) for all the modes in ./example folder
+- Also, users can refer to the example run scripts (non docker) for all the modes in ./example folder
 
   
 ## OpenOmics RFdiffusion README ends here  

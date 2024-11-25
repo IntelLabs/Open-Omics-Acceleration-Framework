@@ -25,7 +25,7 @@ RUN groupadd --gid 1001 $SERVICE_NAME && \
 # Copy Conda installation from the conda_setup stage
 COPY --from=conda_setup /opt/conda /opt/conda
 
-COPY . /app
+#COPY . /app
 
 WORKDIR /app
 RUN git clone https://github.com/RosettaCommons/RFdiffusion.git 
@@ -33,6 +33,23 @@ RUN git clone https://github.com/RosettaCommons/RFdiffusion.git
 WORKDIR /app/RFdiffusion
 # adding the git commit id
 RUN git checkout 820bfdfaded8c260b962dc40a3171eae316b6ce0
+
+
+RUN git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git  ## change the repo to public oo main
+WORKDIR TransOmics.OpenOmicsInternal                          ## update the directory name
+RUN git checkout ea71596                                 ## update the commit
+#RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+#WORKDIR Open-Omics-Acceleration-Framework
+#RUN git checkout <commit-id>
+
+WORKDIR /app/RFdiffusion
+RUN cp TransOmics.OpenOmicsInternal/applications/RFdiffusion/RFdiffusion.patch .
+#RUN cp Open-Omics-Acceleration-Framework/applications/RFdiffusion/RFdiffusion.patch .
+
+# Apply the patch file
+#COPY RFdiffusion.patch /app/RFdiffusion/RFdiffusion.patch
+RUN git apply RFdiffusion.patch
+RUN rm -rf TransOmics.OpenOmicsInternal
 
 WORKDIR /app/RFdiffusion/models
 RUN  wget https://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063dc4/Base_ckpt.pt && \
@@ -47,13 +64,9 @@ RUN  wget https://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063
 
 WORKDIR /app/RFdiffusion
 
-# Apply the patch file
-COPY RFdiffusion.patch /app/RFdiffusion/RFdiffusion.patch
-RUN git apply RFdiffusion.patch
-
 RUN /opt/conda/bin/conda env create -f env/SE3nv.yml
 
-WORKDIR /app/RFdiffusion/
+#WORKDIR /app/RFdiffusion/
 RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
 WORKDIR /app/RFdiffusion/jemalloc
 RUN bash autogen.sh --prefix=/opt/conda/envs/SE3nv/ && make install
@@ -61,7 +74,7 @@ WORKDIR /app/RFdiffusion
 RUN rm -rf jemalloc
 
 # Set up environment activation and PATH
-RUN echo "source /opt/conda/bin/activate SE3nv" >> ~/.bashrc
+#RUN echo "source /opt/conda/bin/activate SE3nv" >> ~/.bashrc
 ENV PATH="/opt/conda/envs/SE3nv/bin:/opt/conda/bin:$PATH"
 	
 # Install dependencies
@@ -72,7 +85,7 @@ RUN python setup.py install
 WORKDIR /app/RFdiffusion
 RUN pip install -e .
 
-WORKDIR /app/RFdiffusion
+#WORKDIR /app/RFdiffusion
 RUN tar -xvf examples/ppi_scaffolds_subset.tar.gz -C examples/
 
 WORKDIR /app/RFdiffusion/scripts
