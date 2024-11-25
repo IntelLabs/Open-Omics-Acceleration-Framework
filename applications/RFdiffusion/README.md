@@ -10,6 +10,14 @@ Open-Omics-RFdiffusion is an optimized version of RFdiffusion for protein struct
 - Binder design
 - Design diversification ("partial diffusion", sampling around a design)
 
+### New features
+- Supports float32 and bfloat16 precision for faster computation
+
+Notes:  
+- OpenOmics RFdiffusion supports all the parameters supported by original RFdiffusion (please refer to original RFdiffusion readme below)  
+- Additionly, OpenOmics RFdiffusion provides two more parameters:  
+  - `--dtype` : <float32/bfloat16>     
+  - `--output_dir` : \<output dir path>  
 ## Modifications
 ```bash
 SE3nv.yml Added specific packages along with their versions.
@@ -47,7 +55,7 @@ export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:$LD_LIBRARY_PATH"
 ```bash
 git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
 cd ~/TransOmics.OpenOmicsInternal/applications/RFdiffusion
-docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy="127.0.0.1,localhost,apt.repo.inel.com" -t rfdiffusion .
+docker build --build-arg http_proxy=<proxy_url> --build-arg https_proxy=<proxy_url> -t rfdiffusion .
 ```
 
 ## Running
@@ -67,17 +75,18 @@ export INPUT_FILE=<full-path of input pdb file>
 
 docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/<prefix> inference.input_pdb=/data 'contigmap.contigs=<contigs>' inference.num_designs=<Integer> inference.precision=<float32/bfloat16>
 ```
-
+## examples/design_unconditional.sh
 ```bash
-#example
-cd ~/TransOmics.OpenOmicsInternal/applications/RFdiffusion
-
+mkdir -p output
+export OUTPUT_DIR=$PWD/output
+docker run -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/design_unconditional 'contigmap.contigs=[100-200]' inference.num_designs=1
+```
+## examples/design_motifscaffolding.sh
+```bash
 mkdir -p output
 export OUTPUT_DIR=$PWD/output
 export INPUT_FILE=$PWD/examples/input_pdbs/5TPN.pdb
-
 chmod a+w $OUTPUT_DIR
-
 docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/design_motifscaffolding inference.input_pdb=/data 'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=1 inference.precision=float32
 ```
 ## All steps are ended here for optimized RFdiffusion.
