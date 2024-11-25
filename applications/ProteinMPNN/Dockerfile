@@ -28,7 +28,12 @@ WORKDIR /ProteinMPNN
 RUN git checkout 8907e6671bfbfc92303b5f79c4b5e6ce47cdef57
 
 # Apply the patch file
-COPY ProteinMPNN.patch /ProteinMPNN/ProteinMPNN.patch
+RUN  git clone --recursive github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git    ## change this to final OpeOmics release or commit git url
+#RUN cd TransOmics.OpenOmicsInternal
+#RUN git checkout 
+
+RUN cp TransOmics.OpenOmicsInternal/applications/ProteinMPNN/ProteinMPNN.patch .
+#COPY ProteinMPNN.patch /ProteinMPNN/ProteinMPNN.patch
 RUN git apply ProteinMPNN.patch
 
 ENV PATH="/opt/conda/bin:$PATH"
@@ -44,7 +49,7 @@ RUN conda install -n p_mpnn -y pytorch==2.3.1 torchvision==0.18.1 torchaudio==2.
 RUN /opt/conda/envs/p_mpnn/bin/python -m pip install intel-extension-for-pytorch==2.3.100 oneccl-bind-pt==2.3.0 --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/cpu/us/
 RUN /opt/conda/envs/p_mpnn/bin/python -m pip install numpy==1.26.0
 
-COPY . /
+#COPY . /
 # Clone jemalloc source for building
 WORKDIR /ProteinMPNN
 RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
@@ -54,7 +59,7 @@ WORKDIR /ProteinMPNN
 RUN rm -rf jemalloc
 
 # Set up environment activation and PATH
-RUN echo "source /opt/conda/bin/activate p_mpnn" >> ~/.bashrc
+#RUN echo "source /opt/conda/bin/activate p_mpnn" >> ~/.bashrc
 ENV PATH="/opt/conda/envs/p_mpnn/bin:/opt/conda/bin:$PATH"
 #CMD source ~/.bashrc
 
@@ -62,7 +67,7 @@ ENV PATH="/opt/conda/envs/p_mpnn/bin:/opt/conda/bin:$PATH"
 RUN chmod +x /ProteinMPNN/python_scripts/*.py
 RUN mkdir /outputs
 
-WORKDIR /ProteinMPNN/python_scripts
+#WORKDIR /ProteinMPNN/python_scripts
 # Change ownership of the directory
 RUN chown -R $SERVICE_NAME:$SERVICE_NAME /ProteinMPNN /outputs
 

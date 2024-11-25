@@ -7,12 +7,12 @@ from argparse import ArgumentParser
 
 def main(argv):
     # Argument parsing
-    parser = ArgumentParser(description="Run ProteinMPNN pipeline with homooligomers and tied positions")
-    parser.add_argument('--input', help="Input data directory", default="ProteinMPNN/inputs/PDB_homooligomers/pdbs/")
-    parser.add_argument('--output', help="Output directory", default="/outputs/example_6_outputs")
-    parser.add_argument('--homooligomer', type=int, default=1, help="Homooligomer flag")
-    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
-    parser.add_argument('--sampling_temp', type=float, default=0.2, help="Sampling temperature")
+    parser = ArgumentParser(description="Run ProteinMPNN pipeline for monomers")
+    parser.add_argument('--input', help="Input data directory", default="ProteinMPNN/inputs/PDB_monomers/pdbs/")
+    parser.add_argument('--output', help="Output directory", default="/outputs/example_7_outputs")
+    parser.add_argument('--num_seq_per_target', type=int, default=1, help="Number of sequences per target")
+    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
+    parser.add_argument('--unconditional_probs_only', type=int, default=1, help="Use unconditional probabilities only")
     parser.add_argument('--seed', type=int, default=37, help="Random seed")
     parser.add_argument('--batch_size', type=int, default=1, help="Batch size")
     parser.add_argument('--precision', choices=['float32', 'bfloat16'], default='float32', help="Precision type for calculations")
@@ -27,34 +27,23 @@ def main(argv):
     # Paths for output files
     folder_with_pdbs = args.input
     path_for_parsed_chains = os.path.join(output_dir, "parsed_pdbs.jsonl")
-    path_for_tied_positions = os.path.join(output_dir, "tied_pdbs.jsonl")
-    path_for_designed_sequences = os.path.join(output_dir, "temp_0.1")
 
     # Run the parsing script
     a = run([
-        'python', '../helper_scripts/parse_multiple_chains.py',
+        'python', 'helper_scripts/parse_multiple_chains.py',
         '--input_path', folder_with_pdbs,
         '--output_path', path_for_parsed_chains
     ])
     assert a.returncode == 0, "Error parsing multiple chains"
 
-    # Run the tied positions script
-    a = run([
-        'python', '../helper_scripts/make_tied_positions_dict.py',
-        '--input_path', path_for_parsed_chains,
-        '--output_path', path_for_tied_positions,
-        '--homooligomer', str(args.homooligomer)
-    ])
-    assert a.returncode == 0, "Error making tied positions dict"
-
     # Run the main ProteinMPNN script
     a = run([
-        'python', '../protein_mpnn_run.py',
+        'python', 'protein_mpnn_run.py',
         '--jsonl_path', path_for_parsed_chains,
-        '--tied_positions_jsonl', path_for_tied_positions,
         '--out_folder', output_dir,
         '--num_seq_per_target', str(args.num_seq_per_target),
         '--sampling_temp', str(args.sampling_temp),
+        '--unconditional_probs_only', str(args.unconditional_probs_only),
         '--seed', str(args.seed),
         '--batch_size', str(args.batch_size),
         '--precision', args.precision

@@ -6,11 +6,11 @@ from argparse import ArgumentParser
 
 def main(argv):
     # Argument parsing
-    parser = ArgumentParser(description="Run protein folding with non-fixed positions on specific chains")
+    parser = ArgumentParser(description="Run protein folding with fixed positions on specific chains")
     parser.add_argument('--input', help="Input folder with PDBs", default="ProteinMPNN/inputs/PDB_complexes/pdbs/")
-    parser.add_argument('--output', help="Output directory", default="/outputs/example_4_non_fixed_outputs")
+    parser.add_argument('--output', help="Output directory", default="/outputs/example_4_outputs")
     parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A C")
-    parser.add_argument('--design_only_positions', help="Design only these positions", default="1 2 3 4 5 6 7 8 9 10, 3 4 5 6 7 8")
+    parser.add_argument('--fixed_positions', help="Fixed positions for the chains", default="1 2 3 4 5 6 7 8 23 25, 10 11 12 13 14 15 16 17 18 19 20 40")
     parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
     parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
     parser.add_argument('--seed', type=int, default=37, help="Random seed")
@@ -31,7 +31,7 @@ def main(argv):
 
     # Run parsing script
     a = run([
-        'python', '../helper_scripts/parse_multiple_chains.py',
+        'python', 'helper_scripts/parse_multiple_chains.py',
         '--input_path', folder_with_pdbs,
         '--output_path', path_for_parsed_chains
     ])
@@ -39,27 +39,26 @@ def main(argv):
 
     # Assign chains to design
     a = run([
-        'python', '../helper_scripts/assign_fixed_chains.py',
+        'python', 'helper_scripts/assign_fixed_chains.py',
         '--input_path', path_for_parsed_chains,
         '--output_path', path_for_assigned_chains,
         '--chain_list', args.chains_to_design
     ])
     assert a.returncode == 0, "Error assigning fixed chains"
 
-    # Make non-fixed positions dictionary
+    # Make fixed positions dictionary
     a = run([
-        'python', '../helper_scripts/make_fixed_positions_dict.py',
+        'python', 'helper_scripts/make_fixed_positions_dict.py',
         '--input_path', path_for_parsed_chains,
         '--output_path', path_for_fixed_positions,
         '--chain_list', args.chains_to_design,
-        '--position_list', args.design_only_positions,
-        '--specify_non_fixed'
+        '--position_list', args.fixed_positions
     ])
-    assert a.returncode == 0, "Error making non-fixed positions dictionary"
+    assert a.returncode == 0, "Error making fixed positions dictionary"
 
     # Run protein folding script
     a = run([
-        'python', '../protein_mpnn_run.py',
+        'python', 'protein_mpnn_run.py',
         '--jsonl_path', path_for_parsed_chains,
         '--chain_id_jsonl', path_for_assigned_chains,
         '--fixed_positions_jsonl', path_for_fixed_positions,
