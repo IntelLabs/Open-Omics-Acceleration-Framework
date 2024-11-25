@@ -6,7 +6,7 @@ ABS_SCRIPT_PATH="$(realpath "${SCRIPT_PATH}")"
 #echo "Value of ABS_SCRIPT_PATH: ${ABS_SCRIPT_PATH}"
 ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"
 # Default Conda installation directory
-CONDA_INSTALL_DIR=$(realpath /home/miniforge3)
+CONDA_INSTALL_DIR=$(realpath ./miniforge3)
 
 # Parse command line arguments
 while (( "$#" )); do
@@ -26,7 +26,17 @@ while (( "$#" )); do
       ;;
   esac
 done
-
+# Check if Miniforge3 exists and install if not found
+if [ ! -d "$CONDA_INSTALL_DIR" ]; then
+  echo "Miniforge3 is not installed. Installing..."
+  wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
+  bash Miniforge3-Linux-x86_64.sh -b -p "$CONDA_INSTALL_DIR"
+  echo "Miniforge3 installation complete."
+else
+  echo "Miniforge3 is already installed at: $CONDA_INSTALL_DIR"
+fi
+# Export Conda binary path
+export PATH="$CONDA_INSTALL_DIR/bin:$PATH"
 # Clone the RFdiffusion repository if it doesn't exist
 if [ ! -d "RFdiffusion" ]; then
   git clone https://github.com/RosettaCommons/RFdiffusion.git
@@ -35,7 +45,7 @@ else
 fi
 
 echo "$CONDA_INSTALL_DIR"
-# Apply patch (assuming patch file is new_changed.patch and it should be applied in RFdiffusion directory)
+# Apply patch (assuming patch file is RFdiffusion.patch and it should be applied in RFdiffusion directory)
 cd RFdiffusion
 git checkout 820bfdfaded8c260b962dc40a3171eae316b6ce0
 git log -1
@@ -71,7 +81,7 @@ fi
 # Create and activate the Conda environment using the YAML file, disabling plugins to avoid errors
 #CONDA_NO_PLUGINS=true 
 conda env create -f env/SE3nv.yml 
-
+conda init
 conda activate SE3nv
 
 # Install SE3Transformer requirements
