@@ -154,15 +154,30 @@ docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion_latest:latest
 ```
 ## examples/design_cyclic_oligos
 ```bash
+mkdir -p output
+export OUTPUT_DIR=$PWD/output
 docker run -v $OUTPUT_DIR:/output rfdiffusion_latest:latest python run_inference.py --config-name=symmetnference.symmetry="C6" inference.num_designs=1 inference.output_prefix=/output/C6_oligo 'potentials.guiding_potentials=["type:olig_contacts,weight_intra:1,weight_inter:0.1"]' potentials.olig_intra_all=True potentials.olig_inter_all=True potentials.guide_scale=2.0 potentials.guide_decay="quadratic" 'contigmap.contigs=[480-480]' inference.precision=float32
 ```
 ## examples/design_dihedral_oligos
 ```bash
+mkdir -p output
+export OUTPUT_DIR=$PWD/output
 docker run -v $OUTPUT_DIR:/output rfdiffusion_latest:latest python run_inference.py --config-name=symmetry inference.symmetry="D2" inference.num_designs=1 inference.output_prefix=/output/D2_oligo 'potentials.guiding_potentials=["type:olig_contacts,weight_intra:1,weight_inter:0.1"]' potentials.olig_intra_all=True potentials.olig_inter_all=True potentials.guide_scale=2.0 potentials.guide_decay="quadratic" 'contigmap.contigs=[320-320]' inference.precision=float32
 ```
 ## examples/design_tetrahedral_oligos
 ```bash
+mkdir -p output
+export OUTPUT_DIR=$PWD/output
 docker run -v $OUTPUT_DIR:/output rfdiffusion_latest:latest python run_inference.py --config-name=symmetry inference.symmetry="tetrahedral" inference.num_designs=1 inference.output_prefix=/output/tetrahedral_oligo 'potentials.guiding_potentials=["type:olig_contacts,weight_intra:1,weight_inter:0.1"]' potentials.olig_intra_all=True potentials.olig_inter_all=True potentials.guide_scale=2.0 potentials.guide_decay="quadratic" 'contigmap.contigs=[1200-1200]'
+```
+## Symmetric Motif Scaffolding.
+## examples/design_nickel.sh
+```bash
+mkdir -p output
+export OUTPUT_DIR=$PWD/output
+export INPUT_FILE=$PWD/examples/input_pdbs/nickel_symmetric_motif.pdb
+
+docker run -v $INPUT_FILE:/data -v $OUTPUT_DIR:/output rfdiffusion_latest:latest python run_inference.py inference.symmetry="C4" inference.num_designs=1 inference.output_prefix=/output/design_nickel 'potentials.guiding_potentials=["type:olig_contacts,weight_intra:1,weight_inter:0.06"]' potentials.olig_intra_all=True potentials.olig_inter_all=True potentials.guide_scale=2 potentials.guide_decay="quadratic" inference.input_pdb=/data 'contigmap.contigs=[50/A2-4/50/0 50/A7-9/50/0 50/A12-14/50/0 50/A17-19/50/0]' inference.ckpt_override_path=../models/Base_epoch8_ckpt.pt inference.precision=float32
 ```
 
 ## All steps are ended here for optimized RFdiffusion.
