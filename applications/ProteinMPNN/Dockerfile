@@ -29,8 +29,9 @@ RUN git checkout 8907e6671bfbfc92303b5f79c4b5e6ce47cdef57
 
 # Apply the patch file
 RUN  git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git    ## change this to final OpeOmics release or commit git url
-WORKDIR TransOmics.OpenOmicsInternal
-RUN git checkout 3d826b3a91eff7888a1e666f99ea859a703deb14                ## update this after changing line #31
+WORKDIR /ProteinMPNN/TransOmics.OpenOmicsInternal
+#RUN git checkout 3d826b3a91eff7888a1e666f99ea859a703deb14                
+RUN git checkout ffd4b60ded855dc5dccab481246850c25715ade5
 
 WORKDIR /ProteinMPNN
 RUN cp TransOmics.OpenOmicsInternal/applications/ProteinMPNN/ProteinMPNN.patch .
