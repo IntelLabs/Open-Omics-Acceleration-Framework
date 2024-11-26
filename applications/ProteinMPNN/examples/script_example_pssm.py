@@ -8,8 +8,8 @@ from argparse import ArgumentParser
 def main(argv):
     # Argument parsing
     parser = ArgumentParser(description="Run ProteinMPNN pipeline with PSSM inputs")
-    parser.add_argument('--pssm_input', help="PSSM input directory", default="ProteinMPNN/inputs/PSSM_inputs")
-    parser.add_argument('--input', help="Input data directory", default="ProteinMPNN/inputs/PDB_complexes/pdbs/")
+    parser.add_argument('--pssm_input', help="PSSM input directory", default="/ProteinMPNN/inputs/PSSM_inputs")
+    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
     parser.add_argument('--output', help="Output directory", default="/outputs/example_pssm_outputs")
     parser.add_argument('--chains_to_design', default="A B", help="Chains to design")
     parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
@@ -80,4 +80,3 @@ def main(argv):
 if __name__ == "__main__":
     import sys
     main(sys.argv)
-
