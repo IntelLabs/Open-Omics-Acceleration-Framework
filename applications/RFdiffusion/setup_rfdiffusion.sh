@@ -80,8 +80,9 @@ cd ../
 # Create and activate the Conda environment using the YAML file, disabling plugins to avoid errors
 #CONDA_NO_PLUGINS=true 
 conda env create -f env/SE3nv.yml 
-conda init
-conda activate SE3nv
+source $CONDA_INSTALL_DIR/bin/activate SE3nv
+#conda init
+#conda activate SE3nv
 
 # Install SE3Transformer requirements
 cd env/SE3Transformer
@@ -91,3 +92,6 @@ python setup.py install
 # Install the rfdiffusion module
 cd ../.. # Change into the root directory of the repository
 pip install -e .
+
+echo "Conda (Miniforge3) is installed at $CONDA_INSTALL_DIR"
+echo "To manually activate conda env do: source $CONDA_INSTALL_DIR/bin/activate SE3nv"
