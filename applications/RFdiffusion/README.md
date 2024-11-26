@@ -1,32 +1,7 @@
 # OpenOmics RFdiffusion
 RFdiffusion is a deep learning based computational tool for designing novel protein strcutures and functions. It is based on diffusion models, a type of generative model that has been successfully applied in fields like image generation. RFdiffusion adapts this approach to generate protein backbone structures that meet desired constraints, such as binding desing, motif scaffolding, or other functional properties. RFDiffusion has gained traction owing to its accuracy in modelling novel proteins.  
 
-Here, we present OpenOmics RFdiffusion, a highly optimized version of RFdiffusion (inference) for modern CPUs, while keeping the exact same functionality (including command line parameters) and accuracy as the original. OpenOmics RFdiffusion also supports lower precision inference for faster execution w/o compromizing the accuracy. OpenOmics RFdiffusion achieves xx - yy speedup over the original RFdiffusion on Intel's fifth generation Xeon Scalable server processors. 
-
-
-## Using source code
-### Installation
-```bash
-source setup_rfdiffusion.sh
-```
-#### Install jemalloc for better performance
-```bash
-git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
-cd jemalloc && bash autogen.sh --prefix=<install_location> && make install 
-cd ..
-export LD_LIBRARY_PATH=<install_location>/lib:$LD_LIBRARY_PATH
-```
-
-### Run
-Unconditional Monomer:  
-```bash
-cd scripts/  
-python run_inference.py 'contigmap.contigs=<[150-150]>' inference.output_prefix=./test inference.num_designs=<num_designs> inference.precision=<bfloat16/float32>
-```
-Note: 
-- Please refer to the original RFdiffusion README below for information on the input/output parameters
-- Also, original RFdiffusion provides example run scripts for all the modes (binder design, motif scaffolding, etc) in ./example folder   
-
+Here, we present OpenOmics RFdiffusion, a highly optimized version of RFdiffusion (inference) for modern CPUs, while keeping the exact same functionality (including command line parameters) and accuracy as the original. OpenOmics RFdiffusion also supports lower precision inference for faster execution w/o compromizing the accuracy. 
 
 ## Using Docker
 ### Docker build
@@ -40,13 +15,12 @@ docker build --build-arg http_proxy=<http_proxy> --build-arg https_proxy=<https_
 
 ### Docker Run
 ```bash
-cd TransOmics.OpenOmicsInternal/applications/RFdiffusion/
 export OUTPUT_DIR=<path_to_output_dir>  
-export INPUT_DIR=<path_to_input_file>  
+export INPUT_FILE=<path_to_input_file>  
 ```
 Motif Scaffolding:  
 ```bash
-docker run -v $INPUT_DIR:/infile.pdb -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/<output_file_prefix> inference.input_pdb=/infile.pdb 'contigmap.contigs=<contigs>' inference.num_designs=<num_designs> inference.precision=<float32/bfloat16>
+docker run -v $INPUT_FILE:/infile.pdb -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/<output_file_prefix> inference.input_pdb=/infile.pdb 'contigmap.contigs=<contigs>' inference.num_designs=<num_designs> inference.precision=<float32/bfloat16>
 ```
 
 Example, Motif Scaffolding:    
@@ -74,6 +48,29 @@ docker run -v $INPUT_FILE:/infile.pdb -v $OUTPUT_DIR:/output rfdiffusion:latest 
 Note: 
 - Please refer to the original readme below for various modes like unconditional monomer, binder design, etc supported by RFdiffusion and its input/output parameters
 - Also, users can refer to the example run scripts (non docker) for all the modes in ./example folder
+
+## Using source code
+### Install
+```bash
+source setup_rfdiffusion.sh
+```
+#### Install jemalloc for better performance
+```bash
+git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
+cd jemalloc && bash autogen.sh --prefix=<install_location> && make install 
+cd ..
+export LD_LIBRARY_PATH=<install_location>/lib:$LD_LIBRARY_PATH
+```
+
+### Run
+Unconditional Monomer:  
+```bash
+cd scripts/  
+python run_inference.py 'contigmap.contigs=<[150-150]>' inference.output_prefix=./test inference.num_designs=<num_designs> inference.precision=<bfloat16/float32>
+```
+Note: 
+- Please refer to the original RFdiffusion README below for information on the input/output parameters
+- Also, original RFdiffusion provides example run scripts for all the modes (binder design, motif scaffolding, etc) in ./example folder   
 
   
 ## OpenOmics RFdiffusion README ends here  
