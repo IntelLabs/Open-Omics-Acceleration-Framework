@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 def main(argv):
     # Argument parsing
     parser = ArgumentParser(description="Run ProteinMPNN pipeline for monomers")
-    parser.add_argument('--input', help="Input data directory", default="ProteinMPNN/inputs/PDB_monomers/pdbs/")
+    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_monomers/pdbs/")
     parser.add_argument('--output', help="Output directory", default="/outputs/example_7_outputs")
     parser.add_argument('--num_seq_per_target', type=int, default=1, help="Number of sequences per target")
     parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
@@ -53,4 +53,3 @@ def main(argv):
 if __name__ == "__main__":
     import sys
     main(sys.argv)
-
