@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 def main(argv):
     # Argument parsing
     parser = ArgumentParser(description="Run protein folding with fixed positions on specific chains")
-    parser.add_argument('--input', help="Input folder with PDBs", default="ProteinMPNN/inputs/PDB_complexes/pdbs/")
+    parser.add_argument('--input', help="Input folder with PDBs", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
     parser.add_argument('--output', help="Output directory", default="/outputs/example_4_outputs")
     parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A C")
     parser.add_argument('--fixed_positions', help="Fixed positions for the chains", default="1 2 3 4 5 6 7 8 23 25, 10 11 12 13 14 15 16 17 18 19 20 40")
