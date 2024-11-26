@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 def main(argv):
     # Argument parsing
     parser = ArgumentParser(description="Run ProteinMPNN pipeline with homooligomers and tied positions")
-    parser.add_argument('--input', help="Input data directory", default="ProteinMPNN/inputs/PDB_homooligomers/pdbs/")
+    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_homooligomers/pdbs/")
     parser.add_argument('--output', help="Output directory", default="/outputs/example_6_outputs")
     parser.add_argument('--homooligomer', type=int, default=1, help="Homooligomer flag")
     parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
@@ -64,4 +64,3 @@ def main(argv):
 if __name__ == "__main__":
     import sys
     main(sys.argv)
-
