@@ -1,6 +1,29 @@
 # OpenOmics ProtGPT2
 ProtGPT2 is a popular deep language model for Protein Design. ProtpGPT2, trained on known proteins, generates de novo proteins sequences, hence has the potential to revolutionize domains such as healthcare, agriculture, evironmental, etc. OpenOmics ProtGPT2 is a highly optimized version of the original ProtGPT2 for modern CPUs, with support for lower precision computations. It maintains the exact same accuracy level as original ProtGPT2.    
 
+Notes:  
+- OpenOmics ProtGPT2 supports all the parameters supported by original ProtGPT2 (please refer to original PrtoGPT2 readme below)  
+- Additionly, OpenOmics ProtGPT2 provides three more parameters:  
+  - `--dtype` : <float32/bfloat16>   
+  - `--model_dir` : \<directory path of user provided model files>  
+  - `--output_file` : \<output file path>  
+- OpenOmics ProtGPT2 by default downloads the model parameters; user can provide his/her models through `--model_dir` input parameter  
+
+
+## Using Docker  
+### Build  
+```bash  
+git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git  
+cd TransOmics.OpenOmicsInternal/applications/protgpt2  
+docker build --build-arg http_proxy=<proxy_url> --build-arg https_proxy=<proxy_url> -t protgpt2 .  
+```
+
+## Run
+```bash
+export OUTPUT_DIR=<output_dir_path>     ## needs a+w permission on the dir  
+docker run -it -v $OUTPUT_DIR:/output protgpt2:latest python protgpt2.py --max_length <max_seq_len> --do_sample <True/False> --top_k <value> --repetition_penalty <value> --num_return_sequences <num_output_seqs> --eos_token_id <0>  --dtype <float32/bfloat16> --iterations <num_iters> --output_file /output/<output_file_name>   
+```
+Note: external models can be provided using ```--model_dir``` parameter.  
 
 ## Build from source
 ```bash
@@ -26,31 +49,6 @@ Example:
 ```bash
 python protgpt2.py --max_length 100 --do_sample True --top_k 950 --repetition_penalty 1.2 --num_return_sequences 10 --eos_token_id 0  --dtype float32 --iterations 5 --output_file protgpt2_output.txt   
 ```
-
-Notes:  
-- OpenOmics ProtGPT2 supports all the parameters supported by original ProtGPT2 (please refer to original PrtoGPT2 readme below)  
-- Additionly, OpenOmics ProtGPT2 provides three more parameters:  
-  - `--dtype` : <float32/bfloat16>   
-  - `--model_dir` : \<directory path of user provided model files>  
-  - `--output_file` : \<output file path>  
-- OpenOmics ProtGPT2 by default downloads the model parameters; user can provide his/her models through `--model_dir` input parameter  
-
-
-## Using Docker  
-### Build  
-```bash  
-git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git  
-cd TransOmics.OpenOmicsInternal/applications/protgpt2  
-docker build --build-arg http_proxy=<proxy_url> --build-arg https_proxy=<proxy_url> -t protgpt2 .  
-```
-
-## Run
-```bash
-export OUTPUT_DIR=<output_dir_path>     ## needs a+w permission on the dir  
-docker run -it -v $OUTPUT_DIR:/output protgpt2:latest python protgpt2.py --max_length <max_seq_len> --do_sample <True/False> --top_k <value> --repetition_penalty <value> --num_return_sequences <num_output_seqs> --eos_token_id <0>  --dtype <float32/bfloat16> --iterations <num_iters> --output_file /output/<output_file_name>   
-```
-Note: external models can be provided using ```--model_dir``` parameter.  
-
 ## OpenOmics Protgpt2 README ends here
 
 # Original Protgpt2 README:
