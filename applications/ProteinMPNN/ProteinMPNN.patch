@@ -847,3 +847,177 @@ index 0000000..e8324cc
 +    import sys
 +    main(sys.argv)
 +
+diff --git a/protein_mpnn_run.py b/protein_mpnn_run.py
+index 27816ee..4efd2d1 100644
+--- a/protein_mpnn_run.py
++++ b/protein_mpnn_run.py
+@@ -17,6 +17,7 @@ def main(args):
+     import random
+     import os.path
+     import subprocess
++    import intel_extension_for_pytorch as ipex
+     
+     from protein_mpnn_utils import loss_nll, loss_smoothed, gather_edges, gather_nodes, gather_nodes_t, cat_neighbors_nodes, _scores, _S_to_seq, tied_featurize, parse_PDB, parse_fasta
+     from protein_mpnn_utils import StructureDataset, StructureDatasetPDB, ProteinMPNN
+@@ -65,7 +66,7 @@ def main(args):
+     alphabet_dict = dict(zip(alphabet, range(21)))    
+     print_all = args.suppress_print == 0 
+     omit_AAs_np = np.array([AA in omit_AAs_list for AA in alphabet]).astype(np.float32)
+-    device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
++    device = torch.device("cpu")
+     if os.path.isfile(args.chain_id_jsonl):
+         with open(args.chain_id_jsonl, 'r') as json_file:
+             json_list = list(json_file)
+@@ -181,6 +182,15 @@ def main(args):
+     model.to(device)
+     model.load_state_dict(checkpoint['model_state_dict'])
+     model.eval()
++    if args.precision == 'bfloat16':
++        model = model.to(dtype=torch.bfloat16)
++    else:
++        model = model.to(dtype=torch.float32)
++    if args.use_ipex:
++        if args.precision == 'bfloat16':
++            model = ipex.optimize(model, dtype=torch.bfloat16)
++        else:
++            model = ipex.optimize(model, dtype=torch.float32)
+ 
+     if print_all:
+         print(40*'-')
+@@ -223,8 +233,15 @@ def main(args):
+     total_residues = 0
+     protein_list = []
+     total_step = 0
++    if args.precision == 'bfloat16':
++        dtype = torch.bfloat16
++        enabled = True
++        torch.set_default_dtype(dtype)
++    else:
++        dtype = torch.float32
++        enabled = False
+     # Validation epoch
+-    with torch.no_grad():
++    with torch.no_grad(), torch.autocast(enabled=enabled,dtype=dtype,device_type="cpu"):
+         test_sum, test_weights = 0., 0.
+         for ix, protein in enumerate(dataset_valid):
+             score_list = []
+@@ -307,6 +324,8 @@ def main(args):
+                 np.savez(unconditional_probs_only_file, log_p=concat_log_p, S=S[0,].cpu().numpy(), mask=mask[0,].cpu().numpy(), design_mask=mask_out)
+             else:
+                 randn_1 = torch.randn(chain_M.shape, device=X.device)
++                if args.precision == "bfloat16":
++                    mask = mask.to(torch.bfloat16)
+                 log_probs = model(X, S, mask, chain_M*chain_M_pos, residue_idx, chain_encoding_all, randn_1)
+                 mask_for_loss = mask*chain_M*chain_M_pos
+                 scores = _scores(S, log_probs, mask_for_loss) #score only the redesigned part
+@@ -340,7 +359,7 @@ def main(args):
+                             global_scores = global_scores.cpu().data.numpy()
+                             
+                             all_probs_list.append(sample_dict["probs"].cpu().data.numpy())
+-                            all_log_probs_list.append(log_probs.cpu().data.numpy())
++                            all_log_probs_list.append(log_probs.float().cpu().data.numpy())
+                             S_sample_list.append(S_sample.cpu().data.numpy())
+                             for b_ix in range(BATCH_COPIES):
+                                 masked_chain_length_list = masked_chain_length_list_list[b_ix]
+@@ -464,6 +483,9 @@ if __name__ == "__main__":
+     argparser.add_argument("--pssm_bias_flag", type=int, default=0, help="0 for False, 1 for True")
+     
+     argparser.add_argument("--tied_positions_jsonl", type=str, default='', help="Path to a dictionary with tied positions")
+-    
++    argparser.add_argument("--precision", type=str, choices=["float32", "bfloat16"], help="Floating-point precision to use (float32 or bfloat16)")
++    argparser.add_argument("--use_ipex", action="store_true",help="Enable IPEX optimizations if set. Otherwise, run without IPEX")
++
++
+     args = argparser.parse_args()    
+     main(args)   
+diff --git a/setup_proteinmpnn.sh b/setup_proteinmpnn.sh
+new file mode 100644
+index 0000000..b67ce4c
+--- /dev/null
++++ b/setup_proteinmpnn.sh
+@@ -0,0 +1,85 @@
++#!/bin/bash
++
++set -e
++trap 'echo "Error on line $LINENO"; exit 1;' ERR
++
++SCRIPT_PATH="${BASH_SOURCE:-$0}"
++ABS_SCRIPT_PATH="$(realpath "${SCRIPT_PATH}")"
++ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"
++
++CONDA_INSTALL_DIR=$(realpath ./miniforge3)
++
++# Parse command line arguments
++while (( "$#" )); do
++  case "$1" in
++    -p)
++      CONDA_INSTALL_DIR=$2
++      CONDA_INSTALL_DIR=$(realpath "$CONDA_INSTALL_DIR")
++      shift 2
++      ;;
++    -*|--*=)
++      echo "Error: Unsupported flag $1" >&2
++      exit 1
++      ;;
++    *)
++      echo "Error: Unsupported argument $1" >&2
++      exit 1
++      ;;
++  esac
++done
++
++# Check if Miniforge3 exists
++if [ ! -d "$CONDA_INSTALL_DIR" ]; then
++  echo "Miniforge3 is not installed. Installing..."
++  command -v wget >/dev/null 2>&1 || { echo "wget is required but not installed. Exiting."; exit 1; }
++  wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
++  bash Miniforge3-Linux-x86_64.sh -b -p "$CONDA_INSTALL_DIR"
++  echo "Miniforge3 installation complete."
++else
++  echo "Miniforge3 is already installed at: $CONDA_INSTALL_DIR"
++fi
++
++export PATH="$CONDA_INSTALL_DIR/bin:$PATH"
++
++# Clone the ProteinMPNN repository
++if [ ! -d "ProteinMPNN" ]; then
++  git clone https://github.com/dauparas/ProteinMPNN.git
++else
++  echo "ProteinMPNN repository already exists, skipping git clone."
++fi
++
++cd ProteinMPNN
++git checkout 8907e6671bfbfc92303b5f79c4b5e6ce47cdef57
++PATCH_FILE="$ABS_DIRECTORY/ProteinMPNN.patch"
++if [ -f "$PATCH_FILE" ]; then
++  if git apply --reverse --check "$PATCH_FILE" > /dev/null 2>&1; then
++    echo "Patch has already been applied. Skipping patch step."
++  else
++    git apply "$PATCH_FILE"
++    echo "Patch applied successfully."
++  fi
++else
++  echo "Error: Patch file not found at $PATCH_FILE" >&2
++  exit 1
++fi
++
++# Create and activate the Conda environment
++#source "$CONDA_INSTALL_DIR/bin/activate"
++if conda env list | grep -q "^p_mpnn"; then
++	echo "Environment exists. Moving ahead without create the env. If the setup crashes, please remove manually."
++    else
++	echo "Creating conda env p_mpnn.."
++	conda create -n p_mpnn -y python=3.11 pip=24.0
++fi
++
++source $CONDA_INSTALL_DIR/bin/activate p_mpnn
++#conda activate p_mpnn
++
++conda install -n p_mpnn -y pytorch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 -c pytorch
++pip install intel-extension-for-pytorch==2.3.100
++pip install numpy==1.26.0
++
++echo "setup complete!"
++echo "Note:"
++echo "Conda (Miniforge3) is installed at $CONDA_INSTALL_DIR"
++echo "To manually activate conda env, do: source $CONDA_INSTALL_DIR/bin/activate SE3nv"
