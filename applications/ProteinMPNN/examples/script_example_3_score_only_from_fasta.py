@@ -8,8 +8,8 @@ from argparse import ArgumentParser
 def main(argv):
     # Argument parsing
     parser = ArgumentParser(description="Run protein folding and scoring from a FASTA file on specific PDB and chains")
-    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
-    parser.add_argument('--path_to_fasta', help="Path to the FASTA file", default="/ProteinMPNN/outputs/example_3_outputs/seqs/")
+    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/3HTN.pdb")
+    parser.add_argument('--path_to_fasta', help="Path to the FASTA file", default="/ProteinMPNN/outputs/example_3_outputs/seqs/3HTN.fa")
     parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A")
     parser.add_argument('--output', help="Output directory", default="/outputs/example_3_score_only_from_fasta_outputs")
     parser.add_argument('--num_seq_per_target', type=int, default=5, help="Number of sequences per target")
