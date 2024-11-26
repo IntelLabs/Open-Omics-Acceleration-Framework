@@ -64,11 +64,22 @@ else
 fi
 
 # Create and activate the Conda environment
-source "$CONDA_INSTALL_DIR/bin/activate"
-conda create -n p_mpnn -y python=3.11 pip=24.0
-conda init
-conda activate p_mpnn
+#source "$CONDA_INSTALL_DIR/bin/activate"
+if conda env list | grep -q "^p_mpnn"; then
+	echo "Environment exists. Moving ahead without create the env. If the setup crashes, please remove manually."
+    else
+	echo "Creating conda env p_mpnn.."
+	conda create -n p_mpnn -y python=3.11 pip=24.0
+fi
+
+source $CONDA_INSTALL_DIR/bin/activate p_mpnn
+#conda activate p_mpnn
 
 conda install -n p_mpnn -y pytorch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 -c pytorch
 pip install intel-extension-for-pytorch==2.3.100
 pip install numpy==1.26.0
+
+echo "setup complete!"
+echo "Note:"
+echo "Conda (Miniforge3) is installed at $CONDA_INSTALL_DIR"
+echo "To manually activate conda env, do: source $CONDA_INSTALL_DIR/bin/activate SE3nv"
