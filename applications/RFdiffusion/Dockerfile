@@ -37,7 +37,8 @@ RUN git checkout 820bfdfaded8c260b962dc40a3171eae316b6ce0
 
 RUN git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git  ## change the repo to public oo main
 WORKDIR TransOmics.OpenOmicsInternal                          ## update the directory name
-RUN git checkout ea71596                                 ## update the commit
+RUN git checkout a4e53c0d289e2326287590072b3fe64b363b8225                                 ## update the commit
+#RUN git checkout ea71596                                 ## update the commit
 #RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 #WORKDIR Open-Omics-Acceleration-Framework
 #RUN git checkout <commit-id>
