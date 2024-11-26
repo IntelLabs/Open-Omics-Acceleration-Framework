@@ -1,9 +1,6 @@
 ## OpenOmics ProteinMPNN
 ProteinMPNN is a widely used deep learning-based method for protein sequence design. It generates the amino acid sequences given protein structure backbone, enable design of de novo proteins and optimizations of existing ones.  
-Here, we present OpenOmics ProteinMPNN, a highly optimized version for modern CPUs with exact same functionality and accuracy as the original ProteinMPNN. Across benchmark datasets ProteinMPNN is xx - yy faster than the original one.  
-
-### New features
-- Supports bfloat16 precision for faster computation, using ```--precision <float32/bfloat16>```
+Here, we present OpenOmics ProteinMPNN, a highly optimized version for modern CPUs with exact same functionality and accuracy as the original ProteinMPNN. OpenOmics ProteinMPNN also supports lower precision (bfloat16) computations.
 
 ## Using Docker  
 ### Build  
@@ -18,58 +15,58 @@ The main script for ProteinMPNN ```protein_mpnn_run.py``` can be run as
 ```bash
 docker run -it -v <output_dir>:/outputs -v <input_dir>:/input pmpnn:latest python protein_mpnn_run.py
 ```
-**Note: Various Input parameters to protein_mpnn_run.py are described in the original readme below**
+**Note: Various input parameters to protein_mpnn_run.py are described in the original readme below**
 
-Examples:
+### Examples:  
 Various ProteinMPNN example scripts are present in examples/ and can be run as follows:
 
-### Simple monomer example
+#### Simple monomer example
 ```bash
 docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_1.py
 ```
-### Simple multi-chain example
+#### Simple multi-chain example
 ```bash
 docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_2.py
 ```
-### Directly from the .pdb path
+#### Directly from the .pdb path
 ```bash
 docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_3.py
 ```
 
-### Return score only (model's uncertainty)
+#### Return score only (model's uncertainty)
 ```bash
 docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_3_score_only.py
 ```
-### Return score only (model's uncertainty) loading sequence from fasta files
+#### Return score only (model's uncertainty) loading sequence from fasta files
 ```bash
 docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_3_score_only_from_fasta.py 
 ```
 
-### Fix some residue positions
+#### Fix some residue positions
 ```bash
 docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_4.py  
 ```
-### Specify which positions to design
+#### Specify which positions to design
 ```bash
 docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_4_non_fixed.py  
 ```
-### Tie some positions together (symmetry)
+#### Tie some positions together (symmetry)
 ```bash
 docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_5.py  
 ```
-### Homooligomer example
+#### Homooligomer example
 ```bash
 docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_6.py 
 ```
-### Return sequence unconditional probabilities (PSSM like)
+#### Return sequence unconditional probabilities (PSSM like)
 ```bash
 docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_7.py 
 ```
-### Add amino acid bias
+#### Add amino acid bias
 ```bash
 docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_8.py  
 ```
-### Use PSSM bias when designing sequences
+#### Use PSSM bias when designing sequences
 ```bash
 docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_example_pssm.py  
 ```
@@ -79,8 +76,9 @@ All the above scripts are parameterizable, for example:
 mkdir -p ./outputs
 docker run -it -v ./output:/outputs -v ./inputs/PDB_monomers/pdbs/:/input pmpnn:latest python examples/script_example_1.py --input /input --num_seq_per_target 10 --sampling_temp 0.1 --seed 37 --batch_size 1 --precision bfloat16
 ```
+
 ## Using source code
-### Installation
+### Install
 ```bash
 source setup_proteinmpnn.sh
 ```
@@ -93,7 +91,7 @@ export LD_LIBRARY_PATH=<install_location>/lib:$LD_LIBRARY_PATH
 ```
 
 ### Run
-### Simple monomer example:  
+#### Simple monomer example:  
 ```bash
 cd examples/  
 python script_example_1.py  --output <output-dir> --input <input-pdb-directory> --precision <bfloat16/float32>
@@ -106,7 +104,7 @@ python script_example_1.py  --output ../output/ --input ../inputs/PDB_monomers/p
 ```
 ## OpenOmics ProteinMPNN README ends here
 
-## Original ProteinMPNN README:
+## Original ProteinMPNN README follows:
 # ProteinMPNN
 ![ProteinMPNN](https://docs.google.com/drawings/d/e/2PACX-1vTtnMBDOq8TpHIctUfGN8Vl32x5ISNcPKlxjcQJF2q70PlaH2uFlj2Ac4s3khnZqG1YxppdMr0iTyk-/pub?w=889&h=358)
 Read [ProteinMPNN paper](https://www.biorxiv.org/content/10.1101/2022.06.03.494563v1).
