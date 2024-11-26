@@ -58,10 +58,10 @@ index 0000000..93d04ac
 +    main(sys.argv)
 diff --git a/examples/script_example_2.py b/examples/script_example_2.py
 new file mode 100644
-index 0000000..dc43474
+index 0000000..47dbcc2
 --- /dev/null
 +++ b/examples/script_example_2.py
-@@ -0,0 +1,66 @@
+@@ -0,0 +1,65 @@
 +#!/usr/bin/env python
 +# encoding: utf-8
 +import os
@@ -127,13 +127,12 @@ index 0000000..dc43474
 +if __name__ == "__main__":
 +    import sys
 +    main(sys.argv)
-+
 diff --git a/examples/script_example_3.py b/examples/script_example_3.py
 new file mode 100644
-index 0000000..83a21d3
+index 0000000..331c4e5
 --- /dev/null
 +++ b/examples/script_example_3.py
-@@ -0,0 +1,47 @@
+@@ -0,0 +1,46 @@
 +#!/usr/bin/env python
 +# encoding: utf-8
 +import os
@@ -180,13 +179,12 @@ index 0000000..83a21d3
 +if __name__ == "__main__":
 +    import sys
 +    main(sys.argv)
-+
 diff --git a/examples/script_example_3_score_only.py b/examples/script_example_3_score_only.py
 new file mode 100644
-index 0000000..6308b96
+index 0000000..9245b7a
 --- /dev/null
 +++ b/examples/script_example_3_score_only.py
-@@ -0,0 +1,50 @@
+@@ -0,0 +1,49 @@
 +#!/usr/bin/env python
 +# encoding: utf-8
 +import os
@@ -236,7 +234,6 @@ index 0000000..6308b96
 +if __name__ == "__main__":
 +    import sys
 +    main(sys.argv)
-+
 diff --git a/examples/script_example_3_score_only_from_fasta.py b/examples/script_example_3_score_only_from_fasta.py
 new file mode 100644
 index 0000000..4bcaa23
@@ -302,10 +299,10 @@ index 0000000..4bcaa23
 +    main(sys.argv)
 diff --git a/examples/script_example_4.py b/examples/script_example_4.py
 new file mode 100644
-index 0000000..96b211d
+index 0000000..459ef77
 --- /dev/null
 +++ b/examples/script_example_4.py
-@@ -0,0 +1,80 @@
+@@ -0,0 +1,79 @@
 +#!/usr/bin/env python
 +# encoding: utf-8
 +import os
@@ -385,13 +382,12 @@ index 0000000..96b211d
 +if __name__ == "__main__":
 +    import sys
 +    main(sys.argv)
-+
 diff --git a/examples/script_example_4_non_fixed.py b/examples/script_example_4_non_fixed.py
 new file mode 100644
-index 0000000..6674ad6
+index 0000000..33040d9
 --- /dev/null
 +++ b/examples/script_example_4_non_fixed.py
-@@ -0,0 +1,80 @@
+@@ -0,0 +1,79 @@
 +#!/usr/bin/env python
 +# encoding: utf-8
 +import os
@@ -471,13 +467,12 @@ index 0000000..6674ad6
 +if __name__ == "__main__":
 +    import sys
 +    main(sys.argv)
-+
 diff --git a/examples/script_example_5.py b/examples/script_example_5.py
 new file mode 100644
-index 0000000..487fbfe
+index 0000000..3f940ee
 --- /dev/null
 +++ b/examples/script_example_5.py
-@@ -0,0 +1,94 @@
+@@ -0,0 +1,93 @@
 +#!/usr/bin/env python
 +# encoding: utf-8
 +
@@ -571,13 +566,12 @@ index 0000000..487fbfe
 +if __name__ == "__main__":
 +    import sys
 +    main(sys.argv)
-+
 diff --git a/examples/script_example_6.py b/examples/script_example_6.py
 new file mode 100644
-index 0000000..3e0c614
+index 0000000..9c6d61b
 --- /dev/null
 +++ b/examples/script_example_6.py
-@@ -0,0 +1,68 @@
+@@ -0,0 +1,67 @@
 +#!/usr/bin/env python
 +# encoding: utf-8
 +
@@ -645,13 +639,12 @@ index 0000000..3e0c614
 +if __name__ == "__main__":
 +    import sys
 +    main(sys.argv)
-+
 diff --git a/examples/script_example_7.py b/examples/script_example_7.py
 new file mode 100644
-index 0000000..6dda7fb
+index 0000000..b50c24d
 --- /dev/null
 +++ b/examples/script_example_7.py
-@@ -0,0 +1,57 @@
+@@ -0,0 +1,56 @@
 +#!/usr/bin/env python
 +# encoding: utf-8
 +
@@ -708,13 +701,12 @@ index 0000000..6dda7fb
 +if __name__ == "__main__":
 +    import sys
 +    main(sys.argv)
-+
 diff --git a/examples/script_example_8.py b/examples/script_example_8.py
 new file mode 100644
-index 0000000..0c3b518
+index 0000000..85c9766
 --- /dev/null
 +++ b/examples/script_example_8.py
-@@ -0,0 +1,68 @@
+@@ -0,0 +1,67 @@
 +#!/usr/bin/env python
 +# encoding: utf-8
 +
@@ -782,13 +774,12 @@ index 0000000..0c3b518
 +if __name__ == "__main__":
 +    import sys
 +    main(sys.argv)
-+
 diff --git a/examples/script_example_pssm.py b/examples/script_example_pssm.py
 new file mode 100644
-index 0000000..2be1b93
+index 0000000..02c032e
 --- /dev/null
 +++ b/examples/script_example_pssm.py
-@@ -0,0 +1,85 @@
+@@ -0,0 +1,84 @@
 +#!/usr/bin/env python
 +# encoding: utf-8
 +
@@ -873,7 +864,6 @@ index 0000000..2be1b93
 +if __name__ == "__main__":
 +    import sys
 +    main(sys.argv)
-+
 diff --git a/protein_mpnn_run.py b/protein_mpnn_run.py
 index 27816ee..e76aa36 100644
 --- a/protein_mpnn_run.py
@@ -1219,3 +1209,83 @@ index 27816ee..e76aa36 100644
 +
 +    args = argparser.parse_args()
 +    main(args)
+diff --git a/setup_proteinmpnn.sh b/setup_proteinmpnn.sh
+new file mode 100644
+index 0000000..f5dc47f
+--- /dev/null
++++ b/setup_proteinmpnn.sh
+@@ -0,0 +1,74 @@
++#!/bin/bash
++
++set -e
++trap 'echo "Error on line $LINENO"; exit 1;' ERR
++
++SCRIPT_PATH="${BASH_SOURCE:-$0}"
++ABS_SCRIPT_PATH="$(realpath "${SCRIPT_PATH}")"
++ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"
++
++CONDA_INSTALL_DIR=$(realpath ./miniforge3)
++
++# Parse command line arguments
++while (( "$#" )); do
++  case "$1" in
++    -p)
++      CONDA_INSTALL_DIR=$2
++      CONDA_INSTALL_DIR=$(realpath "$CONDA_INSTALL_DIR")
++      shift 2
++      ;;
++    -*|--*=)
++      echo "Error: Unsupported flag $1" >&2
++      exit 1
++      ;;
++    *)
++      echo "Error: Unsupported argument $1" >&2
++      exit 1
++      ;;
++  esac
++done
++
++# Check if Miniforge3 exists
++if [ ! -d "$CONDA_INSTALL_DIR" ]; then
++  echo "Miniforge3 is not installed. Installing..."
++  command -v wget >/dev/null 2>&1 || { echo "wget is required but not installed. Exiting."; exit 1; }
++  wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
++  bash Miniforge3-Linux-x86_64.sh -b -p "$CONDA_INSTALL_DIR"
++  echo "Miniforge3 installation complete."
++else
++  echo "Miniforge3 is already installed at: $CONDA_INSTALL_DIR"
++fi
++
++export PATH="$CONDA_INSTALL_DIR/bin:$PATH"
++
++# Clone the ProteinMPNN repository
++if [ ! -d "ProteinMPNN" ]; then
++  git clone https://github.com/dauparas/ProteinMPNN.git
++else
++  echo "ProteinMPNN repository already exists, skipping git clone."
++fi
++
++cd ProteinMPNN
++git checkout 8907e6671bfbfc92303b5f79c4b5e6ce47cdef57
++PATCH_FILE="$ABS_DIRECTORY/ProteinMPNN.patch"
++if [ -f "$PATCH_FILE" ]; then
++  if git apply --reverse --check "$PATCH_FILE" > /dev/null 2>&1; then
++    echo "Patch has already been applied. Skipping patch step."
++  else
++    git apply "$PATCH_FILE"
++    echo "Patch applied successfully."
++  fi
++else
++  echo "Error: Patch file not found at $PATCH_FILE" >&2
++  exit 1
++fi
++
++# Create and activate the Conda environment
++source "$CONDA_INSTALL_DIR/bin/activate"
++conda create -n p_mpnn -y python=3.11 pip=24.0
++conda init
++conda activate p_mpnn
++
++conda install -n p_mpnn -y pytorch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 -c pytorch
++pip install intel-extension-for-pytorch==2.3.100
++pip install numpy==1.26.0
