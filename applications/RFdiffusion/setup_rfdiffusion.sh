@@ -64,7 +64,7 @@ else
   exit 1
 fi
 mkdir -p models
-cd models
+cd models/
 wget https://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063dc4/Base_ckpt.pt
 wget https://files.ipd.uw.edu/pub/RFdiffusion/e29311f6f1bf1af907f9ef9f44b8328b/Complex_base_ckpt.pt
 wget https://files.ipd.uw.edu/pub/RFdiffusion/60f09a193fb5e5ccdc4980417708dbab/Complex_Fold_base_ckpt.pt
@@ -79,7 +79,12 @@ wget https://files.ipd.uw.edu/pub/RFdiffusion/1befcb9b28e2f778f53d47f18b7597fa/R
 cd ../
 # Create and activate the Conda environment using the YAML file, disabling plugins to avoid errors
 #CONDA_NO_PLUGINS=true 
-conda env create -f env/SE3nv.yml 
+if conda env list | grep -q "^SE3nv"; then
+	echo "Environment exists. Moving ahead without create the env. If the setup crashes, please remove manually."
+    else
+	echo "Creating conda env SE3nv.."
+	conda env create -f env/SE3nv.yml 
+fi
 source $CONDA_INSTALL_DIR/bin/activate SE3nv
 #conda init
 #conda activate SE3nv
@@ -93,5 +98,7 @@ python setup.py install
 cd ../.. # Change into the root directory of the repository
 pip install -e .
 
+echo ""
+echo "Note:"
 echo "Conda (Miniforge3) is installed at $CONDA_INSTALL_DIR"
-echo "To manually activate conda env do: source $CONDA_INSTALL_DIR/bin/activate SE3nv"
+echo "To manually activate conda env, do: source $CONDA_INSTALL_DIR/bin/activate SE3nv"
