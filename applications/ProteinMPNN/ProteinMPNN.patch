@@ -1,6 +1,6 @@
 diff --git a/examples/script_example_1.py b/examples/script_example_1.py
 new file mode 100644
-index 0000000..315eb70
+index 0000000..aa58b04
 --- /dev/null
 +++ b/examples/script_example_1.py
 @@ -0,0 +1,51 @@
@@ -13,7 +13,7 @@ index 0000000..315eb70
 +def main(argv):
 +    # Argument parsing
 +    parser = ArgumentParser(description="Run protein folding scripts")
-+    parser.add_argument('--input', help="Input data directory", default="ProteinMPNN/inputs/PDB_monomers/pdbs")
++    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_monomers/pdbs")
 +    parser.add_argument('--output', help="Output directory", default="/outputs/example_1_outputs")
 +    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
 +    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
@@ -57,7 +57,7 @@ index 0000000..315eb70
 +    main(sys.argv)
 diff --git a/examples/script_example_2.py b/examples/script_example_2.py
 new file mode 100644
-index 0000000..f6b117f
+index 0000000..2b9d7dc
 --- /dev/null
 +++ b/examples/script_example_2.py
 @@ -0,0 +1,64 @@
@@ -70,7 +70,7 @@ index 0000000..f6b117f
 +def main(argv):
 +    # Argument parsing
 +    parser = ArgumentParser(description="Run protein folding with assigned chains")
-+    parser.add_argument('--input', help="Input data directory", default="ProteinMPNN/inputs/PDB_complexes/pdbs/")
++    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
 +    parser.add_argument('--output', help="Output directory", default="/outputs/example_2_outputs")
 +    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A B")
 +    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
@@ -127,7 +127,7 @@ index 0000000..f6b117f
 +
 diff --git a/examples/script_example_3.py b/examples/script_example_3.py
 new file mode 100644
-index 0000000..539eb87
+index 0000000..59dc76d
 --- /dev/null
 +++ b/examples/script_example_3.py
 @@ -0,0 +1,45 @@
@@ -140,7 +140,7 @@ index 0000000..539eb87
 +def main(argv):
 +    # Argument parsing
 +    parser = ArgumentParser(description="Run protein folding on specific PDB and chains")
-+    parser.add_argument('--pdb_path', help="Path to the PDB file", default="ProteinMPNN/inputs/PDB_complexes/pdbs/")
++    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
 +    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A")
 +    parser.add_argument('--output', help="Output directory", default="/outputs/example_3_outputs")
 +    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
@@ -178,7 +178,7 @@ index 0000000..539eb87
 +
 diff --git a/examples/script_example_3_score_only.py b/examples/script_example_3_score_only.py
 new file mode 100644
-index 0000000..1ab9abd
+index 0000000..6c22aba
 --- /dev/null
 +++ b/examples/script_example_3_score_only.py
 @@ -0,0 +1,47 @@
@@ -191,7 +191,7 @@ index 0000000..1ab9abd
 +def main(argv):
 +    # Argument parsing
 +    parser = ArgumentParser(description="Run protein folding and scoring on specific PDB and chains")
-+    parser.add_argument('--pdb_path', help="Path to the PDB file", default="ProteinMPNN/inputs/PDB_complexes/pdbs/")
++    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
 +    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A")
 +    parser.add_argument('--output', help="Output directory", default="/outputs/example_3_score_only_outputs")
 +    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
@@ -231,7 +231,7 @@ index 0000000..1ab9abd
 +
 diff --git a/examples/script_example_3_score_only_from_fasta.py b/examples/script_example_3_score_only_from_fasta.py
 new file mode 100644
-index 0000000..b90284c
+index 0000000..09752e5
 --- /dev/null
 +++ b/examples/script_example_3_score_only_from_fasta.py
 @@ -0,0 +1,50 @@
@@ -245,8 +245,8 @@ index 0000000..b90284c
 +def main(argv):
 +    # Argument parsing
 +    parser = ArgumentParser(description="Run protein folding and scoring from a FASTA file on specific PDB and chains")
-+    parser.add_argument('--pdb_path', help="Path to the PDB file", default="ProteinMPNN/inputs/PDB_complexes/pdbs/")
-+    parser.add_argument('--path_to_fasta', help="Path to the FASTA file", default="ProteinMPNN/outputs/example_3_outputs/seqs/")
++    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
++    parser.add_argument('--path_to_fasta', help="Path to the FASTA file", default="/ProteinMPNN/outputs/example_3_outputs/seqs/")
 +    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A")
 +    parser.add_argument('--output', help="Output directory", default="/outputs/example_3_score_only_from_fasta_outputs")
 +    parser.add_argument('--num_seq_per_target', type=int, default=5, help="Number of sequences per target")
@@ -287,7 +287,7 @@ index 0000000..b90284c
 +    main(sys.argv)
 diff --git a/examples/script_example_4.py b/examples/script_example_4.py
 new file mode 100644
-index 0000000..6c6e19c
+index 0000000..93f22fa
 --- /dev/null
 +++ b/examples/script_example_4.py
 @@ -0,0 +1,77 @@
@@ -300,7 +300,7 @@ index 0000000..6c6e19c
 +def main(argv):
 +    # Argument parsing
 +    parser = ArgumentParser(description="Run protein folding with fixed positions on specific chains")
-+    parser.add_argument('--input', help="Input folder with PDBs", default="ProteinMPNN/inputs/PDB_complexes/pdbs/")
++    parser.add_argument('--input', help="Input folder with PDBs", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
 +    parser.add_argument('--output', help="Output directory", default="/outputs/example_4_outputs")
 +    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A C")
 +    parser.add_argument('--fixed_positions', help="Fixed positions for the chains", default="1 2 3 4 5 6 7 8 23 25, 10 11 12 13 14 15 16 17 18 19 20 40")
@@ -370,7 +370,7 @@ index 0000000..6c6e19c
 +
 diff --git a/examples/script_example_4_non_fixed.py b/examples/script_example_4_non_fixed.py
 new file mode 100644
-index 0000000..142ea48
+index 0000000..96ca500
 --- /dev/null
 +++ b/examples/script_example_4_non_fixed.py
 @@ -0,0 +1,78 @@
@@ -383,7 +383,7 @@ index 0000000..142ea48
 +def main(argv):
 +    # Argument parsing
 +    parser = ArgumentParser(description="Run protein folding with non-fixed positions on specific chains")
-+    parser.add_argument('--input', help="Input folder with PDBs", default="ProteinMPNN/inputs/PDB_complexes/pdbs/")
++    parser.add_argument('--input', help="Input folder with PDBs", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
 +    parser.add_argument('--output', help="Output directory", default="/outputs/example_4_non_fixed_outputs")
 +    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A C")
 +    parser.add_argument('--design_only_positions', help="Design only these positions", default="1 2 3 4 5 6 7 8 9 10, 3 4 5 6 7 8")
@@ -454,7 +454,7 @@ index 0000000..142ea48
 +
 diff --git a/examples/script_example_5.py b/examples/script_example_5.py
 new file mode 100644
-index 0000000..b9e9cad
+index 0000000..fb53e52
 --- /dev/null
 +++ b/examples/script_example_5.py
 @@ -0,0 +1,92 @@
@@ -468,7 +468,7 @@ index 0000000..b9e9cad
 +def main(argv):
 +    # Argument parsing
 +    parser = ArgumentParser(description="Run ProteinMPNN pipeline with multiple chains and positions")
-+    parser.add_argument('--input', help="Input data directory", default="ProteinMPNN/inputs/PDB_complexes/pdbs/")
++    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
 +    parser.add_argument('--output', help="Output directory", default="/outputs/example_5_outputs")
 +    parser.add_argument('--chains_to_design', default="A C", help="Chains to design")
 +    parser.add_argument('--fixed_positions', default="9 10 11 12 13 14 15 16 17 18 19 20 21 22 23, 10 11 18 19 20 22", help="Fixed positions for the chains")
@@ -552,10 +552,10 @@ index 0000000..b9e9cad
 +
 diff --git a/examples/script_example_6.py b/examples/script_example_6.py
 new file mode 100644
-index 0000000..9f84390
+index 0000000..0bec234
 --- /dev/null
 +++ b/examples/script_example_6.py
-@@ -0,0 +1,67 @@
+@@ -0,0 +1,66 @@
 +#!/usr/bin/env python
 +# encoding: utf-8
 +
@@ -566,7 +566,7 @@ index 0000000..9f84390
 +def main(argv):
 +    # Argument parsing
 +    parser = ArgumentParser(description="Run ProteinMPNN pipeline with homooligomers and tied positions")
-+    parser.add_argument('--input', help="Input data directory", default="ProteinMPNN/inputs/PDB_homooligomers/pdbs/")
++    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_homooligomers/pdbs/")
 +    parser.add_argument('--output', help="Output directory", default="/outputs/example_6_outputs")
 +    parser.add_argument('--homooligomer', type=int, default=1, help="Homooligomer flag")
 +    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
@@ -622,13 +622,12 @@ index 0000000..9f84390
 +if __name__ == "__main__":
 +    import sys
 +    main(sys.argv)
-+
 diff --git a/examples/script_example_7.py b/examples/script_example_7.py
 new file mode 100644
-index 0000000..eca676a
+index 0000000..9e22a93
 --- /dev/null
 +++ b/examples/script_example_7.py
-@@ -0,0 +1,56 @@
+@@ -0,0 +1,55 @@
 +#!/usr/bin/env python
 +# encoding: utf-8
 +
@@ -639,7 +638,7 @@ index 0000000..eca676a
 +def main(argv):
 +    # Argument parsing
 +    parser = ArgumentParser(description="Run ProteinMPNN pipeline for monomers")
-+    parser.add_argument('--input', help="Input data directory", default="ProteinMPNN/inputs/PDB_monomers/pdbs/")
++    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_monomers/pdbs/")
 +    parser.add_argument('--output', help="Output directory", default="/outputs/example_7_outputs")
 +    parser.add_argument('--num_seq_per_target', type=int, default=1, help="Number of sequences per target")
 +    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
@@ -684,13 +683,12 @@ index 0000000..eca676a
 +if __name__ == "__main__":
 +    import sys
 +    main(sys.argv)
-+
 diff --git a/examples/script_example_8.py b/examples/script_example_8.py
 new file mode 100644
-index 0000000..4939eb4
+index 0000000..83c83bd
 --- /dev/null
 +++ b/examples/script_example_8.py
-@@ -0,0 +1,67 @@
+@@ -0,0 +1,66 @@
 +#!/usr/bin/env python
 +# encoding: utf-8
 +
@@ -701,7 +699,7 @@ index 0000000..4939eb4
 +def main(argv):
 +    # Argument parsing
 +    parser = ArgumentParser(description="Run ProteinMPNN pipeline with amino acid bias")
-+    parser.add_argument('--input', help="Input data directory", default="ProteinMPNN/inputs/PDB_monomers/pdbs/")
++    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_monomers/pdbs/")
 +    parser.add_argument('--output', help="Output directory", default="/outputs/example_8_outputs")
 +    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
 +    parser.add_argument('--sampling_temp', type=float, default=0.1, help="Sampling temperature")
@@ -757,13 +755,12 @@ index 0000000..4939eb4
 +if __name__ == "__main__":
 +    import sys
 +    main(sys.argv)
-+
 diff --git a/examples/script_example_pssm.py b/examples/script_example_pssm.py
 new file mode 100644
-index 0000000..e8324cc
+index 0000000..2a36869
 --- /dev/null
 +++ b/examples/script_example_pssm.py
-@@ -0,0 +1,83 @@
+@@ -0,0 +1,82 @@
 +#!/usr/bin/env python
 +# encoding: utf-8
 +
@@ -774,8 +771,8 @@ index 0000000..e8324cc
 +def main(argv):
 +    # Argument parsing
 +    parser = ArgumentParser(description="Run ProteinMPNN pipeline with PSSM inputs")
-+    parser.add_argument('--pssm_input', help="PSSM input directory", default="ProteinMPNN/inputs/PSSM_inputs")
-+    parser.add_argument('--input', help="Input data directory", default="ProteinMPNN/inputs/PDB_complexes/pdbs/")
++    parser.add_argument('--pssm_input', help="PSSM input directory", default="/ProteinMPNN/inputs/PSSM_inputs")
++    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
 +    parser.add_argument('--output', help="Output directory", default="/outputs/example_pssm_outputs")
 +    parser.add_argument('--chains_to_design', default="A B", help="Chains to design")
 +    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
@@ -846,7 +843,6 @@ index 0000000..e8324cc
 +if __name__ == "__main__":
 +    import sys
 +    main(sys.argv)
-+
 diff --git a/protein_mpnn_run.py b/protein_mpnn_run.py
 index 27816ee..4efd2d1 100644
 --- a/protein_mpnn_run.py
