@@ -127,7 +127,7 @@ index 0000000..2b9d7dc
 +
 diff --git a/examples/script_example_3.py b/examples/script_example_3.py
 new file mode 100644
-index 0000000..59dc76d
+index 0000000..6873593
 --- /dev/null
 +++ b/examples/script_example_3.py
 @@ -0,0 +1,45 @@
@@ -140,7 +140,7 @@ index 0000000..59dc76d
 +def main(argv):
 +    # Argument parsing
 +    parser = ArgumentParser(description="Run protein folding on specific PDB and chains")
-+    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
++    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/3HTN.pdb")
 +    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A")
 +    parser.add_argument('--output', help="Output directory", default="/outputs/example_3_outputs")
 +    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
@@ -178,7 +178,7 @@ index 0000000..59dc76d
 +
 diff --git a/examples/script_example_3_score_only.py b/examples/script_example_3_score_only.py
 new file mode 100644
-index 0000000..6c22aba
+index 0000000..930585d
 --- /dev/null
 +++ b/examples/script_example_3_score_only.py
 @@ -0,0 +1,47 @@
@@ -191,7 +191,7 @@ index 0000000..6c22aba
 +def main(argv):
 +    # Argument parsing
 +    parser = ArgumentParser(description="Run protein folding and scoring on specific PDB and chains")
-+    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
++    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/3HTN.pdb")
 +    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A")
 +    parser.add_argument('--output', help="Output directory", default="/outputs/example_3_score_only_outputs")
 +    parser.add_argument('--num_seq_per_target', type=int, default=2, help="Number of sequences per target")
@@ -231,7 +231,7 @@ index 0000000..6c22aba
 +
 diff --git a/examples/script_example_3_score_only_from_fasta.py b/examples/script_example_3_score_only_from_fasta.py
 new file mode 100644
-index 0000000..09752e5
+index 0000000..4fbf9f9
 --- /dev/null
 +++ b/examples/script_example_3_score_only_from_fasta.py
 @@ -0,0 +1,50 @@
@@ -245,8 +245,8 @@ index 0000000..09752e5
 +def main(argv):
 +    # Argument parsing
 +    parser = ArgumentParser(description="Run protein folding and scoring from a FASTA file on specific PDB and chains")
-+    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
-+    parser.add_argument('--path_to_fasta', help="Path to the FASTA file", default="/ProteinMPNN/outputs/example_3_outputs/seqs/")
++    parser.add_argument('--pdb_path', help="Path to the PDB file", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/3HTN.pdb")
++    parser.add_argument('--path_to_fasta', help="Path to the FASTA file", default="/ProteinMPNN/outputs/example_3_outputs/seqs/3HTN.fa")
 +    parser.add_argument('--chains_to_design', help="Chains to design (space-separated)", default="A")
 +    parser.add_argument('--output', help="Output directory", default="/outputs/example_3_score_only_from_fasta_outputs")
 +    parser.add_argument('--num_seq_per_target', type=int, default=5, help="Number of sequences per target")
