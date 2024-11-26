@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 def main(argv):
     # Argument parsing
     parser = ArgumentParser(description="Run ProteinMPNN pipeline with multiple chains and positions")
-    parser.add_argument('--input', help="Input data directory", default="ProteinMPNN/inputs/PDB_complexes/pdbs/")
+    parser.add_argument('--input', help="Input data directory", default="/ProteinMPNN/inputs/PDB_complexes/pdbs/")
     parser.add_argument('--output', help="Output directory", default="/outputs/example_5_outputs")
     parser.add_argument('--chains_to_design', default="A C", help="Chains to design")
     parser.add_argument('--fixed_positions', default="9 10 11 12 13 14 15 16 17 18 19 20 21 22 23, 10 11 18 19 20 22", help="Fixed positions for the chains")
