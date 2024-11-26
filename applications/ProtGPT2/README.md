@@ -1,5 +1,5 @@
 # OpenOmics ProtGPT2
-ProtGPT2 is a popular deep language model for Protein Design. ProtpGPT2, trained on known proteins, generates de novo proteins sequences, hence has the potential to revolutionize domains such as healthcare, agriculture, evironmental, etc. OpenOmics ProtGPT2 is a highly optimized version of the original ProtGPT2 for modern CPUs, with support for lower precision computations. It maintains the exact same accuracy level as original ProtGPT2.    
+ProtGPT2 is a popular deep language model for Protein Design. ProtpGPT2, trained on known proteins, generates de novo proteins sequences, hence has the potential to revolutionize domains such as healthcare, agriculture, evironmental, etc. OpenOmics ProtGPT2 is a highly optimized version of the original ProtGPT2 for modern CPUs, with support for lower precision computations. It maintains the exact same accuracy level as original the ProtGPT2.    
 
 Notes:  
 - OpenOmics ProtGPT2 supports all the parameters supported by original ProtGPT2 (please refer to original PrtoGPT2 readme below)  
@@ -25,7 +25,7 @@ docker run -it -v $OUTPUT_DIR:/output protgpt2:latest python protgpt2.py --max_l
 ```
 Note: external models can be provided using ```--model_dir``` parameter.  
 
-## Build from source
+## Using source code
 ```bash
 git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
 cd TransOmics.OpenOmicsInternal/applications/protgpt2
@@ -51,7 +51,7 @@ python protgpt2.py --max_length 100 --do_sample True --top_k 950 --repetition_pe
 ```
 ## OpenOmics Protgpt2 README ends here
 
-# Original Protgpt2 README:
+## Original Protgpt2 README follows:
 
 # **ProtGPT2**
 
