@@ -79,8 +79,31 @@ All the above scripts are parameterizable, for example:
 mkdir -p ./outputs
 docker run -it -v ./output:/outputs -v ./inputs/PDB_monomers/pdbs/:/input pmpnn:latest python examples/script_example_1.py --input /input --num_seq_per_target 10 --sampling_temp 0.1 --seed 37 --batch_size 1 --precision bfloat16
 ```
+## Using source code
+### Installation
+```bash
+source setup_proteinmpnn.sh
+```
+#### Install jemalloc for better performance
+```bash
+git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
+cd jemalloc && bash autogen.sh --prefix=<install_location> && make install 
+cd ..
+export LD_LIBRARY_PATH=<install_location>/lib:$LD_LIBRARY_PATH
+```
 
-
+### Run
+### Simple monomer example:  
+```bash
+cd examples/  
+python script_example_1.py  --output <output-dir> --input <input-pdb-directory> --precision <bfloat16/float32>
+```
+```bash
+## example
+mkdir -p ./output
+cd examples
+python script_example_1.py  --output ../output/ --input ../inputs/PDB_monomers/pdbs/ --precision float32
+```
 ## OpenOmics ProteinMPNN README ends here
 
 ## Original ProteinMPNN README:
