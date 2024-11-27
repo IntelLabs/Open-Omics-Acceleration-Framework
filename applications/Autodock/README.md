@@ -2,6 +2,7 @@
 Open-Omics-Autodock is an optimized, multithreaded SYCL CPU version of the original AutoDock for high-performance molecular docking, enabling efficient protein-ligand interaction predictions.
 # Docker Setup Instructions
 ## 1. Build the Docker Image
+
 To build the Docker image with the tag autodock-sycl-cpu, use the following commands based on your machine's proxy requirements:
 * For machine without a proxy:
 ```zsh
@@ -11,6 +12,7 @@ docker build -t autodock-sycl-cpu .
 ```zsh
 docker build --build-arg http_proxy=<http_proxy> --build-arg https_proxy=<https_proxy> --build-arg no_proxy=<no_proxy_ip> -t autodock-sycl-cpu .
 ```
+
 ## 2. Prepare Input and Output Directories                                                                                     
 We can choose any protein complex from **140** protein-ligand complexes available on (https://zenodo.org/records/4031961) (dataset can be downloaded as a zip file from the link here https://zenodo.org/records/4031961/files/data.zip?download=1).
 

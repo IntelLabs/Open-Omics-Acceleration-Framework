@@ -1,0 +1,512 @@
+diff --git a/openfold/model/primitives.py b/openfold/model/primitives.py
+index 354d2cb..0ddea1c 100644
+--- a/openfold/model/primitives.py
++++ b/openfold/model/primitives.py
+@@ -184,26 +184,26 @@ class Linear(nn.Linear):
+ class LayerNorm(nn.Module):
+     def __init__(self, c_in, eps=1e-5):
+         super(LayerNorm, self).__init__()
+-        
++
+         self.c_in = (c_in,)
+         self.eps = eps
+ 
+         self.weight = nn.Parameter(torch.ones(c_in))
+         self.bias = nn.Parameter(torch.zeros(c_in))
+ 
+-    def forward(self, x): 
++    def forward(self, x):
+         d = x.dtype
+         deepspeed_is_initialized = (
+-            deepspeed_is_installed and 
++            deepspeed_is_installed and
+             deepspeed.utils.is_initialized()
+         )
+         if(d is torch.bfloat16 and not deepspeed_is_initialized):
+             with torch.cuda.amp.autocast(enabled=False):
+                 out = nn.functional.layer_norm(
+-                    x, 
+-                    self.c_in, 
+-                    self.weight.to(dtype=d), 
+-                    self.bias.to(dtype=d), 
++                    x,
++                    self.c_in,
++                    self.weight,#.to(dtype=d),
++                    self.bias,#.to(dtype=d),
+                     self.eps
+                 )
+         else:
+@@ -226,7 +226,7 @@ def softmax_no_cast(t: torch.Tensor, dim: int = -1) -> torch.Tensor:
+     """
+     d = t.dtype
+     deepspeed_is_initialized = (
+-        deepspeed_is_installed and 
++        deepspeed_is_installed and
+         deepspeed.utils.is_initialized()
+     )
+     if(d is torch.bfloat16 and not deepspeed_is_initialized):
+@@ -259,7 +259,7 @@ def _attention(query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, bias
+ 
+ @torch.jit.ignore
+ def _attention_chunked_trainable(
+-    query, key, value, biases, chunk_size, chunk_dim, checkpoint, 
++    query, key, value, biases, chunk_size, chunk_dim, checkpoint,
+ ):
+     if(checkpoint and len(biases) > 2):
+         raise ValueError(
+@@ -304,7 +304,7 @@ def _attention_chunked_trainable(
+             ]
+ 
+             o_chunk = _attention(q_chunk, k_chunk, v_chunk, bias_chunks)
+-            
++
+         o_chunk = o_chunk.transpose(-2, -3)
+         o_chunks.append(o_chunk)
+ 
+@@ -375,7 +375,7 @@ class Attention(nn.Module):
+         self.sigmoid = nn.Sigmoid()
+ 
+     def _prep_qkv(self,
+-        q_x: torch.Tensor, 
++        q_x: torch.Tensor,
+         kv_x: torch.Tensor
+     ) -> Tuple[
+         torch.Tensor, torch.Tensor, torch.Tensor
+@@ -400,12 +400,12 @@ class Attention(nn.Module):
+         return q, k, v
+ 
+     def _wrap_up(self,
+-        o: torch.Tensor, 
++        o: torch.Tensor,
+         q_x: torch.Tensor
+     ) -> torch.Tensor:
+         if(self.linear_g is not None):
+             g = self.sigmoid(self.linear_g(q_x))
+-        
++
+             # [*, Q, H, C_hidden]
+             g = g.view(g.shape[:-1] + (self.no_heads, -1))
+             o = o * g
+@@ -445,7 +445,7 @@ class Attention(nn.Module):
+                 is used instead
+             use_lma:
+                 Whether to use low-memory attention (Staats & Rabe 2021). If
+-                none of the "use_<...>" flags are True, a stock PyTorch 
++                none of the "use_<...>" flags are True, a stock PyTorch
+                 implementation is used instead
+             lma_q_chunk_size:
+                 Query chunk size (for LMA)
+@@ -474,7 +474,7 @@ class Attention(nn.Module):
+ 
+         if(biases is None):
+             biases = []
+-        
++
+         # [*, H, Q/K, C_hidden]
+         q, k, v = self._prep_qkv(q_x, kv_x)
+ 
+@@ -489,7 +489,7 @@ class Attention(nn.Module):
+             o = o.transpose(-2, -3)
+         elif(use_lma):
+             biases = [
+-                b.expand(b.shape[:-2] + (q_x.shape[-2],) + (kv_x.shape[-2],)) 
++                b.expand(b.shape[:-2] + (q_x.shape[-2],) + (kv_x.shape[-2],))
+                 for b in biases
+             ]
+             o = _lma(q, k, v, biases, lma_q_chunk_size, lma_kv_chunk_size)
+@@ -530,8 +530,8 @@ class GlobalAttention(nn.Module):
+ 
+         self.sigmoid = nn.Sigmoid()
+ 
+-    def forward(self, 
+-        m: torch.Tensor, 
++    def forward(self,
++        m: torch.Tensor,
+         mask: torch.Tensor,
+         use_lma: bool = False,
+     ) -> torch.Tensor:
+@@ -568,11 +568,11 @@ class GlobalAttention(nn.Module):
+             )
+         else:
+             o = _lma(
+-                q, 
+-                k, 
+-                v, 
+-                [bias], 
+-                DEFAULT_LMA_Q_CHUNK_SIZE, 
++                q,
++                k,
++                v,
++                [bias],
++                DEFAULT_LMA_Q_CHUNK_SIZE,
+                 DEFAULT_LMA_KV_CHUNK_SIZE
+             )
+ 
+@@ -595,11 +595,11 @@ class GlobalAttention(nn.Module):
+ 
+ 
+ def _lma(
+-    q: torch.Tensor, 
+-    k: torch.Tensor, 
+-    v: torch.Tensor, 
+-    biases: List[torch.Tensor], 
+-    q_chunk_size: int, 
++    q: torch.Tensor,
++    k: torch.Tensor,
++    v: torch.Tensor,
++    biases: List[torch.Tensor],
++    q_chunk_size: int,
+     kv_chunk_size: int,
+ ):
+     no_q, no_kv = q.shape[-2], k.shape[-2]
+@@ -625,14 +625,14 @@ def _lma(
+             a = torch.einsum(
+                 "...hqd,...hkd->...hqk", q_chunk, k_chunk,
+             )
+-       
++
+             for b in small_bias_chunks:
+                 a += b
+-        
++
+             max_a = torch.max(a, dim=-1, keepdim=True)[0]
+             exp_a = torch.exp(a - max_a)
+             exp_v = torch.einsum("...hvf,...hqv->...hqf", v_chunk, exp_a)
+- 
++
+             maxes.append(max_a.detach().squeeze(-1))
+             weights.append(torch.sum(exp_a, dim=-1))
+             values.append(exp_v)
+@@ -662,7 +662,7 @@ def _flash_attn(q, k, v, kv_mask):
+         raise ValueError(
+             "_flash_attn requires that FlashAttention be installed"
+         )
+-   
++
+     batch_dims = q.shape[:-3]
+     no_heads, n, c = q.shape[-3:]
+     dtype = q.dtype
+@@ -684,25 +684,25 @@ def _flash_attn(q, k, v, kv_mask):
+ 
+     # Flattened batch size
+     batch_size = q.shape[0]
+-    
++
+     # [B_flat * N, H, C]
+     q = q.reshape(-1, *q.shape[-2:])
+-    
++
+     q_max_s = n
+     q_cu_seqlens = torch.arange(
+         0, (batch_size + 1) * n, step=n, dtype=torch.int32, device=q.device
+     )
+ 
+     # [B_flat, N, 2, H, C]
+-    kv = torch.stack([k, v], dim=-3) 
++    kv = torch.stack([k, v], dim=-3)
+     kv_shape = kv.shape
+-    
++
+     # [B_flat, N, 2 * H * C]
+-    kv = kv.reshape(*kv.shape[:-3], -1) 
+-    
++    kv = kv.reshape(*kv.shape[:-3], -1)
++
+     kv_unpad, _, kv_cu_seqlens, kv_max_s = unpad_input(kv, kv_mask)
+     kv_unpad = kv_unpad.reshape(-1, *kv_shape[-3:])
+-   
++
+     out = flash_attn_unpadded_kvpacked_func(
+         q,
+         kv_unpad,
+@@ -713,9 +713,9 @@ def _flash_attn(q, k, v, kv_mask):
+         dropout_p = 0.,
+         softmax_scale = 1., # q has been scaled already
+     )
+-  
++
+     # [*, B, N, H, C]
+-    out = out.reshape(*batch_dims, n, no_heads, c) 
++    out = out.reshape(*batch_dims, n, no_heads, c)
+ 
+     out = out.to(dtype=dtype)
+ 
+diff --git a/openfold/model/structure_module.py b/openfold/model/structure_module.py
+index 61f7383..06c6e11 100644
+--- a/openfold/model/structure_module.py
++++ b/openfold/model/structure_module.py
+@@ -39,7 +39,7 @@ from openfold.utils.tensor_utils import (
+     flatten_final_dims,
+ )
+ 
+-attn_core_inplace_cuda = importlib.import_module("attn_core_inplace_cuda")
++#attn_core_inplace_cuda = importlib.import_module("attn_core_inplace_cuda")
+ 
+ 
+ class AngleResnetBlock(nn.Module):
+@@ -253,7 +253,7 @@ class InvariantPointAttention(nn.Module):
+             z = _z_reference_list
+         else:
+             z = [z]
+-       
++
+         #######################################
+         # Generate scalar and point activations
+         #######################################
+@@ -305,7 +305,7 @@ class InvariantPointAttention(nn.Module):
+         ##########################
+         # [*, N_res, N_res, H]
+         b = self.linear_b(z[0])
+-        
++
+         if(_offload_inference):
+             z[0] = z[0].cpu()
+ 
+@@ -345,7 +345,7 @@ class InvariantPointAttention(nn.Module):
+ 
+         # [*, H, N_res, N_res]
+         pt_att = permute_final_dims(pt_att, (2, 0, 1))
+-        
++
+         if(inplace_safe):
+             a += pt_att
+             del pt_att
+@@ -357,7 +357,7 @@ class InvariantPointAttention(nn.Module):
+                 a.shape[-1],
+             )
+         else:
+-            a = a + pt_att 
++            a = a + pt_att
+             a = a + square_mask.unsqueeze(-3)
+             a = self.softmax(a)
+ 
+@@ -372,11 +372,11 @@ class InvariantPointAttention(nn.Module):
+         # [*, N_res, H * C_hidden]
+         o = flatten_final_dims(o, 2)
+ 
+-        # [*, H, 3, N_res, P_v] 
++        # [*, H, 3, N_res, P_v]
+         if(inplace_safe):
+             v_pts = permute_final_dims(v_pts, (1, 3, 0, 2))
+             o_pt = [
+-                torch.matmul(a, v.to(a.dtype)) 
++                torch.matmul(a, v.to(a.dtype))
+                 for v in torch.unbind(v_pts, dim=-3)
+             ]
+             o_pt = torch.stack(o_pt, dim=-3)
+@@ -416,7 +416,7 @@ class InvariantPointAttention(nn.Module):
+                 (o, *torch.unbind(o_pt, dim=-1), o_pt_norm, o_pair), dim=-1
+             ).to(dtype=z[0].dtype)
+         )
+-        
++
+         return s
+ 
+ 
+@@ -442,12 +442,12 @@ class BackboneUpdate(nn.Module):
+         Args:
+             [*, N_res, C_s] single representation
+         Returns:
+-            [*, N_res, 6] update vector 
++            [*, N_res, 6] update vector
+         """
+         # [*, 6]
+         update = self.linear(s)
+ 
+-        return update 
++        return update
+ 
+ 
+ class StructureModuleTransitionLayer(nn.Module):
+@@ -638,7 +638,7 @@ class StructureModule(nn.Module):
+             A dictionary of outputs
+         """
+         s = evoformer_output_dict["single"]
+-        
++
+         if mask is None:
+             # [*, N]
+             mask = s.new_ones(s.shape[:-1])
+@@ -661,9 +661,9 @@ class StructureModule(nn.Module):
+ 
+         # [*, N]
+         rigids = Rigid.identity(
+-            s.shape[:-1], 
+-            s.dtype, 
+-            s.device, 
++            s.shape[:-1],
++            s.dtype,
++            s.device,
+             self.training,
+             fmt="quat",
+         )
+@@ -671,18 +671,18 @@ class StructureModule(nn.Module):
+         for i in range(self.no_blocks):
+             # [*, N, C_s]
+             s = s + self.ipa(
+-                s, 
+-                z, 
+-                rigids, 
+-                mask, 
++                s,
++                z,
++                rigids,
++                mask,
+                 inplace_safe=inplace_safe,
+-                _offload_inference=_offload_inference, 
++                _offload_inference=_offload_inference,
+                 _z_reference_list=z_reference_list
+             )
+             s = self.ipa_dropout(s)
+             s = self.layer_norm_ipa(s)
+             s = self.transition(s)
+-           
++
+             # [*, N]
+             rigids = rigids.compose_q_update_vec(self.bb_update(s))
+ 
+@@ -691,7 +691,7 @@ class StructureModule(nn.Module):
+             # here
+             backb_to_global = Rigid(
+                 Rotation(
+-                    rot_mats=rigids.get_rots().get_rot_mats(), 
++                    rot_mats=rigids.get_rots().get_rot_mats(),
+                     quats=None
+                 ),
+                 rigids.get_trans(),
+@@ -716,7 +716,7 @@ class StructureModule(nn.Module):
+             )
+ 
+             scaled_rigids = rigids.scale_translation(self.trans_scale_factor)
+-            
++
+             preds = {
+                 "frames": scaled_rigids.to_tensor_7(),
+                 "sidechain_frames": all_frames_to_global.to_tensor_4x4(),
+@@ -731,7 +731,7 @@ class StructureModule(nn.Module):
+             rigids = rigids.stop_rot_gradient()
+ 
+         del z, z_reference_list
+-        
++
+         if(_offload_inference):
+             evoformer_output_dict["pair"] = (
+                 evoformer_output_dict["pair"].to(s.device)
+diff --git a/openfold/utils/kernel/attention_core.py b/openfold/utils/kernel/attention_core.py
+index 362ea30..bbb6899 100644
+--- a/openfold/utils/kernel/attention_core.py
++++ b/openfold/utils/kernel/attention_core.py
+@@ -17,7 +17,7 @@ from operator import mul
+ 
+ import torch
+ 
+-attn_core_inplace_cuda = importlib.import_module("attn_core_inplace_cuda")
++#attn_core_inplace_cuda = importlib.import_module("attn_core_inplace_cuda")
+ 
+ 
+ SUPPORTED_DTYPES = [torch.float32, torch.bfloat16]
+@@ -34,9 +34,9 @@ class AttentionCoreFunction(torch.autograd.Function):
+         q = q.contiguous()
+         k = k.contiguous()
+ 
+-        # [*, H, Q, K] 
++        # [*, H, Q, K]
+         attention_logits = torch.matmul(
+-            q, k.transpose(-1, -2), 
++            q, k.transpose(-1, -2),
+         )
+ 
+         if(bias_1 is not None):
+@@ -45,12 +45,12 @@ class AttentionCoreFunction(torch.autograd.Function):
+             attention_logits += bias_2
+ 
+         attn_core_inplace_cuda.forward_(
+-            attention_logits, 
++            attention_logits,
+             reduce(mul, attention_logits.shape[:-1]),
+             attention_logits.shape[-1],
+         )
+ 
+-        o = torch.matmul(attention_logits, v) 
++        o = torch.matmul(attention_logits, v)
+ 
+         ctx.bias_1_shape = bias_1.shape if bias_1 is not None else None
+         ctx.bias_2_shape = bias_2.shape if bias_2 is not None else None
+@@ -62,9 +62,9 @@ class AttentionCoreFunction(torch.autograd.Function):
+     def backward(ctx, grad_output):
+         q, k, v, attention_logits = ctx.saved_tensors
+         grad_q = grad_k = grad_v = grad_bias_1 = grad_bias_2 = None
+-       
++
+         grad_v = torch.matmul(
+-            attention_logits.transpose(-1, -2), 
++            attention_logits.transpose(-1, -2),
+             grad_output
+         )
+ 
+diff --git a/setup.py b/setup.py
+index 1d5c3a0..88cc2af 100644
+--- a/setup.py
++++ b/setup.py
+@@ -53,9 +53,9 @@ compute_capabilities = set([
+ ])
+ 
+ compute_capabilities.add((7, 0))
+-_, bare_metal_major, _ = get_cuda_bare_metal_version(CUDA_HOME)
+-if int(bare_metal_major) >= 11:
+-    compute_capabilities.add((8, 0))
++#_, bare_metal_major, _ = get_cuda_bare_metal_version(CUDA_HOME)
++#if int(bare_metal_major) >= 11:
++#    compute_capabilities.add((8, 0))
+ 
+ compute_capability, _ = get_nvidia_cc()
+ if compute_capability is not None:
+@@ -85,27 +85,27 @@ setup(
+         "openfold": ['utils/kernel/csrc/*'],
+         "": ["resources/stereo_chemical_props.txt"]
+     },
+-    ext_modules=[CUDAExtension(
+-        name="attn_core_inplace_cuda",
+-        sources=[
+-            "openfold/utils/kernel/csrc/softmax_cuda.cpp",
+-            "openfold/utils/kernel/csrc/softmax_cuda_kernel.cu",
+-        ],
+-        include_dirs=[
+-            os.path.join(
+-                os.path.dirname(os.path.abspath(__file__)),
+-                'openfold/utils/kernel/csrc/'
+-            )
+-        ],
+-        extra_compile_args={
+-            'cxx': ['-O3'] + version_dependent_macros,
+-            'nvcc': (
+-                ['-O3', '--use_fast_math'] +
+-                version_dependent_macros +
+-                extra_cuda_flags
+-            ),
+-        }
+-    )],
++#    ext_modules=[CUDAExtension(
++        #name="attn_core_inplace_cuda",
++        #sources=[
++        #    "openfold/utils/kernel/csrc/softmax_cuda.cpp",
++        #    "openfold/utils/kernel/csrc/softmax_cuda_kernel.cu",
++        #],
++        #include_dirs=[
++        #    os.path.join(
++        #        os.path.dirname(os.path.abspath(__file__)),
++        #        'openfold/utils/kernel/csrc/'
++        #    )
++        #],
++        #extra_compile_args={
++        #    'cxx': ['-O3'] + version_dependent_macros,
++        #    'nvcc': (
++        #        ['-O3', '--use_fast_math'] +
++        #        version_dependent_macros +
++        #        extra_cuda_flags
++        #    ),
++        #}
++    #)],
+     cmdclass={'build_ext': BuildExtension},
+     classifiers=[
+         'License :: OSI Approved :: Apache Software License',

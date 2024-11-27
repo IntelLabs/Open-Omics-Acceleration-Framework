@@ -1,0 +1,60 @@
+# Accept the base image name as an argument
+ARG BASE_IMAGE
+
+# Extend from the base image passed as an argument
+FROM ${BASE_IMAGE}
+
+USER $SERVICE_NAME
+# Clone Openfold
+WORKDIR /app/esm
+RUN git clone https://github.com/aqlaboratory/openfold.git
+WORKDIR /app/esm/openfold
+RUN mv /app/esm_openfold_change_py37.patch /app/esm/openfold/esm_openfold_change_py37.patch
+RUN git checkout -b esm_openfold 4b41059694619831a7db195b7e0988fc4ff3a307
+RUN git apply esm_openfold_change_py37.patch
+
+WORKDIR /app/esm
+RUN ${HOME}/conda/bin/mamba env create -f environment.yml
+RUN bash -c "source ${HOME}/conda/etc/profile.d/conda.sh && \
+source ${HOME}/conda/etc/profile.d/mamba.sh && \
+mamba activate esmfold && \
+pip install . "
+
+WORKDIR /app/esm/openfold
+RUN bash -c "source ${HOME}/conda/etc/profile.d/conda.sh && \
+source ${HOME}/conda/etc/profile.d/mamba.sh && \
+mamba activate esmfold && \
+python setup.py install "
+
+WORKDIR /app/esm
+RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
+WORKDIR /app/esm/jemalloc
+RUN bash autogen.sh --prefix=${HOME}/conda/envs/esmfold/ && make install && \
+    rm -rf /app/esm/jemalloc
+    
+RUN echo "#!/bin/bash" >> /app/init.sh && \
+echo "source ${HOME}/conda/etc/profile.d/conda.sh" >> /app/init.sh && \
+echo "source ${HOME}/conda/etc/profile.d/mamba.sh" >> /app/init.sh && \
+echo "mamba activate esmfold" >> /app/init.sh && \
+chmod +x /app/init.sh && \
+echo "source /app/init.sh" >> ~/.bashrc
+
+WORKDIR /app/esm/
+HEALTHCHECK NONE
+
+ENV LD_PRELOAD "/home/esm-base-service/conda/envs/esmfold/lib/libjemalloc.so:$LD_PRELOAD"
+ENV MALLOC_CONF "oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms:-1,muzzy_decay_ms:-1"
+
+RUN echo '#!/bin/bash' > /app/entrypoint.sh && \
+    echo 'if [ -z "$1" ]; then' >> /app/entrypoint.sh && \
+    echo '    exec /bin/bash' >> /app/entrypoint.sh && \
+    echo 'else' >> /app/entrypoint.sh && \
+    echo '    source /app/init.sh' >> /app/entrypoint.sh && \
+    echo '    exec "$@"' >> /app/entrypoint.sh && \
+    echo 'fi' >> /app/entrypoint.sh && \
+    chmod +x /app/entrypoint.sh
+
+    
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD []
+
