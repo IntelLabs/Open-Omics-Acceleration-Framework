@@ -15,7 +15,7 @@ With a goal to build a performant, cost effective and productive platform, we ar
 * **Building blocks (lib) layer**: for tool developers, this layer consists of key building blocks -- biology specific and generic AI algorithms and data structures -- that can replace ones used in existing tools to accelerate them or can be used as ingredients to build new efficient tools.
 
 <p align="center">
-<img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/sanchit-misra-patch-1/images/Open-Omics-Acceleration-Framework-v3.0.jpg" height="300"/a></br>
+<img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/Open-Omics-Acceleration-Framework-v3.0.jpg" height="300"/a></br>
 </p> 
 
 With a goal of providing a one-stop platform, this framework brings our following repositories for digital biology under one umbrella:
