@@ -5,8 +5,8 @@ Here, we present OpenOmics ProteinMPNN, a highly optimized version for modern CP
 ## Using Docker  
 ### Build  
 ```bash  
-git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git  
-cd TransOmics.OpenOmicsInternal/applications/ProteinMPNN  
+git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git  
+cd Open-Omics-Acceleration-Framework/applications/ProteinMPNN  
 docker build --build-arg http_proxy=<proxy_url> --build-arg https_proxy=<proxy_url> -t pmpnn .
 ```
 ---------------------------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ docker run -it -v <output_dir>:/outputs pmpnn:latest python examples/script_exam
 All the above scripts are parameterizable, for example:
 ```bash
 mkdir -p ./outputs
-docker run -it -v ./output:/outputs -v ./inputs/PDB_monomers/pdbs/:/input pmpnn:latest python examples/script_example_1.py --input /input --num_seq_per_target 10 --sampling_temp 0.1 --seed 37 --batch_size 1 --precision bfloat16
+docker run -it -v ./output:/outputs pmpnn:latest python examples/script_example_1.py --input /ProteinMPNN/inputs/PDB_monomers/pdbs --num_seq_per_target 10 --sampling_temp 0.1 --seed 37 --batch_size 1 --precision bfloat16
 ```
 
 ## Using source code
