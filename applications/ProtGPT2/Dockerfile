@@ -38,25 +38,24 @@ RUN groupadd --gid 1001 $SERVICE_NAME && \
 COPY --from=conda_setup /opt/conda /opt/conda
 
 # Copy application code                                                                #COPY . /app
-RUN git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
-WORKDIR /app/TransOmics.OpenOmicsInternal                       
-RUN git checkout e3c2a2f
-#RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-#WORKDIR Open-Omics-Acceleration-Framework
-#RUN git checkout <commit-id>
-WORKDIR /app
+#RUN git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
+#WORKDIR /app/TransOmics.OpenOmicsInternal                       
+#RUN git checkout e3c2a2f
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
+RUN tar -xzf Source_code_with_submodules.tar.gz
+#WORKDIR /app/Open-Omics-Acceleration-Framework
+#WORKDIR /app
 
 ENV PATH="/opt/conda/bin:$PATH"
 
 # Copy environment.yml and create Conda environment
 #COPY env.yml /app/env.yml
-RUN cp TransOmics.OpenOmicsInternal/applications/ProtGPT2/env.yml .
-RUN cp TransOmics.OpenOmicsInternal/applications/ProtGPT2/protgpt2.py .
-RUN cp TransOmics.OpenOmicsInternal/applications/ProtGPT2/model_script.sh .
-RUN rm -rf TransOmics.OpenOmicsInternal
+RUN cp /app/Open-Omics-Acceleration-Framework/applications/ProtGPT2/env.yml .
+RUN cp /app/Open-Omics-Acceleration-Framework/applications/ProtGPT2/protgpt2.py .
+RUN cp /app/Open-Omics-Acceleration-Framework/applications/ProtGPT2/model_script.sh .
+RUN rm -rf Open-Omics-Acceleration-Framework
 RUN conda env create -f env.yml
-
-WORKDIR /app
+#WORKDIR /app
 RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
 WORKDIR /app/jemalloc
 RUN bash autogen.sh --prefix=/opt/conda/envs/protgpt2/ && make install
@@ -66,11 +65,6 @@ RUN rm -rf jemalloc
 # Set up environment activation and PATH
 #RUN echo "source /opt/conda/bin/activate protgpt2" >> ~/.bashrc
 ENV PATH="/opt/conda/envs/protgpt2/bin:$PATH"
-
-#RUN mkdir -p /home/protgpt2-service/.cache/huggingface/hub && \
-#    chown -R $SERVICE_NAME:$SERVICE_NAME /home/protgpt2-service/.cache/huggingface && \
-#    rm -rf /home/protgpt2-service/.cache/huggingface/hub/models--nferruz--ProtGPT2 && \
- #   ln -s /model_dir /home/protgpt2-service/.cache/huggingface/hub/models--nferruz--ProtGPT2
 
 # Swith to Non-root user
 RUN chown -R $SERVICE_NAME:$SERVICE_NAME /app
