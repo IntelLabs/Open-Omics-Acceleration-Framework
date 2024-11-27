@@ -4,7 +4,7 @@ RFdiffusion is a deep learning based computational tool for designing novel prot
 Here, we present OpenOmics RFdiffusion, a highly optimized version of RFdiffusion (inference) for modern CPUs, while keeping the exact same functionality (including command line parameters) and accuracy as the original. OpenOmics RFdiffusion also supports lower precision inference for faster execution w/o compromizing the accuracy. 
 
 ## Using Docker
-### Docker build
+### Build
 ```bash
 git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 cd Open-Omics-Acceleration-Framework/applications/RFdiffusion
@@ -13,12 +13,12 @@ cd Open-Omics-Acceleration-Framework/applications/RFdiffusion
 docker build --build-arg http_proxy=<http_proxy> --build-arg https_proxy=<https_proxy> --build-arg no_proxy=<no_proxy_ip> -t rfdiffusion .
 ```
 
-### Docker Run
+### Run
+Motif Scaffolding:
 ```bash
 export OUTPUT_DIR=<path_to_output_dir>  
 export INPUT_FILE=<path_to_input_file>  
-```
-Motif Scaffolding:  
+```  
 ```bash
 docker run -v $INPUT_FILE:/infile.pdb -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/<output_file_prefix> inference.input_pdb=/infile.pdb 'contigmap.contigs=<contigs>' inference.num_designs=<num_designs> inference.precision=<float32/bfloat16>
 ```
@@ -37,9 +37,7 @@ Example, Partial Diffusion:
 ```bash
 mkdir -p ./output
 export OUTPUT_DIR=./output/
-export INPUT_FILE=./examples/input_pdbs/2KL8.pdb
 ```
-
 ```bash
 docker run -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py
 inference.output_prefix=/output/design_partialdiffusion inference.input_pdb=../examples/input_pdbs/2KL8.pdb 'contigmap.contigs=[79-79]' inference.num_designs=1 diffuser.partial_T=10 inference.precision=bfloat16
@@ -47,7 +45,7 @@ inference.output_prefix=/output/design_partialdiffusion inference.input_pdb=../e
 
 Note: 
 - Please refer to the original readme below for various modes like unconditional monomer, binder design, etc supported by RFdiffusion and its input/output parameters
-- Also, users can refer to the example run scripts (non docker) for all the modes in ./example folder
+- Also, users can refer to the example run scripts (non docker) for all the modes in [example](https://github.com/RosettaCommons/RFdiffusion/tree/820bfdfaded8c260b962dc40a3171eae316b6ce0/examples) folder
 
 ## Using source code
 ### Install
