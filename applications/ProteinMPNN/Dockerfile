@@ -28,16 +28,14 @@ WORKDIR /ProteinMPNN
 RUN git checkout 8907e6671bfbfc92303b5f79c4b5e6ce47cdef57
 
 # Apply the patch file
-RUN  git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git    ## change this to final OpeOmics release or commit git url
-WORKDIR /ProteinMPNN/TransOmics.OpenOmicsInternal
-#RUN git checkout 3d826b3a91eff7888a1e666f99ea859a703deb14                
-RUN git checkout ffd4b60ded855dc5dccab481246850c25715ade5
-
-WORKDIR /ProteinMPNN
-RUN cp TransOmics.OpenOmicsInternal/applications/ProteinMPNN/ProteinMPNN.patch .
-#COPY ProteinMPNN.patch /ProteinMPNN/ProteinMPNN.patch
+#RUN  git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git    ## change this to final OpeOmics release or commit git url
+#WORKDIR /ProteinMPNN/TransOmics.OpenOmicsInternal                
+#RUN git checkout ffd4b60ded855dc5dccab481246850c25715ade5
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
+RUN tar -xzf Source_code_with_submodules.tar.gz
+RUN cp /ProteinMPNN/Open-Omics-Acceleration-Framework/applications/ProteinMPNN/ProteinMPNN.patch .
 RUN git apply ProteinMPNN.patch
-RUN rm -rf TransOmics.OpenOmicsInternal
+RUN rm -rf Open-Omics-Acceleration-Framework
 
 ENV PATH="/opt/conda/bin:$PATH"
 
