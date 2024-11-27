@@ -1,0 +1,418 @@
+diff --git a/environment.yml b/environment.yml
+index 2d1b70d..59604d5 100644
+--- a/environment.yml
++++ b/environment.yml
+@@ -2,25 +2,23 @@ name: esmfold
+ channels:
+   - conda-forge
+   - bioconda
+-  - pytorch
+ dependencies:
+   - conda-forge::python=3.7
+   - conda-forge::setuptools=59.5.0
+-  - conda-forge::pip
++  - conda-forge::pip=24.0
+   - conda-forge::openmm=7.5.1
+-  - conda-forge::pdbfixer
+-  - conda-forge::cudatoolkit==11.3.*
+-  - conda-forge::einops
+-  - conda-forge::fairscale
+-  - conda-forge::omegaconf
+-  - conda-forge::hydra-core
+-  - conda-forge::pandas
+-  - conda-forge::pytest
++  - conda-forge::pdbfixer=1.7
++  - conda-forge::einops==0.3.2
++  - conda-forge::fairscale==0.4.6
++  - conda-forge::omegaconf=2.3.0
++  - conda-forge::hydra-core=1.3.2
++  - conda-forge::pandas=1.3.5
++  - conda-forge::pytest=7.4.4
+   - bioconda::hmmer==3.3.2
+   - bioconda::hhsuite==3.3.0
+   - bioconda::kalign2==2.04
+-  - pytorch::pytorch=1.12.*
+   - pip:
++      - torch==1.12.1
+       - biopython==1.79
+       - deepspeed==0.5.9
+       - dm-tree==0.1.6
+@@ -33,4 +31,6 @@ dependencies:
+       - typing-extensions==3.10.0.2
+       - pytorch_lightning==1.5.10
+       - wandb==0.12.21
++      - biotite==0.39.0
++      - intel-extension-for-pytorch==1.12.100
+       - git+https://github.com/NVIDIA/dllogger.git
+diff --git a/esm/esmfold/v1/misc.py b/esm/esmfold/v1/misc.py
+index 76b8e74..5c37d82 100644
+--- a/esm/esmfold/v1/misc.py
++++ b/esm/esmfold/v1/misc.py
+@@ -95,7 +95,10 @@ def output_to_pdb(output: T.Dict) -> T.List[str]:
+     # atom14_to_atom37 must be called first, as it fails on latest numpy if the
+     # input is a numpy array. It will work if the input is a torch tensor.
+     final_atom_positions = atom14_to_atom37(output["positions"][-1], output)
+-    output = {k: v.to("cpu").numpy() for k, v in output.items()}
++    output ={
++            k: v.to("cpu").float().numpy() if v.to("cpu").dtype == torch.bfloat16 else v.to("cpu").numpy()
++            for k, v in output.items()
++            }
+     final_atom_positions = final_atom_positions.cpu().numpy()
+     final_atom_mask = output["atom37_atom_exists"]
+     pdbs = []
+diff --git a/examples/inverse_folding/sample_sequences.py b/examples/inverse_folding/sample_sequences.py
+index 3a12693..fd22f54 100644
+--- a/examples/inverse_folding/sample_sequences.py
++++ b/examples/inverse_folding/sample_sequences.py
+@@ -16,9 +16,10 @@ import torch
+ import esm
+ import esm.inverse_folding
+ 
+-
++nogpu = True
++noipex = True
+ def sample_seq_singlechain(model, alphabet, args):
+-    if torch.cuda.is_available() and not args.nogpu:
++    if torch.cuda.is_available() and not nogpu:
+         model = model.cuda()
+         print("Transferred model to GPU")
+     coords, native_seq = esm.inverse_folding.util.load_coords(args.pdbfile, args.chain)
+@@ -31,7 +32,7 @@ def sample_seq_singlechain(model, alphabet, args):
+     with open(args.outpath, 'w') as f:
+         for i in range(args.num_samples):
+             print(f'\nSampling.. ({i+1} of {args.num_samples})')
+-            sampled_seq = model.sample(coords, temperature=args.temperature, device=torch.device('cuda'))
++            sampled_seq = model.sample(coords, temperature=args.temperature, device=torch.device('cpu'))
+             print('Sampled sequence:')
+             print(sampled_seq)
+             f.write(f'>sampled_seq_{i+1}\n')
+@@ -42,7 +43,7 @@ def sample_seq_singlechain(model, alphabet, args):
+ 
+ 
+ def sample_seq_multichain(model, alphabet, args):
+-    if torch.cuda.is_available() and not args.nogpu:
++    if torch.cuda.is_available() and not nogpu:
+         model = model.cuda()
+         print("Transferred model to GPU")
+     structure = esm.inverse_folding.util.load_structure(args.pdbfile)
+@@ -107,17 +108,32 @@ def main():
+             action='store_false',
+             help='use the backbone of only target chain in the input for conditioning'
+     )
+-    parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
+-  
++    parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
++    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
+     args = parser.parse_args()
+ 
+     model, alphabet = esm.pretrained.esm_if1_gvp4_t16_142M_UR50()
+     model = model.eval()
+ 
+-    if args.multichain_backbone:
+-        sample_seq_multichain(model, alphabet, args)
+-    else:
+-        sample_seq_singlechain(model, alphabet, args)
++    if not noipex:
++        dtype = torch.bfloat16 if args.bf16 else torch.float32
++        import intel_extension_for_pytorch as ipex
++        model = ipex.optimize(model, dtype=dtype)
++    if noipex and args.bf16:
++        model=model.bfloat16()
++    enable_autocast = args.bf16
++    if args.timing:
++        import time
++        start_time = time.time()
++    device_type ="cpu" if nogpu else "cuda"
++    with torch.no_grad():
++        with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
++            if args.multichain_backbone:
++                sample_seq_multichain(model, alphabet, args)
++            else:
++                sample_seq_singlechain(model, alphabet, args)
++    if args.timing:
++        print(f"Total Inference Time = {time.time() - start_time} seconds")
+ 
+ 
+ if __name__ == '__main__':
+diff --git a/examples/inverse_folding/score_log_likelihoods.py b/examples/inverse_folding/score_log_likelihoods.py
+index cd81951..ccefd28 100644
+--- a/examples/inverse_folding/score_log_likelihoods.py
++++ b/examples/inverse_folding/score_log_likelihoods.py
+@@ -18,10 +18,11 @@ from tqdm import tqdm
+ 
+ import esm
+ import esm.inverse_folding
+-
++nogpu = True
++noipex = True
+ 
+ def score_singlechain_backbone(model, alphabet, args):
+-    if torch.cuda.is_available() and not args.nogpu:
++    if torch.cuda.is_available() and not nogpu:
+         model = model.cuda()
+         print("Transferred model to GPU")
+     coords, native_seq = esm.inverse_folding.util.load_coords(args.pdbfile, args.chain)
+@@ -50,7 +51,7 @@ def score_singlechain_backbone(model, alphabet, args):
+ 
+ 
+ def score_multichain_backbone(model, alphabet, args):
+-    if torch.cuda.is_available() and not args.nogpu:
++    if torch.cuda.is_available() and not nogpu:
+         model = model.cuda()
+         print("Transferred model to GPU")
+     structure = esm.inverse_folding.util.load_structure(args.pdbfile)
+@@ -113,18 +114,33 @@ def main():
+             help='use the backbone of only target chain in the input for conditioning'
+     )
+     
+-    parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
+-    
++    parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
++    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
+     args = parser.parse_args()
+ 
+     model, alphabet = esm.pretrained.esm_if1_gvp4_t16_142M_UR50()
+     model = model.eval()
+-
+-    if args.multichain_backbone:
+-        score_multichain_backbone(model, alphabet, args)
+-    else:
+-        score_singlechain_backbone(model, alphabet, args)
+-
++    nogpu = True
++    noipex = True
++    if not noipex:
++        dtype = torch.bfloat16 if args.bf16 else torch.float32
++        import intel_extension_for_pytorch as ipex
++        model = ipex.optimize(model, dtype=dtype)
++    if noipex and args.bf16:
++        model=model.bfloat16()
++    enable_autocast = args.bf16
++    if args.timing:
++        import time
++        start_time = time.time()
++    device_type ="cpu" if nogpu else "cuda"
++    with torch.no_grad():
++        with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
++            if args.multichain_backbone:
++                score_multichain_backbone(model, alphabet, args)
++            else:
++                score_singlechain_backbone(model, alphabet, args)
++    if args.timing:
++        print(f"Total Inference Time = {time.time() - start_time} seconds")
+ 
+ 
+ if __name__ == '__main__':
+diff --git a/examples/lm-design/conf/config.yaml b/examples/lm-design/conf/config.yaml
+index f065473..977fcdf 100644
+--- a/examples/lm-design/conf/config.yaml
++++ b/examples/lm-design/conf/config.yaml
+@@ -8,12 +8,14 @@ num_seqs: 1
+ test_mode: False
+ allow_missing_residue_coords: True
+ suppress_AA: 'C'
+-disable_cuda: False
++disable_cuda: True
+ cuda_device_idx:  # Set to numberic value to override default GPU device used.
+ task: free_generation  # fixedbb or free_generation
+ pdb_fn:  # set as empty string when using free_generation
+ free_generation_length: 100
+-
++noipex: True
++bf16: False
++timing: False
+ tasks:
+   free_generation:
+       num_iter: 170000
+diff --git a/examples/lm-design/lm_design.py b/examples/lm-design/lm_design.py
+index b578ad9..42e4fa1 100644
+--- a/examples/lm-design/lm_design.py
++++ b/examples/lm-design/lm_design.py
+@@ -111,6 +111,12 @@ class Designer:
+         def apply_common_settings(model):
+             model.to(self.device)
+             model.eval()
++            if not self.cfg.noipex:
++                import intel_extension_for_pytorch as ipex
++                dtype = torch.bfloat16 if self.cfg.bf16 else torch.float32
++                model = ipex.optimize(model, dtype=dtype)
++            if self.cfg.noipex and self.cfg.bf16:
++                model.bfloat16()
+             # No grads for models
+             for p in model.parameters():
+                 p.requires_grad = False
+@@ -340,14 +346,19 @@ class Designer:
+         Main run-loop for the Designer. Runs a relevant design procedure from the config.
+         """
+         logger.info(f'Designing sequence for task: {self.cfg.task}')
+-        
+         design_cfg = self.cfg.tasks[self.cfg.task]
+-        if self.cfg.task == 'fixedbb':
+-            stage_fixedbb(self, design_cfg)
+-        elif self.cfg.task == 'free_generation':
+-            stage_free_generation(self, **design_cfg)
+-        else:
+-            raise ValueError(f'Invalid task: {self.cfg.task}')
++        enable_autocast = self.cfg.bf16
++        device_type ="cpu" if self.cfg.disable_cuda else "cuda"
++        if self.cfg.timing:
++            import time
++            start_time = time.time()
++        with torch.amp.autocast(device_type=device_type, enabled=enable_autocast):
++            if self.cfg.task == 'fixedbb':
++                stage_fixedbb(self, design_cfg)
++            elif self.cfg.task == 'free_generation':
++                stage_free_generation(self, **design_cfg)
++            else:
++                raise ValueError(f'Invalid task: {self.cfg.task}')
+ 
+         logger.info(f'Final designed sequences:')
+         for seq in self.decode(self.x_seqs):
+diff --git a/scripts/extract.py b/scripts/extract.py
+index 9e5bcb3..6e2b9b9 100644
+--- a/scripts/extract.py
++++ b/scripts/extract.py
+@@ -56,18 +56,28 @@ def create_parser():
+         help="truncate sequences longer than the given value",
+     )
+ 
+-    parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
++    parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
++    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
+     return parser
+ 
+ 
+ def run(args):
+     model, alphabet = pretrained.load_model_and_alphabet(args.model_location)
+     model.eval()
++    nogpu = True
++    noipex = True
++    if not noipex:
++        dtype = torch.bfloat16 if args.bf16 else torch.float32
++        import intel_extension_for_pytorch as ipex
++        model = ipex.optimize(model, dtype=dtype)
++    if noipex and args.bf16:
++        model.bfloat16()
++
+     if isinstance(model, MSATransformer):
+         raise ValueError(
+             "This script currently does not handle models with MSA input (MSA Transformer)."
+         )
+-    if torch.cuda.is_available() and not args.nogpu:
++    if torch.cuda.is_available() and not nogpu:
+         model = model.cuda()
+         print("Transferred model to GPU")
+ 
+@@ -83,17 +93,27 @@ def run(args):
+ 
+     assert all(-(model.num_layers + 1) <= i <= model.num_layers for i in args.repr_layers)
+     repr_layers = [(i + model.num_layers + 1) % (model.num_layers + 1) for i in args.repr_layers]
+-
++    enable_autocast = args.bf16
++    device_type ="cpu" if nogpu else "cuda"
++    if args.timing:
++        import time
++        total_inference_time = 0
+     with torch.no_grad():
+         for batch_idx, (labels, strs, toks) in enumerate(data_loader):
+             print(
+                 f"Processing {batch_idx + 1} of {len(batches)} batches ({toks.size(0)} sequences)"
+             )
+-            if torch.cuda.is_available() and not args.nogpu:
++            if torch.cuda.is_available() and not nogpu:
+                 toks = toks.to(device="cuda", non_blocking=True)
++            if args.timing:
++                start_time = time.perf_counter()
+ 
+-            out = model(toks, repr_layers=repr_layers, return_contacts=return_contacts)
++            with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
++                out = model(toks, repr_layers=repr_layers, return_contacts=return_contacts)
+ 
++            if args.timing:
++                end_time = time.perf_counter()
++                total_inference_time = total_inference_time + (end_time - start_time)
+             logits = out["logits"].to(device="cpu")
+             representations = {
+                 layer: t.to(device="cpu") for layer, t in out["representations"].items()
+@@ -129,12 +149,24 @@ def run(args):
+                     result,
+                     args.output_file,
+                 )
++    if args.timing:
++        print(f"Total Inference Time = {total_inference_time} seconds")
+ 
+ 
+ def main():
+     parser = create_parser()
+     args = parser.parse_args()
++
++    # Print the parsed arguments:
++
++    print("{:-^62}\n".format("  Parsed arguments  "))
++
++    for key, val in vars(args).items():
++        if val is not None:
++            print("--", key, ":", val)
++
+     run(args)
+ 
++
+ if __name__ == "__main__":
+     main()
+diff --git a/scripts/fold.py b/scripts/fold.py
+index 482cdc9..2b73a98 100644
+--- a/scripts/fold.py
++++ b/scripts/fold.py
+@@ -117,8 +117,9 @@ def create_parser():
+         "result in lower memory usage at the cost of speed. Recommended values: 128, 64, 32. "
+         "Default: None.",
+     )
+-    parser.add_argument("--cpu-only", help="CPU only", action="store_true")
+     parser.add_argument("--cpu-offload", help="Enable CPU offloading", action="store_true")
++    parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
++    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
+     return parser
+ 
+ 
+@@ -145,23 +146,38 @@ def run(args):
+ 
+     model = model.eval()
+     model.set_chunk_size(args.chunk_size)
+-
+-    if args.cpu_only:
++    noipex = True
++    cpu_only =True
++    if cpu_only:
+         model.esm.float()  # convert to fp32 as ESM-2 in fp16 is not supported on CPU
+         model.cpu()
+     elif args.cpu_offload:
+         model = init_model_on_gpu_with_cpu_offloading(model)
+     else:
+         model.cuda()
++    if not noipex:
++        dtype = torch.bfloat16 if args.bf16 else torch.float32
++        import intel_extension_for_pytorch as ipex
++        model = ipex.optimize(model, dtype=dtype)
++    if noipex and args.bf16:
++        model=model.bfloat16()
++    enable_autocast = args.bf16
+     logger.info("Starting Predictions")
+     batched_sequences = create_batched_sequence_datasest(all_sequences, args.max_tokens_per_batch)
+ 
+     num_completed = 0
+     num_sequences = len(all_sequences)
++    device_type ="cpu" if cpu_only else "cuda"
+     for headers, sequences in batched_sequences:
+         start = timer()
+         try:
+-            output = model.infer(sequences, num_recycles=args.num_recycles)
++            if args.timing:
++                import time
++                start_time = time.time()
++            with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
++                output = model.infer(sequences, num_recycles=args.num_recycles)
++            if args.timing:
++                print(f"Total Inference Time = {time.time() - start_time} seconds")
+         except RuntimeError as e:
+             if e.args[0].startswith("CUDA out of memory"):
+                 if len(sequences) > 1:
