@@ -13,8 +13,8 @@ Notes:
 ## Using Docker  
 ### Build  
 ```bash  
-git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git  
-cd TransOmics.OpenOmicsInternal/applications/protgpt2  
+git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git  
+cd Open-Omics-Acceleration-Framework/applications/protgpt2  
 docker build --build-arg http_proxy=<proxy_url> --build-arg https_proxy=<proxy_url> -t protgpt2 .  
 ```
 
@@ -27,8 +27,8 @@ Note: external models can be provided using ```--model_dir``` parameter.
 
 ## Using source code
 ```bash
-git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
-cd TransOmics.OpenOmicsInternal/applications/protgpt2
+git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+cd Open-Omics-Acceleration-Framework/applications/protgpt2
 conda env create -f env.yml            ## Needs anaconda or miniconda or similar distributions for Python
 conda activate protgpt2
 ```
