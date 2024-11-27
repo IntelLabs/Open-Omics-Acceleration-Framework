@@ -6,8 +6,8 @@ Here, we present OpenOmics RFdiffusion, a highly optimized version of RFdiffusio
 ## Using Docker
 ### Docker build
 ```bash
-git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
-cd TransOmics.OpenOmicsInternal/applications/RFdiffusion
+git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+cd Open-Omics-Acceleration-Framework/applications/RFdiffusion
 ```
 ```bash
 docker build --build-arg http_proxy=<http_proxy> --build-arg https_proxy=<https_proxy> --build-arg no_proxy=<no_proxy_ip> -t rfdiffusion .
@@ -27,11 +27,10 @@ Example, Motif Scaffolding:
 ```bash
 mkdir -p ./output
 export OUTPUT_DIR=./output/ 
-export INPUT_FILE=./examples/input_pdbs/5TPN.pdb
 chmod a+w $OUTPUT_DIR
 ```
 ```bash
-docker run -v $INPUT_FILE:/infile.pdb -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/design_motifscaffolding inference.input_pdb=/infile.pdb 'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=4 inference.precision=float32
+docker run -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/design_motifscaffolding inference.input_pdb=../examples/input_pdbs/5TPN.pdb 'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=4 inference.precision=float32
 ```
 
 Example, Partial Diffusion:  
@@ -42,7 +41,8 @@ export INPUT_FILE=./examples/input_pdbs/2KL8.pdb
 ```
 
 ```bash
-docker run -v $INPUT_FILE:/infile.pdb -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py  inference.output_prefix=/output/design_partialdiffusion inference.input_pdb=/infile.pdb 'contigmap.contigs=[79-79]' inference.num_designs=1 diffuser.partial_T=10 inference.precision=bfloat16
+docker run -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py
+inference.output_prefix=/output/design_partialdiffusion inference.input_pdb=../examples/input_pdbs/2KL8.pdb 'contigmap.contigs=[79-79]' inference.num_designs=1 diffuser.partial_T=10 inference.precision=bfloat16
 ```
 
 Note: 
