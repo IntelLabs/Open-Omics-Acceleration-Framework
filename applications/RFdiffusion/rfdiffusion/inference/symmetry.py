@@ -73,7 +73,7 @@ class SymGen:
             self.apply_symmetry = self._apply_octahedral
 
         elif global_sym.lower() in saved_symmetries:
-            # Using a saved symmetry 
+            # Using a saved symmetry
             self._log.info('Initializing %s symmetry order.'%global_sym)
             self._init_from_symrots_file(global_sym)
 
@@ -108,7 +108,7 @@ class SymGen:
             start_i = subunit_len * i
             end_i = subunit_len * (i+1)
             coords_out[start_i:end_i] = torch.einsum(
-                'bnj,kj->bnk', coords_out[:subunit_len], self.sym_rots[i])
+                'bnj,kj->bnk', coords_out[:subunit_len].to(dtype=torch.float32), self.sym_rots[i].to(dtype=torch.float32))
             seq_out[start_i:end_i]  = seq_out[:subunit_len]
         return coords_out, seq_out
 
@@ -174,7 +174,7 @@ class SymGen:
                 center = torch.mean(subunit_chain[:, 1, :], axis=0)
                 subunit_chain -= center[None, None, :]
                 rotated_axis = torch.einsum(
-                    'nj,kj->nk', base_axis, self.sym_rots[i]) 
+                    'nj,kj->nk', base_axis, self.sym_rots[i])
                 subunit_chain += rotated_axis[:, None, :]
 
             coords_out[start_i:end_i] = subunit_chain
@@ -185,7 +185,7 @@ class SymGen:
     ## symmetry from file #
     #######################
     def _init_from_symrots_file(self, name):
-        """ _init_from_symrots_file initializes using 
+        """ _init_from_symrots_file initializes using
         ./inference/sym_rots.npz
 
         Args:
@@ -203,11 +203,11 @@ class SymGen:
             if str(k) == name: symms = v
         assert symms is not None, "%s not found in %s"%(name, fn)
 
-        
+
         self.sym_rots =  [torch.tensor(v_i, dtype=torch.float32) for v_i in symms]
         self.order = len(self.sym_rots)
 
-        # Return if identity is the first rotation  
+        # Return if identity is the first rotation
         if not np.isclose(((self.sym_rots[0]-np.eye(3))**2).sum(), 0):
 
             # Move identity to be the first rotation

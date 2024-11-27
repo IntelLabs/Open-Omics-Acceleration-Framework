@@ -35,22 +35,14 @@ WORKDIR /app/RFdiffusion
 RUN git checkout 820bfdfaded8c260b962dc40a3171eae316b6ce0
 
 
-RUN git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git  ## change the repo to public oo main
-WORKDIR TransOmics.OpenOmicsInternal                          ## update the directory name
-RUN git checkout a4e53c0d289e2326287590072b3fe64b363b8225                                 ## update the commit
-#RUN git checkout ea71596                                 ## update the commit
-#RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-#WORKDIR Open-Omics-Acceleration-Framework
-#RUN git checkout <commit-id>
-
-WORKDIR /app/RFdiffusion
-RUN cp TransOmics.OpenOmicsInternal/applications/RFdiffusion/RFdiffusion.patch .
-#RUN cp Open-Omics-Acceleration-Framework/applications/RFdiffusion/RFdiffusion.patch .
-
-# Apply the patch file
-#COPY RFdiffusion.patch /app/RFdiffusion/RFdiffusion.patch
+#RUN git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git  ## change the repo to public oo main
+#WORKDIR TransOmics.OpenOmicsInternal                          ## update the directory name
+#RUN git checkout a4e53c0d289e2326287590072b3fe64b363b8225                                 
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
+RUN tar -xzf Source_code_with_submodules.tar.gz
+RUN cp /app/RFdiffusion/Open-Omics-Acceleration-Framework/applications/RFdiffusion/RFdiffusion.patch .
 RUN git apply RFdiffusion.patch
-RUN rm -rf TransOmics.OpenOmicsInternal
+RUN rm -rf Open-Omics-Acceleration-Framework
 
 WORKDIR /app/RFdiffusion/models
 RUN  wget https://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063dc4/Base_ckpt.pt && \
@@ -67,7 +59,6 @@ WORKDIR /app/RFdiffusion
 
 RUN /opt/conda/bin/conda env create -f env/SE3nv.yml
 
-#WORKDIR /app/RFdiffusion/
 RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
 WORKDIR /app/RFdiffusion/jemalloc
 RUN bash autogen.sh --prefix=/opt/conda/envs/SE3nv/ && make install

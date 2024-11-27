@@ -712,11 +712,10 @@ index 2a3bf36..f58c0bd 100755
          if hasattr(sampler, "contig_map"):
 diff --git a/setup_rfdiffusion.sh b/setup_rfdiffusion.sh
 new file mode 100644
-index 0000000..4bfd464
+index 0000000..8b9df66
 --- /dev/null
 +++ b/setup_rfdiffusion.sh
-@@ -0,0 +1,92 @@
-+
+@@ -0,0 +1,104 @@
 +#!/bin/bash
 +
 +set -e
@@ -783,7 +782,7 @@ index 0000000..4bfd464
 +  exit 1
 +fi
 +mkdir -p models
-+cd models
++cd models/
 +wget https://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063dc4/Base_ckpt.pt
 +wget https://files.ipd.uw.edu/pub/RFdiffusion/e29311f6f1bf1af907f9ef9f44b8328b/Complex_base_ckpt.pt
 +wget https://files.ipd.uw.edu/pub/RFdiffusion/60f09a193fb5e5ccdc4980417708dbab/Complex_Fold_base_ckpt.pt
@@ -796,10 +795,18 @@ index 0000000..4bfd464
 +# original structure prediction weights
 +wget https://files.ipd.uw.edu/pub/RFdiffusion/1befcb9b28e2f778f53d47f18b7597fa/RF_structure_prediction_weights.pt
 +cd ../
-+# Create and activate the Conda environment file
-+conda env create -f env/SE3nv.yml
-+conda init
-+conda activate SE3nv
++# Create and activate the Conda environment using the YAML file, disabling plugins to avoid errors
++#CONDA_NO_PLUGINS=true 
++if conda env list | grep -q "^SE3nv"; then
++	echo "Environment exists. Moving ahead without create the env. If the setup crashes, please remove manually."
++    else
++	echo "Creating conda env SE3nv.."
++	conda env create -f env/SE3nv.yml 
++fi
++source $CONDA_INSTALL_DIR/bin/activate SE3nv
++#conda init
++#conda activate SE3nv
++
 +# Install SE3Transformer requirements
 +cd env/SE3Transformer
 +pip install --no-cache-dir -r requirements.txt
@@ -808,3 +815,8 @@ index 0000000..4bfd464
 +# Install the rfdiffusion module
 +cd ../.. # Change into the root directory of the repository
 +pip install -e .
++
++echo ""
++echo "Note:"
++echo "Conda (Miniforge3) is installed at $CONDA_INSTALL_DIR"
++echo "To manually activate conda env, do: source $CONDA_INSTALL_DIR/bin/activate SE3nv"
