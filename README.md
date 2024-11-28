@@ -76,3 +76,8 @@ doi: https://doi.org/10.48550/arXiv.2212.11506.
 * **Efficient Architecture-Aware Acceleration of BWA-MEM for Multicore Systems**. Vasimuddin Md, Sanchit Misra, Heng Li, Srinivas Aluru. IEEE Parallel and Distributed Processing Symposium (IPDPS), 2019. https://ieeexplore.ieee.org/document/8820962.
 * **Performance extraction and suitability analysis of multi- and many-core architectures for next generation sequencing secondary analysis**. Sanchit Misra, Tony Pan, Kanak Mahadik, George Powley, Priya N Vaidya, Md Vasimuddin, Srinivas Aluru. International Conference on Parallel Architectures and Compilation Techniques (PACT), 2018. https://dl.acm.org/doi/abs/10.1145/3243176.3243197.
 * **Identification of Significant Computational Building Blocks through Comprehensive Deep Dive of NGS Secondary Analysis Methods**. Md Vasimuddin, Sanchit Misra, Srinivas Aluru.  BioRxiv 2018 301903. https://www.biorxiv.org/content/10.1101/301903v3.abstract.
+
+
+# Privacy Notice
+
+Please note that Intel does not collect or process any personal data of end users for Open Omics Acceleration Framework. All the inputs and outputs are limited to the end users's local system and Intel does not have access to the data. For more information on Intel's Global Privacy Notice, please click here: https://www.intel.com/content/www/us/en/privacy/intel-privacy-notice.html.
