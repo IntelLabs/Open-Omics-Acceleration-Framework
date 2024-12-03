@@ -6,8 +6,8 @@ FROM ${BASE_IMAGE}
 
 USER $SERVICE_NAME
 # Create Conda Env for ESM
-WORKDIR /app/
-RUN ${HOME}/conda/bin/mamba env create -f env.yml
+WORKDIR /app/esm/
+RUN ${HOME}/conda/bin/mamba env create -f /app/esm/omics_setup/env.yml
 
 WORKDIR /app/esm
 RUN bash -c "source ${HOME}/conda/etc/profile.d/conda.sh && \
