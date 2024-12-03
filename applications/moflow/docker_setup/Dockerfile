@@ -26,8 +26,6 @@ ENV SERVICE_NAME="moflow-base-service"
 RUN groupadd --gid 1001 $SERVICE_NAME && \
     useradd -m -g $SERVICE_NAME --shell /bin/false --uid 1001 $SERVICE_NAME
 
-# Copy application files and set permissions
-COPY . /app
 WORKDIR /app
 RUN chown -R $SERVICE_NAME:$SERVICE_NAME /app
 USER $SERVICE_NAME
@@ -37,14 +35,31 @@ RUN wget --no-check-certificate -O Miniforge3.sh "https://github.com/conda-forge
 RUN bash Miniforge3.sh -b -p "${HOME}/conda" && rm Miniforge3.sh
 
 # Clone MoFlow repository and apply patch
-RUN git clone --recursive https://github.com/calvin-zcx/moflow.git
-COPY mflow_change_all.patch /app/moflow/mflow_change_all.patch
+RUN git clone --recursive https://github.com/calvin-zcx/moflow.git moflow
 WORKDIR /app/moflow
-RUN git apply mflow_change_all.patch 
+RUN git checkout 3611c637260272b3d34a298f221623cb59e01091
+
+ARG GIT_USER
+ARG GIT_TOKEN
+RUN git clone https://$GIT_USER:$GIT_TOKEN@github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
+
+#RUN git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
+WORKDIR /app/moflow/TransOmics.OpenOmicsInternal/applications/moflow
+RUN git checkout 2e0a2373c8b17339c69a9b928ae1e19fadd3dd3d
+
+#RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
+#RUN tar -xzf Source_code_with_submodules.tar.gz
+#WORKDIR /app/moflow/Open-Omics-Acceleration-Framework/moflow
+
+
+WORKDIR /app/moflow
+RUN mv /app/moflow/TransOmics.OpenOmicsInternal/applications/moflow/docker_setup /app/moflow/omics_setup && \
+    git apply /app/moflow/omics_setup/mflow_change_all.patch && \
+    rm -rf /app/moflow/TransOmics.OpenOmicsInternal && \
+    rm -rf /app/moflow/Source_code_with_submodules.tar.gz
 
 # Set up Conda environment
-WORKDIR /app/
-RUN ${HOME}/conda/bin/mamba env create -f env.yml
+RUN ${HOME}/conda/bin/mamba env create -f /app/moflow/omics_setup/env.yml
 
 # Install MoFlow package
 WORKDIR /app/moflow
