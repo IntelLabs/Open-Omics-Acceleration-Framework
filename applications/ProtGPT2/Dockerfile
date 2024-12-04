@@ -37,25 +37,19 @@ RUN groupadd --gid 1001 $SERVICE_NAME && \
 # Copy Conda installation from the conda_setup stage
 COPY --from=conda_setup /opt/conda /opt/conda
 
-# Copy application code                                                                #COPY . /app
-#RUN git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
-#WORKDIR /app/TransOmics.OpenOmicsInternal                       
-#RUN git checkout e3c2a2f
 RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
 RUN tar -xzf Source_code_with_submodules.tar.gz
-#WORKDIR /app/Open-Omics-Acceleration-Framework
-#WORKDIR /app
 
 ENV PATH="/opt/conda/bin:$PATH"
 
 # Copy environment.yml and create Conda environment
-#COPY env.yml /app/env.yml
 RUN cp /app/Open-Omics-Acceleration-Framework/applications/ProtGPT2/env.yml .
 RUN cp /app/Open-Omics-Acceleration-Framework/applications/ProtGPT2/protgpt2.py .
 RUN cp /app/Open-Omics-Acceleration-Framework/applications/ProtGPT2/model_script.sh .
 RUN rm -rf Open-Omics-Acceleration-Framework
+RUN rm -rf Source_code_with_submodules.tar.gz
 RUN conda env create -f env.yml
-#WORKDIR /app
+
 RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
 WORKDIR /app/jemalloc
 RUN bash autogen.sh --prefix=/opt/conda/envs/protgpt2/ && make install
@@ -63,7 +57,6 @@ WORKDIR /app
 RUN rm -rf jemalloc
 
 # Set up environment activation and PATH
-#RUN echo "source /opt/conda/bin/activate protgpt2" >> ~/.bashrc
 ENV PATH="/opt/conda/envs/protgpt2/bin:$PATH"
 
 # Swith to Non-root user

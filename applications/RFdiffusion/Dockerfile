@@ -25,8 +25,6 @@ RUN groupadd --gid 1001 $SERVICE_NAME && \
 # Copy Conda installation from the conda_setup stage
 COPY --from=conda_setup /opt/conda /opt/conda
 
-#COPY . /app
-
 WORKDIR /app
 RUN git clone https://github.com/RosettaCommons/RFdiffusion.git 
 
@@ -34,15 +32,12 @@ WORKDIR /app/RFdiffusion
 # adding the git commit id
 RUN git checkout 820bfdfaded8c260b962dc40a3171eae316b6ce0
 
-
-#RUN git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git  ## change the repo to public oo main
-#WORKDIR TransOmics.OpenOmicsInternal                          ## update the directory name
-#RUN git checkout a4e53c0d289e2326287590072b3fe64b363b8225                                 
 RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
 RUN tar -xzf Source_code_with_submodules.tar.gz
 RUN cp /app/RFdiffusion/Open-Omics-Acceleration-Framework/applications/RFdiffusion/RFdiffusion.patch .
 RUN git apply RFdiffusion.patch
 RUN rm -rf Open-Omics-Acceleration-Framework
+RUN rm -rf Source_code_with_submodules.tar.gz
 
 WORKDIR /app/RFdiffusion/models
 RUN  wget https://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063dc4/Base_ckpt.pt && \
@@ -66,7 +61,6 @@ WORKDIR /app/RFdiffusion
 RUN rm -rf jemalloc
 
 # Set up environment activation and PATH
-#RUN echo "source /opt/conda/bin/activate SE3nv" >> ~/.bashrc
 ENV PATH="/opt/conda/envs/SE3nv/bin:/opt/conda/bin:$PATH"
 	
 # Install dependencies
@@ -77,7 +71,6 @@ RUN python setup.py install
 WORKDIR /app/RFdiffusion
 RUN pip install -e .
 
-#WORKDIR /app/RFdiffusion
 RUN tar -xvf examples/ppi_scaffolds_subset.tar.gz -C examples/
 
 WORKDIR /app/RFdiffusion/scripts
