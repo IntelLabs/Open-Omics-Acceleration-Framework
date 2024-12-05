@@ -42,7 +42,6 @@ RUN git checkout -b esm 2b369911bb5b4b0dda914521b9475cad1656b2ac
 
 RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
 RUN tar -xzf Source_code_with_submodules.tar.gz
-WORKDIR /app/esm
 
 RUN mv /app/esm/Open-Omics-Acceleration-Framework/applications/esm /app/esm/omics_setup && \
     git apply /app/esm/omics_setup/esm_change_all.patch && \
