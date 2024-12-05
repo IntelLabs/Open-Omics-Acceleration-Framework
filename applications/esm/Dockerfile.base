@@ -25,7 +25,6 @@ ENV SERVICE_NAME="esm-base-service"
 RUN groupadd --gid 1001 $SERVICE_NAME && \
 	useradd -m -g $SERVICE_NAME --shell /bin/false --uid 1001 $SERVICE_NAME
 
-COPY . /app
 WORKDIR /app
 
 RUN    chown -R $SERVICE_NAME:$SERVICE_NAME /app
@@ -34,15 +33,25 @@ USER $SERVICE_NAME
 RUN wget --no-check-certificate "https://github.com/conda-forge/miniforge/releases/download/24.3.0-0/Miniforge3-$(uname)-$(uname -m).sh"
 RUN bash Miniforge3-$(uname)-$(uname -m).sh -b -p "${HOME}/conda"
 
-RUN git clone --recursive https://github.com/facebookresearch/esm.git
-COPY esm_change_all.patch /app/esm/esm_change_all.patch
-WORKDIR /app/esm
-RUN git apply esm_change_all.patch
+WORKDIR /app
 
+RUN git clone --recursive https://github.com/facebookresearch/esm.git
+WORKDIR /app/esm
+RUN git checkout -b esm 2b369911bb5b4b0dda914521b9475cad1656b2ac
+
+
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
+RUN tar -xzf Source_code_with_submodules.tar.gz
+
+RUN mv /app/esm/Open-Omics-Acceleration-Framework/applications/esm /app/esm/omics_setup && \
+    git apply /app/esm/omics_setup/esm_change_all.patch && \
+    rm -rf /app/esm/Open-Omics-Acceleration-Framework && \
+    rm -rf /app/esm/Source_code_with_submodules.tar.gz
+    
 RUN mkdir -p /home/esm-base-service/.cache/torch/hub/ && \
     rm -rf /home/esm-base-service/.cache/torch/hub/checkpoints && \
     ln -s /checkpoints /home/esm-base-service/.cache/torch/hub/checkpoints
-  
+    
 HEALTHCHECK NONE
 
 
