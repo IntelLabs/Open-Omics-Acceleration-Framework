@@ -42,7 +42,6 @@ RUN git checkout 3611c637260272b3d34a298f221623cb59e01091
 RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
 RUN tar -xzf Source_code_with_submodules.tar.gz
 
-WORKDIR /app/moflow
 RUN mv /app/moflow/Open-Omics-Acceleration-Framework/applications/moflow /app/moflow/omics_setup && \
     git apply /app/moflow/omics_setup/mflow_change_all.patch && \
     rm -rf /app/moflow/Open-Omics-Acceleration-Framework && \
