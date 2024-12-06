@@ -1,12 +1,12 @@
 # OpenOmics ProtGPT2
-ProtGPT2 is a popular deep language model for Protein Design. ProtpGPT2, trained on known proteins, generates de novo proteins sequences, hence has the potential to revolutionize domains such as healthcare, agriculture, evironmental, etc. OpenOmics ProtGPT2 is a highly optimized version of the original ProtGPT2 for modern CPUs, with support for lower precision computations. It maintains the exact same accuracy level as original the ProtGPT2.    
+ProtGPT2 is a popular deep language model for protein design. ProtpGPT2, trained on known proteins, generates de novo proteins sequences, hence has the potential to revolutionize domains such as Healthcare, Agriculture, Climate, etc. OpenOmics ProtGPT2 is a highly optimized version of the original ProtGPT2 for modern CPUs, with support for lower precision computations. It maintains the exact same accuracy level as original the ProtGPT2.    
 
 Notes:  
 - OpenOmics ProtGPT2 supports all the parameters supported by original ProtGPT2 (please refer to original PrtoGPT2 readme below)  
 - Additionly, OpenOmics ProtGPT2 provides three more parameters:  
-  - `--dtype` : <float32/bfloat16>   
-  - `--model_dir` : \<directory path of user provided model files>  
-  - `--output_file` : \<output file path>  
+  - `--dtype` : <float32/bfloat16>  (lower precision for faster execution)  
+  - `--model_dir` : \<directory path of user provided model files>   (user provided models for inference)
+  - `--output_file` : \<output (fasta) file name>                  (generate output fasta file instead of printing on terminal)
 - OpenOmics ProtGPT2 by default downloads the model parameters; user can provide his/her models through `--model_dir` input parameter  
 
 
