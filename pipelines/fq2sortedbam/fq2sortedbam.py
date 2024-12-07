@@ -26,13 +26,10 @@
 #
 #Authors:  Vasimuddin Md <vasimuddin.md@intel.com>; Babu Pillai <padmanabhan.s.pillai@intel.com>;
 #*****************************************************************************************/
-
-
+#!/usr/bin/env bash
+import json, time, os, sys
 from subprocess import Popen, PIPE, run
 import subprocess
-import time
-import os
-import sys
 import threading
 import tempfile
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
@@ -227,6 +224,7 @@ headers_done = threading.Semaphore(0)
 chromo_dict={}
 # NOTE:  Code relies on insert order of dictionary keys -- so needs python>=3.7
 
+
 # Calculate bins
 def calculate_bins(nranks):
     global bins
@@ -256,6 +254,8 @@ def calculate_bins(nranks):
     #print (bins, bin_region)
     #assert 0
 
+
+    
 # used in mode 5
 def sort_thr5(fname, comm):
     rank = comm.Get_rank()
@@ -270,8 +270,11 @@ def sort_thr5(fname, comm):
     # get binned items, output to bin file
     sz = 0
     while ndone < nranks:
-        bf_sz = 100000000
-        req = comm.irecv(bf_sz)
+        if args["read_type"] == "short":
+            req = comm.irecv()
+        else:
+            bf_sz = 100000000
+            req = comm.irecv(bf_sz)
         b, vl = req.wait()
         b = b//nranks
         if len(vl)>0 and  vl[0]=="done":
@@ -329,6 +332,7 @@ def sw_thr( outpipe, comm, comm2 ):
                     seq_start[sn] = cumlen
                     seq_len[sn] = ln
                     cumlen += ln
+                    #print("In keep")
                 else:
                     #if sn in mydict.keys():
                     if sn in chromo_dict.keys():
@@ -407,41 +411,42 @@ def allexit(comm, flg):
         os.sys.exit(1)
 
 
-def main(argv):
-    parser=ArgumentParser()
-    parser.add_argument('--input',help="Input data directory")
-    parser.add_argument('--tempdir',default="",help="Intermediate data directory")
-    parser.add_argument('--refdir',default="",help="Reference genome directory")
-    parser.add_argument('--read1',default="", help="name of r1 files")
-    parser.add_argument('--read2',default="", help="name of r2 files")
-    parser.add_argument('--read3',default="", help="name of r3 files (for fqprocess) seperated by spaces")
-    parser.add_argument('--readi1',default="",help="name of i1 files (for fqprocess) seperated by spaces")
-    
-    parser.add_argument('--prefix',default="", help="prefix for processed R1 and R3 files for bwa-mem2")
-    parser.add_argument('--suffix',default="", help="suffix for processed R1 and R3 files for bwa-mem2")
-   
-    parser.add_argument('--whitelist',default="whitelist.txt",help="10x whitelist file")
-    parser.add_argument('--read_structure',default="16C",help="read structure")
-    parser.add_argument('--barcode_orientation',default="FIRST_BP_RC",help="barcode orientation")
-    parser.add_argument('--sample_id',default="",help="sample id")
-    parser.add_argument('--output_format',default="",help="output_format")
-    parser.add_argument('--output',help="Output data directory")
-    parser.add_argument('--mode', default='sortedbam', help="flatmode/fqprocessonly/multifq/sortedbam. flatmode is just bwa w/o sort.")
-    parser.add_argument('--params', default='', help="parameter string to bwa-mem2 barring threads paramter")
-    parser.add_argument("-i", "--refindex", help="name of index file")
-    parser.add_argument("-p", "--outfile", help="prefix for read files")
-    parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
-    parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
-    parser.add_argument("-b", "--bam_size",default=9, help="bam file size in GB")
-    parser.add_argument('-in', '--rindex', action='store_true', help="It will build reference genome index for bwa aligner. If it is already done offline then don't use this flag.")
-    parser.add_argument('--dindex', action='store_true', help="It will create .fai index. If it is done offline then disable this.")
-    parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
-    parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
-    parser.add_argument('--read_type',default="short",
-                        help="(short/long): bwa-mem2 with short reads, mm2-fast with long reads")
-    parser.add_argument('-y', "--config", default="", help="config yaml file for args")
-    ## Arg values in the provided yaml file override any command-line or default args values
-    args = vars(parser.parse_args())
+#def main(argv):
+def main(args):
+    ##parser=ArgumentParser()
+    ##parser.add_argument('--input',help="Input data directory")
+    ##parser.add_argument('--tempdir',default="",help="Intermediate data directory")
+    ##parser.add_argument('--refdir',default="",help="Reference genome directory")
+    ##parser.add_argument('--read1',default="", help="name of r1 files")
+    ##parser.add_argument('--read2',default="", help="name of r2 files")
+    ##parser.add_argument('--read3',default="", help="name of r3 files (for fqprocess) seperated by spaces")
+    ##parser.add_argument('--readi1',default="",help="name of i1 files (for fqprocess) seperated by spaces")
+    ##
+    ##parser.add_argument('--prefix',default="", help="prefix for processed R1 and R3 files for bwa-mem2")
+    ##parser.add_argument('--suffix',default="", help="suffix for processed R1 and R3 files for bwa-mem2")
+   ##
+    ##parser.add_argument('--whitelist',default="whitelist.txt",help="10x whitelist file")
+    ##parser.add_argument('--read_structure',default="16C",help="read structure")
+    ##parser.add_argument('--barcode_orientation',default="FIRST_BP_RC",help="barcode orientation")
+    ##parser.add_argument('--sample_id',default="",help="sample id")
+    ##parser.add_argument('--output_format',default="",help="output_format")
+    ##parser.add_argument('--output',help="Output data directory")
+    ##parser.add_argument('--mode', default='sortedbam', help="flatmode/fqprocessonly/multifq/sortedbam. flatmode is just bwa w/o sort.")
+    ####parser.add_argument('--params', default='', help="parameter string to bwa-mem2 barring threads paramter")
+    ##parser.add_argument("-i", "--refindex", help="name of index file")
+    ##parser.add_argument("-p", "--outfile", help="prefix for read files")
+    ##parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
+    ##parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
+    ##parser.add_argument("-b", "--bam_size",default=9, help="bam file size in GB")
+    ##parser.add_argument('-in', '--rindex', action='store_true', help="It will build reference genome index for bwa aligner. If it is already done offline then don't use this flag.")
+    ##parser.add_argument('--dindex', action='store_true', help="It will create .fai index. If it is done offline then disable this.")
+    ##parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
+    ##parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
+    ##parser.add_argument('--read_type',default="short",
+                        ##help="(short/long): bwa-mem2 with short reads, mm2-fast with long reads")
+    ##parser.add_argument('-y', "--config", default="", help="config yaml file for args")
+    #### Arg values in the provided yaml file override any command-line or default args values
+    ##args = vars(parser.parse_args())
 
     #if args["config"] != "":
     #    args = populate_yaml(args)
@@ -496,6 +501,8 @@ def main(argv):
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     nranks = comm.Get_size()
+
+    args["rank"], args['nranks'] = rank, nranks
 
     global ncpus
     ncpus = int(cpus)
@@ -607,7 +614,7 @@ def main(argv):
         allexit(comm, flg)        
         
         # chromo_dict information added
-        if keep == False and rank == 0:
+        if keep == False:
             chromo_file = os.path.join(refdir,ifile)+".fai"
             if os.path.isfile(chromo_file):
                 f = open(chromo_file, "r")
@@ -616,15 +623,17 @@ def main(argv):
                 for line in lines[0:25]:
                     chromo=line.split("\t")[0]
                     chromo_dict[chromo]= 1
-                print(f'chromo_dict: {chromo_dict}')
+                #if rank == 0:
+                #    print(f'chromo_dict: {chromo_dict}')
             else:
-                print(f'Error: File "{chromo_file}" not found, resetting keep=True')
+                if rank == 0:
+                    print(f'Error: File "{chromo_file}" not found, resetting keep=True')
                 #exit()
                 keep = True                
 
 
         comm.barrier()                
-        keep = comm.bcast(keep, root=0)        
+        #keep = comm.bcast(keep, root=0)        
     
     if mode == 'flatmode':
         r'''
@@ -842,6 +851,8 @@ def main(argv):
         # Execute bwamem2 -- may include sort, merge depending on mode
         begin0 = time.time()
         #try:
+        #print('in read: ', inputdir + rfile1)
+        #print("output: ", output)
         fn1 = pragzip_reader( comm, int(cpus), inputdir + rfile1, output )
         if not se_mode:
             fn2 = pragzip_reader( comm, int(cpus), inputdir + rfile2, output, last=True )
@@ -855,6 +866,7 @@ def main(argv):
                       str(rank) + '.txt',capture_output=True, shell=True)
             else:
                 cmd=f'{BWA} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+                #print('bwa cmd', cmd)
                 a=run(cmd, capture_output=True, shell=True)
         else:
             cmd= f'{BWA} mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+ fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
@@ -917,10 +929,20 @@ def main(argv):
         cmd+=f'{SAMTOOLS} cat -o ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr
         a=run(cmd,capture_output=True,shell=True)
         assert a.returncode == 0
-        print("[Info] Concat done, time taken: ", time.time() - tic)
+        tic2 = time.time()
+        os.system('rm ' + output + "/aln*.bam")
+        print("[Info] Concat done, time taken (s): ", time.time() - tic, time.time() - tic2)
 
-        if rank == 0:
-            clean_all(output, tempdir)
+        #if rank == 0:
+        #    clean_all(output, tempdir)
+    elif rank == nranks - 1:
+        #print("[Info] cleaning up...")
+        tic = time.time()
+        os.system('rm ' + output + "/*.sam")
+        os.system('rm ' + output + "*.idx")
+        toc = time.time()        
+        #print("[Info] cleanup done, time taken (s): ", toc -tic)
+        
 
             
 def clean_all(output, tempdir):
@@ -930,7 +952,7 @@ def clean_all(output, tempdir):
     os.system('rm ' + output + "/aln*.bam")
     os.system('rm ' + output + "*.idx")
     toc = time.time()        
-    print("[Info] Clean up done, time taken: ", toc -tic)
+    print("[Info] Clean up done, time taken (s): ", toc -tic)
 
     
 def clean(output):
@@ -938,7 +960,7 @@ def clean(output):
     tic = time.time()
     os.system('rm ' + output + "*.idx")
     toc = time.time()        
-    print("[Info] Clean up done, time taken: ", toc -tic)
+    print("[Info] Clean up done, time taken (s): ", toc -tic)
         
         
 def concatenate_files(input_files, output_file):
@@ -957,4 +979,9 @@ def concatenate_files(input_files, output_file):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    #print('args: ', sys.argv)
+    #print("finish")
+    #main(sys.argv[1:])
+    args = json.loads(sys.argv[1])
+    #print('argss: ', args)
+    main(args)

@@ -30,7 +30,7 @@ WORKDIR Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam
 #RUN git checkout e4cae79
 
 RUN bash install.sh onprem
-RUN ln -s ./miniforge3 /opt/miniforge3
+RUN ln -s ~/miniforge3 /opt/miniforge3
 ENV PATH=/opt/miniforge3/bin/:$PATH
 RUN echo "source /opt/miniforge3/bin/activate fq2bam" >> ~/.bashrc
 ENV source ~/.bashrc
@@ -42,4 +42,4 @@ RUN mkdir /refdir
 RUN mkdir /tempdir
 
 CMD ["/bin/bash"]
-
+SHELL ["source", "~/miniforge3/bin/activate", "fq2bam", "/bin/bash", "-c"]
