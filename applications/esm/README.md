@@ -81,7 +81,7 @@ docker run -it \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
 	esm_image:latest  bash -c \
-	"cd examples/lm-design && python -m lm_design task=fixedbb task=fixedbb pdb_fn=/input/2N2U.pdb bf16=True &> /output/fixed_backbone_log"
+	"cd examples/lm-design && python -m lm_design task=fixedbb pdb_fn=/input/2N2U.pdb bf16=True &> /output/fixed_backbone_log"
 
 ```
 <summary>Free generation design</summary>
