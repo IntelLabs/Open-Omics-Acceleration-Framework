@@ -157,8 +157,8 @@ if __name__ == '__main__':
         " python -u fq2sortedbam.py "
 
     else:
-            
-        cmd = "mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
+        lpath=/app/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0
+        cmd = "export LD_PRELOAD=" + lpath + "; mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
             " -bind-to " + BINDING + \
             " -map-by " + BINDING + \
             " --hostfile hostfile  " + \

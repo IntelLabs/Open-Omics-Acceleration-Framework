@@ -21,10 +21,10 @@ fi
 
 echo "Downloading and setting up miniconda..."
 [[ ! -e "Miniforge3-24.3.0-0-Linux-x86_64.sh" ]] && wget https://github.com/conda-forge/miniforge/releases/download/24.3.0-0/Miniforge3-24.3.0-0-Linux-x86_64.sh
-bash ./Miniforge3-24.3.0-0-Linux-x86_64.sh -u -b -p ~/miniforge3
+bash ./Miniforge3-24.3.0-0-Linux-x86_64.sh -u -b -p ./miniforge3
 
 echo "Setting up conda env named with given argument"
-~/miniforge3/bin/conda env create --name fq2bam -f environment.yml
+./miniforge3/bin/conda env create --name fq2bam -f environment.yml
 echo "Setting up conda env named new_env...DONE"
 
 echo "Activating conda env..."

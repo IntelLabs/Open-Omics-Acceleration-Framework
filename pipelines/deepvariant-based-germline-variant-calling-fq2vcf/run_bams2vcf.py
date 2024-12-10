@@ -92,17 +92,39 @@ if __name__ == '__main__':
     #parser.add_argument('--params', default='', help="parameter string to bwa-mem2 barring threads paramter")
     parser.add_argument("-p", "--outfile", default="finalvcf", help="prefix for the output vcf file")
     parser.add_argument("--sso", action="store_true", help="prefix for the output vcf file")
+    parser.add_argument("--th", default=20, help="#min cores per rank")
+    parser.add_argument("-N", default=-1, help="#ranks")
+    parser.add_argument("-PPN", default=-1, help="ppn")
+    parser.add_argument("--cpus", default=-1, help="CPUS")
+    
     args = vars(parser.parse_args())
 
     num_nodes=1
     N, PPN, CPUS, THREADS, SHARDS, mask = HWConfigure(args["sso"], num_nodes)
+    if args["N"] != -1: N = args["N"]
+    if args["PPN"] != -1: PPN = args["PPN"]
+    if args["cpus"] != -1: CPUS = args["cpus"]
+    if args["shards"] != -1: SHARDS = args["cpus"]
+    
     print('[Info] Running {} processes on one compute node, each with {} threads'.format(N, THREADS))
+    args['cpus'], args['threads'], args['shards'] = str(CPUS), str(THREADS), str(SHARDS)
+
     cmd="hostname > hostfile"
     a = run(cmd, capture_output=True, shell=True)
     
     BINDING="socket"
     cmd="mkdir -p logs"
     a = run(cmd, capture_output=True, shell=True)
+
+    jstring = json.dumps(args)
+    try:
+        #subprocess.run([cmd, 'fq2sortedbam.py', jstring, check=True, capture_output=True, text=True)
+        subprocess.run([f"{cmd} '{jstring}'"], shell=True, check=True, capture_output=False, text=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Command failed with return code {e.returncode}")
+        print(f"Error output: {e.stderr}")
+
+    sys.exit(0)
 
     #cmd = "export I_MPI_PIN_DOMAIN==mask" + "; mpiexec -bootstrap ssh -n " + N + "-ppn " + PPN + " -bind-to " + BINDING + "-map-by " + BINDING + " --hostfile hostfile  python -u fq2bams.py --cpus" + CPUS + " --threads " + THREADS + " --input " +  args.input + " --output " +  args.output + " --refdir " +  args.refdir " + --refindex " + args.refindex + " --read1 " + args.read1 + " --read2 " + args.read2
     cwd = os.getcwd()

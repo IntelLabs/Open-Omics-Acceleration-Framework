@@ -24,19 +24,20 @@ def allexit(comm, flg):
     if flg: os.sys.exit(1)
 
 
-def main(argv):
-    parser=ArgumentParser()
-    parser.add_argument('--input', default="/input", help="Input data directory")
-    parser.add_argument('--tempdir',default="/tempdir",help="Intermediate data directory")
-    parser.add_argument('--refdir',default="/refdir",help="Reference genome directory")
-    parser.add_argument('--output',default="/output", help="Output data directory")
-    parser.add_argument("-i", "--refindex", help="name of refindex file")
-    #parser.add_argument("-r", "--reads", nargs='+',help="name of reads file seperated by space")
-    parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
-    parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
-    parser.add_argument('--shards',default=1,help="Number of shards for deepvariant")
-    parser.add_argument("-p", "--outfile", help="prefix for the output vcf file")    
-    args = vars(parser.parse_args())
+#def main(argv):
+def main(args):
+    #parser=ArgumentParser()
+    #parser.add_argument('--input', default="/input", help="Input data directory")
+    #parser.add_argument('--tempdir',default="/tempdir",help="Intermediate data directory")
+    #parser.add_argument('--refdir',default="/refdir",help="Reference genome directory")
+    #parser.add_argument('--output',default="/output", help="Output data directory")
+    #parser.add_argument("-i", "--refindex", help="name of refindex file")
+    ##parser.add_argument("-r", "--reads", nargs='+',help="name of reads file seperated by space")
+    #parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
+    #parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
+    #parser.add_argument('--shards',default=1,help="Number of shards for deepvariant")
+    #parser.add_argument("-p", "--outfile", help="prefix for the output vcf file")    
+    #args = vars(parser.parse_args())
     ifile=args["refindex"]
     #rfile1=args["reads"]
 
@@ -125,4 +126,6 @@ def main(argv):
     allexit(comm, flg)  ## all ranks exit if failure in rank 0 above
     
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    #main(sys.argv[1:])
+    args = json.loads(sys.argv[1])
+    main(args)
