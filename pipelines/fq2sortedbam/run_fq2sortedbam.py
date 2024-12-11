@@ -152,7 +152,7 @@ if __name__ == '__main__':
     if args["N"] != -1: N = args["N"]
     if args["PPN"] != -1: PPN = args["PPN"]
     if args["cpus"] != -1: CPUS = args["cpus"]
-    #if args["threads"] != -1: THREADS = args["cpus"]
+    if args["threads"] != -1: THREADS = args["cpus"]
     
     print("[Info] Running {} processes per compute node, each with {} threads".format(N, THREADS))
     args['cpus'], args['threads'] = str(CPUS), str(THREADS)

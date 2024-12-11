@@ -6,7 +6,9 @@ FROM ${BASE_IMAGE} as conda_setup
 
 WORKDIR /
 RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git -b dev2
+
 WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
+
 RUN conda env create --name dv_env -f environment.yml
 
 
@@ -29,7 +31,10 @@ RUN source ~/.bashrc
 
 WORKDIR /
 RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git -b dev2
+
 WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
+
+
 # compile bwa-mem2
 RUN echo "Build bwa-mem2"
 WORKDIR  /Open-Omics-Acceleration-Framework/applications/bwa-mem2
