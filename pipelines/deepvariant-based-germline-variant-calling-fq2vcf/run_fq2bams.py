@@ -6,6 +6,9 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 def HWConfigure(sso, num_nodes, th=20):
     run('lscpu > lscpu.txt', capture_output=True, shell=True)
     dt={}
+    flg, count = 1, -1
+    numa_cpu = []
+
     with open('lscpu.txt', 'r') as f:
         l = f.readline()
         while l:
@@ -14,6 +17,14 @@ def HWConfigure(sso, num_nodes, th=20):
                 #aa, bb = a.split(' ')
                 #print(a, b)
                 dt[a] = b
+                if a.startswith("NUMA") == True and count > 0:
+                    numa_cpu.append(b.lstrip())
+                
+                if a.startswith("NUMA") == True and flg and b != "":
+                    flg = 0
+                    nnuma = int(dt['NUMA node(s)'])
+                    count = int(b)
+
             except:
                 pass
             
@@ -24,8 +35,13 @@ def HWConfigure(sso, num_nodes, th=20):
     nthreads = int(dt['Thread(s) per core'])
     ncores = int(dt['Core(s) per socket'])
     nnuma = int(dt['NUMA node(s)'])
+    numa_per_sock = int(count/nsocks)
+    print('CPUS: ', ncpus)
+    print('#sockets: ', nsocks)
+    print('#threads: ', nthreads)
+    print('NUMAs: ', nnuma)    
 
-    if sso == 'sso':
+    if sso:
         nsocks = 1
 
     #th = 16  ## max cores per rank
@@ -67,7 +83,7 @@ def HWConfigure(sso, num_nodes, th=20):
     mask=mask + "]"
     #print("I_MPI_PIN_DOMAIN={}".format(mask))
 
-    return N, PPN, CPUS, THREADS, mask
+    return N, PPN, CPUS, THREADS, mask, numa_per_sock
 
 
 
