@@ -39,7 +39,7 @@ RUN echo "source /opt/conda/bin/activate " > ~/.bashrc
 CMD source ~/.bashrc
 
 WORKDIR /
-RUN git clone -b multimer --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 
 WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
 ENV LD_LIBRARY_PATH "/opt/conda/lib:$LD_LIBRARY_PATH"
