@@ -155,14 +155,14 @@ if __name__ == '__main__':
         print(f'Running on single socket w/ {numa_per_sock} numas per socket')
         cmd = "export LD_PRELOAD=" + lpath + "; numactl -N " + "0-" + str(numa_per_sock-1) + " mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
         " --hostfile hostfile  " + \
-        " python -u fq2sortedbam.py "
+        " python -u fq2bams.py "
 
     else:            
         cmd = "export LD_PRELOAD=" + lpath + "; mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
             " -bind-to " + BINDING + \
             " -map-by " + BINDING + \
             " --hostfile hostfile  " + \
-            " python -u fq2sortedbam.py "
+            " python -u fq2bams.py "
 
     #print(f"N: {N}, PPN: {PPN}")
     jstring = json.dumps(args)
