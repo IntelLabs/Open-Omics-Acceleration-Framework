@@ -8,6 +8,9 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 def HWConfigure(sso, num_nodes, th=20):
     run('lscpu > lscpu.txt', capture_output=True, shell=True)
     dt={}
+    flg, count = 1, -1
+    numa_cpu = []
+
     with open('lscpu.txt', 'r') as f:
         l = f.readline()
         while l:
@@ -16,6 +19,14 @@ def HWConfigure(sso, num_nodes, th=20):
                 #aa, bb = a.split(' ')
                 #print(a, b)
                 dt[a] = b
+                if a.startswith("NUMA") == True and count > 0:
+                    numa_cpu.append(b.lstrip())
+                
+                if a.startswith("NUMA") == True and flg and b != "":
+                    flg = 0
+                    nnuma = int(dt['NUMA node(s)'])
+                    count = int(b)
+
             except:
                 pass
             
@@ -26,6 +37,11 @@ def HWConfigure(sso, num_nodes, th=20):
     nthreads = int(dt['Thread(s) per core'])
     ncores = int(dt['Core(s) per socket'])
     nnuma = int(dt['NUMA node(s)'])
+    numa_per_sock = int(count/nsocks)
+    print('CPUS: ', ncpus)
+    print('#sockets: ', nsocks)
+    print('#threads: ', nthreads)
+    print('NUMAs: ', nnuma)    
 
     if sso:
         nsocks = 1
@@ -37,7 +53,7 @@ def HWConfigure(sso, num_nodes, th=20):
     num_physical_cores_per_node = nsocks * ncores
     num_physical_cores_per_rank = nsocks * ncores
     
-    while num_physical_cores_per_rank > th:
+    while num_physical_cores_per_rank > int(th):
         num_physical_cores_per_rank /= 2
 
     num_physical_cores_per_rank = int(num_physical_cores_per_rank)
@@ -69,7 +85,7 @@ def HWConfigure(sso, num_nodes, th=20):
     mask=mask + "]"
     #print("I_MPI_PIN_DOMAIN={}".format(mask))
 
-    return N, PPN, CPUS, THREADS, mask
+    return N, PPN, CPUS, THREADS, mask, numa_per_sock
 
 
 
@@ -81,7 +97,7 @@ if __name__ == '__main__':
     #parser.add_argument('--input', default="/input", help="Input data directory")
     parser.add_argument('--tempdir',default="",help="Intermediate data directory")
     #parser.add_argument('--refdir',default="/refdir",help="Reference genome directory")
-    parser.add_argument('--output',default="/output", help="Output data directory")
+    parser.add_argument('--output',default="/output/out.bam", help="Output data directory")
     #parser.add_argument("-i", "--refindex", default="None", help="name of refindex file")
     #parser.add_argument("-r1", "--read1", default="None",  help="name of read1")
     #parser.add_argument("-r2", "--read2", default="None",  help="name of read2")
@@ -132,7 +148,7 @@ if __name__ == '__main__':
     args["outfile"] = os.path.basename(args["output"])
     
     num_nodes=1
-    N, PPN, CPUS, THREADS, mask = HWConfigure(args["sso"], num_nodes, args['th'])
+    N, PPN, CPUS, THREADS, mask, numa_per_sock = HWConfigure(args["sso"], num_nodes, args['th'])
     if args["N"] != -1: N = args["N"]
     if args["PPN"] != -1: PPN = args["PPN"]
     if args["cpus"] != -1: CPUS = args["cpus"]
@@ -151,13 +167,14 @@ if __name__ == '__main__':
     #cmd = "export I_MPI_PIN_DOMAIN==mask" + "; mpiexec -bootstrap ssh -n " + N + "-ppn " + PPN + " -bind-to " + BINDING + "-map-by " + BINDING + " --hostfile hostfile  python -u fq2bams.py --cpus" + CPUS + " --threads " + THREADS + " --input " +  args.input + " --output " +  args.output + " --refdir " +  args.refdir " + --refindex " + args.refindex + " --read1 " + args.read1 + " --read2 " + args.read2
     cwd = os.getcwd()
     #print(cwd)
+    lpath="/app/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0"
     if args["sso"]:
-        cmd = "mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
+        print(f'Running on single socket w/ {numa_per_sock} numas per socket')
+        cmd = "export LD_PRELOAD=" + lpath + "; numactl -N " + "0-" + str(numa_per_sock-1) + " mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
         " --hostfile hostfile  " + \
         " python -u fq2sortedbam.py "
 
     else:
-        lpath="/app/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0"
         cmd = "export LD_PRELOAD=" + lpath + "; mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
             " -bind-to " + BINDING + \
             " -map-by " + BINDING + \

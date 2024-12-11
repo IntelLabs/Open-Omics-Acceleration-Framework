@@ -32,8 +32,7 @@ RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-F
 WORKDIR Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam
 
 RUN bash install.sh onprem
-#RUN ln -s ./miniforge3 /opt/miniforge3
-ENV PATH="/app/Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/miniforge3/bin/:/app/Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/miniforge3/envs/fq2bam/bin/:$PATH"
+ENV PATH="/app/Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/miniforge3/envs/fq2bam/bin/:/app/Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/miniforge3/bin/:$PATH"
 ENV LD_PRELOAD="/app/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0"
 
 RUN mkdir /input
