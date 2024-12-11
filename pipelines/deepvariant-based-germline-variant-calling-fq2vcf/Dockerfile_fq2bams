@@ -5,7 +5,7 @@ ARG BASE_IMAGE=condaforge/miniforge3
 FROM ${BASE_IMAGE} as conda_setup
 
 WORKDIR /
-RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git -b dev2
 WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
 RUN conda env create --name dv_env -f environment.yml
 
@@ -28,7 +28,7 @@ RUN echo "source activate dv_env" >> ~/.bashrc
 RUN source ~/.bashrc
 
 WORKDIR /
-RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git -b dev2
 WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
 # compile bwa-mem2
 RUN echo "Build bwa-mem2"

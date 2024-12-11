@@ -3,7 +3,7 @@ import json, os, sys
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 #from mpi4py import MPI
 
-def HWConfigure(sso, num_nodes, th):
+def HWConfigure(sso, num_nodes, th=20):
     run('lscpu > lscpu.txt', capture_output=True, shell=True)
     dt={}
     with open('lscpu.txt', 'r') as f:
@@ -35,7 +35,7 @@ def HWConfigure(sso, num_nodes, th):
     num_physical_cores_per_node = nsocks * ncores
     num_physical_cores_per_rank = nsocks * ncores
     
-    while num_physical_cores_per_rank > th:
+    while num_physical_cores_per_rank > int(th):
         num_physical_cores_per_rank /= 2
 
     num_physical_cores_per_rank = int(num_physical_cores_per_rank)
@@ -114,7 +114,8 @@ if __name__ == '__main__':
     args["outfile"] = os.path.basename(args["output"])
     
     num_nodes=1
-    N, PPN, CPUS, THREADS, mask = HWConfigure(args["sso"], num_nodes)
+    #N, PPN, CPUS, THREADS, mask = HWConfigure(args["sso"], num_nodes)
+    N, PPN, CPUS, THREADS, mask, numa_per_sock = HWConfigure(args["sso"], num_nodes, args['th'])    
     if args["N"] != -1: N = args["N"]
     if args["PPN"] != -1: PPN = args["PPN"]
     if args["cpus"] != -1: CPUS = args["cpus"]
@@ -131,13 +132,16 @@ if __name__ == '__main__':
     cmd="mkdir -p logs"
     a = run(cmd, capture_output=True, shell=True)
 
+    lpath="/app/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0"
+        
     if args["sso"]:
-        cmd = "mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
+        print(f'Running on single socket w/ {numa_per_sock} numas per socket')
+        cmd = "export LD_PRELOAD=" + lpath + "; numactl -N " + "0-" + str(numa_per_sock-1) + " mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
         " --hostfile hostfile  " + \
         " python -u fq2sortedbam.py "
 
     else:            
-        cmd = "mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
+        cmd = "export LD_PRELOAD=" + lpath + "; mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
             " -bind-to " + BINDING + \
             " -map-by " + BINDING + \
             " --hostfile hostfile  " + \
