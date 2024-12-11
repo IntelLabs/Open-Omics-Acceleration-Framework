@@ -1,6 +1,7 @@
 # Install Base miniconda image
 ARG FROM_IMAGE=amazonlinux:2023
-ARG BASE_IMAGE=continuumio/miniconda3
+#ARG BASE_IMAGE=continuumio/miniconda3
+ARG BASE_IMAGE=condaforge/miniforge3
 FROM ${BASE_IMAGE} as conda_setup
 
 WORKDIR /

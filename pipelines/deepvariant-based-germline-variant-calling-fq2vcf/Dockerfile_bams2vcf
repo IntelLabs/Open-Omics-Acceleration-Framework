@@ -17,9 +17,10 @@ ARG PYTHON_VERSION=3.8
 ARG DV_GPU_BUILD=0
 ARG VERSION=1.5.0
 
-FROM continuumio/miniconda3 as conda_setup
-RUN conda config --add channels defaults && \
-    conda config --add channels bioconda && \
+#FROM continuumio/miniconda3 as conda_setup
+FROM condaforge/miniforge3 as conda_setup
+#RUN conda config --add channels defaults && \
+RUN  conda config --add channels bioconda && \
     conda config --add channels conda-forge
 RUN conda create -n bio \
                     bioconda::bcftools=1.10 \
@@ -63,6 +64,14 @@ WORKDIR /opt/deepvariant
 RUN echo "Acquire::http::proxy \"$http_proxy\";\n" \
          "Acquire::https::proxy \"$https_proxy\";" > "/etc/apt/apt.conf"
 
+# Define build arguments for proxy
+ARG http_proxy
+ARG https_proxy
+
+# Set environment variables for proxy
+ENV http_proxy=${http_proxy}
+ENV https_proxy=${https_proxy}
+
 RUN ./build-prereq.sh \
   && PATH="${HOME}/bin:${PATH}" ./build_release_binaries.sh  # PATH for bazel
 
@@ -74,8 +83,8 @@ ENV DV_GPU_BUILD=${DV_GPU_BUILD}
 ENV VERSION ${VERSION}
 ENV PYTHON_VERSION ${PYTHON_VERSION}
 
-RUN echo "Acquire::http::proxy \"$http_proxy\";\n" \
-         "Acquire::https::proxy \"$https_proxy\";" > "/etc/apt/apt.conf"
+#RUN echo "Acquire::http::proxy \"$http_proxy\";\n" \
+#         "Acquire::https::proxy \"$https_proxy\";" > "/etc/apt/apt.conf"
 
 WORKDIR /opt/
 COPY --from=builder /opt/deepvariant/bazel-bin/licenses.zip .
