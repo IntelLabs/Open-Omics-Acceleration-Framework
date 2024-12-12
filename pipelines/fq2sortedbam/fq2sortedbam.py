@@ -49,6 +49,7 @@ BINDIR="../.."
 APPSDIR=os.path.join(BINDIR + "/applications/")
 SAMTOOLS=os.path.join(APPSDIR + "/samtools/samtools")
 BWA=os.path.join(APPSDIR + "/bwa-mem2/bwa-mem2")
+BWASSE=os.path.join(APPSDIR + "/bwa-mem2/bwa-mem2.sse42")
 MINIMAP2=os.path.join(APPSDIR + "/mm2-fast/minimap2")
 
 def populate_yaml(args):
@@ -671,14 +672,23 @@ def main(args):
                         fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' +
                         str(rank) + '.txt',capture_output=True, shell=True)
             else:
-                cmd=f'{BWA} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+                if args['simd'] == 'sse':
+                    cmd=f'{BWASSE} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+                else:
+                    cmd=f'{BWA} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
                 print('bwa cmd: ', cmd)
                 a=run(cmd, capture_output=True, shell=True)
 
-        else:                
-            a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+
-                  fn1+' '+fn2+' > '+fn3 + '  2> ' + output +
-                  'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+        else:
+            if args['simd'] == 'sse':
+                a=run(f'{BWASSE} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+
+                      fn1+' '+fn2+' > '+fn3 + '  2> ' + output +
+                      'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+
+            else:
+                a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+
+                      fn1+' '+fn2+' > '+fn3 + '  2> ' + output +
+                      'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
             
         assert a.returncode == 0
         
@@ -865,11 +875,17 @@ def main(args):
                       fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' +
                       str(rank) + '.txt',capture_output=True, shell=True)
             else:
-                cmd=f'{BWA} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+                if args['simd'] == 'sse':
+                    cmd=f'{BWASSE} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+                else:
+                    cmd=f'{BWA} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
                 #print('bwa cmd', cmd)
                 a=run(cmd, capture_output=True, shell=True)
         else:
-            cmd= f'{BWA} mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+ fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+            if args['simd'] == 'sse':
+                cmd= f'{BWASSE} mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+ fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+            else:
+                cmd= f'{BWA} mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+ fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
             #print('bwa cmd', cmd)
             a=run(cmd ,capture_output=True, shell=True)
             

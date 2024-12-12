@@ -47,6 +47,7 @@ BINDIR="../.."
 APPSDIR=os.path.join(BINDIR + "/applications/")
 SAMTOOLS=os.path.join(APPSDIR + "/samtools/samtools")
 BWA=os.path.join(APPSDIR + "/bwa-mem2/bwa-mem2")
+BWASSE=os.path.join(APPSDIR + "/bwa-mem2/bwa-mem2.sse42")
 
 def pr_t1( f, start, end, bufs, sems ):  # thread to read from fastq.gz file
     f.seek(start)
@@ -514,7 +515,7 @@ def rundown(args):
     ##############################################################################
     
     # chromo_dict information added
-    if keep == False and rank == 0:
+    if keep == False: ## and rank == 0:
         chromo_file = os.path.join(refdir,ifile)+".fai"
         if os.path.isfile(chromo_file):
             f = open(chromo_file, "r")
@@ -523,15 +524,16 @@ def rundown(args):
             for line in lines[0:25]:
                 chromo=line.split("\t")[0]
                 chromo_dict[chromo]= 1
-            print(f'chromo_dict: {chromo_dict}')
+            #print(f'chromo_dict: {chromo_dict}')
         else:
-            print(f'[Info] File "{chromo_file}" not found, resetting keep=True')
+            if rank == 0:
+                print(f'[Info] File "{chromo_file}" not found, resetting keep=True')
             #exit()
             keep = True                
 
 
     comm.barrier()                
-    keep = comm.bcast(keep, root=0)            
+    #keep = comm.bcast(keep, root=0)            
     #############################################################################
     if rank == 0:
         print("[Info] bwa-mem2 starts")
@@ -545,13 +547,23 @@ def rundown(args):
     begin1 = time.time()
     #a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+os.path.join(refdir,ifile)+' '+fn1+' '+fn2+' > '+fn3,capture_output=True, shell=True)
     if se_mode:
-        cmd = f'{BWA} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+        if args['simd'] == 'sse':
+            cmd = f'{BWASSE} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+        else:
+            cmd = f'{BWA} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+            
         #print(cmd)
         a=run(cmd, capture_output=True, shell=True)
-    else:                
-        a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+ \
+    else:
+        if args['simd'] == 'sse':
+            a=run(f'{BWASSE} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+ \
               fn1+' '+fn2+' > '+fn3 + '  2> ' + output + \
-              'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+                  'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+            
+        else:                
+            a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+ \
+                  fn1+' '+fn2+' > '+fn3 + '  2> ' + output + \
+                  'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
     
     assert a.returncode==0,"bwa-mem2 Run Failed"
     end1b=time.time()
@@ -631,7 +643,7 @@ def rundown(args):
     comm.barrier()
     if rank==0:
         end5=time.time()
-        print("[Info] Wrote intermediate files at ", tempdir)
+        #print("[Info] Wrote intermediate files at ", tempdir)
         print("\n[Info] fq2bam runtime",end5-start0)
         #print("\n[Info] Starting Deepvariant execution...")
         idxname = os.path.join(output, rfile1 +".idx")

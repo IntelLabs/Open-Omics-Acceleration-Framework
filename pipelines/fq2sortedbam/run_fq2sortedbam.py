@@ -38,10 +38,6 @@ def HWConfigure(sso, num_nodes, th=20):
     ncores = int(dt['Core(s) per socket'])
     nnuma = int(dt['NUMA node(s)'])
     numa_per_sock = int(count/nsocks)
-    print('CPUS: ', ncpus)
-    print('#sockets: ', nsocks)
-    print('#threads: ', nthreads)
-    print('NUMAs: ', nnuma)    
 
     if sso:
         nsocks = 1
@@ -53,7 +49,7 @@ def HWConfigure(sso, num_nodes, th=20):
     num_physical_cores_per_node = nsocks * ncores
     num_physical_cores_per_rank = nsocks * ncores
     
-    while num_physical_cores_per_rank > int(th):
+    while num_physical_cores_per_rank > th:
         num_physical_cores_per_rank /= 2
 
     num_physical_cores_per_rank = int(num_physical_cores_per_rank)
@@ -97,7 +93,7 @@ if __name__ == '__main__':
     #parser.add_argument('--input', default="/input", help="Input data directory")
     parser.add_argument('--tempdir',default="",help="Intermediate data directory")
     #parser.add_argument('--refdir',default="/refdir",help="Reference genome directory")
-    parser.add_argument('--output',default="/output/out.bam", help="Output data directory")
+    parser.add_argument('--output',default="/output", help="Output data directory")
     #parser.add_argument("-i", "--refindex", default="None", help="name of refindex file")
     #parser.add_argument("-r1", "--read1", default="None",  help="name of read1")
     #parser.add_argument("-r2", "--read2", default="None",  help="name of read2")
@@ -152,7 +148,7 @@ if __name__ == '__main__':
     if args["N"] != -1: N = args["N"]
     if args["PPN"] != -1: PPN = args["PPN"]
     if args["cpus"] != -1: CPUS = args["cpus"]
-    if args["threads"] != -1: THREADS = args["cpus"]
+    #if args["threads"] != -1: THREADS = args["cpus"]
     
     print("[Info] Running {} processes per compute node, each with {} threads".format(N, THREADS))
     args['cpus'], args['threads'] = str(CPUS), str(THREADS)

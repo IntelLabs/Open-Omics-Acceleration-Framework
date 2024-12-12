@@ -103,13 +103,16 @@ if __name__ == '__main__':
     parser.add_argument("--th", default=20, help="#min cores per rank")
     parser.add_argument("-N", default=-1, help="#ranks")
     parser.add_argument("-PPN", default=-1, help="ppn")
-    parser.add_argument("--cpus", default=-1, help="CPUS")
+    parser.add_argument("--cpus", default=-1, help="cpus")
+    parser.add_argument("--threads", default=-1, help="threads")
+    parser.add_argument("--shards", default=-1, help="shards")
     
     args = vars(parser.parse_args())
 
     args["refdir"] = os.path.dirname(args["ref"])
     args["refindex"] = os.path.basename(args["ref"])
     args["output"] = os.path.dirname(args["output"])
+    args["tempdir"] = os.path.dirname(args["output"])
     args["outfile"] = os.path.basename(args["output"])
     print('outfile: ', args['outfile'])
 

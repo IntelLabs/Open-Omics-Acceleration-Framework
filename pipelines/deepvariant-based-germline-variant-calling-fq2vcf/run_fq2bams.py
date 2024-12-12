@@ -97,6 +97,7 @@ if __name__ == '__main__':
     #parser.add_argument('--tempdir',default="/output",help="Intermediate data directory")
     #parser.add_argument('--refdir',default="/refdir",help="Reference genome directory")
     parser.add_argument('--output',default="/output", help="Output data directory")
+    parser.add_argument('--simd',default="avx", help="use '=sse' for bwa sse mode")
     parser.add_argument("-i", "--refindex", default="None", help="name of refindex file")
     #parser.add_argument("-r1", "--read1", default="None", help="name of read1")
     #parser.add_argument("-r2", "--read2", default="None", help="name of read2")
@@ -114,6 +115,8 @@ if __name__ == '__main__':
     parser.add_argument("-N", default=-1, help="#ranks")
     parser.add_argument("-PPN", default=-1, help="ppn")
     parser.add_argument("--cpus", default=-1, help="CPUS")
+    parser.add_argument("--threads", default=-1, help="THREADS")
+    parser.add_argument("--shards", default=-1, help="SHARDS")
     
     args = vars(parser.parse_args())
 
@@ -128,6 +131,7 @@ if __name__ == '__main__':
     args["refdir"] = os.path.dirname(args["ref"])
     args["refindex"] = os.path.basename(args["ref"])
     args["output"] = os.path.dirname(args["output"])
+    args["tempdir"] = os.path.dirname(args["output"])
     args["outfile"] = os.path.basename(args["output"])
     
     num_nodes=1
@@ -150,7 +154,7 @@ if __name__ == '__main__':
     cmd="mkdir -p logs"
     a = run(cmd, capture_output=True, shell=True)
 
-    lpath="/app/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0"
+    lpath="/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0"
         
     if args["sso"]:
         print(f'Running on single socket w/ {numa_per_sock} numas per socket')
