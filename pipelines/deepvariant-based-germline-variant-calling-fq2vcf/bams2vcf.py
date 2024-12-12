@@ -113,7 +113,7 @@ def main(args):
         print("\nDeepVariant runtime",end5-t0)
         #print("\nTime for the whole pipeline",end5-start0)
 
-    if rank == nranks - 1:
+    if rank == 0:
         print('[Info] Cleaning up....')
         for i in range(nranks):
             r = "%05d"%(i)
