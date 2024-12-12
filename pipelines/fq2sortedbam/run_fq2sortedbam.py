@@ -38,6 +38,10 @@ def HWConfigure(sso, num_nodes, th=20):
     ncores = int(dt['Core(s) per socket'])
     nnuma = int(dt['NUMA node(s)'])
     numa_per_sock = int(count/nsocks)
+    print('CPUS: ', ncpus)
+    print('#sockets: ', nsocks)
+    print('#threads: ', nthreads)
+    print('NUMAs: ', nnuma)    
 
     if sso:
         nsocks = 1
@@ -49,7 +53,7 @@ def HWConfigure(sso, num_nodes, th=20):
     num_physical_cores_per_node = nsocks * ncores
     num_physical_cores_per_rank = nsocks * ncores
     
-    while num_physical_cores_per_rank > th:
+    while num_physical_cores_per_rank > int(th):
         num_physical_cores_per_rank /= 2
 
     num_physical_cores_per_rank = int(num_physical_cores_per_rank)
@@ -93,7 +97,8 @@ if __name__ == '__main__':
     #parser.add_argument('--input', default="/input", help="Input data directory")
     parser.add_argument('--tempdir',default="",help="Intermediate data directory")
     #parser.add_argument('--refdir',default="/refdir",help="Reference genome directory")
-    parser.add_argument('--output',default="/output", help="Output data directory")
+    parser.add_argument('--output',default="/output/out.bam", help="Output data directory")
+    parser.add_argument('--simd',default="avx", help="use '=sse' for bwa sse mode")
     #parser.add_argument("-i", "--refindex", default="None", help="name of refindex file")
     #parser.add_argument("-r1", "--read1", default="None",  help="name of read1")
     #parser.add_argument("-r2", "--read2", default="None",  help="name of read2")
@@ -127,7 +132,7 @@ if __name__ == '__main__':
     parser.add_argument("-N", default=-1, help="#ranks")
     parser.add_argument("-PPN", default=-1, help="ppn")
     parser.add_argument("--cpus", default=-1, help="CPUS")
-    #parser.add_argument("--threads", default=-1, help="THREADS")
+    parser.add_argument("--threads", default=-1, help="THREADS")
     args = vars(parser.parse_args())
 
     assert len(args["reads"]) >= 1
@@ -141,6 +146,7 @@ if __name__ == '__main__':
     args["refdir"] = os.path.dirname(args["ref"])
     args["refindex"] = os.path.basename(args["ref"])
     args["output"] = os.path.dirname(args["output"])
+    args["tempdir"] = os.path.dirname(args["output"])
     args["outfile"] = os.path.basename(args["output"])
     
     num_nodes=1
@@ -148,7 +154,7 @@ if __name__ == '__main__':
     if args["N"] != -1: N = args["N"]
     if args["PPN"] != -1: PPN = args["PPN"]
     if args["cpus"] != -1: CPUS = args["cpus"]
-    #if args["threads"] != -1: THREADS = args["cpus"]
+    if args["threads"] != -1: THREADS = args["cpus"]
     
     print("[Info] Running {} processes per compute node, each with {} threads".format(N, THREADS))
     args['cpus'], args['threads'] = str(CPUS), str(THREADS)
@@ -164,6 +170,7 @@ if __name__ == '__main__':
     cwd = os.getcwd()
     #print(cwd)
     lpath="/app/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0"
+    tic = time.time()
     if args["sso"]:
         print(f'Running on single socket w/ {numa_per_sock} numas per socket')
         cmd = "export LD_PRELOAD=" + lpath + "; numactl -N " + "0-" + str(numa_per_sock-1) + " mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
@@ -177,6 +184,7 @@ if __name__ == '__main__':
             " --hostfile hostfile  " + \
             " python -u fq2sortedbam.py "
 
+    
     #print(f"N: {N}, PPN: {PPN}")
     jstring = json.dumps(args)
     try:
@@ -186,48 +194,5 @@ if __name__ == '__main__':
         print(f"Command failed with return code {e.returncode}")
         print(f"Error output: {e.stderr}")
 
-    sys.exit(0)
-
-
-    #cmd = "export LD_PRELOAD=" + cwd + "/libmimalloc.so.2.0:$LD_PRELOAD" + \
-    cmd = "mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
-        " -bind-to " + BINDING + \
-        " -map-by " + BINDING + \
-        " --hostfile hostfile  " + \
-        " python -u fq2sortedbam.py --cpus " + str(CPUS) + \
-        " --threads " + str(THREADS) + \
-        " --input " +  args["input"] + \
-        " --output " + args["output"] + \
-        " --tempdir " +  args["tempdir"] + \
-        " --refdir " +  args["refdir"] + \
-        " --refindex " + args["refindex"] + \
-        " --read1 " + args["read1"] + \
-        " --read2 " + args["read2"] + \
-        " --read3 " + args["read3"] + \
-        " --readi1 " + args["readi1"] + \
-        " --params " + "\"" + args["params"] + "\"" + \
-        " --prefix " + args["prefix"] + \
-        " --suffix " + args["suffix"] + \
-        " --whitelist " + args["whitelist"] + \
-        " --read_structure " + args["read_structure"] + \
-        " --barcode_orientation " + args["barcode_orientation"] + \
-        " --sample_id " + str(args["sample_id"]) + \
-        " --output_format " + args["output_format"] + \
-        " --bam_size " + str(args["bam_size"]) + \
-        " --mode " + args["mode"] + \
-        " --read_type " + args["read_type"] + \
-        " --outfile " + args["outfile"]
-        ##" --container_tool " + args["container_tool #+ \
-
-    if args["rindex"]:
-        cmd += " --rindex "
-    if args["dindex"]:
-        cmd +=" --dindex " 
-    if not args["not_keep_unmapped"]:
-        cmd += " --keep_unmapped "
-
-    cmd += " 2>&1 | tee " + args["output"] + "/log_fq2sortedbam.txt"        
-    
-    print("cmd: ", cmd)
-    a = run(cmd, capture_output=True, shell=True)
-    assert a.returncode == 0, "fq2bam failed."
+    toc = time.time()
+    print('[Info] fq2sortedbam runtime: ', toc - tic) 

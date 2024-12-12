@@ -1,3 +1,4 @@
+import json, subprocess
 from subprocess import Popen, PIPE, run
 import os, sys, time
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
@@ -61,6 +62,7 @@ def HWConfigure(sso, num_nodes, th=20):
     PPN = int(num_physical_cores_per_node / num_physical_cores_per_rank)
     CPUS = int(ncores * nthreads * nsocks / PPN - 2*nthreads)
     THREADS = CPUS
+    SHARDS = int(ncores * nthreads * nsocks / PPN) 
     #print(f"N={int(N)}")
     #print(f"PPN={int(PPN)}")
     #print(f"CPUS={int(CPUS)}")
@@ -83,7 +85,7 @@ def HWConfigure(sso, num_nodes, th=20):
     mask=mask + "]"
     #print("I_MPI_PIN_DOMAIN={}".format(mask))
 
-    return N, PPN, CPUS, THREADS, mask, numa_per_sock
+    return N, PPN, CPUS, THREADS, SHARDS, mask, numa_per_sock
 
 
 
@@ -118,7 +120,7 @@ if __name__ == '__main__':
 
     num_nodes=1
     ## N, PPN, CPUS, THREADS, SHARDS, mask = HWConfigure(args["sso"], num_nodes, args['th'])
-    N, PPN, CPUS, THREADS, mask, numa_per_sock = HWConfigure(args["sso"], num_nodes, args['th'])    
+    N, PPN, CPUS, THREADS, SHARDS, mask, numa_per_sock = HWConfigure(args["sso"], num_nodes, args['th'])    
     if args["N"] != -1: N = args["N"]
     if args["PPN"] != -1: PPN = args["PPN"]
     if args["cpus"] != -1: CPUS = args["cpus"]
@@ -134,7 +136,7 @@ if __name__ == '__main__':
     cmd="mkdir -p logs"
     a = run(cmd, capture_output=True, shell=True)
 
-    lpath="/app/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0"
+    lpath="/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0"
     if args["sso"]:
         print(f'Running on single socket w/ {numa_per_sock} numas per socket')
         cmd = "export LD_PRELOAD=" + lpath + "; numactl -N " + "0-" + str(numa_per_sock-1) + " mpiexec -bootstrap ssh -n " + str(N) + " -ppn " + str(PPN) + \
