@@ -85,5 +85,3 @@ ENTRYPOINT ["/entrypoint_pre.sh"]
 
 # Default command
 CMD ["default"]
-# CMD  mkdir weights && mkdir weights/extracted && python extract_params.py --input /data/params/params_model_1.npz --output_dir ./weights/extracted/model_1 \
-#   && python run_multiprocess_pre.py --root_home=/Open-Omics-Acceleration-Framework/applications/alphafold --data_dir=/data --input_dir=/samples --output_dir=/output --model_name=model_1
