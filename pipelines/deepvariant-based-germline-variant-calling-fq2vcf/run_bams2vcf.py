@@ -114,7 +114,7 @@ if __name__ == '__main__':
     args["refdir"] = os.path.dirname(args["ref"])
     args["refindex"] = os.path.basename(args["ref"])
     args["output"] = os.path.dirname(args["output"])
-    args["tempdir"] = os.path.dirname(args["output"])
+    args["tempdir"] = args["output"]
     args["outfile"] = os.path.basename(args["output"])
     print('outfile: ', args['outfile'])
 

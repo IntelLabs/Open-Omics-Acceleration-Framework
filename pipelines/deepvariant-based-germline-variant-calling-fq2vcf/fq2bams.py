@@ -460,6 +460,7 @@ def rundown(args):
     global chromo_dict
     ncpus = int(cpus)
 
+    #print('tempdir: ', tempdir)
     if rank == 0:
         if se_mode:
             print("[Info] Running in SE reads only mode!!!")
