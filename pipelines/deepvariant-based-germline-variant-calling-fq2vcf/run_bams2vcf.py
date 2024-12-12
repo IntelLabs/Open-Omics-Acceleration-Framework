@@ -116,7 +116,7 @@ if __name__ == '__main__':
     args["output"] = os.path.dirname(args["output"])
     args["tempdir"] = args["output"]
     args["outfile"] = os.path.basename(args["output"])
-    print('outfile: ', args['outfile'])
+    #print('outfile: ', args['outfile'])
 
     num_nodes=1
     ## N, PPN, CPUS, THREADS, SHARDS, mask = HWConfigure(args["sso"], num_nodes, args['th'])

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+import json
 from subprocess import Popen, PIPE, run
 import subprocess
 import time
@@ -94,8 +95,8 @@ def main(args):
     print("Deepvariant commandline: ")
     print(command)
     
-    a = run('echo "'+command+'" > '+os.path.join(output, logs, 'dvlog'+binstr+'.txt'), shell=True)
-    a = run(command + " 2>&1 >> " + os.path.join(output, logs, 'dvlog'+binstr+'.txt'), shell=True)
+    a = run('echo "'+command+'" > '+os.path.join(output, "logs", 'dvlog'+binstr+'.txt'), shell=True)
+    a = run(command + " 2>&1 >> " + os.path.join(output, "logs", 'dvlog'+binstr+'.txt'), shell=True)
     assert a.returncode == 0,"[Info] Deepvariant execution failed."
     comm.barrier()
     
