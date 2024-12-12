@@ -97,6 +97,7 @@ if __name__ == '__main__':
     #parser.add_argument('--tempdir',default="/output",help="Intermediate data directory")
     #parser.add_argument('--refdir',default="/refdir",help="Reference genome directory")
     parser.add_argument('--output', default="/output/out.vcf", help="Output data directory")
+    parser.add_argument('--keep_input', default=True, help="keep input files")
     #parser.add_argument("-i", "--refindex", default="None", help="name of refindex file")
     #parser.add_argument('--container_tool',default="docker",help="Container tool used in pipeline : Docker/Podman")
     parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
@@ -113,9 +114,10 @@ if __name__ == '__main__':
 
     args["refdir"] = os.path.dirname(args["ref"])
     args["refindex"] = os.path.basename(args["ref"])
+    args["outfile"] = os.path.basename(args["output"])
     args["output"] = os.path.dirname(args["output"])
     args["tempdir"] = args["output"]
-    args["outfile"] = os.path.basename(args["output"])
+
     #print('outfile: ', args['outfile'])
 
     num_nodes=1

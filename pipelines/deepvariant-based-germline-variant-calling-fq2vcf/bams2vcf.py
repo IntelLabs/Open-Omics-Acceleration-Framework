@@ -113,12 +113,17 @@ def main(args):
         print("\nDeepVariant runtime",end5-t0)
         #print("\nTime for the whole pipeline",end5-start0)
 
-    if rank == 0:
+    if rank == nranks - 1:
         print('[Info] Cleaning up....')
         for i in range(nranks):
             r = "%05d"%(i)
             #print(r)
             #os.system('ls -lh ' + r)
+            if not args['keep_input']:
+                os.system('rm -rf ' + os.path.join(inputdir, "bin_region.pkl"))
+                os.system('rm -rf ' + os.path.join(inputdir, "aln"+r+".bam"))
+                os.system('rm -rf ' + os.path.join(inputdir, "aln"+r+".bam.bai"))
+                
             os.system('rm -rf ' + os.path.join(output, r))
             os.system('rm -rf '+ os.path.join(output, 'intermediate_results_dir' + r))
         print('[Info] Cleaning up done.')
