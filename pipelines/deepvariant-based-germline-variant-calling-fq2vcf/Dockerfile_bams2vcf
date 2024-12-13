@@ -248,6 +248,7 @@ WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-
 
 RUN apt-get update
 RUN apt-get -y install git
+RUN apt-get -y install numactl 
 RUN apt-get install -y build-essential
 RUN apt -y install zlib1g-dev
 RUN apt -y install libncurses5-dev
