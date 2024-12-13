@@ -30,7 +30,6 @@ RUN echo "source activate dv_env" >> ~/.bashrc
 RUN source ~/.bashrc
 
 WORKDIR /
-#RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
 RUN tar -xzf Source_code_with_submodules.tar.gz
 RUN rm -rf Source_code_with_submodules.tar.gz

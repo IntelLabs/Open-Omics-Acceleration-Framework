@@ -34,12 +34,6 @@ LABEL maintainer="https://github.com/google/deepvariant/issues"
 ARG DV_GPU_BUILD
 ENV DV_GPU_BUILD=${DV_GPU_BUILD}
 WORKDIR /opt
-#RUN git clone --recursive https://github.com/IntelLabs/open-omics-deepvariant.git
-#RUN cp -r /opt/open-omics-deepvariant/. /opt/deepvariant/
-#RUN rm open-omics-deepvariant
-# Copying DeepVariant source code
-#COPY . /opt/deepvariant
-
 
 ARG VERSION
 ENV VERSION=${VERSION}
