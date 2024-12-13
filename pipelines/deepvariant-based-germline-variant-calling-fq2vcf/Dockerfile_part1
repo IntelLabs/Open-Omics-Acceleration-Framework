@@ -4,7 +4,6 @@ ARG BASE_IMAGE=continuumio/miniconda3
 FROM ${BASE_IMAGE} as conda_setup
 
 WORKDIR /
-#RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
 RUN tar -xzf Source_code_with_submodules.tar.gz
 RUN rm -rf Source_code_with_submodules.tar.gz
