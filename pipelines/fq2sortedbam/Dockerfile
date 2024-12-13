@@ -25,9 +25,12 @@ RUN apt-get -qq -y install wget
 #    git  --reinstall ca-certificates
     
 WORKDIR /app
-RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+#RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
+RUN tar -xzf Source_code_with_submodules.tar.gz
+RUN rm -rf Source_code_with_submodules.tar.gz
 WORKDIR Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam
-RUN git checkout e4cae79
+#RUN git checkout e4cae79
 
 RUN bash install.sh onprem
 
