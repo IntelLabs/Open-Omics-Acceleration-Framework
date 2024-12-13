@@ -14,7 +14,6 @@ cd ~/Open-Omics-Acceleration-Framework/pipelines/alphafold2-based-protein-foldin
 docker build -t alphafold:pre -f Dockerfile_Pre .   # Build a docker image named alphafold:pre for pre-processing step
 docker build -t alphafold:inf -f Dockerfile_Inf .   # Build a docker image named alphafold:inf for inference step
 
-
 ```
 # Preparation 
 1. Follow the instructions from https://github.com/deepmind/alphafold repo and download the database for alphafold2.
@@ -29,19 +28,33 @@ export OUTPUT_DIR=<path-to-output-directory>
 export LOG_DIR=<path-to-log-directory>
 
 
-# Run pre-processign step
+# Run pre-processign step for monomer
 docker run -it --cap-add SYS_NICE -v $DATA_DIR:/data \
     -v $SAMPLES_DIR:/samples \
     -v $OUTPUT_DIR:/output \
     -v $LOG_DIR:/Open-Omics-Acceleration-Framework/applications/alphafold/logs \
     alphafold:pre
 
-# Run inference step
+# Run pre-processign step for multimer
 docker run -it --cap-add SYS_NICE -v $DATA_DIR:/data \
     -v $SAMPLES_DIR:/samples \
     -v $OUTPUT_DIR:/output \
     -v $LOG_DIR:/Open-Omics-Acceleration-Framework/applications/alphafold/logs \
-    alphafold:inf
+    alphafold:pre multimer
+
+# Run inference step for monomer with relexation
+docker run -it --cap-add SYS_NICE -v $DATA_DIR:/data \
+    -v $SAMPLES_DIR:/samples \
+    -v $OUTPUT_DIR:/output \
+    -v $LOG_DIR:/Open-Omics-Acceleration-Framework/applications/alphafold/logs \
+    alphafold:inf monomer relax
+
+# Run inference step for multimer with relexation
+docker run -it --cap-add SYS_NICE -v $DATA_DIR:/data \
+    -v $SAMPLES_DIR:/samples \
+    -v $OUTPUT_DIR:/output \
+    -v $LOG_DIR:/Open-Omics-Acceleration-Framework/applications/alphafold/logs \
+    alphafold:inf multimer relax
 ```
 
 # Running baremetal

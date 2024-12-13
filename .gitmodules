@@ -22,3 +22,6 @@
 [submodule "applications/bcftools"]
 	path = applications/bcftools
 	url = https://github.com/samtools/bcftools.git
+[submodule "applications/STAR"]
+	path = applications/STAR
+	url = https://github.com/alexdobin/STAR.git

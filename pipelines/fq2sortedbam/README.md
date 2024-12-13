@@ -15,7 +15,8 @@ fq2SortedBAM supports 4 different modes:
 ## Use Docker
 ### Docker build:  
 ```
-git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz  
+tar -xzf Source_code_with_submodules.tar.gz  
 cp Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/Dockerfile .
 cp Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/config.yaml <inputdir>
 docker build -t fq2bam .
@@ -40,7 +41,8 @@ Note:
 ## Use Source Code  
 ### Installation:
 ```
-git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz  
+tar -xzf Source_code_with_submodules.tar.gz  
 cd Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/
 bash install.sh <onprem/cloud>  ## onprem mode: Manually install the depenendies present in basic_setup_ubuntu.sh as it needs sudo access
 ```

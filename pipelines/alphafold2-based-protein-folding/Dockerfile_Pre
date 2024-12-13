@@ -1,24 +1,30 @@
 ARG FROM_IMAGE=ubuntu:22.04
-
 # Install Base miniconda image
 ARG BASE_IMAGE=condaforge/miniforge3:24.3.0-0
 FROM ${BASE_IMAGE} as conda_setup
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Non-root user setup
+ENV SERVICE_NAME="alphafold2-pre-service"
+
+RUN groupadd --gid 1001 $SERVICE_NAME && \
+    useradd -m -g $SERVICE_NAME --shell /bin/false --uid 1001 $SERVICE_NAME
 
 # Install Anaconda and PIP dependency
 RUN conda update -n base conda
 RUN conda install python==3.11
 RUN conda install -y -c conda-forge mkl==2024.2.0  dpcpp_linux-64==2024.2.0 dpcpp-cpp-rt==2024.2.0 mkl-devel==2024.2.0
-RUN conda install -y -c conda-forge openmm==8.1.1 pdbfixer==1.9
+RUN conda install -y -c conda-forge openmm==8.0.0 pdbfixer==1.9
 RUN conda install -y -c bioconda hmmer=3.3.2  hhsuite==3.3.0 kalign2==2.04
 RUN python -m pip install onednn-cpu-iomp==2023.2.0
-RUN python -m pip install torch==2.0.1 pybind11==2.11.1
+RUN python -m pip install torch==2.1.0 pybind11==2.11.1
 RUN python -m pip install absl-py==2.0.0 biopython==1.81 chex==0.1.84 dm-haiku==0.0.10 dm-tree==0.1.8 immutabledict==3.0.0  ml-collections==0.1.1 numpy==1.26.1 scipy==1.11.3 tensorflow==2.14.0 pandas==2.1.1 psutil==5.9.6 tqdm==4.65.0 joblib==1.3.2 pragzip==0.6.0
 RUN python -m pip install jax==0.4.21 jaxlib==0.4.21
-RUN python -m pip install intel-extension-for-pytorch==2.0.100 intel-openmp==2024.2.0
-
+RUN python -m pip install intel-extension-for-pytorch==2.1.0 intel-openmp==2024.2.0
 
 
 FROM ${FROM_IMAGE} as builder
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     git build-essential cmake wget tzdata gcc curl gnupg gnupg2 gnupg1 sudo kalign autoconf numactl time vim tar ca-certificates -y \
     && rm -rf /var/lib/apt/lists/* \
@@ -33,37 +39,50 @@ RUN echo "source /opt/conda/bin/activate " > ~/.bashrc
 CMD source ~/.bashrc
 
 WORKDIR /
-RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
+RUN tar -xzf Source_code_with_submodules.tar.gz
 
 WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
 ENV LD_LIBRARY_PATH "/opt/conda/lib:$LD_LIBRARY_PATH"
 ENV PATH "/opt/conda/bin:$PATH"
 # Compile HHsuite from source.
 #
-RUN git clone --recursive https://github.com/IntelLabs/hh-suite.git \
-    && cd hh-suite \
-    && mkdir build && cd build \
-    && cmake -DCMAKE_INSTALL_PREFIX=`pwd`/release -DCMAKE_CXX_COMPILER="icpx" -DCMAKE_CXX_FLAGS_RELEASE="-O3 -mavx512bw" .. \
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
+RUN git clone --recursive https://github.com/IntelLabs/hh-suite.git
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold/hh-suite
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold/hh-suite/build
+RUN cmake -DCMAKE_INSTALL_PREFIX=`pwd`/release -DCMAKE_CXX_COMPILER="icpx" -DCMAKE_CXX_FLAGS_RELEASE="-O3 -mavx512bw" .. \
     && make -j 4 && make install \
-    && ./release/bin/hhblits -h \
-    && cd ../..
+    && ./release/bin/hhblits -h
 
 WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
 # Compile Hmmer from source.
-RUN git clone --recursive https://github.com/IntelLabs/hmmer.git \
-    && cd hmmer \
-    && cp easel_makefile.in easel/Makefile.in \
-    && cd easel && autoconf && ./configure --prefix=`pwd` && cd .. \
-    && autoconf && CC=icx CFLAGS="-O3 -mavx512bw -fPIC" ./configure --prefix=`pwd`/release \
+RUN git clone --recursive https://github.com/IntelLabs/hmmer.git
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold/hmmer
+RUN cp easel_makefile.in easel/Makefile.in
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold/hmmer/easel
+RUN autoconf && ./configure --prefix=`pwd`
+WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold/hmmer
+RUN autoconf && CC=icx CFLAGS="-O3 -mavx512bw -fPIC" ./configure --prefix=`pwd`/release \
     && make -j 4 && make install \
-    && ./release/bin/jackhmmer -h \
-    && cd ..
+    && ./release/bin/jackhmmer -h
 
 WORKDIR /Open-Omics-Acceleration-Framework/applications/alphafold
+# Swith to Non-root user
+RUN chown -R $SERVICE_NAME:$SERVICE_NAME /Open-Omics-Acceleration-Framework
+USER $SERVICE_NAME
+
+HEALTHCHECK NONE
 
 RUN echo "source /opt/conda/bin/activate " > ~/.bashrc
 CMD source ~/.bashrc
 ENV PATH "/opt/conda/bin:$PATH"
 ENV LD_LIBRARY_PATH "/opt/conda/lib:$LD_LIBRARY_PATH"
-CMD  mkdir weights && mkdir weights/extracted && python extract_params.py --input /data/params/params_model_1.npz --output_dir ./weights/extracted/model_1 \
-  && python run_multiprocess_pre.py --root_home=/Open-Omics-Acceleration-Framework/applications/alphafold --data_dir=/data --input_dir=/samples --output_dir=/output --model_name=model_1
+
+COPY ./entrypoint_pre.sh /
+RUN chmod +x /entrypoint_pre.sh
+
+ENTRYPOINT ["/entrypoint_pre.sh"]
+
+# Default command
+CMD ["default"]
