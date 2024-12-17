@@ -76,10 +76,9 @@ source $CONDA_INSTALL_DIR/bin/activate p_mpnn
 #conda activate p_mpnn
 
 conda install -n p_mpnn -y pytorch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 -c pytorch
-pip install intel-extension-for-pytorch==2.3.100
 pip install numpy==1.26.0
 
 echo "setup complete!"
 echo "Note:"
 echo "Conda (Miniforge3) is installed at $CONDA_INSTALL_DIR"
-echo "To manually activate conda env, do: source $CONDA_INSTALL_DIR/bin/activate SE3nv"
+echo "To manually activate conda env, do: source $CONDA_INSTALL_DIR/bin/activate p_mpnn"
