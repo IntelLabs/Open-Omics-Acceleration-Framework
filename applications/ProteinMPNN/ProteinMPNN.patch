@@ -1173,10 +1173,10 @@ index 27816ee..85da911 100644
 +    main(args)
 diff --git a/setup_proteinmpnn.sh b/setup_proteinmpnn.sh
 new file mode 100644
-index 0000000..b67ce4c
+index 0000000..b501ad6
 --- /dev/null
 +++ b/setup_proteinmpnn.sh
-@@ -0,0 +1,85 @@
+@@ -0,0 +1,84 @@
 +#!/bin/bash
 +
 +set -e
@@ -1255,10 +1255,9 @@ index 0000000..b67ce4c
 +#conda activate p_mpnn
 +
 +conda install -n p_mpnn -y pytorch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 -c pytorch
-+pip install intel-extension-for-pytorch==2.3.100
 +pip install numpy==1.26.0
 +
 +echo "setup complete!"
 +echo "Note:"
 +echo "Conda (Miniforge3) is installed at $CONDA_INSTALL_DIR"
-+echo "To manually activate conda env, do: source $CONDA_INSTALL_DIR/bin/activate SE3nv"
++echo "To manually activate conda env, do: source $CONDA_INSTALL_DIR/bin/activate p_mpnn"
