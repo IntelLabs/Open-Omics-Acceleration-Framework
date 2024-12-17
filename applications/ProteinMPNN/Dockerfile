@@ -1,4 +1,4 @@
-# Use the official Ubuntu image as a base
+i# Use the official Ubuntu image as a base
 ARG FROM_IMAGE=ubuntu:24.04
 
 # Stage 1: Set up Conda environment
@@ -47,7 +47,7 @@ RUN conda create -n p_mpnn python=3.11 pip=24.0
 # Install PyTorch, Torchvision, Torchaudio
 RUN conda install -n p_mpnn -y pytorch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 -c pytorch
 # Install Intel PyTorch extension
-RUN /opt/conda/envs/p_mpnn/bin/python -m pip install intel-extension-for-pytorch==2.3.100 oneccl-bind-pt==2.3.0 --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/cpu/us/
+#RUN /opt/conda/envs/p_mpnn/bin/python -m pip install intel-extension-for-pytorch==2.3.100 oneccl-bind-pt==2.3.0 --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/cpu/us/
 RUN /opt/conda/envs/p_mpnn/bin/python -m pip install numpy==1.26.0
 
 #COPY . /
