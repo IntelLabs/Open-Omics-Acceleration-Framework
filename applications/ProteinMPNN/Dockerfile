@@ -1,4 +1,4 @@
-i# Use the official Ubuntu image as a base
+# Use the official Ubuntu image as a base
 ARG FROM_IMAGE=ubuntu:24.04
 
 # Stage 1: Set up Conda environment
