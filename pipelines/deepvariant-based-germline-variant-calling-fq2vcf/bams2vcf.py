@@ -27,21 +27,7 @@ def allexit(comm, flg):
 
 #def main(argv):
 def main(args):
-    #parser=ArgumentParser()
-    #parser.add_argument('--input', default="/input", help="Input data directory")
-    #parser.add_argument('--tempdir',default="/tempdir",help="Intermediate data directory")
-    #parser.add_argument('--refdir',default="/refdir",help="Reference genome directory")
-    #parser.add_argument('--output',default="/output", help="Output data directory")
-    #parser.add_argument("-i", "--refindex", help="name of refindex file")
-    ##parser.add_argument("-r", "--reads", nargs='+',help="name of reads file seperated by space")
-    #parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
-    #parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
-    #parser.add_argument('--shards',default=1,help="Number of shards for deepvariant")
-    #parser.add_argument("-p", "--outfile", help="prefix for the output vcf file")    
-    #args = vars(parser.parse_args())
     ifile=args["refindex"]
-    #rfile1=args["reads"]
-
     cpus=args["cpus"]
     threads=args["threads"]
     nproc=args["shards"]
@@ -112,8 +98,13 @@ def main(args):
         end5 = time.time()
         print("\nDeepVariant runtime",end5-t0)
         #print("\nTime for the whole pipeline",end5-start0)
+        for i in range(nranks):
+            r = "%05d"%(i)
+            p = os.path.join(output, r)
+            #print('path: ', p)
+            os.system('rm -rf ' + p)
 
-    if rank == 0:
+    if rank == nranks - 1:
         print('[Info] Cleaning up....')
         for i in range(nranks):
             r = "%05d"%(i)
@@ -123,8 +114,7 @@ def main(args):
                 os.system('rm -rf ' + os.path.join(inputdir, "bin_region.pkl"))
                 os.system('rm -rf ' + os.path.join(inputdir, "aln"+r+".bam"))
                 os.system('rm -rf ' + os.path.join(inputdir, "aln"+r+".bam.bai"))
-                
-            os.system('rm -rf ' + os.path.join(output, r))
+
             os.system('rm -rf '+ os.path.join(output, 'intermediate_results_dir' + r))
         print('[Info] Cleaning up done.')
 
@@ -132,6 +122,5 @@ def main(args):
     allexit(comm, flg)  ## all ranks exit if failure in rank 0 above
     
 if __name__ == "__main__":
-    #main(sys.argv[1:])
     args = json.loads(sys.argv[1])
     main(args)

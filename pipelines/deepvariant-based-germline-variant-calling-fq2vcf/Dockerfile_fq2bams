@@ -56,5 +56,7 @@ RUN chmod 775 configure
 RUN ./configure           # Needed for choosing optional functionality
 RUN make
 
-
+RUN mkdir /input
+RUN mkdir /output
 WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
+CMD ["/bin/bash"]

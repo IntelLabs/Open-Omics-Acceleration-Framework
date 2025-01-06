@@ -51,8 +51,13 @@ def HWConfigure(sso, num_nodes, th=20):
     num_physical_cores_all_nodes = num_nodes * nsocks * ncores
     num_physical_cores_per_node = nsocks * ncores
     num_physical_cores_per_rank = nsocks * ncores
-    
-    while num_physical_cores_per_rank > int(th):
+
+    th = int(th)
+    if th > num_physical_cores_per_rank:
+        th = num_physical_cores_per_rank
+        print("Threshold setting > #cores, re-setting threshold to ", th, "(num_physical_cores_per_rank)")
+            
+    while num_physical_cores_per_rank > th:
         num_physical_cores_per_rank /= 2
 
     num_physical_cores_per_rank = int(num_physical_cores_per_rank)
@@ -91,32 +96,36 @@ def HWConfigure(sso, num_nodes, th=20):
 if __name__ == '__main__':
     ## rgs parser
     parser=ArgumentParser()
-    parser.add_argument('--ref', default="", help="Input data directory")
-    parser.add_argument('--reads', nargs='+', help="reads, expects both the reads at the same location")    
+    parser.add_argument('--ref', default="", help="Reference genome path. For BWA this pipeline expects the index here. If the index is not present then it can be generated using --rindex option.")
+    parser.add_argument('--reads', nargs='+', help="Input reads, expects both the reads at the same location.")
     #parser.add_argument('--input', default="/input", help="Input data directory")
     #parser.add_argument('--tempdir',default="/output",help="Intermediate data directory")
     #parser.add_argument('--refdir',default="/refdir",help="Reference genome directory")
     parser.add_argument('--output',default="/output", help="Output data directory")
-    parser.add_argument('--simd',default="avx", help="use '=sse' for bwa sse mode")
-    parser.add_argument("-i", "--refindex", default="None", help="name of refindex file")
+    parser.add_argument('--simd',default="avx", help="Defaults to avx512 mode, use 'sse' for bwa sse mode.")
+    parser.add_argument("--refindex", default="None", help="name of refindex file")
     #parser.add_argument("-r1", "--read1", default="None", help="name of read1")
     #parser.add_argument("-r2", "--read2", default="None", help="name of read2")
-    parser.add_argument('-in', '--rindex',action='store_true',help="It will index reference genome for bwa-mem2. If it is already done offline then don't use this flag.")
+    parser.add_argument('--rindex',action='store_true',help="It will index reference genome for bwa-mem2. If it is already done offline then don't use this flag.")
     parser.add_argument('-dindex',action='store_true',help="It will create .fai index. If it is done offline then disable this.")
     parser.add_argument('--container_tool',default="docker",help="Container tool used in pipeline : Docker/Podman")
-    parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
-    parser.add_argument('--keep_unmapped',action='store_true',help="To not keep the unmapped entries at the end of sam file.")
-    parser.add_argument('--keep_intermediate_sam',action='store_true',help="Keep intermediate sam files.")
-    parser.add_argument('--params', type=str, default='@RG\\tID:RG1\\tSM:RGSN1', help="parameter string to bwa-mem2 barring threads paramter")
+    parser.add_argument('--profile',action='store_true',help="Use profiling")
+    #parser.add_argument('--keep_unmapped',action='store_true',help="To not keep the unmapped entries at the end of sam file.")
+    #parser.add_argument('--keep_intermediate_sam',action='store_true',help="Keep intermediate sam files.")
+    parser.add_argument('--not_keep_unmapped',action='store_true',help="It rejects unmapped reads at the end of sorted bam file, else it accepts the unmapped reads.")
+    parser.add_argument('--keep_intermediate_sam',action='store_true',help="It keeps intermediate SAM files generated out of the alignment tool for each rank. SAM file naming: aln{rank:04d}.sam")    
+    parser.add_argument('--params', type=str, default='@RG\\tID:RG1\\tSM:RGSN1', help="Enables supplying various parameters to bwa-mem2 (barring threads (-t) parameter). e.g. --params '-R \"@RG\\tID:RG1\\tSM:RGSN1\"\' for read grouping.")
+    
+    #parser.add_argument('--params', type=str, default='@RG\\tID:RG1\\tSM:RGSN1', help="parameter string to bwa-mem2 barring threads paramter")
     #parser.add_argument("-p", "--outfile", help="prefix for read files")
-    parser.add_argument("--sso", action='store_true', help="prefix for read files")
+    parser.add_argument("--sso", action='store_true', help="Uses only single socket for execution.")
     parser.add_argument('--buildindexonly',action='store_true',help="It will create bwa and .fai index only. If it is done offline then disable this.")
-    parser.add_argument("--th", default=20, help="#min cores per rank")
-    parser.add_argument("-N", default=-1, help="#ranks")
-    parser.add_argument("-PPN", default=-1, help="ppn")
-    parser.add_argument("--cpus", default=-1, help="CPUS")
-    parser.add_argument("--threads", default=-1, help="THREADS")
-    parser.add_argument("--shards", default=-1, help="SHARDS")
+    parser.add_argument("--th", default=20, help="Threshold for minimum cores allocation to each rank")
+    parser.add_argument("-N", default=-1, help="Enables manual setting of #ranks. While using this setting please set PPN, cpus options accordingly.")
+    parser.add_argument("-PPN", default=-1, help="Enables manual setting of ppn. While using this setting please set N, cpus options accordingly.")
+    parser.add_argument("--cpus", default=-1, help="Enables manual setting of cpus option. While using this setting please set N, PPN options accordingly.")
+    #parser.add_argument("--threads", default=-1, help="THREADS")
+    #parser.add_argument("--shards", default=-1, help="SHARDS")
     
     args = vars(parser.parse_args())
 
@@ -137,11 +146,26 @@ if __name__ == '__main__':
     num_nodes=1
     #N, PPN, CPUS, THREADS, mask = HWConfigure(args["sso"], num_nodes)
     N, PPN, CPUS, THREADS, mask, numa_per_sock = HWConfigure(args["sso"], num_nodes, args['th'])    
-    if args["N"] != -1: N = args["N"]
-    if args["PPN"] != -1: PPN = args["PPN"]
-    if args["cpus"] != -1: CPUS = args["cpus"]
-    if args["threads"] != -1: THREADS = args["cpus"]
-    if args["shards"] != -1: SHARDS = args["cpus"]
+    #if args["N"] != -1: N = args["N"]
+    #if args["PPN"] != -1: PPN = args["PPN"]
+    #if args["cpus"] != -1: CPUS = args["cpus"]
+    #if args["threads"] != -1: THREADS = args["cpus"]
+    #if args["shards"] != -1: SHARDS = args["cpus"]
+    if args["N"] != -1:
+        N = args["N"]
+        assert args["PPN"] != -1, "Please set PPN when manually setting N"
+        assert args["cpus"] != -1, "Please set cpus when manually setting N"
+        
+    if args["PPN"] != -1:
+        PPN = args["PPN"]
+        assert args["N"] != -1, "Please set N when manually setting PPN"
+        assert args["cpus"] != -1, "Please set cpus when manually setting PPN"
+        
+    if args["cpus"] != -1:
+        CPUS = args["cpus"]
+        THREADS = args["cpus"]
+        assert args["PPN"] != -1, "Please set PPN when manually setting cpus"
+        assert args["N"] != -1, "Please set N when manually setting cpus"        
     
     print("[Info] Running {} processes per compute node, each with {} threads".format(N, THREADS))
     args['cpus'], args['threads'] = str(CPUS), str(THREADS)
@@ -211,5 +235,8 @@ if __name__ == '__main__':
     cmd += " 2>&1 | tee " + args["output"] + "/log_fq2bams.txt"        
     
     print("cmd: ", cmd)
-    a = run(cmd, capture_output=True, shell=True)
+    #tic = time.time()
+    a = run(cmd, capture_output=True, shell=True)    
     assert a.returncode == 0, "fq2bams failed."
+    #toc = time.time()
+

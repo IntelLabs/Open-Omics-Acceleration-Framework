@@ -425,16 +425,17 @@ def rundown(args):
     if args["read2"] != "" and args["read2"] != "None":
         rfile2 = args["read2"]
         se_mode = False
-    
-    params = ""
-    if args["params"] != "" and args["params"] != "None":
-        params = " -R " +  "\"" + args["params"] + "\""
+
+    params=args["params"]
+    #params = ""
+    #if args["params"] != "" and args["params"] != "None":
+    #    params = " -R " +  "\"" + args["params"] + "\""
     
     cpus = args["cpus"]
     threads = args["threads"]
     rindex = args["rindex"]
     dindex = args["dindex"]
-    nproc = args["shards"]
+    #nproc = args["shards"]
     inputdir = args["input"] + "/"
     output = args["output"] + "/"
     tempdir = args["tempdir"]
@@ -446,7 +447,8 @@ def rundown(args):
     #if refdir=="": refdir=inputdir
     prof=args["profile"]
     global keep
-    keep=args["keep_unmapped"]
+    #keep=args["keep_unmapped"]
+    if not args["not_keep_unmapped"]: keep=True
     keep_sam=args["keep_intermediate_sam"]
     container_tool=args["container_tool"]
     
@@ -585,7 +587,7 @@ def rundown(args):
         binstr = '%05d'%(nranks*i+rank)
         #cmd+=f'{BINDIR}/applications/samtools/samtools sort --threads '+threads+' -T '+os.path.join(tempdir,'aln'+binstr+'.sorted') + ' -o '+ os.path.join(tempdir,'aln'+binstr+'.bam')+' '+ os.path.join(tempdir,'aln'+binstr+'.sam')
         cmd+=f'{SAMTOOLS} sort --threads '+threads+' -T '+tempdir+ '/aln'+binstr+ \
-            '.sorted -o '+ tempdir +'/aln'+binstr+'.bam '+ tempdir+'/aln'+binstr+'.sam' + " > " + output + "/logs/logsam" + binstr + ".txt;"        
+            '.sorted -o '+ tempdir +'/aln'+binstr+'.bam '+ tempdir+'/aln'+binstr+'.sam' + " > " + output + "/logs/samsortlog" + binstr + ".txt;"        
         #print('samsort: ', cmd)
         if i%20==0:
             a = run(cmd, capture_output = True, shell = True)
@@ -660,27 +662,6 @@ def rundown(args):
 
 #def main(argv):
 def main(args):
-    #parser=ArgumentParser()
-    #parser.add_argument('--input', default="/input", help="Input data directory")
-    #parser.add_argument('--tempdir',default="",help="Intermediate data directory")
-    #parser.add_argument('--refdir',default="/refdir",help="Reference genome directory")
-    #parser.add_argument('--output',default="/output", help="Output data directory")
-    #parser.add_argument("-i", "--refindex", help="name of refindex file")
-    #parser.add_argument("-r1", "--read1", help="name of read1")
-    #parser.add_argument("-r2", "--read2", help="name of read2")
-    #parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
-    #parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
-    #parser.add_argument('-in', '--rindex',action='store_true',help="It will index reference genome for bwa-mem2. If it is already done offline then don't use this flag.")
-    #parser.add_argument('-dindex',action='store_true',help="It will create .fai index. If it is done offline then disable this.")
-    #parser.add_argument('--container_tool',default="docker",help="Container tool used in pipeline : Docker/Podman")
-    #parser.add_argument('--shards',default=1,help="Number of shards for deepvariant")
-    #parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
-    #parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
-    #parser.add_argument('--keep_intermediate_sam',action='store_true',help="Keep intermediate sam files.")
-    #parser.add_argument('--params', default='', help="parameter string to bwa-mem2 barring threads paramter")
-    #parser.add_argument("-p", "--outfile", help="prefix for read files")
-    #parser.add_argument('--buildindexonly',action='store_true',help="It will create bwa and .fai index only. If it is done offline then disable this.")
-    #args = vars(parser.parse_args())
 
     if args['buildindexonly']:
         ifile=args["refindex"]

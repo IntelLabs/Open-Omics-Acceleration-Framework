@@ -51,6 +51,11 @@ def HWConfigure(sso, num_nodes, th=20):
     num_physical_cores_all_nodes = num_nodes * nsocks * ncores
     num_physical_cores_per_node = nsocks * ncores
     num_physical_cores_per_rank = nsocks * ncores
+
+    th = int(th)
+    if th > num_physical_cores_per_rank:
+        th = num_physical_cores_per_rank
+        print("Threshold setting > #cores, re-setting threshold to ", th, "(num_physical_cores_per_rank)")    
     
     while num_physical_cores_per_rank > int(th):
         num_physical_cores_per_rank /= 2
@@ -92,23 +97,33 @@ def HWConfigure(sso, num_nodes, th=20):
 if __name__ == '__main__':
     ## rgs parser
     parser=ArgumentParser()
-    parser.add_argument('--ref', default="", help="Input data directory")
-    parser.add_argument('--input', default="/input", help="Input data directory")
+    parser.add_argument('--ref', default="", help="Reference genome path. \
+    For BWA this pipeline expects the index here. \
+    If the index is not present then it can be generated using --rindex option.")
+    parser.add_argument('--input', default="/input", help="Directory containing\
+    the output/intermediate (.bam) files from fq2bams stage")
     #parser.add_argument('--tempdir',default="/output",help="Intermediate data directory")
     #parser.add_argument('--refdir',default="/refdir",help="Reference genome directory")
-    parser.add_argument('--output', default="/output/out.vcf", help="Output data directory")
-    parser.add_argument('--keep_input', default=True, help="keep input files")
-    #parser.add_argument("-i", "--refindex", default="None", help="name of refindex file")
-    #parser.add_argument('--container_tool',default="docker",help="Container tool used in pipeline : Docker/Podman")
-    parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
-    #parser.add_argument("-p", "--outfile", default="finalvcf", help="prefix for the output vcf file")
+    parser.add_argument('--output', default="/output/out.vcf", help="Output vcf file")
+    parser.add_argument('--keep_input', default=True, help="Keep all the input files. \
+    By default it is set to True.")
+    parser.add_argument('--profile',action='store_true',help="Use profiling")
     parser.add_argument("--sso", action="store_true", help="single socket execution")
-    parser.add_argument("--th", default=20, help="#min cores per rank")
-    parser.add_argument("-N", default=-1, help="#ranks")
-    parser.add_argument("-PPN", default=-1, help="ppn")
-    parser.add_argument("--cpus", default=-1, help="cpus")
-    parser.add_argument("--threads", default=-1, help="threads")
-    parser.add_argument("--shards", default=-1, help="shards")
+    parser.add_argument("--th", default=20, help="Threshold for minimum cores allocation \
+    to each rank")
+    parser.add_argument("-N", default=-1, help="Enables manual setting of #ranks. \
+    While using this setting please set PPN, cpus options accordingly.")
+    parser.add_argument("-PPN", default=-1, help="Enables manual setting of ppn. \
+    While using this setting please set N, cpus options accordingly.")
+    parser.add_argument("--cpus", default=-1, help="Enables manual setting of cpus option. \
+    While using this setting please set N, PPN options accordingly.")
+    
+    #parser.add_argument("--th", default=20, help="#min cores per rank")
+    #parser.add_argument("-N", default=-1, help="#ranks")
+    #parser.add_argument("-PPN", default=-1, help="ppn")
+    #parser.add_argument("--cpus", default=-1, help="cpus")
+    #parser.add_argument("--threads", default=-1, help="threads")
+    #parser.add_argument("--shards", default=-1, help="shards")
     
     args = vars(parser.parse_args())
 
@@ -123,10 +138,26 @@ if __name__ == '__main__':
     num_nodes=1
     ## N, PPN, CPUS, THREADS, SHARDS, mask = HWConfigure(args["sso"], num_nodes, args['th'])
     N, PPN, CPUS, THREADS, SHARDS, mask, numa_per_sock = HWConfigure(args["sso"], num_nodes, args['th'])    
-    if args["N"] != -1: N = args["N"]
-    if args["PPN"] != -1: PPN = args["PPN"]
-    if args["cpus"] != -1: CPUS = args["cpus"]
-    if args["shards"] != -1: SHARDS = args["cpus"]
+    # if args["N"] != -1: N = args["N"]
+    # if args["PPN"] != -1: PPN = args["PPN"]
+    # if args["cpus"] != -1: CPUS = args["cpus"]
+    # if args["shards"] != -1: SHARDS = args["cpus"]
+    if args["N"] != -1:
+        N = args["N"]
+        assert args["PPN"] != -1, "Please set PPN when manually setting N"
+        assert args["cpus"] != -1, "Please set cpus when manually setting N"
+        
+    if args["PPN"] != -1:
+        PPN = args["PPN"]
+        assert args["N"] != -1, "Please set N when manually setting PPN"
+        assert args["cpus"] != -1, "Please set cpus when manually setting PPN"
+        
+    if args["cpus"] != -1:
+        CPUS = args["cpus"]
+        THREADS = args["cpus"]
+        SHARDS = args["cpus"]
+        assert args["PPN"] != -1, "Please set PPN when manually setting cpus"
+        assert args["N"] != -1, "Please set N when manually setting cpus"        
     
     print('[Info] Running {} processes on one compute node, each with {} threads'.format(N, THREADS))
     args['cpus'], args['threads'], args['shards'] = str(CPUS), str(THREADS), str(SHARDS)
@@ -151,7 +182,8 @@ if __name__ == '__main__':
             " -map-by " + BINDING + \
             " --hostfile hostfile  " + \
             " python -u bams2vcf.py "
-    
+
+    tic = time.time()
     jstring = json.dumps(args)
     try:
         subprocess.run([f"{cmd} '{jstring}'"], shell=True, check=True, capture_output=False, text=True)
@@ -159,4 +191,6 @@ if __name__ == '__main__':
         print(f"Command failed with return code {e.returncode}")
         print(f"Error output: {e.stderr}")
 
+    toc = time.time()
+    print("[Info] Total time take by bams2vcf: {:.4f}".format(toc-tic), " sec")
     print("[Info] bams2vcf pipeline executed successfully.")
