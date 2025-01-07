@@ -80,7 +80,7 @@ fi
 
 export PATH=${WDIR}/applications/mm2-fast:$PATH
 
-cd ${WDIR}/applications/STAR
+cd ${WDIR}/applications/STAR/source/
 make clean
 make -j STAR
 if [ -e "${WDIR}/applications/STAR/source/STAR" ]; then
