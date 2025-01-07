@@ -64,6 +64,8 @@ else
     echo "Error!! bwa-mem2 build failed"
 fi
 
+export PATH=${WDIR}/applications/bwa-mem2:$PATH
+
 cd ${WDIR}/applications/mm2-fast
 make clean
 make -j
@@ -76,6 +78,20 @@ else
     exit
 fi
 
+export PATH=${WDIR}/applications/mm2-fast:$PATH
+
+cd ${WDIR}/applications/STAR
+make clean
+make -j STAR
+if [ -e "${WDIR}/applications/STAR/source/STAR" ]; then
+    echo "STAR build successful"
+else
+    starinstall="FAILED"
+    echo "Error!! STAR build failed"
+    exit
+fi
+
+export PATH=${WDIR}/applications/STAR/source/:$PATH
 
 #make install   #uncomment this for installation
 
@@ -108,15 +124,18 @@ else
     echo "Error!! SAMTools build failed"
 fi
 
-if [ "$?" == "0" ]
-then
-    echo "Samtools installed successfully"
-else
-    echo "Samtools installation failed"
-fi
-#make install         #uncomment this for installation
 
-cd $EXEDIR
+export PATH=${WDIR}/applications/samtools/:$PATH
+
+cd ${WDIR}/applications/bwa-meth/
+wget https://pypi.python.org/packages/source/t/toolshed/toolshed-0.4.0.tar.gz
+tar xzvf toolshed-0.4.0.tar.gz
+cd toolshed-0.4.0
+python setup.py install
+cd -
+python setup.py install
+
+#cd $EXEDIR
 
 #[[ ! -d warp-tools ]] && git clone --recursive https://github.com/broadinstitute/warp-tools.git -b develop
 #cd warp-tools/tools/fastqpreprocessing/
@@ -132,6 +151,7 @@ cd $EXEDIR
 
 echo "bwa compilation is "$bwainstall
 echo "mm2-fast compilation is "$mm2install
+echo "STAR compilation is "$starinstall
 echo "samtools compilation is "$saminstall
 
 echo "Compelete installation done."
