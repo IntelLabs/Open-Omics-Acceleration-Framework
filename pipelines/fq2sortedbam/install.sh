@@ -48,7 +48,10 @@ source ./miniforge3/bin/activate fq2bam
 #echo "localhost" > hostfile
 
 ## build tools
-WDIR=../../
+cd ../../
+#WDIR=../../
+WDIR=`pwd`
+cd -
 EXEDIR=`pwd`
 
 # compile bwa-mem2
@@ -64,7 +67,6 @@ else
     echo "Error!! bwa-mem2 build failed"
 fi
 
-export PATH=${WDIR}/applications/bwa-mem2:$PATH
 
 cd ${WDIR}/applications/mm2-fast
 make clean
@@ -78,11 +80,11 @@ else
     exit
 fi
 
-export PATH=${WDIR}/applications/mm2-fast:$PATH
 
 cd ${WDIR}/applications/STAR/source/
 make clean
 make -j STAR
+echo $WDIR
 if [ -e "${WDIR}/applications/STAR/source/STAR" ]; then
     echo "STAR build successful"
 else
@@ -90,8 +92,6 @@ else
     echo "Error!! STAR build failed"
     exit
 fi
-
-export PATH=${WDIR}/applications/STAR/source/:$PATH
 
 #make install   #uncomment this for installation
 
@@ -124,8 +124,6 @@ else
     echo "Error!! SAMTools build failed"
 fi
 
-
-export PATH=${WDIR}/applications/samtools/:$PATH
 
 cd ${WDIR}/applications/bwa-meth/
 wget https://pypi.python.org/packages/source/t/toolshed/toolshed-0.4.0.tar.gz
