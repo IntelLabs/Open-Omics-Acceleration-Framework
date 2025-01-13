@@ -123,14 +123,15 @@ if __name__ == '__main__':
                         help="Exeuction mode: flatmode/sortedbam/fqprocessonly/multifq. flatmode: just bwa w/o sorting, creates sam files equal to the number of ranks created.\
                         sortedbam: bwa + samsort steps creating single bam file as output. Ignore other (custom) modes.")
     parser.add_argument('--read_type',default="short",
-                        help="(short/long): bwa-mem2 alignment with short reads, mm2-fast alignment with long reads. Defaults to short read type.")
+                        help="(short/long/rna/meth): short - bwa-mem2 alignment for short reads; long - mm2-fast alignment for long reads.\
+                        rna - STAR alignment of rnaseq reads; meth - bwa-meth (mem2) alignment of short meth reads.  Defaults to short.")
     parser.add_argument('--rindex',action='store_true',help="It enables BWA-MEM2 index generation. Use this option if the index is not present.")
     parser.add_argument('--dindex',action='store_true',help="It creates reference genome fai index. Use this option if the reference fai is not present.")
     #parser.add_argument('--container_tool',default="docker",help="Container tool used in pipeline : Docker/Podman")
     parser.add_argument('--profile', action='store_true',help="Use profiling")
     parser.add_argument('--not_keep_unmapped',action='store_true',help="It rejects unmapped reads at the end of sorted bam file, else it accepts the unmapped reads.")
     parser.add_argument('--keep_sam',action='store_true',help="It keeps intermediate SAM files generated out of the alignment tool for each rank. SAM file naming: aln{rank:04d}.sam")    
-    parser.add_argument('--params', type=str, default='@RG\\tID:RG1\\tSM:RGSN1', help="Enables supplying various parameters to bwa-mem2 (barring threads (-t) paramter). e.g. --params '-R \"@RG\\tID:RG1\\tSM:RGSN1\"\' for read grouping.")
+    parser.add_argument('--params', type=str, default='-R "@RG\\tID:RG1\\tSM:RGSN1"', help="Enables supplying various parameters to bwa-mem2 (barring threads (-t) paramter). e.g. --params '-R \"@RG\\tID:RG1\\tSM:RGSN1\"\' for read grouping.")
     #parser.add_argument("-p", "--outfile", default="final", help="prefix for read files")
     parser.add_argument("--sso", action='store_true', help="Executes the pipeline on single socket only. By default, it uses all the sockets.")
     parser.add_argument("--th", default=20, help="Threshold for minimum cores allocation to each rank")

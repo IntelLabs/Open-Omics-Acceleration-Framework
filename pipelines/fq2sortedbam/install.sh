@@ -80,7 +80,6 @@ else
     exit
 fi
 
-
 cd ${WDIR}/applications/STAR/source/
 make clean
 make -j STAR

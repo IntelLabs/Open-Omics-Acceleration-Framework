@@ -33,10 +33,11 @@ WORKDIR Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam
 
 #RUN bash install.sh onprem
 RUN bash install.sh onprem
-ENV PATH="/app/Open-Omics-Acceleration-Framework/applications/samtools/:$PATH"
+ENV PATH="/app/Open-Omics-Acceleration-Framework/applications/samtools:$PATH"
 ENV PATH="/app/Open-Omics-Acceleration-Framework/applications/bwa-mem2:$PATH"
+ENV PATH="/app/Open-Omics-Acceleration-Framework/applications/bwa-meth:$PATH"
 ENV PATH="/app/Open-Omics-Acceleration-Framework/applications/mm2-fast:$PATH"
-ENV PATH="/app/Open-Omics-Acceleration-Framework/applications/STAR/source/:$PATH"
+ENV PATH="/app/Open-Omics-Acceleration-Framework/applications/STAR/source:$PATH"
 ENV PATH="/app/Open-Omics-Acceleration-Framework/applications/samtools/samtools:$PATH"
 
 ENV PATH="/app/Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/miniforge3/envs/fq2bam/bin/:/app/Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam/miniforge3/bin/:$PATH"
