@@ -114,7 +114,7 @@ if __name__ == '__main__':
     #parser.add_argument('--keep_intermediate_sam',action='store_true',help="Keep intermediate sam files.")
     parser.add_argument('--not_keep_unmapped',action='store_true',help="It rejects unmapped reads at the end of sorted bam file, else it accepts the unmapped reads.")
     parser.add_argument('--keep_intermediate_sam',action='store_true',help="It keeps intermediate SAM files generated out of the alignment tool for each rank. SAM file naming: aln{rank:04d}.sam")    
-    parser.add_argument('--params', type=str, default='@RG\\tID:RG1\\tSM:RGSN1', help="Enables supplying various parameters to bwa-mem2 (barring threads (-t) parameter). e.g. --params '-R \"@RG\\tID:RG1\\tSM:RGSN1\"\' for read grouping.")
+    parser.add_argument('--params', type=str, default='-R "@RG\\tID:RG1\\tSM:RGSN1"', help="Enables supplying various parameters to bwa-mem2 (barring threads (-t) parameter). e.g. --params '-R \"@RG\\tID:RG1\\tSM:RGSN1\"\' for read grouping.")
     
     #parser.add_argument('--params', type=str, default='@RG\\tID:RG1\\tSM:RGSN1', help="parameter string to bwa-mem2 barring threads paramter")
     #parser.add_argument("-p", "--outfile", help="prefix for read files")
