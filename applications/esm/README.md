@@ -4,12 +4,24 @@
 Open-Omics-ESM is an optimized version of the Evolutionary Scale Modeling (ESM) toolkit, tailored for modern CPUs. It enhances the performance of key ESM modules—such as ESM-embeddings, LM-Design, InverseFolding, and ESMFold—by leveraging the Intel Extension for PyTorch (IPEX), the latest version of PyTorch, and lower-precision (bf16) computations.
 
 ## Installation
-### Step 1: Run the script to create the Docker images
-Execute the script using the following command:
+### Step 1: 🛠️ Building the Docker Image
+Run the following command to build the Docker image:
 
 ```bash
- ./build_docker_images.sh
+./build_docker_images.sh
 ```
+#### 🌐 Building Behind a Proxy
+If you're working in a corporate or institutional environment, your internet access may be routed through a proxy server. In such cases, Docker may not be able to download dependencies during the build process unless you explicitly configure proxy settings.
+
+To build the Docker image with proxy settings, you can use the --build-arg option to pass your proxy configuration:
+
+```bash
+./build_docker_images.sh --http_proxy=$http_proxy --https_proxy=$https_proxy --no_proxy=$no_proxy
+```
+🔒 Note: Make sure the environment variables http_proxy, https_proxy, and no_proxy are correctly set in your shell before running this command.
+
+For more details, refer to the official Docker documentation:
+[Docker behind proxy](https://docs.docker.com/engine/cli/proxy/)
 ### Step 2: Choose the ESM image to install
 Select the ESM image you want to build based on your specific needs
 
