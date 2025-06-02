@@ -3,11 +3,25 @@
 Open-Omics-MoFlow is a streamlined and optimized version of the MoFlow toolkit, designed to harness the full potential of modern CPUs. It enhances usability through Docker integration and boosts performance with the latest software packages.
 
 ## Building the Docker Image
+## 🛠️ Building the Docker Image
 Run the following command to build the Docker image:
 
 ```bash
-docker build --build-arg htthp_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy=$no_proxy  -t moflow .
+docker build -t moflow .
 ```
+### 🌐 Building Behind a Proxy
+If you're working in a corporate or institutional environment, your internet access may be routed through a proxy server. In such cases, Docker may not be able to download dependencies during the build process unless you explicitly configure proxy settings.
+
+To build the Docker image with proxy settings, you can use the --build-arg option to pass your proxy configuration:
+
+```bash
+docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy=$no_proxy -t moflow .
+```
+🔒 Note: Make sure the environment variables http_proxy, https_proxy, and no_proxy are correctly set in your shell before running this command.
+
+For more details, refer to the official Docker documentation:
+[Docker behind proxy](https://docs.docker.com/engine/cli/proxy/)
+
 ## Setting Up Environment Variables and Directories
 To ensure the application runs smoothly, set up the necessary directories and environment variables. Follow these steps:
 ### Step 1: Export Environment Variables  
