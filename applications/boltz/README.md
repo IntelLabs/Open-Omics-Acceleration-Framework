@@ -1,16 +1,3 @@
-<div align="center">  
-
-[Paper](https://doi.org/10.1101/2024.11.19.624167) |
-[Slack](https://join.slack.com/t/boltz-community/shared_invite/zt-2zj7e077b-D1R9S3JVOolhv_NaMELgjQ) <br> <br>
-</div>
-
-
-## Introduction
-
-Boltz-1 is the state-of-the-art open-source model to predict biomolecular structures containing combinations of proteins, RNA, DNA, and other molecules. It also supports modified residues, covalent ligands and glycans, as well as conditioning the prediction on specified interaction pockets or contacts. 
-
-All the code and weights are provided under MIT license, making them freely available for both academic and commercial uses. For more information about the model, see our [technical report](https://doi.org/10.1101/2024.11.19.624167). To discuss updates, tools and applications join our [Slack channel](https://join.slack.com/t/boltz-community/shared_invite/zt-2zj7e077b-D1R9S3JVOolhv_NaMELgjQ).
-
 ## 🔍 Running Inference with Boltz Docker
 
 Follow the steps below to run inference using the Boltz Docker container:
