@@ -1,0 +1,4 @@
+python run_fq2bams.py --ref /refdir/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna --reads /input/HG001.novaseq.pcr-free.30x.R1_29M.fastq.gz --output /out/ --params '-R "@RG\\tID:RG1\\tSM:RGSN1"' --keep_intermediate_sam
+
+python run_bams2vcf.py --ref /refdir/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna --output /o
+ut/out2.vcf --input /out/

@@ -1,16 +1,15 @@
 # Install Base miniconda image
 ARG FROM_IMAGE=amazonlinux:2023
-ARG BASE_IMAGE=continuumio/miniconda3
+#ARG BASE_IMAGE=continuumio/miniconda3
+ARG BASE_IMAGE=condaforge/miniforge3
 FROM ${BASE_IMAGE} as conda_setup
 
 WORKDIR /
-RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
-RUN tar -xzf Source_code_with_submodules.tar.gz
-RUN rm -rf Source_code_with_submodules.tar.gz
+RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+
 WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
+
 RUN conda env create --name dv_env -f environment.yml
-
-
 
 FROM ${FROM_IMAGE} as builder
 RUN yum update -y && \
@@ -30,10 +29,11 @@ RUN echo "source activate dv_env" >> ~/.bashrc
 RUN source ~/.bashrc
 
 WORKDIR /
-RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
-RUN tar -xzf Source_code_with_submodules.tar.gz
-RUN rm -rf Source_code_with_submodules.tar.gz
+RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git -b dev2
+
 WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
+
+
 # compile bwa-mem2
 RUN echo "Build bwa-mem2"
 WORKDIR  /Open-Omics-Acceleration-Framework/applications/bwa-mem2
@@ -55,5 +55,7 @@ RUN chmod 775 configure
 RUN ./configure           # Needed for choosing optional functionality
 RUN make
 
-
-WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws/
+RUN mkdir /input
+RUN mkdir /output
+WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
+CMD ["/bin/bash"]

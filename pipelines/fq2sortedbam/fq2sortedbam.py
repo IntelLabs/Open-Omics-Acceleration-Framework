@@ -26,13 +26,10 @@
 #
 #Authors:  Vasimuddin Md <vasimuddin.md@intel.com>; Babu Pillai <padmanabhan.s.pillai@intel.com>;
 #*****************************************************************************************/
-
-
+#!/usr/bin/env bash
+import json, time, os, sys
 from subprocess import Popen, PIPE, run
 import subprocess
-import time
-import os
-import sys
 import threading
 import tempfile
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
@@ -52,7 +49,9 @@ BINDIR="../.."
 APPSDIR=os.path.join(BINDIR + "/applications/")
 SAMTOOLS=os.path.join(APPSDIR + "/samtools/samtools")
 BWA=os.path.join(APPSDIR + "/bwa-mem2/bwa-mem2")
+BWASSE=os.path.join(APPSDIR + "/bwa-mem2/bwa-mem2.sse42")
 MINIMAP2=os.path.join(APPSDIR + "/mm2-fast/minimap2")
+STAR=os.path.join(APPSDIR + "/STAR/source/STAR")
 
 def populate_yaml(args):
     with open(args['config'], 'r') as f:
@@ -196,6 +195,7 @@ def pragzip_reader_real( comm, cpus, fname, outpipe, outdir, last=False ):
     threading.Thread(target=pr_t1, args=(f,startpos,endpos,bufs,sems)).start()
     threading.Thread(target=pr_t2, args=(outpipe,bufs,sems)).start()
 
+    
 def pragzip_reader(comm, cpus, fname, outdir, last=False):
     #outpipe = tempfile.mktemp()
     outpipe = tempfile.NamedTemporaryFile()
@@ -208,6 +208,25 @@ def pragzip_reader(comm, cpus, fname, outdir, last=False):
     threading.Thread(target=pragzip_reader_real, args=(comm2, cpus, fname, outpipe, outdir, last)).start()
     return outpipe
 
+def fastq_reader(comm, cpus, fname, outdir, last=False):
+    #outpipe = tempfile.mktemp()
+    outpipe = tempfile.NamedTemporaryFile()
+    temp=outpipe.name
+    outpipe.close()
+    #os.unlink(outpipe.name)
+    outpipe=temp
+    os.mkfifo(outpipe)
+    comm2 = comm.Clone()
+    threading.Thread(target=fastq_reader_real, args=(comm2, cpus, fname, outpipe, outdir, last)).start()
+    return outpipe
+
+
+def if_reader(comm, cpus, fname, outdir, last=False):
+    print('fname: ', fname.split(".")[-1])
+    if fname.split(".")[-1] == "gz":
+        return pragzip_reader(comm, cpus, fname, outdir, last)
+    else:
+        return fastq_reader(comm, cpus, fname, outdir, last)   
 
 #bins_per_rank = 500  # actually -- set this to number of bins, it will get adjusted by main to something reasonable per rank
 bins_per_rank = 1
@@ -225,6 +244,7 @@ keep=False
 headers_done = threading.Semaphore(0)
 chromo_dict={}
 # NOTE:  Code relies on insert order of dictionary keys -- so needs python>=3.7
+
 
 # Calculate bins
 def calculate_bins(nranks):
@@ -255,6 +275,8 @@ def calculate_bins(nranks):
     #print (bins, bin_region)
     #assert 0
 
+
+    
 # used in mode 5
 def sort_thr5(fname, comm):
     rank = comm.Get_rank()
@@ -269,8 +291,11 @@ def sort_thr5(fname, comm):
     # get binned items, output to bin file
     sz = 0
     while ndone < nranks:
-        bf_sz = 100000000
-        req = comm.irecv(bf_sz)
+        if args["read_type"] == "short":
+            req = comm.irecv()
+        else:
+            bf_sz = 100000000
+            req = comm.irecv(bf_sz)
         b, vl = req.wait()
         b = b//nranks
         if len(vl)>0 and  vl[0]=="done":
@@ -328,6 +353,7 @@ def sw_thr( outpipe, comm, comm2 ):
                     seq_start[sn] = cumlen
                     seq_len[sn] = ln
                     cumlen += ln
+                    #print("In keep")
                 else:
                     #if sn in mydict.keys():
                     if sn in chromo_dict.keys():
@@ -379,6 +405,7 @@ def sw_thr( outpipe, comm, comm2 ):
     send_wrap("done", rank, force=True)  # send to self last to avoid race condition with allreduce
     t1 = time.time()
 
+    
 # used for mode 2 and above
 def sam_writer( comm, fname ):
     rank = comm.Get_rank()
@@ -405,51 +432,122 @@ def allexit(comm, flg):
         os.sys.exit(1)
 
 
-def main(argv):
-    parser=ArgumentParser()
-    parser.add_argument('--input',help="Input data directory")
-    parser.add_argument('--tempdir',default="",help="Intermediate data directory")
-    parser.add_argument('--refdir',default="",help="Reference genome directory")
-    parser.add_argument('--read1',default="", nargs='+',help="name of r1 files")
-    parser.add_argument('--read2',default="", nargs='+',help="name of r2 files")
-    parser.add_argument('--read3',default="", nargs='+',help="name of r3 files (for fqprocess) seperated by spaces")
-    parser.add_argument('--readi1',default="", nargs='+',help="name of i1 files (for fqprocess) seperated by spaces")
+def input_check(rank, comm, refdir, inputdir, output, se_mode, ifile, rfile1, rfile2, read_type):
+    all_read_types = ['short', 'long', 'rna_short', 'meth']
+    flg = 0
+    if rank == 0:
+        if all_read_types.count(read_type) != 1:
+            print('[Error] Incorrect read_type: ', all_read_types)
+            flg = 1
+        #assert all_read_types.count(read_type) == 1, 'incorrect read_type provided.'
+    allexit(comm, flg)        
     
-    parser.add_argument('--prefix',default="", help="prefix for processed R1 and R3 files for bwa-mem2")
-    parser.add_argument('--suffix',default="", help="suffix for processed R1 and R3 files for bwa-mem2")
-   
-    parser.add_argument('--whitelist',default="whitelist.txt",help="10x whitelist file")
-    parser.add_argument('--read_structure',default="16C",help="read structure")
-    parser.add_argument('--barcode_orientation',default="FIRST_BP_RC",help="barcode orientation")
-    parser.add_argument('--sample_id',default="",help="sample id")
-    parser.add_argument('--output_format',default="",help="output_format")
-    parser.add_argument('--output',help="Output data directory")
-    parser.add_argument('--mode', default='sortedbam', help="flatmode/fqprocessonly/multifq/sortedbam. flatmode is just bwa w/o sort.")
-    parser.add_argument('--params', default='', help="parameter string to bwa-mem2 barring threads paramter")
-    parser.add_argument("-i", "--index", help="name of index file")
-    parser.add_argument("-p", "--outfile", help="prefix for read files")
-    parser.add_argument("-c", "--cpus",default=1,help="Number of cpus. default=1")
-    parser.add_argument("-t", "--threads",default=1,help="Number of threads used in samtool operations. default=1")
-    parser.add_argument("-b", "--bam_size",default=9, help="bam file size in GB")
-    parser.add_argument('-in', '--rindex', default='False', help="It will build reference genome index for bwa aligner. If it is already done offline then don't use this flag.")
-    parser.add_argument('-dindex', default='False', help="It will create .fai index. If it is done offline then disable this.")
-    parser.add_argument('-pr', '--profile',action='store_true',help="Use profiling")
-    parser.add_argument('--keep_unmapped',action='store_true',help="Keep Unmapped entries at the end of sam file.")
-    parser.add_argument('--read_type',default="short",
-                        help="(short/long): bwa-mem2 with short reads, mm2-fast with long reads")
-    parser.add_argument('-y', "--config", default="", help="config yaml file for args")
-    ## Arg values in the provided yaml file override any command-line or default args values
-    args = vars(parser.parse_args())
+    if read_type == 'short':
+        assert os.path.exists(refdir + ifile) == True, "missing bwa-mem2 genome"
+        flg = 0
+        if os.path.exists(refdir + ifile + ".bwt.2bit.64") == False: flg=1
+        if os.path.exists(refdir + ifile + ".0123") == False: flg = 1
+        if os.path.exists(refdir + ifile + ".amb") == False: flg=1
+        if os.path.exists(refdir + ifile + ".ann") == False: flg=1
+        if os.path.exists(refdir + ifile + ".pac") == False: flg=1
+        if flg and rank == 0:
+            print("Error: Some BWA reference index files missing...Exiting")
+            print("Error: You can enable rindex option in the config file to create index on-the-fly.")
+            print("Error: Or, you can manually build and place the index in ", refdir)
+        if flg:
+            os.sys.exit(1)
 
-    if args["config"] != "":
-        args = populate_yaml(args)
+    assert os.path.exists(inputdir+rfile1) == True, "missing input read1 files"
+    if not se_mode:
+        assert os.path.exists(inputdir+rfile2) == True, "missing input read2 files"
+    # output paths
+    assert os.path.exists(output) == True, "output path does not exist"
 
+    flg = 0
+    if rank == 0:
+        g = rfile1
+        if g.split(".")[-1] != "gz":
+            print("Error: reads file1 not in gzip format. Exiting...")
+            #os.sys.exit(1)
+            flg = 1
+            
+        if not se_mode:
+            g = rfile2
+            if g.split(".")[-1] != "gz":
+                print("Error: reads file2 not in gzip format. Exiting...")
+                #os.sys.exit(1)
+                flg = 1
+                    
+    allexit(comm, flg)  ## all ranks exit if failure in rank 0 above       
+
+    
+def create_folder(fo):
+    flg = 0
+    if not os.path.exists(fo):
+        try:
+            os.mkdir(fo)
+        except:
+            print("Error: Unable to create logs folder inside the ouptut folder")
+            flg = 1
+    else: print('[Info] output logs folder exits, will override the log files')
+    return flg
+
+
+def alignment(p):
+    outfile, read_type, params, refdir, ifile, fn1, fn2, fn3, output, cpus, rank = p
+    if read_type == "long":
+        a = run(f'{MINIMAP2} ' + params + ' -t '+cpus+' '+refdir+ifile+' '+
+                fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' +
+                str(rank) + '.txt',capture_output=True, shell=True)
+        assert a.returncode == 0
+        
+    elif read_type == 'short':
+        cmd=f'{BWA} mem '
+        if args['simd'] == 'sse': cmd=f'{BWASSE} mem '
+        #cmd += f'{BWASSE} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+        #else:
+        #    cmd=f'{BWA} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+        #print('cmd: ', cmd, fn2)
+        #print('cmd2: ', refdir, ifile, fn1, fn3, output, rank)
+        cmd = cmd + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' ' + fn2 + ' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+        #print('bwa cmd: ', cmd)
+        a=run(cmd, capture_output=True, shell=True)
+        assert a.returncode == 0
+        
+    elif read_type == 'rna_short':
+        #cmd = f'{STAR} ' + params + ' --runThreadN '+cpus+' --genomeDir '+ refdir + ' --readFilesIn ' + fn1+' ' + fn2 +' > ' + fn3 + '  2> ' + output +'logs/starlog' + str(rank) + '.txt'
+        cmd = f'{STAR} ' + params + ' --runThreadN '+cpus+' --genomeDir '+ refdir + ' --readFilesIn ' + fn1+' ' + fn2 + ' '
+        #cmd +=  ' --outFileNamePrefix ' + outfile + str("%05d"%rank) + ' --outTmpDir temp' + str("%05d"%rank)
+        cmd += ' --outFileNamePrefix ' + os.path.join(output, 'logs', 'starlog' + str("%05d"%rank))
+        cmd += ' --outStd SAM '
+        cmd += ' --outTmpDir ' + os.path.join(output, 'temp' + str("%05d"%rank))
+        #cmd += '  > '  + output +'logs/starlog' + str(rank) + '.txt'
+        cmd += '  > '  + fn3
+        #cmd += '  2> ' + output +'logs/starlogerr' + str(rank) + '.txt'
+        print('STAR cmd: ', cmd)
+        a=run(cmd, capture_output=True, shell=True)
+        assert a.returncode == 0
+        
+    elif read_type == 'meth':
+        cmd = "bwameth.py " + params + ' -t ' + cpus + ' --reference ' + refdir+ifile + ' ' + fn1 + ' ' + fn2 + ' > ' + fn3 + ' '
+        cmd += ' 2> ' + output +'logs/bwamethlog' + str(rank) + '.txt'
+        print('bwa-meth cmd: ', cmd)
+        a=run(cmd, capture_output=True, shell=True)
+
+        assert a.returncode == 0
+
+    
+
+#def main(argv):
+def main(args):
     global chromo_dict    
     read_type=args["read_type"]        
-    ifile=args["index"]
-    params=args["params"]
+    ifile=args["refindex"]
+    params = args["params"]
+    #params= ""
+    #if args["params"] != "" and args["params"]  != "None" or args["params"] != None:
+    #    params = " -R " +  "\"" + args["params"] + "\""
 
-    params=params.replace("+","-")
     read1 = rfile1 = args["read1"]
     read2 = rfile2 = args["read2"]
     read3 = args["read3"]
@@ -470,16 +568,18 @@ def main(argv):
     cpus=args["cpus"]
     threads=args["threads"]    ## read prefix for R1, I1, R2 files
     rindex=args["rindex"]
-    folder=args["input"] + "/"
+    #print('rindex: ', rindex)
+    inputdir=args["input"] + "/"
     output=args["output"] + "/"
     tempdir=args["tempdir"]
     if tempdir=="": tempdir=output
     else: tempdir=tempdir + "/"
     refdir=args["refdir"] + "/"
-    #if refdir=="": refdir=folder
+    #if refdir=="": refdir=inputdir
     prof=args["profile"]
     global keep
-    keep=args["keep_unmapped"]
+    #keep=False
+    if not args["not_keep_unmapped"]: keep=True
     dindex=args["dindex"]
     
     sample_id=args['sample_id']
@@ -493,12 +593,14 @@ def main(argv):
     rank = comm.Get_rank()
     nranks = comm.Get_size()
 
+    args["rank"], args['nranks'] = rank, nranks
+
     global ncpus
     ncpus = int(cpus)
     
     if rank == 0:
         if se_mode:
-            print("[Info] Running in SE reads only mode!!!")
+            print("[Info] Running in SE reads only mode w/ ", read_type, ' read type')
         else: print("[Info] Running in PE reads mode!!!")
         if read_type == "short":
             print("[Info] BWA-MEM2 parameters: ", params)
@@ -508,7 +610,7 @@ def main(argv):
 
     def faidx(refdir, ifile):
         g = refdir + ifile
-        print(g.split(".")[-1])
+        #print(g.split(".")[-1])
         if g.split(".")[-1] == "gz":
             print("Error: genome file should not be gzip for indexing.\nExiting...")
             return 1
@@ -522,101 +624,71 @@ def main(argv):
     #start0 = time.time()
     # Generate data (reads) index file(s)
 
+    ##############################################################################
     flg=0
-    if rank == 0:
-        if dindex == 'True':
-            flg = faidx(refdir, ifile)
-
+    if rank == 0 and  dindex == True:
+        flg = faidx(refdir, ifile)
+        if flg:  
+            print("[Info] Exiting due to a failure in creating .fai file.")                    
     allexit(comm, flg)
 
+    ##############################################################################    
     flg = 0
     if rank == 0:
         fo = os.path.join(output, "logs")
-        if not os.path.exists(fo):
-            try:
-                os.mkdir(fo)
-            except:
-                print("Error: Unable to create logs folder inside the ouptut folder")
-                flg = 1
-        else:
-            print('[Info] output logs folder exits, will override the log files')
-
+        flg = create_folder(fo)
     allexit(comm, flg)        
-
-    if rank==0:
-        #yappi.set_clock_type("wall")
-        #if prof: yappi.start()
-        #file_size = os.path.getsize(folder+rfile1)
-        #print("\nSize of FASTQ file:",file_size)
-        if rindex == 'True' :
-            print("[Info] Indexing Starts", flush=True)
-            begin = time.time()
-            a=run(f'{BWA} index '+ refdir + ifile + ' > ' + output + \
-                  '/logs/bwaindexlog.txt', capture_output=True,shell=True)
-            
-            end=time.time()
-            print("\n[Info] Bwa Index creation time:",end-begin)
-
-    comm.barrier()             
-    #################################################################
-    if mode in ['flatmode', 'sortedbam', 'multifq']:
-        assert os.path.exists(refdir + ifile) == True, "missing bwa-mem2 genome"
-        if not read_type == "long":
-            flg = 0
-            if os.path.exists(refdir + ifile + ".bwt.2bit.64") == False: flg=1
-            if os.path.exists(refdir + ifile + ".0123") == False: flg = 1
-            if os.path.exists(refdir + ifile + ".amb") == False: flg=1
-            if os.path.exists(refdir + ifile + ".ann") == False: flg=1
-            if os.path.exists(refdir + ifile + ".pac") == False: flg=1
-            if flg and rank == 0:
-                print("Error: Some BWA reference index files missing...Exiting")
-                print("Error: You can enable rindex option in the config file to create index on-the-fly.")
-                print("Error: Or, you can manually build and place the index in ", refdir)
-            if flg:
-                os.sys.exit(1)
-            
-
-    if mode in ['flatmode', 'sortedbam']:
-        assert os.path.exists(folder+rfile1) == True, "missing input read1 files"
-        if not se_mode:
-            assert os.path.exists(folder+rfile2) == True, "missing input read2 files"
-        # output paths
-        assert os.path.exists(output) == True, "output path does not exist"
-
-    if mode in ['sortedbam', 'flatmode']:
-        ## bwa-mem2 index path check, every ranks checks the access.
-        if rank == 0:
-            g = rfile1
-            if g.split(".")[-1] != "gz":
-                print("Error: reads file1 not in gzip format. Exiting...")
-                os.sys.exit(1)
-                
-            if not se_mode:
-                g = rfile2
-                if g.split(".")[-1] != "gz":
-                    print("Error: reads file2 not in gzip format. Exiting...")
-                    os.sys.exit(1)
-            
-
-        # chromo_dict information added
-        if keep == False and rank == 0:
-            chromo_file = os.path.join(refdir,ifile)+".fai"
-            if os.path.isfile(chromo_file):
-                f = open(chromo_file, "r")
-                lines=f.readlines()
-                f.close()
-                for line in lines[0:25]:
-                    chromo=line.split("\t")[0]
-                    chromo_dict[chromo]= 1
-                print(f'chromo_dict: {chromo_dict}')
-            else:
+    ##############################################################################
+    
+    # Preindex refernce genome if requested
+    flg = 0
+    if rank==0 and rindex == 'True':
+        print("[Info] Indexing Starts", flush=True)
+        begin = time.time()
+        if read_type == 'meth':
+            cmd='bwameth.py index-mem2 ' + refdir+ifile+ ' > ' + output + \
+                '/logs/bwamethindexlog.txt'
+        elif read_type == 'short':
+            cmd = f'{BWA} index '+ refdir + ifile + ' > ' + output + \
+                '/logs/bwaindexlog.txt'
+        else:
+            print("[Error] Only capable of creating index for bwa-mem2 and bwa-meth")
+            flg=1
+            #sys.exit(1)
+        if flg == 0:
+            flg = run(cmd, capture_output=True,shell=True)
+            flg = flg.returncode
+        end=time.time()
+        print("\n[Info] bwa index creation time:", end - begin)
+        if flg:  print("[Info] bwa index creation failed. Check logs.")
+    allexit(comm, flg)                    
+    
+    ##############################################################################
+    input_check(rank, comm, refdir, inputdir, output, se_mode, ifile, rfile1, rfile2, read_type)
+    ##############################################################################
+        
+    # chromo_dict information added
+    if keep == False:
+        chromo_file = os.path.join(refdir,ifile)+".fai"
+        if os.path.isfile(chromo_file):
+            f = open(chromo_file, "r")
+            lines=f.readlines()
+            f.close()
+            for line in lines[0:25]:
+                chromo=line.split("\t")[0]
+                chromo_dict[chromo]= 1
+            #if rank == 0:
+            #    print(f'chromo_dict: {chromo_dict}')
+        else:
+            if rank == 0:
                 print(f'Error: File "{chromo_file}" not found, resetting keep=True')
-                #exit()
-                keep = True                
+            #exit()
+            keep = True                
 
 
-        comm.barrier()                
-        keep = comm.bcast(keep, root=0)        
+    comm.barrier()                
+    #keep = comm.bcast(keep, root=0)        
+    #############################################################################
     
     if mode == 'flatmode':
         r'''
@@ -643,27 +715,17 @@ def main(argv):
             
         # Execute bwamem2 -- may include sort, merge depending on mode
         begin0 = time.time()
-        fn1 = pragzip_reader( comm, int(cpus), folder+rfile1, output )
+        fn1 = pragzip_reader( comm, int(cpus), inputdir+rfile1, output )
+        #fn1 = if_reader( comm, int(cpus), inputdir+rfile1, output )
+        fn2 = ""
         if not se_mode:
-            fn2 = pragzip_reader( comm, int(cpus), folder+rfile2, output, last=True )
+            fn2 = pragzip_reader( comm, int(cpus), inputdir+rfile2, output, last=True )
+            #fn2 = if_reader( comm, int(cpus), inputdir+rfile2, output, last=True )
         fn3 = os.path.join(output, outfile + str("%05d"%rank) + ".sam")
         begin1 = time.time()
-        if se_mode:
-            if read_type == "long":
-                a = run(f'{MINIMAP2} ' + params + ' -t '+cpus+' '+refdir+ifile+' '+
-                        fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' +
-                        str(rank) + '.txt',capture_output=True, shell=True)
-            else:
-                a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+ 
-                      refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' +
-                      output +'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
 
-        else:                
-            a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+
-                  fn1+' '+fn2+' > '+fn3 + '  2> ' + output +
-                  'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
-            
-        assert a.returncode == 0
+        p = os.path.join(output,outfile), read_type, params, refdir, ifile, fn1, fn2, fn3, output, cpus, rank
+        alignment(p)
         
         end1b=time.time()
         #thr.join()
@@ -673,7 +735,7 @@ def main(argv):
         if rank==0:
             print("\n[Info] FASTQ to SAM time (flatmode):",end1-begin1)
             print("   (includes wait time:",end1-end1b,")")
-            print("[Info] Output SAM files are present in the ouptut folder")
+            print("[Info] Output SAM files are present in ", output, " folder")
 
         if rank == 0:
             clean(output)
@@ -698,7 +760,7 @@ def main(argv):
             rl1, rl2, rl3, ri1 = read1, read2, read3, readi1
             barcode_index = rl2[0]
             #cmd='zcat ' + folder/barcode_index '| sed -n "2~4p" | shuf -n 1000 > ' + output + '/downsample.fq'
-            bash_command = '''zcat '''+  folder + "/" + barcode_index + \
+            bash_command = '''zcat '''+  inputdir + "/" + barcode_index + \
             ''' | sed -n '2~4p' | shuf -n 1000 > downsample.fq'''
             a = run(bash_command,shell=True, check=True, executable='/bin/bash')
             assert a.returncode == 0
@@ -719,12 +781,12 @@ def main(argv):
             #r1, r2, r3="--R1 ", "--R2 ", "--R3 "
             r1, r2, r3, i1 ="", "", "", ""
             for r in range(len(rl1)):
-                r1+="--R1 " + folder + "/" + rl1[r] + ' '
-                r2+="--R2 " + folder + "/" + rl2[r] + ' '
-                r3+="--R3 " + folder + "/" + rl3[r] + ' '
+                r1+="--R1 " + inputdir + "/" + rl1[r] + ' '
+                r2+="--R2 " + inputdir + "/" + rl2[r] + ' '
+                r3+="--R3 " + inputdir + "/" + rl3[r] + ' '
 
             for r in range(len(ri1)):
-                i1+="--I1 " + folder + "/" + ri1[r] + ' '
+                i1+="--I1 " + inputdir + "/" + ri1[r] + ' '
 
             ## print(r1)
             ## print(r2)
@@ -758,8 +820,8 @@ def main(argv):
                 #fn1 = "fastq_R1_" + str(r) + ".fastq.gz"
                 #fn2 = "fastq_R3_" + str(r) + ".fastq.gz"
                 #multiome-practice-may15_arcgtf_0.R1.trimmed_adapters.fastq.gz
-                fn1 = os.path.join(folder, prefix + "_" + str(r) + ".R1." + suffix)
-                fn2 =  os.path.join(folder, prefix + "_" + str(r) + ".R3." + suffix)
+                fn1 = os.path.join(inputdir, prefix + "_" + str(r) + ".R1." + suffix)
+                fn2 =  os.path.join(inputdir, prefix + "_" + str(r) + ".R3." + suffix)
 
                 if os.path.isfile(fn1) == False or os.path.isfile(fn2) == False:
                     print(f"[Info] Error: Number of files fastq files ({r}) < number of ranks ({nranks})")
@@ -771,11 +833,11 @@ def main(argv):
         comm.barrier()
         #fn1 = "fastq_R1_" + str(rank) + ".fastq.gz"
         #fn2 = "fastq_R3_" + str(rank) + ".fastq.gz"
-        fn1 = os.path.join(folder, prefix + "_" + str(rank) + ".R1." + suffix)
-        fn2 = os.path.join(folder, prefix + "_" + str(rank) + ".R3." + suffix)
+        fn1 = os.path.join(inputdir, prefix + "_" + str(rank) + ".R1." + suffix)
+        fn2 = os.path.join(inputdir, prefix + "_" + str(rank) + ".R3." + suffix)
 
-        #fn1 = folder + "/fastq_R1_" + str(rank) + ".fastq.gz"
-        #fn2 = folder + "/fastq_R3_" + str(rank) + ".fastq.gz"
+        #fn1 = inputdir + "/fastq_R1_" + str(rank) + ".fastq.gz"
+        #fn2 = inputdir + "/fastq_R3_" + str(rank) + ".fastq.gz"
         if rank == 0:
             print("[Info] Input files: ")
             print(fn1)
@@ -834,28 +896,21 @@ def main(argv):
         # Execute bwamem2 -- may include sort, merge depending on mode
         begin0 = time.time()
         #try:
-        fn1 = pragzip_reader( comm, int(cpus), folder+rfile1, output )
+        #print('in read: ', inputdir + rfile1)
+        #print("output: ", output)
+        fn1 = pragzip_reader( comm, int(cpus), inputdir + rfile1, output )
+        #fn1 = if_reader( comm, int(cpus), inputdir + rfile1, output )
+        fn2 = ""
         if not se_mode:
-            fn2 = pragzip_reader( comm, int(cpus), folder+rfile2, output, last=True )
+            fn2 = pragzip_reader( comm, int(cpus), inputdir + rfile2, output, last=True )
+            #fn2 = if_reader( comm, int(cpus), inputdir + rfile2, output, last=True )
         fn3, thr = sam_writer( comm, output+'/aln' )
         #fn3 = output + "/aln" + str(rank) + ".sam"
         begin1 = time.time()
-        if se_mode:
-            if read_type == "long":
-                a=run(f'{MINIMAP2} ' + params + ' -t '+cpus+' '+refdir+ifile+' '+
-                      fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' +
-                      str(rank) + '.txt',capture_output=True, shell=True)
-            else:
-                a=run(f'{BWA} mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+
-                      ' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) +
-                      '.txt',capture_output=True, shell=True)
-        else:
-            a=run(f'{BWA} mem ' + params +' -t '+cpus+' '+refdir+ifile+' '+fn1+' '+
-                  fn2+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) +
-                  '.txt',capture_output=True, shell=True)
-            
-        assert a.returncode == 0
-        end1b=time.time()
+        p = os.path.join(output,outfile), \
+            read_type, params, refdir, ifile, fn1, fn2, fn3, output, cpus, rank
+        alignment(p)
+        end1b = time.time()
         thr.join()
         comm.barrier()
         end1=time.time()
@@ -874,20 +929,23 @@ def main(argv):
 
     # Finish sort, merge, convert to bam depending on mode
     cmd=""
-    for i in range(bins_per_rank):
+    for i in range(bins_per_rank): 
         binstr = '%05d'%(nranks*i+rank)
         cmd+=f'{SAMTOOLS} sort --threads '+threads+' -T '+tempdir+ '/aln'+binstr+ \
-            '.sorted -o '+ output +'/aln'+binstr+'.bam '+ output+'/aln'+binstr+'.sam;'
+            '.sorted -o '+ output +'/aln'+binstr+'.bam '+ output+'/aln'+binstr+'.sam' + '  2> ' + output +'logs/samsortlog' + str(rank) + '.txt'
+        
         if i%20==0:
             a=run(cmd,capture_output=True,shell=True)
             cmd=""
             
-    if not cmd=="": a=run(cmd,capture_output=True,shell=True)
+    if not cmd=="":
+        a=run(cmd,capture_output=True,shell=True)
+        assert a.returncode==0,"samtools sort Failed"    
     comm.barrier()
 
     if rank==0:
         end2=time.time()
-        print("[Info] SAM to sort-BAM time:",end2-begin2)
+        print("[Info] SAM to sort-BAM time:", end2-begin2)
 
     ## concat bams
     if rank == 0:
@@ -902,16 +960,29 @@ def main(argv):
         infstr = bf[0]
         for i in range(1, len(bf)):
             infstr = infstr + " " + bf[i]
-        if outfile == "":
+        if outfile == "" or outfile == None or outfile == "None":
             outfile = "final_fq2bam"
-
+        #print('outfile: ',outfile)
         cmd+=f'{SAMTOOLS} cat -o ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr
-        a=run(cmd,capture_output=True,shell=True)
+        a=run(cmd,capture_output=True, shell=True)
         assert a.returncode == 0
-        print("[Info] Concat done, time taken: ", time.time() - tic)
+        print("[Info] Concat done, time taken (s): {:.4f}".format(time.time() - tic))
+        #tic2 = time.time()
+        os.system('rm ' + output + "/aln*.bam")
+        #print("[Info] Concat done, time taken (s): ", time.time() - tic, time.time() - tic2)
 
-        if rank == 0:
-            clean_all(output, tempdir)
+        #if rank == 0:
+        #    clean_all(output, tempdir)
+    elif rank == nranks - 1:
+        #print("[Info] cleaning up...")
+        tic = time.time()
+        if not args["keep_sam"]:
+            os.system('rm ' + output + "/*.sam")
+        os.system('rm ' + output + "*.idx")
+        toc = time.time()
+        print("[Info] Clean up done.")
+        #print("[Info] cleanup done, time taken (s): ", toc -tic)
+        
 
             
 def clean_all(output, tempdir):
@@ -921,7 +992,7 @@ def clean_all(output, tempdir):
     os.system('rm ' + output + "/aln*.bam")
     os.system('rm ' + output + "*.idx")
     toc = time.time()        
-    print("[Info] Clean up done, time taken: ", toc -tic)
+    print("[Info] Clean up done, time taken (s): ", toc -tic)
 
     
 def clean(output):
@@ -929,7 +1000,7 @@ def clean(output):
     tic = time.time()
     os.system('rm ' + output + "*.idx")
     toc = time.time()        
-    print("[Info] Clean up done, time taken: ", toc -tic)
+    print("[Info] Clean up done, time taken (s): ", toc -tic)
         
         
 def concatenate_files(input_files, output_file):
@@ -948,4 +1019,9 @@ def concatenate_files(input_files, output_file):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    #print('args: ', sys.argv)
+    #print("finish")
+    #main(sys.argv[1:])
+    args = json.loads(sys.argv[1])
+    #print('argss: ', args)
+    main(args)

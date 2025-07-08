@@ -1,7 +1,7 @@
 name: new_env
 channels:
   - conda-forge
-  - defaults
+  - anaconda
 dependencies:
   - _libgcc_mutex=0.1=main
   - _openmp_mutex=5.1=1_gnu
@@ -41,4 +41,4 @@ dependencies:
   - pip:
       - pragzip==0.5.0
       - yappi==1.4.0
-prefix: /home/ashish/miniconda3/envs/new_env
+
