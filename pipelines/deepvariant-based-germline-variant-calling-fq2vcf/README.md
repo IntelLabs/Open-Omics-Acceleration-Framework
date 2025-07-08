@@ -35,7 +35,7 @@ Notes:
 ```bash
 docker run  --volume <refdir>:/refdir <readsdir>:/readsdir <outdir_fq2bams>:/outdir fq2bams:latest python run_fq2bams.py --ref /refdir/<reference_file> --reads  /readsdir/<read1>  /readsdir/<read2>  --output /outdir/<outBAMfile>   
 
-docker run  --volume <refdir>:/refdir <outdir_fq2bams>:/indir <output>:/outdir  bams2vcf:latest python run_bams2vcf.py --ref /refdir/$ref --input /indir/  --output /workdir/<outVCFfile>   
+docker run  --volume <refdir>:/refdir <outdir_fq2bams>:/indir <output>:/outdir  bams2vcf:latest python run_bams2vcf.py --ref /refdir/<reference_file> --input /indir/  --output /outdir/<outVCFfile>   
 ```
 
 # Results
@@ -49,23 +49,8 @@ The following instructions run seamlessly on a standalone AWS ec2 instance. To r
 ### One-time setup
 This step takes around ~15 mins to execute. During the installation process, whenever prompted for user input, it is recommended that the user select all default options.
 ```bash
-wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz
-tar -xzf Source_code_with_submodules.tar.gz
-cd Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws
-bash deepvariant_ec2_setup.sh
-```
-
-### Modify _config_ file
-We need a reference sequence and paired-ended read datasets. Open the "_config_" file and set the input and output directories as shown in config file.
-The sample config contains the following lines to be updated.
-```bash
-export LD_PRELOAD=<absolute_path>/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
-export INPUT_DIR=/path-to-read-datasets/
-export OUTPUT_DIR=/path-to-output-directory/
-export REF_DIR=/path-to-ref-directory/
-REF=ref.fasta
-R1=R1.fastq.gz
-R2=R2.fastq.gz
+git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+cd Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
 ```
 
 ### Create the index files for the reference sequence
@@ -74,9 +59,10 @@ bash create_reference_index.sh
 ```
 
 ### Run the pipeline.
-Note that the script uses default setting for creating multiple MPI ranks based on the system configuration.
 ```bash
-bash run_pipeline_ec2.sh
+python run_fq2bams.py --ref refdir/<reference_file> --reads  readsdir/<read1>  readsdir/<read2>  --output outdir/<outBAMfile>     
+python run_bams2vcf.py --ref refdir/<reference_file> --input outdir/  --output outdir/<outVCFfile>     
+
 ```
 
 
