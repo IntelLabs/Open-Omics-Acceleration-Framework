@@ -17,9 +17,10 @@ ARG PYTHON_VERSION=3.8
 ARG DV_GPU_BUILD=0
 ARG VERSION=1.5.0
 
-FROM continuumio/miniconda3 as conda_setup
-RUN conda config --add channels defaults && \
-    conda config --add channels bioconda && \
+#FROM continuumio/miniconda3 as conda_setup
+FROM condaforge/miniforge3 as conda_setup
+#RUN conda config --add channels defaults && \
+RUN  conda config --add channels bioconda && \
     conda config --add channels conda-forge
 RUN conda create -n bio \
                     bioconda::bcftools=1.10 \
@@ -42,8 +43,10 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     git  --reinstall ca-certificates
 WORKDIR /opt
 
-RUN git clone --recursive https://github.com/IntelLabs/open-omics-deepvariant.git
-RUN cp -r /opt/open-omics-deepvariant/. /opt/deepvariant/
+#RUN git clone --recursive https://github.com/IntelLabs/open-omics-deepvariant.git
+COPY ./open-omics-deepvariant /opt/deepvariant/
+#RUN cp -r /opt/deeptrio /opt/deepvariant/
+#RUN cp -r /opt/open-omics-deepvariant/. /opt/deepvariant/
 RUN rm -rf open-omics-deepvariant
 
 
@@ -57,6 +60,14 @@ WORKDIR /opt/deepvariant
 RUN echo "Acquire::http::proxy \"$http_proxy\";\n" \
          "Acquire::https::proxy \"$https_proxy\";" > "/etc/apt/apt.conf"
 
+# Define build arguments for proxy
+ARG http_proxy
+ARG https_proxy
+
+# Set environment variables for proxy
+ENV http_proxy=${http_proxy}
+ENV https_proxy=${https_proxy}
+
 RUN ./build-prereq.sh \
   && PATH="${HOME}/bin:${PATH}" ./build_release_binaries.sh  # PATH for bazel
 
@@ -68,8 +79,8 @@ ENV DV_GPU_BUILD=${DV_GPU_BUILD}
 ENV VERSION ${VERSION}
 ENV PYTHON_VERSION ${PYTHON_VERSION}
 
-RUN echo "Acquire::http::proxy \"$http_proxy\";\n" \
-         "Acquire::https::proxy \"$https_proxy\";" > "/etc/apt/apt.conf"
+#RUN echo "Acquire::http::proxy \"$http_proxy\";\n" \
+#         "Acquire::https::proxy \"$https_proxy\";" > "/etc/apt/apt.conf"
 
 WORKDIR /opt/
 COPY --from=builder /opt/deepvariant/bazel-bin/licenses.zip .
@@ -226,7 +237,43 @@ RUN apt-get -y update && \
   rm -rf /var/lib/apt/lists/*
 
 
-WORKDIR /opt/deepvariant
-COPY extra_scripts .
+WORKDIR /
+#COPY extra_scripts .
+RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git -b dev2
+WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
 
+RUN apt-get update
+RUN apt-get -y install git
+RUN apt-get -y install numactl 
+RUN apt-get install -y build-essential
+RUN apt -y install zlib1g-dev
+RUN apt -y install libncurses5-dev
+#RUN apt -y install libbz2-dev
+#RUN apt -y install liblzma-dev
+
+RUN  apt -y install autoconf make gcc libbz2-dev liblzma-dev libz-dev libcurl4-openssl-dev
+
+# compile htslib
+WORKDIR  /Open-Omics-Acceleration-Framework/applications/htslib
+RUN autoreconf -i  # Build the configure script and install files it uses
+RUN ./configure    # Optional but recommended, for choosing extra functionality
+RUN make
+#make install   #uncomment this for installation
+
+# compile samtools
+WORKDIR  /Open-Omics-Acceleration-Framework/applications/samtools
+RUN autoheader
+RUN autoconf -Wno-syntax
+RUN chmod 775 configure
+RUN ./configure           # Needed for choosing optional functionality
+RUN make
+
+
+WORKDIR  /Open-Omics-Acceleration-Framework/applications/bcftools
+RUN make -j
+
+WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
+
+RUN mkdir /input
+RUN mkdir /output
 CMD ["/opt/deepvariant/bin/run_deepvariant", "--help"]
