@@ -4,16 +4,6 @@ FROM ${FROM_IMAGE} as builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Proxy configuration
-ARG http_proxy
-ENV http_proxy=${http_proxy}
-
-ARG https_proxy
-ENV https_proxy=${https_proxy}
-
-ARG no_proxy
-ENV no_proxy=${no_proxy}
-
 # Install necessary build tools and clean up
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git build-essential wget vim ca-certificates autoconf automake make numactl unzip && \
@@ -55,8 +45,7 @@ WORKDIR /app/moflow
 RUN bash -c "source ${HOME}/conda/etc/profile.d/conda.sh && \
              source ${HOME}/conda/etc/profile.d/mamba.sh && \
              mamba activate moflow && \
-             pip install torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https://download.pytorch.org/whl/cpu  && \
-             pip install intel-extension-for-pytorch==2.3.0"
+             pip install torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https://download.pytorch.org/whl/cpu"
     
 # Initialization script for Conda environment
 RUN echo "#!/bin/bash" > /app/init.sh && \
