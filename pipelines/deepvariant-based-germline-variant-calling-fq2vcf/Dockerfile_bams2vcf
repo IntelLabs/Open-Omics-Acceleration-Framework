@@ -35,6 +35,12 @@ LABEL maintainer="https://github.com/google/deepvariant/issues"
 ARG DV_GPU_BUILD
 ENV DV_GPU_BUILD=${DV_GPU_BUILD}
 WORKDIR /opt
+#RUN git clone --recursive https://github.com/IntelLabs/open-omics-deepvariant.git
+#RUN cp -r /opt/open-omics-deepvariant/. /opt/deepvariant/
+#RUN rm open-omics-deepvariant
+# Copying DeepVariant source code
+#COPY . /opt/deepvariant
+
 
 ARG VERSION
 ENV VERSION=${VERSION}
@@ -43,8 +49,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     git  --reinstall ca-certificates
 WORKDIR /opt
 
-#RUN git clone --recursive https://github.com/IntelLabs/open-omics-deepvariant.git
-COPY ./open-omics-deepvariant /opt/deepvariant/
+RUN git clone --recursive https://github.com/IntelLabs/open-omics-deepvariant.git
+RUN cp -r ./open-omics-deepvariant /opt/deepvariant/
+#COPY ./open-omics-deepvariant /opt/deepvariant/
 #RUN cp -r /opt/deeptrio /opt/deepvariant/
 #RUN cp -r /opt/open-omics-deepvariant/. /opt/deepvariant/
 RUN rm -rf open-omics-deepvariant
@@ -239,7 +246,7 @@ RUN apt-get -y update && \
 
 WORKDIR /
 #COPY extra_scripts .
-RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git -b dev2
+RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
 
 RUN apt-get update
