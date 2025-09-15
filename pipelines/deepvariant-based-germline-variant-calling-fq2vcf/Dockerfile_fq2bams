@@ -6,7 +6,7 @@ FROM ${BASE_IMAGE} as conda_setup
 
 WORKDIR /
 RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-
+RUN git checkout 060a0c76ad4ded6d6de709b0466b8bdafdc6053d
 WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
 
 RUN conda env create --name dv_env -f environment.yml
@@ -31,7 +31,7 @@ RUN source ~/.bashrc
 
 WORKDIR /
 RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-
+RUN git checkout 060a0c76ad4ded6d6de709b0466b8bdafdc6053d
 WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
 
 
