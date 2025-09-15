@@ -10,7 +10,8 @@ Given a cell by gene matrix, this [scanpy](https://github.com/scverse/scanpy) ba
 # Download entire repository
 ```bash
 cd ~
-git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
+RUN tar -xzf Source_code_with_submodules.tar.gz
 cd ~/Open-Omics-Acceleration-Framework/pipelines/single-cell-RNA-seq-analysis
 ```
 

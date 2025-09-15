@@ -1,15 +1,7 @@
-#ARG FROM_IMAGE=ubuntu:20.04
-# PYTHON_VERSION is also set in settings.sh.
-#ARG PYTHON_VERSION=3.10
-
-#FROM ${FROM_IMAGE} as builder
 FROM ubuntu:20.04
 FROM python:3.10
 
-#RUN echo "Acquire::http::proxy \"$http_proxy\";\n" \
-#         "Acquire::https::proxy \"$https_proxy\";" > "/etc/apt/apt.conf"
 RUN apt-get update 
-##&& DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 RUN apt-get install -y build-essential
 RUN apt-get install -y git
 RUN apt-get install -y vim
@@ -23,11 +15,8 @@ RUN apt-get -qq -y install wget gcc-11 g++-11
 RUN unlink /usr/bin/gcc && unlink /usr/bin/g++
 RUN ln -s /usr/bin/gcc-11 /usr/bin/gcc && ln -s /usr/bin/g++-11 /usr/bin/g++
 
-#RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-#    git  --reinstall ca-certificates
-    
 WORKDIR /app
-RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git -b dev2
+RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 #COPY /scratch/users/mvasimud/workspace/Open-Omics-Acceleration-Framework .
 WORKDIR Open-Omics-Acceleration-Framework/pipelines/fq2sortedbam
 
