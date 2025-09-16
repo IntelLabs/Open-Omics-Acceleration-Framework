@@ -50,7 +50,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
 WORKDIR /opt
 
 RUN git clone --recursive https://github.com/IntelLabs/open-omics-deepvariant.git
+WORKDIR /opt/open-omics-deepvariant
 RUN git checkout bdcc819
+WORKDIR /opt
 
 RUN cp -r ./open-omics-deepvariant /opt/deepvariant/
 #COPY ./open-omics-deepvariant /opt/deepvariant/
@@ -60,8 +62,11 @@ RUN rm -rf open-omics-deepvariant
 
 
 RUN git clone --recursive https://github.com/samtools/bcftools.git
+WORKDIR /opt/bcftools
 RUN git checkout e4a21b8
+WORKDIR /opt
 RUN git clone --recursive https://github.com/samtools/htslib.git
+WORKDIR /opt/htslib
 RUN git checkout 3668b932bdb9f737c4af9c28ddbf0472156a5f24
 
 
@@ -251,7 +256,7 @@ RUN apt-get -y update && \
 WORKDIR /
 #COPY extra_scripts .
 RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-
+WORKDIR /Open-Omics-Acceleration-Framework
 RUN git checkout 060a0c76ad4ded6d6de709b0466b8bdafdc6053d
 
 WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
