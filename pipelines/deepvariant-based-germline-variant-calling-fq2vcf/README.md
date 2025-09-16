@@ -25,7 +25,7 @@ docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_p
 ```
 Part II: bams2vcf
 ```bash
-docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy -t bams2vcf -f Dockerfile_bamsvcf  .   
+docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy -t bams2vcf -f Dockerfile_bams2vcf  .   
 ```
 
 ### 3. Run the Dockers  
