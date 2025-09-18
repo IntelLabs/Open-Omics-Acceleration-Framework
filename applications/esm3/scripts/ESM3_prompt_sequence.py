@@ -1,3 +1,6 @@
+# Copyright 2025 Intel Corporation
+# SPDX-License-Identifier: MIT License
+
 import os
 import re
 import torch

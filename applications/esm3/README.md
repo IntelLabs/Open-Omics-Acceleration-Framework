@@ -263,7 +263,7 @@ This enables a seamless transition from smaller and faster models, to our larges
 ### ESM3 Example Usage
  <a name="esm3-example"></a>
 
-Check out our [tutorials](./cookbook/tutorials) to learn how to use ESM3.
+Check out our [tutorials](https://github.com/evolutionaryscale/esm/tree/main/cookbook/tutorials) to learn how to use ESM3.
 
 ## ESM C <a name="esm-c"></a>
 [ESM Cambrian](https://www.evolutionaryscale.ai/blog/esm-cambrian) is a parallel model family to our flagship ESM3 generative models. While ESM3 focuses on controllable generation of proteins, ESM C focuses on creating representations of the underlying biology of proteins.
@@ -393,7 +393,7 @@ print(logits_output.logits, logits_output.embeddings)
 ### ESM C Example Usage
  <a name="esm-c-example"></a>
 
-Check out our [tutorials](./cookbook/tutorials) to learn how to use ESM C.
+Check out our [tutorials](https://github.com/evolutionaryscale/esm/tree/main/cookbook/tutorials) to learn how to use ESM C.
 
 ## Responsible Development <a name="responsible-development"></a>
 
@@ -410,7 +410,7 @@ With this in mind, we have performed a variety of mitigations for `esm3-sm-open-
 
 ## Licenses  <a name="licenses"></a>
 
-The code and model weights of ESM3 and ESM C are available under a mixture of non-commercial and permissive commercial licenses. For complete license details, see [LICENSE.md](./LICENSE.md).
+The code and model weights of ESM3 and ESM C are available under a mixture of non-commercial and permissive commercial licenses. For complete license details, see [LICENSE.md](https://github.com/evolutionaryscale/esm/blob/main/LICENSE.md).
 
 ## Citations  <a name="citations"></a>
 If you use ESM in your work, please cite one of the following:
