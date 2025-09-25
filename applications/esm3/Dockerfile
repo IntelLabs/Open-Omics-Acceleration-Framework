@@ -1,3 +1,6 @@
+# Copyright 2025 Intel Corporation
+# SPDX-License-Identifier: MIT License
+
 ARG FROM_IMAGE=ubuntu:25.10
 
 FROM ${FROM_IMAGE} AS builder

@@ -1,6 +1,6 @@
 # Open-Omics-ESM
 
-Open-Omics-ESM3 is an optimized version of the Evolutionary Scale Modeling (ESM3) toolkit, designed for modern CPUs. It enhances the performance of various ESM3 modules by enabling lower-precision computations (bf16) for improved efficiency.
+Open-Omics-ESM3 is an optimized version of the Evolutionary Scale Modeling [ESM3](https://github.com/evolutionaryscale/esm) toolkit, designed for modern CPUs. It enhances the performance of various ESM3 modules by enabling lower-precision computations (bf16) for improved efficiency.
 
 ## 🛠️ Building the Docker Image
 Run the following command to build the Docker image:
