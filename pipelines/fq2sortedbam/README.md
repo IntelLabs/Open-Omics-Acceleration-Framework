@@ -6,10 +6,17 @@ The pipeline takes input fastq files and produces sorted BAM file through the fo
 
 ### Modes:
 fq2SortedBAM supports 4 different modes:  
-1. ```sortedbam```: It takes fastq reads files and reference genome as input and outputs sorted BAM file  
+1. ```sortedbam```: It takes fastq reads files and reference genome as input and outputs a sorted BAM file  
 2. ```flatmode```: It takes fastq reads files and reference genome as input, and outputs multiple (equal to the number of ranks created) unsorted SAM files  
 3. ```fqprocessonly```: Custom mode, not for general use
 4. ```multifq```: Custom mode, not for general use  
+
+## Sequence alingment tools in the pipeline
+Both sortedbam and flatmode support bwa-mem2 for short reads and mm2-fast (accelerated version of minimap2) for long reads alignemnt.  
+These alignment tools can be enabled by _--read_type_ command-line option:  
+1. [deafult] selects bwa-mem2 when _--read_type=short_  
+2. selects mm2-fast when _--read_type=long_  (Note: mm2-fast runs with '-a' command-line option by default producing SAM output)  
+3. Both the alignment tools support all the original tools' command-line options; these parameters can be provided through _--params_ command-line option to fq2sortedBAM    
 
 
 ## Use Docker
