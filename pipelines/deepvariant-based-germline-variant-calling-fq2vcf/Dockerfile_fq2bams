@@ -43,6 +43,10 @@ RUN echo "Build bwa-mem2"
 WORKDIR  /Open-Omics-Acceleration-Framework/applications/bwa-mem2
 RUN make multi
 
+RUN echo "Build mm2-fast"
+WORKDIR  /Open-Omics-Acceleration-Framework/applications/mm2-fast
+RUN make clean
+RUN make -j
 
 # compile htslib
 WORKDIR  /Open-Omics-Acceleration-Framework/applications/htslib
