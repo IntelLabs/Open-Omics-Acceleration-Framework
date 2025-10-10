@@ -2,9 +2,10 @@
 ### Overview:  
 OpenOmics' fq2vcf is a highly optimized, distributed, deep learning-based short-read germline variant calling pipeline for x86 CPUs. 
 The pipeline comprises of:   
-1. bwa-mem2 (a highly optimized version of bwa-mem) for sequence mapping  
-2. SortSAM using samtools  
-3. An optimized version of DeepVariant tool for Variant Calling   
+1. Sequence alignment using: bwa-mem2 (a highly optimized version of bwa-mem) for short reads or mm2-fast  (a highly optimized version of minimap2) for long reads 
+2. SortSAM using SAMTools  
+3. An optimized version of DeepVariant tool for Variant Calling
+   
 The following figure illustrates the pipeline:
 
 <p align="center">
@@ -29,14 +30,26 @@ docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_p
 ```
 
 ### 3. Run the Dockers  
-Notes:  
-<refdir> is expected to contain the bwa-mem2 index. You can index the reference during the run by enabling "--rindex" to fq2bams commandline.  
+Notes:
+- Alignment tools (bwa-mem2/mm2-fast) can be selected using parameter _--read_type short_ for bwa-mem2 or _--read_type long_ for mm2-fast to run_fq2bams.py  
+- All the alignment tools' command-line parameters are supported and can be provided as --params "'<param_list>'"  to run_fq2bams.py
+- Inputs reads are expected in gz file format
+- refdir is expected to contain the bwa-mem2 genome and index. You can also index the reference genome during the run by enabling "--rindex" to fq2bams command-line (for bwa-mem2). For mm2-fast, it creates the reference genome index during the alignment step on-the-fly.  
 
 ```bash
 docker run  --volume <refdir>:/refdir <readsdir>:/readsdir <outdir_fq2bams>:/outdir fq2bams:latest python run_fq2bams.py --ref /refdir/<reference_file> --reads  /readsdir/<read1>  /readsdir/<read2>  --output /outdir/<outBAMfile>   
 
 docker run  --volume <refdir>:/refdir <outdir_fq2bams>:/indir <output>:/outdir  bams2vcf:latest python run_bams2vcf.py --ref /refdir/<reference_file> --input /indir/  --output /outdir/<outVCFfile>   
 ```
+
+Example using mm2-fast for aligment:  
+```bash
+docker run  --volume xpath:/refdir ypath:/readsdir outpath:/outdir fq2bams:latest python run_fq2bams.py --read_type long --ref /refdir/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna --reads  /readsdir/HG002_35x_PacBio_14kb-15kb.fastq.gz  --output /outdir/   
+
+docker run  --volume xpath:/refdir outpath:/indir outpath:/outdir  bams2vcf:latest python run_bams2vcf.py --ref /refdir/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna --input /indir/  --output /outdir/hg002_pacbio_vcfile      
+```
+
+
 
 # Results
 

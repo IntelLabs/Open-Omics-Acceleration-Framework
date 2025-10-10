@@ -106,6 +106,8 @@ if __name__ == '__main__':
     parser.add_argument("--refindex", default="None", help="name of refindex file")
     #parser.add_argument("-r1", "--read1", default="None", help="name of read1")
     #parser.add_argument("-r2", "--read2", default="None", help="name of read2")
+    parser.add_argument('--read_type',default="short",
+                        help="(short/long): short - bwa-mem2 alignment for short reads; long - mm2-fast alignment for long reads. Defaults to short.")
     parser.add_argument('--rindex',action='store_true',help="It will index reference genome for bwa-mem2. If it is already done offline then don't use this flag.")
     parser.add_argument('-dindex',action='store_true',help="It will create .fai index. If it is done offline then disable this.")
     parser.add_argument('--container_tool',default="docker",help="Container tool used in pipeline : Docker/Podman")
@@ -130,7 +132,10 @@ if __name__ == '__main__':
     args = vars(parser.parse_args())
 
     assert len(args["reads"]) >= 1
-    
+    assert args["read_type"] in ["short", "long"], "Invalid read_type, should be short or long"
+    if args["read_type"] == "long":
+        assert len(args["reads"]) == 1, "For long reads only one read file is expected"
+            
     args["input"] = os.path.dirname(args["reads"][0])
 
     args["read1"] = os.path.basename(args["reads"][0])

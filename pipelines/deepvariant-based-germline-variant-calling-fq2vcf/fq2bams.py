@@ -48,6 +48,7 @@ APPSDIR=os.path.join(BINDIR + "/applications/")
 SAMTOOLS=os.path.join(APPSDIR + "/samtools/samtools")
 BWA=os.path.join(APPSDIR + "/bwa-mem2/bwa-mem2")
 BWASSE=os.path.join(APPSDIR + "/bwa-mem2/bwa-mem2.sse42")
+MINIMAP2=os.path.join(APPSDIR + "/mm2-fast/minimap2")
 
 def pr_t1( f, start, end, bufs, sems ):  # thread to read from fastq.gz file
     f.seek(start)
@@ -199,7 +200,13 @@ def sort_thr5(fname, comm):
     # get binned items, output to bin file
     while ndone<nranks:
         #b, vl = comm.recv()
-        req = comm.irecv()
+        #req = comm.irecv()
+        if args["read_type"] == "short":
+            req = comm.irecv()
+        else:
+            bf_sz = 100000000
+            req = comm.irecv(bf_sz)
+            
         b, vl = req.wait()
         b = b//nranks
         if len(vl)>0 and  vl[0]=="done":
@@ -418,13 +425,17 @@ def create_folder(fo):
 
 
 def rundown(args):
+    read_type = args["read_type"] 
     ifile = args["refindex"]
     rfile1 = args["read1"]
-    se_mode = True
-    rfile2 = ""
-    if args["read2"] != "" and args["read2"] != "None":
-        rfile2 = args["read2"]
-        se_mode = False
+    rfile2 = args["read2"]
+    
+    se_mode = False
+    if rfile2 == "" or rfile2 == "None":
+        se_mode = True
+        
+    if read_type == "long":
+        se_mode = True   ## for long reads, se_mode=True always
 
     params=args["params"]
     #params = ""
@@ -539,7 +550,8 @@ def rundown(args):
     #keep = comm.bcast(keep, root=0)            
     #############################################################################
     if rank == 0:
-        print("[Info] bwa-mem2 starts")
+        if read_type == "short":  print("[Info] bwa-mem2 starts")
+        if read_type == "long":  print("[Info] mm2-fast starts")
     
     begin0 = time.time()
     fn1 = pragzip_reader( comm, int(cpus), os.path.join(inputdir,rfile1), output )
@@ -549,26 +561,33 @@ def rundown(args):
     #print("tempdir:" , tempdir, os.path.join(tempdir,'aln'))
     begin1 = time.time()
     #a=run(f'{BINDIR}/applications/bwa-mem2/bwa-mem2 mem -t '+cpus+' '+os.path.join(refdir,ifile)+' '+fn1+' '+fn2+' > '+fn3,capture_output=True, shell=True)
-    if se_mode:
-        if args['simd'] == 'sse':
-            cmd = f'{BWASSE} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+    if read_type == "short":
+        if se_mode:
+            if args['simd'] == 'sse':
+                cmd = f'{BWASSE} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+            else:
+                cmd = f'{BWA} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
+                
+            #print(cmd)
+            a=run(cmd, capture_output=True, shell=True)
         else:
-            cmd = f'{BWA} mem ' + params + ' -t '+cpus+' '+ refdir+ifile+' '+fn1+' '+' > '+fn3 + '  2> ' + output +'logs/bwalog' + str(rank) + '.txt'
-            
-        #print(cmd)
-        a=run(cmd, capture_output=True, shell=True)
-    else:
-        if args['simd'] == 'sse':
-            a=run(f'{BWASSE} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+ \
-              fn1+' '+fn2+' > '+fn3 + '  2> ' + output + \
-                  'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
-            
-        else:                
-            a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+ \
-                  fn1+' '+fn2+' > '+fn3 + '  2> ' + output + \
-                  'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+            if args['simd'] == 'sse':
+                a=run(f'{BWASSE} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+ \
+                fn1+' '+fn2+' > '+fn3 + '  2> ' + output + \
+                    'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+                
+            else:                
+                a=run(f'{BWA} mem ' + params + ' -t '+cpus+' '+refdir+ifile+' '+ \
+                    fn1+' '+fn2+' > '+fn3 + '  2> ' + output + \
+                    'logs/bwalog' + str(rank) + '.txt',capture_output=True, shell=True)
+
+        assert a.returncode==0,"bwa-mem2 Run Failed"
+    else:   # long reads
+        a = run(f'{MINIMAP2} -a ' + params + ' -t '+cpus+' '+refdir+ifile+' '+
+                fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' +
+                str(rank) + '.txt',capture_output=True, shell=True)
+        assert a.returncode==0,"minimap2 Run Failed"
     
-    assert a.returncode==0,"bwa-mem2 Run Failed"
     end1b=time.time()
     thr.join()
     comm.barrier()
