@@ -496,7 +496,7 @@ def create_folder(fo):
 def alignment(p):
     outfile, read_type, params, refdir, ifile, fn1, fn2, fn3, output, cpus, rank = p
     if read_type == "long":
-        a = run(f'{MINIMAP2} ' + params + ' -t '+cpus+' '+refdir+ifile+' '+
+        a = run(f'{MINIMAP2} -a ' + params + ' -t '+cpus+' '+refdir+ifile+' '+
                 fn1+' '+' > '+fn3 + '  2> ' + output +'logs/mm2log' +
                 str(rank) + '.txt',capture_output=True, shell=True)
         assert a.returncode == 0
