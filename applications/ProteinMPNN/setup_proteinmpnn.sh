@@ -1,3 +1,8 @@
+# Copyright 2025 Intel Corporation
+# SPDX-License-Identifier: MIT License
+# Author: Rahamathullah
+# Email shaikx.rahamathullah@intel.com
+
 #!/bin/bash
 
 set -e
@@ -50,7 +55,7 @@ fi
 
 cd ProteinMPNN
 git checkout 8907e6671bfbfc92303b5f79c4b5e6ce47cdef57
-PATCH_FILE="$ABS_DIRECTORY/ProteinMPNN.patch"
+PATCH_FILE="$ABS_DIRECTORY/ProteinMPNN_torch.patch"
 if [ -f "$PATCH_FILE" ]; then
   if git apply --reverse --check "$PATCH_FILE" > /dev/null 2>&1; then
     echo "Patch has already been applied. Skipping patch step."
@@ -76,10 +81,9 @@ source $CONDA_INSTALL_DIR/bin/activate p_mpnn
 #conda activate p_mpnn
 
 conda install -n p_mpnn -y pytorch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 -c pytorch
-pip install intel-extension-for-pytorch==2.3.100
 pip install numpy==1.26.0
 
 echo "setup complete!"
 echo "Note:"
 echo "Conda (Miniforge3) is installed at $CONDA_INSTALL_DIR"
-echo "To manually activate conda env, do: source $CONDA_INSTALL_DIR/bin/activate SE3nv"
+echo "To manually activate conda env, do: source $CONDA_INSTALL_DIR/bin/activate p_mpnn"

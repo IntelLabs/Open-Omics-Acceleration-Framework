@@ -1,3 +1,6 @@
+# Copyright 2025 Intel Corporation
+# SPDX-License-Identifier: MIT License
+
 # Use the official Ubuntu image as a base
 ARG FROM_IMAGE=ubuntu:24.04
 
@@ -26,18 +29,23 @@ RUN groupadd --gid 1001 $SERVICE_NAME && \
 COPY --from=conda_setup /opt/conda /opt/conda
 
 WORKDIR /app
+RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+WORKDIR /app/Open-Omics-Acceleration-Framework
+RUN git switch db29aec9c3e2eb27c36dd91824dfc346e5deae89
+#RUN git switch protein_design
+
+WORKDIR /app
 RUN git clone https://github.com/RosettaCommons/RFdiffusion.git 
 
 WORKDIR /app/RFdiffusion
 # adding the git commit id
 RUN git checkout 820bfdfaded8c260b962dc40a3171eae316b6ce0
 
-RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
-RUN tar -xzf Source_code_with_submodules.tar.gz
-RUN cp /app/RFdiffusion/Open-Omics-Acceleration-Framework/applications/RFdiffusion/RFdiffusion.patch .
+# ----------------------------
+# Apply patch to RFdiffusion
+# ----------------------------
+RUN cp /app/Open-Omics-Acceleration-Framework/applications/RFdiffusion/RFdiffusion.patch .
 RUN git apply RFdiffusion.patch
-RUN rm -rf Open-Omics-Acceleration-Framework
-RUN rm -rf Source_code_with_submodules.tar.gz
 
 WORKDIR /app/RFdiffusion/models
 RUN  wget https://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063dc4/Base_ckpt.pt && \
@@ -73,7 +81,26 @@ RUN pip install -e .
 
 RUN tar -xvf examples/ppi_scaffolds_subset.tar.gz -C examples/
 
+# Install ipywidgets
+RUN pip install ipywidgets
+
+WORKDIR /app/RFdiffusion
+RUN git clone https://github.com/sokrypton/ColabDesign.git
+WORKDIR /app/RFdiffusion/ColabDesign
+RUN git checkout 4c0bc6d67f8f967135ecccc135a26b3bfded25e8
+RUN cp /app/Open-Omics-Acceleration-Framework/applications/RFdiffusion/pipeline_design_colab.patch . 
+RUN git apply pipeline_design_colab.patch
+
+#RUN patch -p1 < pipeline_design_colab.patch || true
+RUN pip install -e .
+
+RUN pip install opea-comps==1.3 && \
+    pip install numpy==1.26.4 && \
+    pip install netifaces==0.11.0 
+
 WORKDIR /app/RFdiffusion/scripts
+RUN cp /app/Open-Omics-Acceleration-Framework/applications/RFdiffusion/postprocess.py .
+RUN rm -rf /app/Open-Omics-Acceleration-Framework
 RUN chown -R $SERVICE_NAME:$SERVICE_NAME /app
 
 # Switch to non-root user

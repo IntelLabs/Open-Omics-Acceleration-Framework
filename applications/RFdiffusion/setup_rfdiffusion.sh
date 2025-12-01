@@ -1,3 +1,8 @@
+# Copyright 2025 Intel Corporation
+# SPDX-License-Identifier: MIT License
+# Author: Rahamathullah
+# Email shaikx.rahamathullah@intel.com
+
 #!/bin/bash
 
 set -e
