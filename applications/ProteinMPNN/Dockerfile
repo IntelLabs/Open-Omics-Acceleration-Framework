@@ -27,7 +27,7 @@ RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 WORKDIR /Open-Omics-Acceleration-Framework
 RUN git switch db29aec9c3e2eb27c36dd91824dfc346e5deae89
 #RUN git switch protein_design
-RUN mv Open-Omics-Acceleration-Framework /OpenOmics
+#RUN mv Open-Omics-Acceleration-Framework /OpenOmics
 
 
 # ---------------------------
@@ -37,7 +37,7 @@ WORKDIR /
 RUN git clone https://github.com/dauparas/ProteinMPNN.git
 WORKDIR /ProteinMPNN
 RUN git checkout 8907e6671bfbfc92303b5f79c4b5e6ce47cdef57
-RUN cp /OpenOmics/applications/ProteinMPNN/ProteinMPNN_torch.patch .
+RUN cp /Open-Omics-Acceleration-Framework/applications/ProteinMPNN/ProteinMPNN_torch.patch .
 RUN git apply ProteinMPNN_torch.patch
 
 # ---------------------------
@@ -55,14 +55,14 @@ RUN git clone https://github.com/sokrypton/ColabDesign.git
 WORKDIR /ColabDesign
 RUN git checkout 4c0bc6d67f8f967135ecccc135a26b3bfded25e8
 # Apply JAX patch from the same Open-Omics folder
-RUN cp /OpenOmics/applications/ProteinMPNN/ProteinMPNN_jax.patch .
+RUN cp /Open-Omics-Acceleration-Framework/applications/ProteinMPNN/ProteinMPNN_jax.patch .
 RUN patch -p1 --force < ProteinMPNN_jax.patch || true
 
 # ---------------------------
 # Cleanup
 # ---------------------------
 WORKDIR /
-RUN rm -rf /OpenOmics
+RUN rm -rf /Open-Omics-Acceleration-Framework
 
 # Create shared conda env
 RUN conda create -n p_mpnn python=3.11 -y && \
