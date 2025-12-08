@@ -164,6 +164,424 @@ index a51bcce..ab28e9c 100644
 +    - pydantic==2.7.1
 +    - dgl==2.1.0
 +    - numpy==1.26.0
+diff --git a/protein.py b/protein.py
+new file mode 100644
+index 0000000..ebaf048
+--- /dev/null
++++ b/protein.py
+@@ -0,0 +1,412 @@
++#!/usr/bin/env python
++# Copyright 2025 Intel Corporation
++# SPDX-License-Identifier: MIT License
++# Author: Rahamathullah
++# Email shaikx.rahamathullah@intel.com
++
++# encoding: utf-8
++import os, sys
++import time
++import signal
++import argparse
++import random
++import string
++import json
++import numpy as np
++import matplotlib.pyplot as plt
++from string import ascii_uppercase, ascii_lowercase
++from rfdiffusion.inference.utils import parse_pdb
++from ColabDesign.colabdesign.rf.utils import get_ca, fix_contigs, fix_partial_contigs, fix_pdb, sym_it
++from colabdesign.shared.protein import pdb_to_string
++import subprocess
++def get_pdb(pdb_code=None):
++  print("----get_pdb")
++  if pdb_code is None or pdb_code == "":
++    upload_dict = files.upload()
++    pdb_string = upload_dict[list(upload_dict.keys())[0]]
++    with open("tmp.pdb","wb") as out: out.write(pdb_string)
++    return "tmp.pdb"
++  elif os.path.isfile(pdb_code):
++    return pdb_code
++  elif len(pdb_code) == 4:
++    if not os.path.isfile(f"{pdb_code}.pdb1"):
++      os.system(f"wget -qnc https://files.rcsb.org/download/{pdb_code}.pdb1.gz")
++      os.system(f"gunzip {pdb_code}.pdb1.gz")
++    return f"{pdb_code}.pdb1"
++  else:
++    os.system(f"wget -qnc https://alphafold.ebi.ac.uk/files/AF-{pdb_code}-F1-model_v3.pdb")
++    return f"AF-{pdb_code}-F1-model_v3.pdb"
++
++def run_ananas(pdb_str, path, sym=None):
++  print("----run_ananas")
++  pdb_filename = f"outputs/{path}/ananas_input.pdb"
++  out_filename = f"outputs/{path}/ananas.json"
++  with open(pdb_filename,"w") as handle:
++    handle.write(pdb_str)
++
++  cmd = f"./ananas {pdb_filename} -u -j {out_filename}"
++  if sym is None: os.system(cmd)
++  else: os.system(f"{cmd} {sym}")
++
++  # parse results
++  try:
++    out = json.loads(open(out_filename,"r").read())
++    results,AU = out[0], out[-1]["AU"]
++    group = AU["group"]
++    chains = AU["chain names"]
++    rmsd = results["Average_RMSD"]
++    print(f"AnAnaS detected {group} symmetry at RMSD:{rmsd:.3}")
++
++    C = np.array(results['transforms'][0]['CENTER'])
++    A = [np.array(t["AXIS"]) for t in results['transforms']]
++
++    # apply symmetry and filter to the asymmetric unit
++    new_lines = []
++    for line in pdb_str.split("\n"):
++      if line.startswith("ATOM"):
++        chain = line[21:22]
++        if chain in chains:
++          x = np.array([float(line[i:(i+8)]) for i in [30,38,46]])
++          if group[0] == "c":
++            x = sym_it(x,C,A[0])
++          if group[0] == "d":
++            x = sym_it(x,C,A[1],A[0])
++          coord_str = "".join(["{:8.3f}".format(a) for a in x])
++          new_lines.append(line[:30]+coord_str+line[54:])
++      else:
++        new_lines.append(line)
++    return results, "\n".join(new_lines)
++
++  except:
++    return None, pdb_str
++
++"""def run(command, steps, num_designs=1): #, visual="none"):
++
++  #os.system(f'{command} > /dev/null ')
++  #return 1, 1
++  print("-run")
++  def run_command_and_get_pid(command):
++    print("-------run_command_and_get_pid")
++    pid_file = '/dev/shm/pid'
++    os.system(f'nohup {command} > /dev/null & echo $! > {pid_file}')
++    with open(pid_file, 'r') as f:
++      pid = int(f.read().strip())
++    os.remove(pid_file)
++  #  pid = process.pid
++    return pid
++  def is_process_running(pid):
++    try:
++      os.kill(pid, 0)
++    except OSError:
++      return False
++    else:
++      return True
++
++  # clear previous run
++  for n in range(steps):
++    if os.path.isfile(f"/dev/shm/{n}.pdb"):
++      os.remove(f"/dev/shm/{n}.pdb")
++
++  pid = run_command_and_get_pid(command)
++  try:
++    fail = False
++    for _ in range(num_designs):
++
++      # for each step check if output generated
++      for n in range(steps):
++        wait = True
++        while wait and not fail:
++          time.sleep(0.1)
++          if os.path.isfile(f"/dev/shm/{n}.pdb"):
++            pdb_str = open(f"/dev/shm/{n}.pdb").read()
++            if pdb_str[-3:] == "TER":
++              wait = False
++            elif not is_process_running(pid):
++              print('elif not')
++              fail = True
++          elif not is_process_running(pid):
++            print('elif not-2')
++            fail = True
++    while is_process_running(pid):
++      time.sleep(0.1)
++  except Exception as e:
++    print(f"Exception in run(): {e}")
++    try:
++      process.kill()
++    except:
++      pass
++  except KeyboardInterrupt:
++    os.kill(pid, signal.SIGTERM)
++    #progress.bar_style = 'danger'
++    #progress.description = "stopped"""
++############## external code #####################
++""" def run(command, steps, num_designs=1, visual="none"):
++
++  def run_command_and_get_pid(command):
++    print("Launching process")
++    process = subprocess.Popen(command, shell=True)
++    return process.pid, process
++
++  def is_process_running(process):
++    try:
++      os.kill(pid, 0)
++    except OSError:
++      return False
++    else:
++      return True
++
++  # Clear previous run
++  for n in range(steps):
++    if os.path.isfile(f"/dev/shm/{n}.pdb"):
++      os.remove(f"/dev/shm/{n}.pdb")
++
++  pid, process = run_command_and_get_pid(command)
++  try:
++    fail = False
++    for _ in range(num_designs):
++      for n in range(steps):
++        wait = True
++        while wait and not fail:
++          time.sleep(0.1)
++          if os.path.isfile(f"/dev/shm/{n}.pdb"):
++            with open(f"/dev/shm/{n}.pdb") as f:
++              pdb_str = f.read()
++              if pdb_str.strip().endswith("TER"):
++                wait = False
++              elif not is_process_running(pid):
++                fail = True
++          elif not is_process_running(pid):
++            fail = True
++
++    # Wait for process to end completely before exiting
++    process.wait()
++
++  except KeyboardInterrupt:
++    process.terminate()
++    print("Terminated by user.")"""
++
++def run(command, steps, num_designs=1, visual="none"):
++
++  def run_command_and_get_process(command):
++    return subprocess.Popen(command, shell=True)
++
++  def is_process_running(process):
++    return process.poll() is None
++
++  # Clear previous outputs
++  for n in range(steps):
++    pdb_path = f"/dev/shm/{n}.pdb"
++    if os.path.exists(pdb_path):
++      os.remove(pdb_path)
++
++  process = run_command_and_get_process(command)
++
++  try:
++    fail = False
++    for _ in range(num_designs):
++      for n in range(steps):
++        wait = True
++        while wait and not fail:
++          time.sleep(0.1)
++          pdb_path = f"/dev/shm/{n}.pdb"
++          if os.path.isfile(pdb_path):
++            with open(pdb_path) as f:
++              pdb_str = f.read()
++            if pdb_str.strip().endswith("TER"):
++              wait = False
++            elif not is_process_running(process):
++              fail = True
++          elif not is_process_running(process):
++            fail = True
++
++    # Wait for process to finish fully
++    process.wait()
++
++  except KeyboardInterrupt:
++    print("Interrupted. Terminating process.")
++    process.terminate()
++    process.wait()
++
++def run_diffusion(contigs, path,pdb=None, iterations=50,
++                  symmetry="none", order=1, hotspot=None,
++                  chains=None, add_potential=False,
++                  num_designs=1): #, visual="none"):
++
++  full_path = f"outputs/{path}"
++  #print("-----run_diffusion")
++  #full_path = os.path.join(path)
++  print('full_path_1', full_path)
++  os.makedirs(full_path, exist_ok=True)
++  opts = [f"inference.output_prefix={full_path}",
++          f"inference.num_designs={num_designs}"]
++  if chains == "": chains = None
++  # determine symmetry type
++  if symmetry in ["auto","cyclic","dihedral"]:
++    if symmetry == "auto":
++      sym, copies = None, 1
++    else:
++      sym, copies = {"cyclic":(f"c{order}",order),
++                     "dihedral":(f"d{order}",order*2)}[symmetry]
++  else:
++    symmetry = None
++    sym, copies = None, 1
++
++  # determine mode
++  contigs = contigs.replace(","," ").replace(":"," ").split()
++  is_fixed, is_free = False, False
++  fixed_chains = []
++  for contig in contigs:
++    for x in contig.split("/"):
++      a = x.split("-")[0]
++      if a[0].isalpha():
++        is_fixed = True
++        if a[0] not in fixed_chains:
++          fixed_chains.append(a[0])
++      if a.isnumeric():
++        is_free = True
++  if len(contigs) == 0 or not is_free:
++    mode = "partial"
++  elif is_fixed:
++    mode = "fixed"
++  else:
++    mode = "free"
++
++  # fix input contigs
++  if mode in ["partial","fixed"]:
++    pdb_str = pdb_to_string(get_pdb(pdb), chains=chains)
++    if symmetry == "auto":
++      a, pdb_str = run_ananas(pdb_str, path)
++      if a is None:
++        print(f'ERROR: no symmetry detected')
++        symmetry = None
++        sym, copies = None, 1
++      else:
++        if a["group"][0] == "c":
++          symmetry = "cyclic"
++          sym, copies = a["group"], int(a["group"][1:])
++        elif a["group"][0] == "d":
++          symmetry = "dihedral"
++          sym, copies = a["group"], 2 * int(a["group"][1:])
++        else:
++          print(f'ERROR: the detected symmetry ({a["group"]}) not currently supported')
++          symmetry = None
++          sym, copies = None, 1
++
++    elif mode == "fixed":
++      pdb_str = pdb_to_string(pdb_str, chains=fixed_chains)
++
++    pdb_filename = f"{full_path}/input.pdb"
++    with open(pdb_filename, "w") as handle:
++      handle.write(pdb_str)
++
++    parsed_pdb = parse_pdb(pdb_filename)
++    opts.append(f"inference.input_pdb={pdb_filename}")
++    if mode in ["partial"]:
++      iterations = int(80 * (iterations / 200))
++      opts.append(f"diffuser.partial_T={iterations}")
++      contigs = fix_partial_contigs(contigs, parsed_pdb)
++    else:
++      opts.append(f"diffuser.T={iterations}")
++      contigs = fix_contigs(contigs, parsed_pdb)
++  else:
++    opts.append(f"diffuser.T={iterations}")
++    parsed_pdb = None
++    contigs = fix_contigs(contigs, parsed_pdb)
++
++  if hotspot is not None and hotspot != "":
++    opts.append(f"ppi.hotspot_res=[{hotspot}]")
++
++  # setup symmetry
++  if sym is not None:
++    sym_opts = ["--config-name symmetry", f"inference.symmetry={sym}"]
++    if add_potential:
++      sym_opts += ["'potentials.guiding_potentials=[\"type:olig_contacts,weight_intra:1,weight_inter:0.1\"]'",
++                   "potentials.olig_intra_all=True","potentials.olig_inter_all=True",
++                   "potentials.guide_scale=2","potentials.guide_decay=quadratic"]
++    opts = sym_opts + opts
++    contigs = sum([contigs] * copies,[])
++
++  opts.append(f"'contigmap.contigs=[{' '.join(contigs)}]'")
++  opts += ["+inference.dump_pdb=True","+inference.dump_pdb_path='/dev/shm'"]
++
++  print("mode:", mode)
++  print("output:", full_path)
++  print("contigs:", contigs)
++
++  final_contigs_file = os.path.join(full_path, "final_contigs.txt")
++  """with open(final_contigs_file, 'w') as f:
++    for c in contigs:
++      f.write(f"'{c}'\n")"""
++  with open(final_contigs_file, 'w') as f:
++    if isinstance(contigs, list):
++        if len(contigs) == 1:
++            # Single contig string, write as-is without quotes
++            f.write(f"{contigs[0]}\n")
++        else:
++            # Multiple contigs, join with comma and space
++            f.write(", ".join(contigs) + "\n")
++    else:
++        # In case contigs is not a list (fallback)
++        f.write(str(contigs) + "\n")
++
++  opts_str = " ".join(opts)
++  cmd = f"./scripts/run_inference.py {opts_str}"
++  print(cmd)
++
++  # RUN
++  #print("-----before run")
++  run(cmd, iterations, num_designs) #, visual=visual)
++  #print("------after run")
++  # fix pdbs
++  for n in range(num_designs):
++    pdbs = [f"{full_path}_{n}.pdb"]
++    for pdb in pdbs:
++        with open(pdb, "r") as handle:
++          pdb_str = handle.read()
++        with open(pdb, "w") as handle:
++          pdb_str = handle.write(fix_pdb(pdb_str, contigs))
++  print('final rfdiffusion output generated')
++  return contigs, copies
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument("--name", type=str, required=True)
++    parser.add_argument("--pdb", type=str, required=True)
++    #parser.add_argument("--path", type=str, required=True)
++    parser.add_argument("--contigs", type=str, required=True)
++    parser.add_argument("--iterations", type=int, default=50)
++    parser.add_argument("--hotspot", type=str)
++    parser.add_argument("--num_designs", type=int, default=1)
++    #parser.add_argument("--visual", type=str, default="none")
++    parser.add_argument("--symmetry", type=str, default="none")
++    parser.add_argument("--order", type=int, default=1)
++    parser.add_argument("--chains", type=str)
++    parser.add_argument("--add_potential", action="store_true")
++    o = parser.parse_args()
++
++    path = o.name
++    while os.path.exists(f"outputs/{path}_0.pdb"):
++        path = o.name + "_" + ''.join(random.choices(string.ascii_lowercase + string.digits, k=5))
++
++    flags = {
++        "contigs": o.contigs,
++        "pdb": o.pdb,
++        "order": o.order,
++        "iterations": o.iterations,
++        "symmetry": o.symmetry,
++        "hotspot": o.hotspot,
++        "path": path,
++        "chains": o.chains,
++        "add_potential": o.add_potential,
++        "num_designs": o.num_designs,
++        #"visual": o.visual
++    }
++
++    for k, v in flags.items():
++        if isinstance(v, str):
++            flags[k] = v.replace("'", "").replace('"', '')
++
++    contigs, copies = run_diffusion(**flags)
++
++if __name__ == "__main__":
++    main()
 diff --git a/rfdiffusion/inference/model_runners.py b/rfdiffusion/inference/model_runners.py
 index 9a33d98..a6b27d1 100644
 --- a/rfdiffusion/inference/model_runners.py
@@ -633,6 +1051,64 @@ index 864a5ab..463363b 100644
          if not np.isclose(((self.sym_rots[0]-np.eye(3))**2).sum(), 0):
  
              # Move identity to be the first rotation
+diff --git a/rfdiffusion/inference/utils.py b/rfdiffusion/inference/utils.py
+index 43e7e99..61298c4 100644
+--- a/rfdiffusion/inference/utils.py
++++ b/rfdiffusion/inference/utils.py
+@@ -640,7 +640,6 @@ def process_target(pdb_path, parse_hetatom=False, center=True):
+         out["info_het"] = target_struct["info_het"]
+     return out
+ 
+-
+ def get_idx0_hotspots(mappings, ppi_conf, binderlen):
+     """
+     Take pdb-indexed hotspot resudes and the length of the binder, and makes the 0-indexed tensor of hotspots
+@@ -654,12 +653,15 @@ def get_idx0_hotspots(mappings, ppi_conf, binderlen):
+             ), "Hotspot residues need to be provided in pdb-indexed form. E.g. A100,A103"
+             hotspots = [(i[0], int(i[1:])) for i in ppi_conf.hotspot_res]
+             hotspot_idx = []
+-            for i, res in enumerate(mappings["receptor_con_ref_pdb_idx"]):
++            if "receptor_con_ref_pdb_idx" in mappings:
++              (idx,idx0) = (mappings["receptor_con_ref_pdb_idx"],mappings["receptor_con_hal_idx0"])
++            else:
++              (idx,idx0) = (mappings["con_ref_pdb_idx"],mappings["con_hal_idx0"])
++            for i, res in enumerate(idx):
+                 if res in hotspots:
+-                    hotspot_idx.append(mappings["receptor_con_hal_idx0"][i])
++                    hotspot_idx.append(idx0[i])
+     return hotspot_idx
+ 
+-
+ class BlockAdjacency:
+     """
+     Class for handling PPI design inference with ss/block_adj inputs.
+@@ -688,8 +690,8 @@ class BlockAdjacency:
+              conf.scaffold_list as conf
+              conf.inference.num_designs for sanity checking
+         """
+-       
+-        self.conf=conf 
++
++        self.conf=conf
+         # either list or path to .txt file with list of scaffolds
+         if self.conf.scaffoldguided.scaffold_list is not None:
+             if type(self.conf.scaffoldguided.scaffold_list) == list:
+@@ -874,13 +876,13 @@ class BlockAdjacency:
+         """
+         Wrapper method for pulling an item from the list, and preparing ss and block adj features
+         """
+-        
++
+         # Handle determinism. Useful for integration tests
+         if self.conf.inference.deterministic:
+             torch.manual_seed(self.num_completed)
+             np.random.seed(self.num_completed)
+             random.seed(self.num_completed)
+-  
++
+         if self.systematic:
+             # reset if num designs > num_scaffolds
+             if self.item_n >= len(self.scaffold_list):
 diff --git a/scripts/run_inference.py b/scripts/run_inference.py
 index 2a3bf36..f58c0bd 100755
 --- a/scripts/run_inference.py
@@ -712,10 +1188,15 @@ index 2a3bf36..f58c0bd 100755
          if hasattr(sampler, "contig_map"):
 diff --git a/setup_rfdiffusion.sh b/setup_rfdiffusion.sh
 new file mode 100644
-index 0000000..8b9df66
+index 0000000..3626fc2
 --- /dev/null
 +++ b/setup_rfdiffusion.sh
-@@ -0,0 +1,104 @@
+@@ -0,0 +1,109 @@
++# Copyright 2025 Intel Corporation
++# SPDX-License-Identifier: MIT License
++# Author: Rahamathullah
++# Email shaikx.rahamathullah@intel.com
++
 +#!/bin/bash
 +
 +set -e
@@ -796,12 +1277,12 @@ index 0000000..8b9df66
 +wget https://files.ipd.uw.edu/pub/RFdiffusion/1befcb9b28e2f778f53d47f18b7597fa/RF_structure_prediction_weights.pt
 +cd ../
 +# Create and activate the Conda environment using the YAML file, disabling plugins to avoid errors
-+#CONDA_NO_PLUGINS=true 
++#CONDA_NO_PLUGINS=true
 +if conda env list | grep -q "^SE3nv"; then
 +	echo "Environment exists. Moving ahead without create the env. If the setup crashes, please remove manually."
 +    else
 +	echo "Creating conda env SE3nv.."
-+	conda env create -f env/SE3nv.yml 
++	conda env create -f env/SE3nv.yml
 +fi
 +source $CONDA_INSTALL_DIR/bin/activate SE3nv
 +#conda init
