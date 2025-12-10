@@ -16,8 +16,8 @@ Option 2 above incurs lightweight AF2 preprocessing as compared to option 1.
 
 ### Build (Docker images)
 ```bash
-git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git -b super_pipeline
-cd TransOmics.OpenOmicsInternal/pipelines/protein-design
+git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git -b protein_design
+cd Open-Omics-Acceleration-Framework/pipelines/protein-design
 ```
 
 ```bash

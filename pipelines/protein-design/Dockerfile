@@ -31,8 +31,7 @@ WORKDIR /app
 
 RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 RUN /app/Open-Omics-Acceleration-Framework
-RUN git checkout db29aec9c3e2eb27c36dd91824dfc346e5deae89
-#RUN git switch protein_design
+RUN git switch protein_design
 
 # Clone the ColabDesign repository
 WORKDIR /app
