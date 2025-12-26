@@ -8,7 +8,7 @@
 set -e  # Stop if any command fails
 git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 cd Open-Omics-Acceleration-Framework/
-git checkout db29aec9c3e2eb27c36dd91824dfc346e5deae89
+git switch protein_design
 
 cd applications/RFdiffusion
 

@@ -25,9 +25,7 @@ WORKDIR /
 
 RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
 WORKDIR /Open-Omics-Acceleration-Framework
-RUN git switch db29aec9c3e2eb27c36dd91824dfc346e5deae89
-#RUN git switch protein_design
-#RUN mv Open-Omics-Acceleration-Framework /OpenOmics
+RUN git switch protein_design
 
 
 # ---------------------------
