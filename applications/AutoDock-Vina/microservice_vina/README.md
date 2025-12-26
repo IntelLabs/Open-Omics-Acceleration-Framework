@@ -54,7 +54,6 @@ This ensures the non-root user inside the container (UID 1001) can read/write th
 ### 3.2 Start the server
 Then run command:
 ```bash
-cp -r ../../common .
 docker run --rm -it   -v "$(pwd):/microservice"   -v "$(pwd)/workspaces:/workspaces"   -p 9012:9012   autodock_vina_microservice:latest   python /microservice/vina_opea_server.py     --port 9012     --workspace-root /workspaces     --max-tar-size-mb 500
 ```
 Arguments:
