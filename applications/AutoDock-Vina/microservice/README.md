@@ -35,9 +35,9 @@ The Dockerfile installs AutoDock Vina, `opea-comps`, and the Python runtime.
 From the project’s `build_docker/` directory:
 
 ```bash
-cd build_docker/
+cd ../build_docker/
 docker build -t autodock_vina_microservice:latest --build-arg FLAVOR=microservice
-cd ..
+cd ../microservice/
 ``` 
 After this step, the image `autodock_vina_microservice:latest` will be available locally.
 You can verify with:
@@ -48,7 +48,8 @@ docker images | grep autodock_vina_microservice
 ### 3.1 Fix permissions (because container user is non-root)
 From the host machine, run:
 ```bash
-chown -R 1001:1001 .
+mkdir -p workspaces
+chown -R 1001:1001 workspaces
 ```
 This ensures the non-root user inside the container (UID 1001) can read/write the code and workspace directories.
 ### 3.2 Start the server
