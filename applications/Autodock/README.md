@@ -6,11 +6,15 @@ Open-Omics-Autodock is an optimized, multithreaded SYCL CPU version of the origi
 To build the Docker image with the tag autodock-sycl-cpu, use the following commands based on your machine's proxy requirements:
 * For machine without a proxy:
 ```zsh
+cd build_docker/
 docker build -t autodock-sycl-cpu .
+cd ..
 ```
 * For machine with a proxy:
 ```zsh
+cd build_docker/
 docker build --build-arg http_proxy=<http_proxy> --build-arg https_proxy=<https_proxy> --build-arg no_proxy=<no_proxy_ip> -t autodock-sycl-cpu .
+cd ..
 ```
 
 ## 2. Prepare Input and Output Directories                                                                                     

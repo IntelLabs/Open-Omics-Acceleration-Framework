@@ -10,9 +10,9 @@ Production-ready microservice for running **AutoDock-GPU (CPU backend)** through
 # Docker Setup Instructions
 ## 1. Build the Docker Image
 ```zsh
-cd build_docker/
+cd ../build_docker/
 docker build -t autodock_microservice_scan .
-cd ..
+cd ../microservice/
 ```
 **Note:Change in dockerfile `NUMWI=64` to `NUMWI=128` if you want 128 bit size of autodock executable**
 ## 2. Run the Microservice (Dynamic Port)
