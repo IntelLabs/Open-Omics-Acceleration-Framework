@@ -11,7 +11,7 @@ Key characteristics:
 * Inputs and outputs are fully isolated per task
 * Outputs are published to Amazon S3
 
-**For setting up AWS Batch, follow [these](https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/tree/main/applications/common/nextflow) instructions.**
+**For setting up AWS Batch, follow [these](https://github.com/sri480673/Open-Omics-Acceleration-Framework-srilekha/tree/main/applications/common/nextflow) instructions.**
 
 ## Build Dockerfile
 ```bash
