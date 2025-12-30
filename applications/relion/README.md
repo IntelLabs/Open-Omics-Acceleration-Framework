@@ -48,6 +48,21 @@ You can specify different modes as an argument to the Docker command. Each mode 
 | `autorefine` | `relion_nru:latest autorefine`                              | Run 3D auto-refinement       |  `3D_AUTO/`   |
 | `custom`     | `relion_nru:latest relion_refine_mpi [your-flags]`          | Run any custom RELION command |  User-defined (`--o`) |
 
+
+
+## Additional Ways to Run Relion
+
+OpenOmics supports multiple ways to run Relion depending on your workflow and scale. Choose the mode that best fits your use case:
+
+### 1. Run as a Microservice
+If you want to expose Relion as a service that can be queried over an API, you can deploy it as a microservice.
+Refer to [here](https://github.com/sri480673/Open-Omics-Acceleration-Framework-srilekha/tree/autodock_microservice/applications/relion/microservice/README.md) for setup instructions and API usage details.
+
+### 2. Run on Cloud Instances (Nextflow)
+To run many Relion tasks over multiple cloud instances, we provide a Nextflow-based option.
+This allows you to scale Relion tasks easily across cloud infrastructure. Refer to [here](https://github.com/sri480673/Open-Omics-Acceleration-Framework-srilekha/tree/autodock_microservice/applications/relion/nextflow/README.md)
+
+
 ---
 
 **The Original README for Relion starts here:**
