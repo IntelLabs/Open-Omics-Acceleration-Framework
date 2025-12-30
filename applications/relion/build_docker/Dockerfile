@@ -13,13 +13,14 @@ RUN groupadd --gid 1001 $SERVICE_NAME && \
 # Install system packages and Python build dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+    iproute2 \
     git \
     cmake \
     vim \
     make \
     tar \
-    curl \
     wget \
+    unzip \
     gnupg \
     time \
     ca-certificates \
@@ -40,8 +41,19 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Prepare directory and switch to non-root
+RUN wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -O "/tmp/awscliv2.zip" && \
+    unzip /tmp/awscliv2.zip -d /tmp && \
+    /tmp/aws/install && \
+    rm -rf /tmp/aws /tmp/awscliv2.zip
+
 WORKDIR /opt
+RUN wget -q https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz && \
+    tar -xzf Source_code_with_submodules.tar.gz && \
+    mv Open-Omics-Acceleration-Framework/application/common /opt/common && \
+    rm -rf Source_code_with_submodules.tar.gz Open-Omics-Acceleration-Framework
+
+ENV PYTHONPATH="/opt/common:${PYTHONPATH}"
+RUN mkdir -p /microservice && chown $SERVICE_NAME:$SERVICE_NAME /microservice
 RUN chown -R $SERVICE_NAME:$SERVICE_NAME /opt
 USER $SERVICE_NAME
 
@@ -85,6 +97,12 @@ RUN bash -c "source $CONDA_DIR/etc/profile.d/conda.sh && \
     conda activate relion-5.0 && \
     pip install --verbose /opt/relion_5.0[vis]"
 
+RUN bash -c "source $CONDA_DIR/etc/profile.d/conda.sh && \
+    conda activate relion-5.0 && \
+    pip install --no-cache-dir \
+        'opea-comps' \
+        'uvicorn[standard]'"
+
 # Build RELION
 WORKDIR /opt/relion_5.0
 SHELL ["/bin/bash", "-c"]
@@ -108,8 +126,10 @@ RUN source /home/relion-service/intel/oneapi/2025.0/oneapi-vars.sh --force && \
           -DCMAKE_EXE_LINKER_FLAGS="-static-intel -static-libgcc -qopenmp-link=static -Wno-unused-command-line-argument" \
           -DTORCH_HOME_PATH=/opt/relion_5.0/torch_home \
           -DPYTHON_EXE_PATH=/opt/conda/envs/relion-5.0/bin/python \
-          -DCMAKE_INSTALL_PREFIX=/opt/relion_5.0_cpu_benchmark_prefix .. && \ 
-          make -j$(nproc) && make install 
+          -DCMAKE_INSTALL_PREFIX=/opt/relion_5.0_cpu_benchmark_prefix .. && \
+    make -j"$(nproc)" && \
+    make install
+
 WORKDIR /opt/relion_5.0
 RUN rm -rf /opt/relion_5.0/build_cpu
 RUN echo 'source /home/relion-service/intel/oneapi/setvars.sh --force' >> /home/relion-service/.bashrc
