@@ -77,7 +77,7 @@ INFO:     Uvicorn running on http://0.0.0.0:9012 (Press CTRL+C to quit)
 ```
 ## 4. Run the Client
 ```bash
-python vina_opea_client.py   --host 127.0.0.1   --port 9012   --user-id sri   --dataset-dir 5wlo   --receptor protein.pdbqt   --ligand rand-0.pdbqt   --center-x 16.459   --center-y -19.946   --center-z -5.850   --size-x 18.375   --size-y 18.375   --size-z 18.375 --cpu 4 --exhaustiveness 4 --download-tarball --tarball-output vina_result.tar.gz
+python vina_opea_client.py   --host 127.0.0.1   --port 9012   --user-id testuser   --dataset-dir 5wlo   --receptor protein.pdbqt   --ligand rand-0.pdbqt   --center-x 16.459   --center-y -19.946   --center-z -5.850   --size-x 18.375   --size-y 18.375   --size-z 18.375 --cpu 4 --exhaustiveness 4 --download-tarball --tarball-output vina_result.tar.gz
 ```
 Where:
 * `--dataset-dir 5wlo` points to a local folder like:
