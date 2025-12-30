@@ -52,7 +52,7 @@ http://<HOST_IP>:9012/v1/relion
 
 2. Run the client(Autorefine Example):
 ```bash
-python relion_opea_client.py   --host 127.0.0.1   --port 9012   --user-id srilekha   --workspace-id job_refine   --dataset-s3-url s3://srilekha-new-s3/data_3d_refine.tar.gz   --mode autorefine   --num-mpi 7 --i particles.star --ref run_it025_class002_box256.mrc --o Refine/rf  --j 24 --pool 48 --save-metadata relion_refine_ok.json --healpix-order 2 --ini-high 50 --auto-refine --split-random-halves  --auto-local-healpix-order 4 --low-resol-join-halves 40 --sym D2 --offset-range 5 --offset-step 2 --norm --scale --zero-mask --oversampling 1  --auto-ignore-angles --auto-resol-angles --ctf --ctf --particle-diameter 200 --flatten-solvent --dont-combine-weights-via-disc --preread-images --firstiter-cc --output-s3-prefix s3://srilekha-new-s3/relion_outputs
+python relion_opea_client.py   --host 127.0.0.1   --port 9012   --user-id user   --workspace-id job_refine   --dataset-s3-url s3://<bucket-name>/data_3d_refine.tar.gz   --mode autorefine   --num-mpi 7 --i particles.star --ref run_it025_class002_box256.mrc --o Refine/rf  --j 24 --pool 48 --save-metadata relion_refine_ok.json --healpix-order 2 --ini-high 50 --auto-refine --split-random-halves  --auto-local-healpix-order 4 --low-resol-join-halves 40 --sym D2 --offset-range 5 --offset-step 2 --norm --scale --zero-mask --oversampling 1  --auto-ignore-angles --auto-resol-angles --ctf --ctf --particle-diameter 200 --flatten-solvent --dont-combine-weights-via-disc --preread-images --firstiter-cc --output-s3-prefix s3://<bucket-name>/relion_outputs
 ```
 
 ## API Contract
