@@ -17,7 +17,7 @@ The runner reads a JSON config and supports three common execution patterns:
    * `absl-py`
 ## Build Docker
 ```bash
-cd ../docker_vina/
+cd ../build_docker/
 docker build -t autodock_vina_multiprocess:latest --build-arg FLAVOR=multiprocess .
 cd ../multiprocess/
 ```
