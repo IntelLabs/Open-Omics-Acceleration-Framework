@@ -35,7 +35,6 @@ cd ..
 
 # Running the Server:                                                      
 ```bash
-cp -r ../../common .
 docker run --rm -it -p 9012:9012   -v $(pwd):/microservice  gromacs_microservice_scan:latest   /opt/conda/envs/grms_env/bin/python /microservice/opea_gromacs_microservice.py --port 9012
 ```
 * -p : Maps container port 9012 → host port 9012 so the API is reachable
@@ -45,7 +44,7 @@ docker run --rm -it -p 9012:9012   -v $(pwd):/microservice  gromacs_microservice
 
 # Client Example
 ```bash
-python opea_gromacs_client.py     --host 127.0.0.1     --port 9012     --user-id srilekha     --job-label test1     --pdb-file ./1AKI.pdb
+python opea_gromacs_client.py     --host 127.0.0.1     --port 9012     --user-id user     --job-label test1     --pdb-file ./1AKI.pdb
 ```
 This will:
 * Encode the PDB
