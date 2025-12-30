@@ -60,6 +60,24 @@ This command will process your receptor and ligand files and place the results i
 ### 4. Expected Output                                                                                                           
 After running the above command, you should find the output file (`rand-1_out.pdbqt`) in the output directory, such as `5wlo_output` for this example.
 
+## Additional Ways to Run Autodock-vina
+
+OpenOmics supports multiple ways to run Autodock-vina depending on your workflow and scale. Choose the mode that best fits your use case:
+
+### 1. Run as a Microservice
+If you want to expose Autodock-vina as a service that can be queried over an API, you can deploy it as a microservice.
+Refer to [here](https://github.com/sri480673/Open-Omics-Acceleration-Framework-srilekha/tree/autodock_microservice/applications/AutoDock-Vina/microservice/README.md) for setup instructions and API usage details.
+
+### 2. Run on Cloud Instances (Nextflow)
+To run many Autodock-vina tasks over multiple cloud instances, we provide a Nextflow-based option.
+This allows you to scale Autodock-vina tasks easily across cloud infrastructure. Refer to [here](https://github.com/sri480673/Open-Omics-Acceleration-Framework-srilekha/tree/autodock_microservice/applications/AutoDock-Vina/nextflow/README.md)
+
+### 3. Run Multiple Processes (Parallel Local Execution)
+To run many Autodock-vina tasks on a single machine, you can use the multiprocess tool, which batches your tasks and executes them in parallel using all the available cores.
+It automatically determines and configures the optimal level of parallelism.
+Read more about the multiprocess tool [here](https://github.com/sri480673/Open-Omics-Acceleration-Framework-srilekha/tree/autodock_microservice/applications/AutoDock-Vina/multiprocess/README.md)
+
+
 ---
 The original README content of AutoDock-Vina follows:
 
