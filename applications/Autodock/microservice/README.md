@@ -54,6 +54,6 @@ What Happens Internally
 * rand-5.dlg
 * rand-5.xml
 ### 5. Server returns:
-* metadata_b64
-* results_tar_b64 (only those 3 files)
+* `metadata_b64`
+* `results_tar_b64` (only those 3 files)
 ### 6.Workspace is deleted automatically

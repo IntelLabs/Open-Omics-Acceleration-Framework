@@ -68,6 +68,20 @@ ls $OUTPUT_SYCL_CPU/rand-0.xml
 ```
 These files contain the docking results in both `.dlg` and `.xml` formats.
 
+
+## Additional Ways to Run Autodock
+
+OpenOmics supports multiple ways to run Autodock depending on your workflow and scale. Choose the mode that best fits your use case:
+
+### 1. Run as a Microservice
+If you want to expose Autodock as a service that can be queried over an API, you can deploy it as a microservice.
+Refer to [here](https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/tree/main/applications/Autodock/microservice/README.md) for setup instructions and API usage details.
+
+### 2. Run on Cloud Instances (Nextflow)
+To run many Autodock tasks over multiple cloud instances, we provide a Nextflow-based option.
+This allows you to scale Autodock tasks easily across cloud infrastructure. Refer to [here](https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/tree/main/applications/Autodock/nextflow/README.md)
+
+
 ---
 
 The original README content of AutoDock as follows:
