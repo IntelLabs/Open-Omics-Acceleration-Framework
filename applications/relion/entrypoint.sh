@@ -2,17 +2,6 @@
 source ~/intel/oneapi/2025.0/oneapi-vars.sh
 APPEXE=/opt/relion_5.0_cpu_benchmark_prefix/bin/relion_refine_mpi
 DEFAULT_DATA_DIR=/opt/relion_5.0/relion_benchmark
-PYTHON_EXE=/opt/conda/envs/relion-5.0/bin/python
-if [[ "${1-}" == "service" ]]; then
-	shift
-	if [[ ! -f "/microservice/relion_opea_server.py" ]]; then
-		echo "ERROR: /microservice/relion_opea_server.py not found."
-		echo "Mount your microservice code: -v /path/to/code:/microservice"
-		exit 1
-	fi
-	exec "$PYTHON_EXE" /microservice/relion_opea_server.py "$@"
-fi
-
 cd "$DEFAULT_DATA_DIR" || exit 1
 
 NUMMPI=$((16+1))
