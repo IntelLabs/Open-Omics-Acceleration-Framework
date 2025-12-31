@@ -43,13 +43,9 @@ RUN git clone --recursive https://github.com/facebookresearch/esm.git
 WORKDIR /app/esm
 RUN git checkout -b esm 2b369911bb5b4b0dda914521b9475cad1656b2ac
 
-RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz
+RUN tar -xzf Source_code_with_submodules.tar.gz
 WORKDIR /app/esm/Open-Omics-Acceleration-Framework/
-RUN git checkout esm_v4
-
-#RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz
-#RUN tar -xzf Source_code_with_submodules.tar.gz
-#WORKDIR /app/esm/Open-Omics-Acceleration-Framework/
 
 WORKDIR /app/esm
 USER root
