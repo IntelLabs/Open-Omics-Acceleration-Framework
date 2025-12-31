@@ -39,7 +39,8 @@ def main():
         "pdb_str": pdb_str,
         "fasta_str":fasta_b64,
         "chain": args.chain,
-        "multichain_backbone": args.multichain_backbone
+        "multichain_backbone": args.multichain_backbone,
+        "port": args.port
     }
 
     print(f" Sending POST request to {url} ...")
@@ -53,7 +54,7 @@ def main():
             decoded_bytes = base64.b64decode(data["result"])
             decoded_json = json.loads(decoded_bytes.decode("utf-8"))
             if isinstance(decoded_json, list) and all(isinstance(item, list) and len(item) == 2 for item in decoded_json):
-    
+
 
                 # Save results
                 with open("score_ouput.csv", "w") as fout:

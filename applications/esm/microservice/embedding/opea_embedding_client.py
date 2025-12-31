@@ -31,6 +31,7 @@ def main():
         "toks_per_batch": args.toks_per_batch,
         "repr_layers": args.repr_layers,
         "include": args.include,
+        "port": args.port
     }
     print("Sending POST to:", url)
 

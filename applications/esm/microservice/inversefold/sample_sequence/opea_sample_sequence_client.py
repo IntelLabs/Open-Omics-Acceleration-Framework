@@ -38,7 +38,8 @@ def main():
         "chain": args.chain,
         "temperature": args.temperature,
         "num_samples": args.num_samples,
-        "multichain_backbone": args.multichain_backbone
+        "multichain_backbone": args.multichain_backbone,
+        "port": args.port
     }
 
     print(f" Sending POST request to {url} ...")

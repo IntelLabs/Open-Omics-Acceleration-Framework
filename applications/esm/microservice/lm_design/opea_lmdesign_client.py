@@ -59,7 +59,7 @@ def main(cfg: DictConfig) -> None:
     if pdb_fn:
         replace_pdb_path_with_string(cfg, "pdb_fn")
 
-    payload = {"cfg_dict": OmegaConf.to_container(cfg, resolve=True)}
+    payload = {"cfg_dict": OmegaConf.to_container(cfg, resolve=True), "port": args.port}
 
     print("Sending POST to:", url)
     try:

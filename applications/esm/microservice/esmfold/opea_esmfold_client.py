@@ -42,6 +42,7 @@ def main():
         "fasta_base64": fasta_b64,
         "num_recycles": args.num_recycles,
         "max_tokens_per_batch": args.max_tokens_per_batch,
+        "port": args.port
     }
     print("Sending POST to:", url)
 
