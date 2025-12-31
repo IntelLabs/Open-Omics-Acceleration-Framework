@@ -1,27 +1,17 @@
 
 # Open-Omics-ESM
 
-Open-Omics-ESM is an optimized version of the Evolutionary Scale Modeling (ESM) toolkit, tailored for modern CPUs. It enhances the performance of key ESM modules—such as ESM-embeddings, LM-Design, InverseFolding, and ESMFold—by leveraging the Intel Extension for PyTorch (IPEX), the latest version of PyTorch, and lower-precision (bf16) computations.
+Open-Omics-ESM is an optimized version of the Evolutionary Scale Modeling (ESM) toolkit, tailored for modern CPUs. It improves the performance of key ESM modules—such as ESM-embeddings, LM-Design, InverseFolding, and ESMFold—by leveraging Intel Extension for PyTorch (IPEX) and performing computations in lower precision (bf16).
 
 ## Installation
-### Step 1: 🛠️ Building the Docker Image
-Run the following command to build the Docker image:
+### Step 1: Run the script to create the Docker images
+Execute the script using the following command:
 
 ```bash
-./build_docker_images.sh
+
+ ./docker_setup/build_docker_images.sh
 ```
-#### 🌐 Building Behind a Proxy
-If you're working in a corporate or institutional environment, your internet access may be routed through a proxy server. In such cases, Docker may not be able to download dependencies during the build process unless you explicitly configure proxy settings.
 
-To build the Docker image with proxy settings, you can use the --build-arg option to pass your proxy configuration:
-
-```bash
-./build_docker_images.sh --http_proxy=$http_proxy --https_proxy=$https_proxy --no_proxy=$no_proxy
-```
-🔒 Note: Make sure the environment variables http_proxy, https_proxy, and no_proxy are correctly set in your shell before running this command.
-
-For more details, refer to the official Docker documentation:
-[Docker behind proxy](https://docs.docker.com/engine/cli/proxy/)
 ### Step 2: Choose the ESM image to install
 Select the ESM image you want to build based on your specific needs
 
@@ -44,9 +34,9 @@ Performance optimization with bfloat16 and Intel Extension for PyTorch
  `--bf16` flag accelerates performance by utilizing bfloat16 precision, which enhances computational efficiency without compromising accuracy.
 
 
-### Export Directories  
+### Export Directories
 ```bash
-export INPUT=$PWD/<your input folder>                
+export INPUT=$PWD/<your input folder>
 export OUTPUT=$PWD/<your output folder>
 export MODELS=$PWD/<your output folder>
 ```
@@ -54,9 +44,9 @@ export MODELS=$PWD/<your output folder>
 The following is an example to do the same.
 ```bash
 mkdir -p input output models
-export INPUT=$PWD/input                
-export OUTPUT=$PWD/output     
-export MODELS=$PWD/models 
+export INPUT=$PWD/docker_setup/input
+export OUTPUT=$PWD/output
+export MODELS=$PWD/models
 ```
 ```bash
 chmod a+w $MODELS $OUTPUT
@@ -64,11 +54,11 @@ chmod a+w $MODELS $OUTPUT
 
 The `input` directory must contain both FASTA_FILE and PDB_FILE for the tool to process sequence and structural data
 ### Run Commands
-In this ESM setup, the `input` directory contains files like FASTA (protein sequences) and PDB (protein structures) for different tasks such as sequence extraction and protein folding. Each file type has a specific use. For testing, follow the provided instructions or refer to the research papers for more details. 
+In this ESM setup, the `input` directory contains files like FASTA (protein sequences) and PDB (protein structures) for different tasks such as sequence extraction and protein folding. Each file type has a specific use. For testing, follow the provided instructions or refer to the research papers for more details.
 
 When you run the Docker command, the models will automatically be downloaded during the first run. The user will need to wait for the download to complete, but from the second run onward, the inference will run directly without downloading the models again.
 
-#### ESM-Embeddings 
+#### ESM-Embeddings
 Compute embeddings for multiple protein sequences from a FASTA file in a single batch process using ESM.See [Compute embeddings in bulk from FASTA](#bulk_fasta) for detailed user guide.
 
 ```bash
@@ -82,8 +72,8 @@ docker run -it \
 ```
 <br />
 
-#### LM-Design 
-LM-Design supports fixed backbone sequence generation for known structures and random sequence generation for exploratory protein design.See [examples/lm-design/](https://github.com/facebookresearch/esm/tree/main/examples/lm-design#lm-design-examples) for detailed user guide. 
+#### LM-Design
+LM-Design supports fixed backbone sequence generation for known structures and random sequence generation for exploratory protein design.See [examples/lm-design/](https://github.com/facebookresearch/esm/tree/main/examples/lm-design#lm-design-examples) for detailed user guide.
 <summary>Fixed backbone design</summary>
 
 ```bash
@@ -110,7 +100,7 @@ docker run -it \
 <br />
 
 #### Inverse_Folding
-Inverse Folding involves generating sample protein sequences that are designed to match a specified structure and scoring these sequences based on their folding compatibility.See [examples/inverse_folding/](https://github.com/facebookresearch/esm/tree/main/examples/inverse_folding#inverse-folding-with-esm-if1) for detailed user guide. 
+Inverse Folding involves generating sample protein sequences that are designed to match a specified structure and scoring these sequences based on their folding compatibility.See [examples/inverse_folding/](https://github.com/facebookresearch/esm/tree/main/examples/inverse_folding#inverse-folding-with-esm-if1) for detailed user guide.
 <summary>Sample sequence designs for a given structure</summary>
 
 ```bash
@@ -161,7 +151,7 @@ docker run -it \
 <br />
 
 #### ESMFold Structure Prediction
-ESMFold predicts protein structures from amino acid sequences using advanced machine learning techniques, facilitating rapid structural insights in protein design.See [ESMFold Structure Prediction](#esmfold) for detailed user guide. 
+ESMFold predicts protein structures from amino acid sequences using advanced machine learning techniques, facilitating rapid structural insights in protein design.See [ESMFold Structure Prediction](#esmfold) for detailed user guide.
 
 ```bash
 #example
@@ -173,6 +163,30 @@ docker run -it \
   python scripts/fold.py -i /input/few_proteins.fasta -o /output --bf16
 ```
 
+## Additional Ways to Run ESM
+
+OpenOmics supports multiple ways to run ESM depending on your workflow and scale. Choose the mode that best fits your use case:
+
+### 1. Run as a Microservice
+If you want to expose ESM as a service that can be queried over an API, you can deploy it as a microservice.
+Refer to [here](microservice/README.md) for setup instructions and API usage details.
+
+### 2. Run Multiple Processes (Parallel Local Execution)
+To run many ESM tasks on a single machine, you can use the multiprocess tool, which batches your tasks and executes them in parallel using all the available cores.
+It automatically determines and configures the optimal level of parallelism.
+Read more about the multiprocess tool [here](../common/multiprocess/README.md).
+
+We have included an example demonstrating how to use it:
+
+Step 1: Start ESM container in interactive mode.
+```bash
+docker run -it --privileged -v $MODELS:/checkpoints -v $INPUT:/input -v $OUTPUT:/output esm_image:latest
+```
+
+Step 2: Use the multiprocess script.
+```bash
+(esm_py11) esm-base-service@08e3dd8275ed:/app/esm$ python omics_setup/common/multiprocess/multiprocess.py --json_file omics_setup/multiprocess/config_esm2_embedding.json --case 1
+```
 
 ---
 The original README content of ESM follows.
@@ -294,7 +308,7 @@ For a complete list of available models, with details and release notes, see [Pr
 An easy way to get started is to load ESM or ESMFold through the [HuggingFace transformers library](https://huggingface.co/docs/transformers/model_doc/esm),
 which has simplified the ESMFold dependencies and provides a standardized API and tools to work with state-of-the-art pretrained models.
 
-Alternatively, [ColabFold](https://colab.research.google.com/github/sokrypton/ColabFold/blob/main/ESMFold.ipynb) has integrated ESMFold so that you can 
+Alternatively, [ColabFold](https://colab.research.google.com/github/sokrypton/ColabFold/blob/main/ESMFold.ipynb) has integrated ESMFold so that you can
 easily run it directly in the browser on a Google Colab instance.
 
 We also provide an API which you can access through curl or on [the ESM Metagenomic Atlas web page](https://esmatlas.com/resources?action=fold).
@@ -588,7 +602,7 @@ see our [blog post](https://ai.facebook.com/blog/protein-folding-esmfold-metagen
 Bulk download instructions available at a seperate README [here](scripts/atlas/README.md).
 
 The Atlas resources include a page to [fold a sequence using ESMFold](https://esmatlas.com/resources?action=fold),
-searching a subset of the ESM Atlas by [structure](https://esmatlas.com/resources?action=search_structure) or 
+searching a subset of the ESM Atlas by [structure](https://esmatlas.com/resources?action=search_structure) or
 [sequence](https://esmatlas.com/resources?action=search_sequence),
 as well as an [API](https://esmatlas.com/about#api) to access those resources programmatically.
 

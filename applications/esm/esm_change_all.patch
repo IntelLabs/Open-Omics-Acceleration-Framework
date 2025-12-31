@@ -1,18 +1,18 @@
 diff --git a/environment.yml b/environment.yml
-index 2d1b70d..59604d5 100644
+index 2d1b70d..36e6b65 100644
 --- a/environment.yml
 +++ b/environment.yml
-@@ -2,25 +2,23 @@ name: esmfold
+@@ -2,35 +2,35 @@ name: esmfold
  channels:
    - conda-forge
    - bioconda
 -  - pytorch
  dependencies:
-   - conda-forge::python=3.7
+-  - conda-forge::python=3.7
++  - conda-forge::python=3.10
    - conda-forge::setuptools=59.5.0
 -  - conda-forge::pip
-+  - conda-forge::pip=24.0
-   - conda-forge::openmm=7.5.1
+-  - conda-forge::openmm=7.5.1
 -  - conda-forge::pdbfixer
 -  - conda-forge::cudatoolkit==11.3.*
 -  - conda-forge::einops
@@ -21,6 +21,8 @@ index 2d1b70d..59604d5 100644
 -  - conda-forge::hydra-core
 -  - conda-forge::pandas
 -  - conda-forge::pytest
++  - conda-forge::pip=24.0
++  - conda-forge::openmm=8.0
 +  - conda-forge::pdbfixer=1.7
 +  - conda-forge::einops==0.3.2
 +  - conda-forge::fairscale==0.4.6
@@ -37,8 +39,18 @@ index 2d1b70d..59604d5 100644
        - biopython==1.79
        - deepspeed==0.5.9
        - dm-tree==0.1.6
-@@ -33,4 +31,6 @@ dependencies:
-       - typing-extensions==3.10.0.2
+       - ml-collections==0.1.0
+-      - numpy==1.21.2
+-      - PyYAML==5.4.1
+-      - requests==2.26.0
+-      - scipy==1.7.1
++      - numpy==1.26.4
++      - PyYAML==6.0.2
++      - requests==2.32.3
++      - scipy==1.15.3
+       - tqdm==4.62.2
+-      - typing-extensions==3.10.0.2
++      - typing-extensions==4.14.1
        - pytorch_lightning==1.5.10
        - wandb==0.12.21
 +      - biotite==0.39.0
@@ -61,32 +73,65 @@ index 76b8e74..5c37d82 100644
      final_atom_mask = output["atom37_atom_exists"]
      pdbs = []
 diff --git a/examples/inverse_folding/sample_sequences.py b/examples/inverse_folding/sample_sequences.py
-index 3a12693..fd22f54 100644
+index 3a12693..628b99e 100644
 --- a/examples/inverse_folding/sample_sequences.py
 +++ b/examples/inverse_folding/sample_sequences.py
-@@ -16,9 +16,10 @@ import torch
+@@ -16,33 +16,49 @@ import torch
  import esm
  import esm.inverse_folding
  
--
 +nogpu = True
 +noipex = True
+ 
  def sample_seq_singlechain(model, alphabet, args):
 -    if torch.cuda.is_available() and not args.nogpu:
 +    if torch.cuda.is_available() and not nogpu:
          model = model.cuda()
          print("Transferred model to GPU")
      coords, native_seq = esm.inverse_folding.util.load_coords(args.pdbfile, args.chain)
-@@ -31,7 +32,7 @@ def sample_seq_singlechain(model, alphabet, args):
-     with open(args.outpath, 'w') as f:
-         for i in range(args.num_samples):
-             print(f'\nSampling.. ({i+1} of {args.num_samples})')
+     print('Native sequence loaded from structure file:')
+     print(native_seq)
+ 
+-    print(f'Saving sampled sequences to {args.outpath}.')
++    if args.outpath:
++        print(f"Saving sampled sequences to {args.outpath}.")
++        Path(args.outpath).parent.mkdir(parents=True, exist_ok=True)
+ 
+-    Path(args.outpath).parent.mkdir(parents=True, exist_ok=True)
+-    with open(args.outpath, 'w') as f:
+-        for i in range(args.num_samples):
+-            print(f'\nSampling.. ({i+1} of {args.num_samples})')
 -            sampled_seq = model.sample(coords, temperature=args.temperature, device=torch.device('cuda'))
-+            sampled_seq = model.sample(coords, temperature=args.temperature, device=torch.device('cpu'))
-             print('Sampled sequence:')
-             print(sampled_seq)
-             f.write(f'>sampled_seq_{i+1}\n')
-@@ -42,7 +43,7 @@ def sample_seq_singlechain(model, alphabet, args):
+-            print('Sampled sequence:')
+-            print(sampled_seq)
+-            f.write(f'>sampled_seq_{i+1}\n')
+-            f.write(sampled_seq + '\n')
++    sampled_sequences = []  # store results if no file output
+ 
+-            recovery = np.mean([(a==b) for a, b in zip(native_seq, sampled_seq)])
+-            print('Sequence recovery:', recovery)
++    for i in range(args.num_samples):
++        print(f'\nSampling.. ({i+1} of {args.num_samples})')
++        sampled_seq = model.sample(coords, temperature=args.temperature, device=torch.device('cpu'))
++        
++        print('Sampled sequence:')
++        print(sampled_seq)
++
++        recovery = np.mean([(a == b) for a, b in zip(native_seq, sampled_seq)])
++        print('Sequence recovery:', recovery)
++
++        sampled_sequences.append(sampled_seq)
++
++    if args.outpath:
++        Path(args.outpath).parent.mkdir(parents=True, exist_ok=True)
++        with open(args.outpath, 'w') as f:
++            for i, seq in enumerate(sampled_sequences):
++                f.write(f'>sampled_seq_{i+1}\n{seq}\n')
++
++    else:
++        print("Returning sequences...")
++        print(sampled_sequences)
++    return sampled_sequences
  
  
  def sample_seq_multichain(model, alphabet, args):
@@ -95,7 +140,56 @@ index 3a12693..fd22f54 100644
          model = model.cuda()
          print("Transferred model to GPU")
      structure = esm.inverse_folding.util.load_structure(args.pdbfile)
-@@ -107,17 +108,32 @@ def main():
+@@ -53,21 +69,35 @@ def sample_seq_multichain(model, alphabet, args):
+     print(native_seq)
+     print('\n')
+ 
+-    print(f'Saving sampled sequences to {args.outpath}.')
++    if args.outpath:
++        print(f"Saving sampled sequences to {args.outpath}.")
++        Path(args.outpath).parent.mkdir(parents=True, exist_ok=True)
++
++    sampled_sequences = []  # Store outputs if no file
++
++    for i in range(args.num_samples):
++        print(f'\nSampling.. ({i+1} of {args.num_samples})')
+ 
+-    Path(args.outpath).parent.mkdir(parents=True, exist_ok=True)
+-    with open(args.outpath, 'w') as f:
+-        for i in range(args.num_samples):
+-            print(f'\nSampling.. ({i+1} of {args.num_samples})')
+-            sampled_seq = esm.inverse_folding.multichain_util.sample_sequence_in_complex(
+-                    model, coords, target_chain_id, temperature=args.temperature)
+-            print('Sampled sequence:')
+-            print(sampled_seq)
+-            f.write(f'>sampled_seq_{i+1}\n')
+-            f.write(sampled_seq + '\n')
++        sampled_seq = esm.inverse_folding.multichain_util.sample_sequence_in_complex(
++            model, coords, target_chain_id, temperature=args.temperature
++        )
+ 
+-            recovery = np.mean([(a==b) for a, b in zip(native_seq, sampled_seq)])
+-            print('Sequence recovery:', recovery)
++        print('Sampled sequence:')
++        print(sampled_seq)
++
++        recovery = np.mean([(a == b) for a, b in zip(native_seq, sampled_seq)])
++        print('Sequence recovery:', recovery)
++
++        sampled_sequences.append(sampled_seq)
++
++    if args.outpath:
++        with open(args.outpath, 'w') as f:
++            for i, seq in enumerate(sampled_sequences):
++                f.write(f'>sampled_seq_{i+1}\n{seq}\n')
++    else:
++        print("\nNo output path provided. Returning sampled sequences:")
++        print(sampled_sequences)
++    return sampled_sequences
+ 
+ 
+ def main():
+@@ -107,17 +137,30 @@ def main():
              action='store_false',
              help='use the backbone of only target chain in the input for conditioning'
      )
@@ -107,7 +201,7 @@ index 3a12693..fd22f54 100644
  
      model, alphabet = esm.pretrained.esm_if1_gvp4_t16_142M_UR50()
      model = model.eval()
- 
+-
 -    if args.multichain_backbone:
 -        sample_seq_multichain(model, alphabet, args)
 -    else:
@@ -123,22 +217,21 @@ index 3a12693..fd22f54 100644
 +        import time
 +        start_time = time.time()
 +    device_type ="cpu" if nogpu else "cuda"
-+    with torch.no_grad():
-+        with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
-+            if args.multichain_backbone:
-+                sample_seq_multichain(model, alphabet, args)
-+            else:
-+                sample_seq_singlechain(model, alphabet, args)
++    with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
++        if args.multichain_backbone:
++            sample_seq_multichain(model, alphabet, args)
++        else:
++            sample_seq_singlechain(model, alphabet, args)
 +    if args.timing:
 +        print(f"Total Inference Time = {time.time() - start_time} seconds")
  
  
  if __name__ == '__main__':
 diff --git a/examples/inverse_folding/score_log_likelihoods.py b/examples/inverse_folding/score_log_likelihoods.py
-index cd81951..ccefd28 100644
+index cd81951..40e3089 100644
 --- a/examples/inverse_folding/score_log_likelihoods.py
 +++ b/examples/inverse_folding/score_log_likelihoods.py
-@@ -18,10 +18,11 @@ from tqdm import tqdm
+@@ -18,67 +18,97 @@ from tqdm import tqdm
  
  import esm
  import esm.inverse_folding
@@ -148,39 +241,161 @@ index cd81951..ccefd28 100644
  
  def score_singlechain_backbone(model, alphabet, args):
 -    if torch.cuda.is_available() and not args.nogpu:
-+    if torch.cuda.is_available() and not nogpu:
-         model = model.cuda()
-         print("Transferred model to GPU")
-     coords, native_seq = esm.inverse_folding.util.load_coords(args.pdbfile, args.chain)
-@@ -50,7 +51,7 @@ def score_singlechain_backbone(model, alphabet, args):
+-        model = model.cuda()
+-        print("Transferred model to GPU")
+-    coords, native_seq = esm.inverse_folding.util.load_coords(args.pdbfile, args.chain)
+-    print('Native sequence loaded from structure file:')
+-    print(native_seq)
+-    print('\n')
+-
+-    ll, _ = esm.inverse_folding.util.score_sequence(
+-            model, alphabet, coords, native_seq) 
+-    print('Native sequence')
+-    print(f'Log likelihood: {ll:.2f}')
+-    print(f'Perplexity: {np.exp(-ll):.2f}')
+-
+-    print('\nScoring variant sequences from sequence file..\n')
+-    infile = FastaFile()
+-    infile.read(args.seqfile)
+-    seqs = get_sequences(infile)
+-    Path(args.outpath).parent.mkdir(parents=True, exist_ok=True)
+-    with open(args.outpath, 'w') as fout:
+-        fout.write('seqid,log_likelihood\n')
++        if torch.cuda.is_available() and not nogpu:
++                model = model.cuda()
++                print("Transferred model to GPU")
++        coords, native_seq = esm.inverse_folding.util.load_coords(args.pdbfile, args.chain)
++        print('Native sequence loaded from structure file:')
++        print(native_seq)
++        print('\n')
++
++        ll, _ = esm.inverse_folding.util.score_sequence(
++                model, alphabet, coords, native_seq) 
++        print('Native sequence')
++        print(f'Log likelihood: {ll:.2f}')
++        print(f'Perplexity: {np.exp(-ll):.2f}')
++
++        print('\nScoring variant sequences from sequence file..\n')
++        infile = FastaFile()
++        infile.read(args.seqfile)
++        seqs = get_sequences(infile)
++        results = []  # store (header, log_likelihood)
++
+         for header, seq in tqdm(seqs.items()):
+-            ll, _ = esm.inverse_folding.util.score_sequence(
+-                    model, alphabet, coords, str(seq))
+-            fout.write(header + ',' + str(ll) + '\n')
+-    print(f'Results saved to {args.outpath}') 
++                ll, _ = esm.inverse_folding.util.score_sequence(
++                        model, alphabet, coords, native_seq
++                )
++                results.append((header, ll))
++
++        if args.outpath:
++                Path(args.outpath).parent.mkdir(parents=True, exist_ok=True)
++                with open(args.outpath, 'w') as fout:
++                        fout.write('seqid,log_likelihood\n')
++                        for header, ll in results:
++                                fout.write(header + ',' + str(ll) + '\n')
++                print(f"Results saved to {args.outpath}")
++
++        else:
++                print("\nNo output path provided. Returning results:")
++                for header, ll in results:
++                        print(f"{header}, {ll}")
++        return results
++
++
  
  
  def score_multichain_backbone(model, alphabet, args):
 -    if torch.cuda.is_available() and not args.nogpu:
-+    if torch.cuda.is_available() and not nogpu:
-         model = model.cuda()
-         print("Transferred model to GPU")
-     structure = esm.inverse_folding.util.load_structure(args.pdbfile)
-@@ -113,18 +114,33 @@ def main():
+-        model = model.cuda()
+-        print("Transferred model to GPU")
+-    structure = esm.inverse_folding.util.load_structure(args.pdbfile)
+-    coords, native_seqs = esm.inverse_folding.multichain_util.extract_coords_from_complex(structure)
+-    target_chain_id = args.chain
+-    native_seq = native_seqs[target_chain_id]
+-    print('Native sequence loaded from structure file:')
+-    print(native_seq)
+-    print('\n')
+-
+-    ll, _ = esm.inverse_folding.multichain_util.score_sequence_in_complex(
+-            model, alphabet, coords, target_chain_id, native_seq) 
+-    print('Native sequence')
+-    print(f'Log likelihood: {ll:.2f}')
+-    print(f'Perplexity: {np.exp(-ll):.2f}')
+-
+-    print('\nScoring variant sequences from sequence file..\n')
+-    infile = FastaFile()
+-    infile.read(args.seqfile)
+-    seqs = get_sequences(infile)
+-    Path(args.outpath).parent.mkdir(parents=True, exist_ok=True)
+-    with open(args.outpath, 'w') as fout:
+-        fout.write('seqid,log_likelihood\n')
++        if torch.cuda.is_available() and not nogpu:
++                model = model.cuda()
++                print("Transferred model to GPU")
++        structure = esm.inverse_folding.util.load_structure(args.pdbfile)
++        coords, native_seqs = esm.inverse_folding.multichain_util.extract_coords_from_complex(structure)
++        target_chain_id = args.chain
++        native_seq = native_seqs[target_chain_id]
++        print('Native sequence loaded from structure file:')
++        print(native_seq)
++        print('\n')
++
++        ll, _ = esm.inverse_folding.multichain_util.score_sequence_in_complex(
++                model, alphabet, coords, target_chain_id, native_seq) 
++        print('Native sequence')
++        print(f'Log likelihood: {ll:.2f}')
++        print(f'Perplexity: {np.exp(-ll):.2f}')
++
++        print('\nScoring variant sequences from sequence file..\n')
++        infile = FastaFile()
++        infile.read(args.seqfile)
++        seqs = get_sequences(infile)
++        results = []  # Store (header, log_likelihood)
++
+         for header, seq in tqdm(seqs.items()):
+-            ll, _ = esm.inverse_folding.multichain_util.score_sequence_in_complex(
+-                    model, alphabet, coords, target_chain_id, str(seq))
+-            fout.write(header + ',' + str(ll) + '\n')
+-    print(f'Results saved to {args.outpath}') 
++                ll, _ = esm.inverse_folding.multichain_util.score_sequence_in_complex(
++                        model, alphabet, coords, target_chain_id, str(seq)
++                )
++                results.append((header, ll))
++
++        if args.outpath:
++                Path(args.outpath).parent.mkdir(parents=True, exist_ok=True)
++                with open(args.outpath, 'w') as fout:
++                        fout.write('seqid,log_likelihood\n')
++                        for header, ll in results:
++                                fout.write(header + ',' + str(ll) + '\n')
++                print(f"Results saved to {args.outpath}")
++
++        else:
++                print("\nNo output path provided. Showing results:")
++                for header, ll in results:
++                        print(f"{header}, {ll}")
++        return results
++
+ 
+ 
+ def main():
+@@ -112,18 +142,32 @@ def main():
+             action='store_false',
              help='use the backbone of only target chain in the input for conditioning'
      )
-     
--    parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
 -    
+-    parser.add_argument("--nogpu", action="store_true", help="Do not use GPU even if available")
 +    parser.add_argument("--bf16", action="store_true", help="Use bf16 precision")
 +    parser.add_argument("--timing", action="store_true", help="Enable timing for inference")
+     
      args = parser.parse_args()
  
      model, alphabet = esm.pretrained.esm_if1_gvp4_t16_142M_UR50()
      model = model.eval()
--
--    if args.multichain_backbone:
--        score_multichain_backbone(model, alphabet, args)
--    else:
--        score_singlechain_backbone(model, alphabet, args)
--
-+    nogpu = True
-+    noipex = True
 +    if not noipex:
 +        dtype = torch.bfloat16 if args.bf16 else torch.float32
 +        import intel_extension_for_pytorch as ipex
@@ -188,21 +403,25 @@ index cd81951..ccefd28 100644
 +    if noipex and args.bf16:
 +        model=model.bfloat16()
 +    enable_autocast = args.bf16
++    device_type ="cpu" if nogpu else "cuda"
 +    if args.timing:
 +        import time
 +        start_time = time.time()
-+    device_type ="cpu" if nogpu else "cuda"
-+    with torch.no_grad():
-+        with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
-+            if args.multichain_backbone:
-+                score_multichain_backbone(model, alphabet, args)
-+            else:
-+                score_singlechain_backbone(model, alphabet, args)
++    with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
++        if args.multichain_backbone:
++            score_multichain_backbone(model, alphabet, args)
++        else:
++            score_singlechain_backbone(model, alphabet, args)
 +    if args.timing:
 +        print(f"Total Inference Time = {time.time() - start_time} seconds")
  
+-    if args.multichain_backbone:
+-        score_multichain_backbone(model, alphabet, args)
+-    else:
+-        score_singlechain_backbone(model, alphabet, args)
  
- if __name__ == '__main__':
+ 
+ 
 diff --git a/examples/lm-design/conf/config.yaml b/examples/lm-design/conf/config.yaml
 index f065473..977fcdf 100644
 --- a/examples/lm-design/conf/config.yaml
@@ -225,10 +444,42 @@ index f065473..977fcdf 100644
    free_generation:
        num_iter: 170000
 diff --git a/examples/lm-design/lm_design.py b/examples/lm-design/lm_design.py
-index b578ad9..42e4fa1 100644
+index b578ad9..0a1fe7c 100644
 --- a/examples/lm-design/lm_design.py
 +++ b/examples/lm-design/lm_design.py
-@@ -111,6 +111,12 @@ class Designer:
+@@ -50,6 +50,9 @@ from utils import ngram as ngram_utils
+ logger = logging.getLogger(__name__)  # Hydra configured
+ os.environ['MKL_THREADING_LAYER'] = 'GNU'
+ 
++# Global model cache so ESM is only loaded once
++_MODEL_CACHE = None
++
+ 
+ class Designer:
+     cutoff_dist = 8
+@@ -95,7 +98,21 @@ class Designer:
+         torch.backends.cudnn.benchmark = True  # Slightly faster runtime for optimization
+         logger.info("Finished Designer init")
+ 
++
+     def _init_models(self):
++        """Initialize or reuse cached ESM model components."""
++        global _MODEL_CACHE
++        if _MODEL_CACHE is not None:
++            logger.info("✅ Using cached ESM model (already loaded).")
++            self.vocab = _MODEL_CACHE["vocab"]
++            self.vocab_mask_AA = _MODEL_CACHE["vocab_mask_AA"]
++            self.vocab_mask_AA_idx = _MODEL_CACHE["vocab_mask_AA_idx"]
++            self.struct_model = _MODEL_CACHE["struct_model"]
++            self.LM = _MODEL_CACHE["LM"]
++            self.pdb_loader_params = _MODEL_CACHE["pdb_loader_params"]
++            return
++
++        logger.info("🚀 Loading ESM model for the first time...")
+         self.vocab = Alphabet.from_architecture('ESM-1b')
+         self.vocab_mask_AA = torch.BoolTensor(
+             [t in self.allowed_AA for t in self.vocab.all_toks]
+@@ -111,6 +128,12 @@ class Designer:
          def apply_common_settings(model):
              model.to(self.device)
              model.eval()
@@ -241,11 +492,28 @@ index b578ad9..42e4fa1 100644
              # No grads for models
              for p in model.parameters():
                  p.requires_grad = False
-@@ -340,14 +346,19 @@ class Designer:
-         Main run-loop for the Designer. Runs a relevant design procedure from the config.
-         """
+@@ -119,6 +142,18 @@ class Designer:
+         self.LM = apply_common_settings(self.LM)
+         self.struct_model = apply_common_settings(self.struct_model)
+ 
++        _MODEL_CACHE = {
++            "vocab": self.vocab,
++            "vocab_mask_AA": self.vocab_mask_AA,
++            "vocab_mask_AA_idx": self.vocab_mask_AA_idx,
++            "struct_model": self.struct_model,
++            "LM": self.LM,
++            "pdb_loader_params": self.pdb_loader_params,
++        }
++
++        logger.info("ESM model loaded and cached successfully.")
++
++
+     def encode(self, seq_raw, onehot=True):
+         device = self.device
+         if isinstance(seq_raw, list):
+@@ -342,17 +377,26 @@ class Designer:
          logger.info(f'Designing sequence for task: {self.cfg.task}')
--        
+         
          design_cfg = self.cfg.tasks[self.cfg.task]
 -        if self.cfg.task == 'fixedbb':
 -            stage_fixedbb(self, design_cfg)
@@ -258,20 +526,49 @@ index b578ad9..42e4fa1 100644
 +        if self.cfg.timing:
 +            import time
 +            start_time = time.time()
-+        with torch.amp.autocast(device_type=device_type, enabled=enable_autocast):
++        with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
 +            if self.cfg.task == 'fixedbb':
 +                stage_fixedbb(self, design_cfg)
 +            elif self.cfg.task == 'free_generation':
 +                stage_free_generation(self, **design_cfg)
 +            else:
 +                raise ValueError(f'Invalid task: {self.cfg.task}')
++        if self.cfg.timing:
++            print(f"Total Inference Time = {time.time() - start_time} seconds")
  
          logger.info(f'Final designed sequences:')
          for seq in self.decode(self.x_seqs):
+             logger.info(seq)
+         self.output_seq = self.decode(self.x_seqs)[0]
++        return self.output_seq
+             
+     def init_schedulers_from_cfg(self, cfg: DictConfig):
+         """
 diff --git a/scripts/extract.py b/scripts/extract.py
-index 9e5bcb3..6e2b9b9 100644
+index 9e5bcb3..99a518d 100644
 --- a/scripts/extract.py
 +++ b/scripts/extract.py
+@@ -18,17 +18,17 @@ def create_parser():
+     )
+ 
+     parser.add_argument(
+-        "model_location",
++        "--model_location",
+         type=str,
+         help="PyTorch model file OR name of pretrained model to download (see README for models)",
+     )
+     parser.add_argument(
+-        "fasta_file",
++        "--fasta_file",
+         type=pathlib.Path,
+         help="FASTA file on which to extract representations",
+     )
+     parser.add_argument(
+-        "output_dir",
++        "--output_dir",
+         type=pathlib.Path,
+         help="output directory for extracted representations",
+     )
 @@ -56,18 +56,28 @@ def create_parser():
          help="truncate sequences longer than the given value",
      )
@@ -360,7 +657,7 @@ index 9e5bcb3..6e2b9b9 100644
  if __name__ == "__main__":
      main()
 diff --git a/scripts/fold.py b/scripts/fold.py
-index 482cdc9..2b73a98 100644
+index 482cdc9..6c85c45 100644
 --- a/scripts/fold.py
 +++ b/scripts/fold.py
 @@ -117,8 +117,9 @@ def create_parser():
@@ -374,14 +671,18 @@ index 482cdc9..2b73a98 100644
      return parser
  
  
-@@ -145,23 +146,38 @@ def run(args):
+@@ -141,27 +142,40 @@ def run(args):
+         torch.hub.set_dir(args.model_dir)
  
+     model = esm.pretrained.esmfold_v1()
+-
+-
      model = model.eval()
      model.set_chunk_size(args.chunk_size)
 -
 -    if args.cpu_only:
++    cpu_only = True
 +    noipex = True
-+    cpu_only =True
 +    if cpu_only:
          model.esm.float()  # convert to fp32 as ESM-2 in fp16 is not supported on CPU
          model.cpu()
