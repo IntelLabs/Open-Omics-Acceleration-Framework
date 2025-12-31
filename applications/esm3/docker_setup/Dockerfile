@@ -42,6 +42,7 @@ RUN mv /app/esm/Open-Omics-Acceleration-Framework/applications/esm3 /app/esm/omi
     mv /app/esm/Open-Omics-Acceleration-Framework/applications/common /app/esm/common && \
     mv /app/esm/omics_setup/microservice /app/esm/microservice && \
     mv /app/esm/omics_setup/multiprocess /app/esm/multiprocess && \
+    mv /app/esm/omics_setup/docker_setup/env.yml /app/env.yml && \
     git apply /app/esm/omics_setup/docker_setup/esm3_changes.patch && \
     rm -rf /app/esm/Open-Omics-Acceleration-Framework && \
     rm -rf /app/esm/Source_code_with_submodules.tar.gz
@@ -64,7 +65,7 @@ RUN bash -c "source ${HOME}/conda/etc/profile.d/conda.sh && \
     opea-comps==1.3 \
     netifaces==0.11.0 \
     absl-py \
-    psutil
+    psutil"
 
 
 RUN echo "#!/bin/bash" > /app/init.sh && \
