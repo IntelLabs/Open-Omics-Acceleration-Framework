@@ -3,5 +3,5 @@
     "input_dir": "/input/fasta_input",
     "output_log_dir": "output_log/",
     "shared_args":  "--output_dir results --bf16",
-    "input_file_arg": "--fasta_file "
+    "input_file_arg": "--fasta_file="
 }
