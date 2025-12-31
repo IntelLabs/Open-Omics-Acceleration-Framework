@@ -18,7 +18,7 @@ ENV no_proxy=${no_proxy}
 
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git build-essential wget vim ca-certificates autoconf automake make numactl iproute2&& \
+    git build-essential wget vim ca-certificates autoconf automake make numactl iproute2 time && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get autoremove -y && \
     apt-get clean

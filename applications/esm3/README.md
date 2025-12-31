@@ -176,12 +176,13 @@ We have included an example demonstrating how to use it:
 
 Step 1: Start ESM3 container in interactive mode.
 ```bash
-docker run -it -e HF_TOKEN="<your_huggingface_token>" -v $MODELS:/models -v $INPUT:/input -v $OUTPUT:/output esm3_image:latest
+docker run -it --rm --privileged -e HF_TOKEN=$HUGGING_FACE_HUB_TOKEN -v $MODELS:/models -v $INPUT:/input -v $OUTPUT:/output esm3_image:latest
 ```
 
 Step 2: Use the multiprocess script.
 ```bash
-(esm3) esm3-base-service@23e9f24a5140:/app$ python common/multiprocess/multiprocess.py --json_file multiprocess/config_esm3json --case 1
+
+(esm3) esm3-base-service@23e9f24a5140:/app$ cd esm/ && python common/multiprocess/multiprocess.py --json_file multiprocess/config_esm3json --case 1
 ```
 ---
 The original README content of ESM3 follows.
