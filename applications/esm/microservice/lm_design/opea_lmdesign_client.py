@@ -43,17 +43,17 @@ def replace_pdb_path_with_string(cfg: DictConfig, key: str) -> None:
         if pdb_file_path:
             pdb_str = read_pdb_file(Path(pdb_file_path))
             OmegaConf.update(cfg, key, pdb_str)
-        
+
     except Exception as e:
         print(f"Failed to process PDB at {key}: {e}")
 
-@hydra.main(config_path="../../examples/lm-design/conf", config_name="config")
+@hydra.main(config_path="conf", config_name="config")
 def main(cfg: DictConfig) -> None:
-    
+
     # Prepare the request URL
     url = f"http://{args.host}:{args.port}/v1/esmlmdesign"
 
-    args_no_spaces = [arg.replace(" ", "") for arg in sys.argv[1:]]    
+    args_no_spaces = [arg.replace(" ", "") for arg in sys.argv[1:]]
     pdb_fn = cfg.pdb_fn
 
     if pdb_fn:
@@ -69,7 +69,7 @@ def main(cfg: DictConfig) -> None:
         if response.status_code == 200:
             data = response.json()
             decoded_json_str = base64.b64decode(data["results"]).decode("utf-8")
-            
+
             # Save decoded FASTA output to file
             fasta_path = Path("output.fasta")
 
