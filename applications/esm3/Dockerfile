@@ -8,7 +8,7 @@ FROM ${FROM_IMAGE} AS builder
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git build-essential wget vim ca-certificates autoconf automake make numactl && \
+    git build-essential wget vim ca-certificates autoconf automake make numactl iproute2&& \
     rm -rf /var/lib/apt/lists/* && \
     apt-get autoremove -y && \
     apt-get clean
@@ -25,7 +25,12 @@ RUN wget --no-check-certificate "https://github.com/conda-forge/miniforge/releas
 RUN bash Miniforge3-$(uname)-$(uname -m).sh -b -p "${HOME}/conda"
 
 WORKDIR /app
-COPY . /app
+COPY microservice/ /app/microservice
+COPY common/ /app/common
+COPY multiprocess/ /app/multiprocess
+
+COPY docker_setup/ /app
+COPY common/ /app/common
 RUN git clone https://github.com/evolutionaryscale/esm.git
 WORKDIR /app/esm
 RUN git checkout -b esm d40007ea16850da4fbf60244a9d50c2a94cbef3d
@@ -42,8 +47,13 @@ WORKDIR /app/esm
 RUN bash -c "source ${HOME}/conda/etc/profile.d/conda.sh && \
     source ${HOME}/conda/etc/profile.d/mamba.sh && \
     mamba activate esm3 && \
-    pip install --upgrade pip setuptools wheel && \
-    pip install ."
+    pip install --upgrade pip setuptools wheel \
+ && pip install . \
+ && pip install \
+    opea-comps==1.3 \
+    netifaces==0.11.0 \
+    absl-py \
+    psutil
 
 
 RUN echo "#!/bin/bash" > /app/init.sh && \
@@ -52,7 +62,7 @@ RUN echo "#!/bin/bash" > /app/init.sh && \
     echo "mamba activate esm3" >> /app/init.sh && \
     chmod +x /app/init.sh && \
     echo "source /app/init.sh" >> ~/.bashrc
-    
+
 WORKDIR /app/esm
 
 RUN echo '#!/bin/bash' > /app/entrypoint.sh && \

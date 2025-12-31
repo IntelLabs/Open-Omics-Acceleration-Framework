@@ -93,8 +93,8 @@ def main_esmc(client: ESMCInferenceClient, protein , args):
 
         output = client.logits(
             protein_tensor,
-            LogitsConfig(sequence=True, 
-                            return_embeddings=True, 
+            LogitsConfig(sequence=True,
+                            return_embeddings=True,
                             return_hidden_states=True,
                             structure=args.structure,
                             secondary_structure=args.secondary_structure,
@@ -109,12 +109,12 @@ def main_esmc(client: ESMCInferenceClient, protein , args):
         assert output.hidden_states is not None
         print(f"Client returned logits with shape: {output.logits.sequence.shape}, embeddings with shape: {output.embeddings.shape}, and hidden states with shape {output.hidden_states.shape}")
 
-        
+
 
         # Request a specific hidden layer
         output_layer = client.logits(
             protein_tensor,
-            LogitsConfig(return_hidden_states=True, 
+            LogitsConfig(return_hidden_states=True,
                             ith_hidden_layer=1,
                             sequence=args.sequence,
                             structure=args.structure,
@@ -131,10 +131,10 @@ def main_esmc(client: ESMCInferenceClient, protein , args):
         return output
 
 
-def processing_fasta(client: ESMCInferenceClient, fasta_file: str, output_dir: str, args):
+def processing_fasta(client: ESMCInferenceClient, fasta_file: str, args,output_dir: str = None):
     """Runs protein folding and saves the output as a PDB file in the specified directory."""
     print(f"Processing {fasta_file}...")
-
+    logits_result=[]
     if args.protein_complex:
         protein_chains = []
         for record in SeqIO.parse(fasta_file, "fasta"):
@@ -144,16 +144,21 @@ def processing_fasta(client: ESMCInferenceClient, fasta_file: str, output_dir: s
         protein = ProteinComplex.from_chains(protein_chains)
         protein = ESMProtein.from_protein_complex(protein)
         logits_output = main_esmc(client, protein, args)
-        fasta_name = os.path.splitext(os.path.basename(fasta_file))[0]
-        torch.save(logits_output, os.path.join(output_dir, f"{fasta_name}.pt"))
+        logits_result.append({"protien_complex":logits_output})
+        if output_dir:
+            fasta_name = os.path.splitext(os.path.basename(fasta_file))[0]
+            torch.save(logits_output, os.path.join(output_dir, f"{fasta_name}.pt"))
     else:
         fasta_entries = sorted(read_fasta(fasta_file), key=lambda header_seq: len(header_seq[1]))
         for entry in fasta_entries:
             header, sequence = entry
             protein = ESMProtein(sequence=sequence)
             logits_output = main_esmc(client, protein, args)
-            fasta_name = os.path.splitext(os.path.basename(header))[0]
-            torch.save(logits_output, os.path.join(output_dir, f"{fasta_name}.pt"))
+            logits_result.append({header:logits_output})
+            if output_dir:
+                fasta_name = os.path.splitext(os.path.basename(header))[0]
+                torch.save(logits_output, os.path.join(output_dir, f"{fasta_name}.pt"))
+    return logits_result
 
 def main(fasta_file: str, output_dir: str, model_name: str, args):
 
@@ -175,7 +180,7 @@ def main(fasta_file: str, output_dir: str, model_name: str, args):
     if args.timing:
         infer_time = time.time()
 
-    processing_fasta(model, fasta_file, output_dir, args)
+    processing_fasta(model, fasta_file,args, output_dir)
 
     if args.timing:
         print(f"Inference time = {time.time() - infer_time} seconds")
@@ -197,7 +202,7 @@ if __name__ == "__main__":
     parser.add_argument("--ith_hidden_layer", type=int, default=-1, help="Specify which hidden layer to return")
     parser.add_argument("--bf16", action="store_true", help="Enable bf16 inference.")
     parser.add_argument("--timing", action="store_true", help="Enable timing for inference.")
-    parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes (multi-chain structure) using a multi-chain FASTA file input.")   
+    parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes (multi-chain structure) using a multi-chain FASTA file input.")
 
 
     args = parser.parse_args()

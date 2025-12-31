@@ -15,24 +15,24 @@ def get_sample_protein_from_csv(csv_file: str, sequence_length: int = None) -> E
     df = pd.read_csv(csv_file, sep="\t")
     if not {"Label", "Start", "End"}.issubset(df.columns):
         raise ValueError("CSV file must contain 'Label', 'Start', and 'End' columns")
-    
+
     function_annotations = [
         FunctionAnnotation(label=row["Label"], start=int(row["Start"]), end=int(row["End"]))
         for _, row in df.iterrows()
     ]
-    
+
     # Determine sequence length
     sequence_length = sequence_length or max(df["End"], default=100)
-    
+
     protein = ESMProtein(sequence="_" * sequence_length)
     protein.function_annotations = function_annotations
     return protein
 
-def chain_of_thought(client: ESM3InferenceClient, csv_path: str, output_dir: str, args):
+def chain_of_thought(client: ESM3InferenceClient, csv_path: str, args,output_dir: str = None):
     cot_protein = get_sample_protein_from_csv(csv_path, args.sequence_length)
     enable_autocast = args.bf16
     device_type = "cpu"
-    
+
     with torch.amp.autocast(device_type=device_type, enabled=enable_autocast):
         cot_protein.sequence = "_" * len(cot_protein.sequence)
         cot_protein.coordinates = None
@@ -53,15 +53,16 @@ def chain_of_thought(client: ESM3InferenceClient, csv_path: str, output_dir: str
                     condition_on_coordinates_only=args.condition_on_coordinates_only
                 ),
             )
-        
+
         assert isinstance(cot_protein_tensor, ESMProteinTensor)
         cot_protein = client.decode(cot_protein_tensor)
         assert isinstance(cot_protein, ESMProtein)
-        
-        csv_name = os.path.splitext(os.path.basename(csv_path))[0]
-        output_pdb_path = os.path.join(output_dir, f"{csv_name}.pdb")
-        cot_protein.to_pdb(output_pdb_path)
-        print(f"Saved output to {output_pdb_path}")
+        if output_dir:
+            csv_name = os.path.splitext(os.path.basename(csv_path))[0]
+            output_pdb_path = os.path.join(output_dir, f"{csv_name}.pdb")
+            cot_protein.to_pdb(output_pdb_path)
+            print(f"Saved output to {output_pdb_path}")
+        return cot_protein.to_pdb_string()
 
 def main(args):
 
@@ -69,13 +70,13 @@ def main(args):
         print(f"Invalid CSV file: {args.csv_file}")
         return
     os.makedirs(args.output_dir, exist_ok=True)
-    
+
     client = ESM3InferenceClient() if os.getenv("ESM_API_KEY") else ESM3.from_pretrained(
         "esm3_sm_open_v1", bf16=args.bf16
     )
-    
+
     infer_time = time.time()
-    chain_of_thought(client, args.csv_file, args.output_dir, args)
+    chain_of_thought(client, args.csv_file, args,args.output_dir)
     if args.timing:
         print(f"Inference time = {time.time() - infer_time} seconds")
 
@@ -91,8 +92,8 @@ if __name__ == "__main__":
     parser.add_argument("--temperature", type=float, default=1.0, help="Sampling temperature.")
     parser.add_argument("--top_p", type=float, default=1.0, help="Top-p sampling value.")
     parser.add_argument("--condition_on_coordinates_only", action="store_true", help="Condition only on coordinates.")
-    parser.add_argument("--sequence_length", type=int, help="Custom sequence length (optional).")
-    
+    parser.add_argument("--sequence_length", type=int,default=None, help="Custom sequence length (optional).")
+
     args = parser.parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
     if args.timing:

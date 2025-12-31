@@ -102,21 +102,21 @@ def fold_protein(client: ESM3InferenceClient, protein, args, output_dir, fasta_f
             )
 
         assert isinstance(folded_protein, ESMProtein), f"ESMProtein was expected but got {protein}"
-        
+
         return folded_protein
-    
+
 def save_pdb(folding_outuput,fasta_name,output_dir):
-    
+
     output_pdb_path = os.path.join(output_dir, f"{fasta_name}.pdb")
     folding_outuput.to_pdb(output_pdb_path)
     print(f"Saved folded protein to {output_pdb_path}")
     mean_plddt = folding_outuput.plddt.mean().item()
     print(f"Mean pLDDT Score: {mean_plddt:.4f}")
 
-def processing_fasta(client: ESM3InferenceClient, fasta_file: str, output_dir: str, args):
+def processing_fasta(client: ESM3InferenceClient, fasta_file: str, args,output_dir: str = None):
     """Runs protein folding and saves the output as a PDB file in the specified directory."""
     print(f"Processing {fasta_file}...")
-
+    folding_result=[]
     if args.protein_complex:
         protein_chains = []
         for record in SeqIO.parse(fasta_file, "fasta"):
@@ -126,17 +126,21 @@ def processing_fasta(client: ESM3InferenceClient, fasta_file: str, output_dir: s
         protein = ProteinComplex.from_chains(protein_chains)
         protein = ESMProtein.from_protein_complex(protein)
         folding_outuput = fold_protein(client, protein, args, output_dir, fasta_file)
-        fasta_name = os.path.splitext(os.path.basename(fasta_file))[0]
-        save_pdb(folding_outuput,fasta_name,output_dir)
+        folding_result.append({"protien_complex":folding_outuput.to_pdb_string()})
+        if output_dir:
+            fasta_name = os.path.splitext(os.path.basename(fasta_file))[0]
+            save_pdb(folding_outuput,fasta_name,output_dir)
     else:
         fasta_entries = sorted(read_fasta(fasta_file), key=lambda header_seq: len(header_seq[1]))
         for entry in fasta_entries:
             header, sequence = entry
             protein = ESMProtein(sequence=sequence)
             folding_outuput = fold_protein(client, protein, args, output_dir, fasta_file)
-            fasta_name = os.path.splitext(os.path.basename(header))[0]
-            save_pdb(folding_outuput,fasta_name,output_dir)
-
+            folding_result.append({header:folding_outuput.to_pdb_string()})
+            if output_dir:
+                fasta_name = os.path.splitext(os.path.basename(header))[0]
+                save_pdb(folding_outuput,fasta_name,output_dir)
+    return folding_result
 
 def main(args):
     """Processes a single FASTA file."""
@@ -153,7 +157,7 @@ def main(args):
 
     if args.timing:
         inter_time = time.time()
-    processing_fasta(client, args.fasta_file, args.output_dir, args)
+    processing_fasta(client, args.fasta_file, args,args.output_dir)
     if args.timing:
         print(f"inference time = {time.time() - inter_time} seconds")
 
@@ -170,9 +174,9 @@ if __name__ == "__main__":
     parser.add_argument("--temperature_annealing", action="store_true", help="Enable temperature annealing.")
     parser.add_argument("--top_p", type=float, default=1.0, help="Top-p sampling value.")
     parser.add_argument("--condition_on_coordinates_only", action="store_true", help="Condition only on coordinates.")
-    parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes (multi-chain structure) using a multi-chain FASTA file input.")   
+    parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes (multi-chain structure) using a multi-chain FASTA file input.")
     args = parser.parse_args()
-    
+
     os.makedirs(args.output_dir, exist_ok=True)
     if args.timing:
         start_time = time.time()

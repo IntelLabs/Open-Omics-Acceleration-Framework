@@ -16,7 +16,7 @@ def write_fasta(filename, sequences):
         for i, seq in enumerate(sequences, 1):
             f.write(f">sampled_seq_{i}\n{seq}\n")
 
-def inversefold_protein(client: ESM3InferenceClient, protein ,pdb_file: str, output_dir: str, args):
+def inversefold_protein(client: ESM3InferenceClient, protein ,pdb_file: str, args,output_dir: str = None):
     """Runs inverse folding and saves the output as a FASTA file."""
     print(f"Processing {pdb_file}...")
 
@@ -51,9 +51,10 @@ def inversefold_protein(client: ESM3InferenceClient, protein ,pdb_file: str, out
 
             if errors:
                 raise RuntimeError(f"Batch generation errors: {errors}")
-
-            output_fasta_path = os.path.join(output_dir, f"{os.path.basename(pdb_file).replace('.pdb', '')}_batch.fasta")
-            write_fasta(output_fasta_path, sequences)
+            if output_dir:
+                output_fasta_path = os.path.join(output_dir, f"{os.path.basename(pdb_file).replace('.pdb', '')}_batch.fasta")
+                write_fasta(output_fasta_path, sequences)
+            return sequences
 
         else:
             inv_folded_protein = client.generate(
@@ -72,21 +73,23 @@ def inversefold_protein(client: ESM3InferenceClient, protein ,pdb_file: str, out
 
             if isinstance(inv_folded_protein, ESMProteinError):
                 raise RuntimeError(f"Error: {str(inv_folded_protein)}")
+            if output_dir:
+                output_fasta_path = os.path.join(output_dir, os.path.basename(pdb_file).replace(".pdb", ".fasta"))
+                write_fasta(output_fasta_path, [inv_folded_protein.sequence])
+            return  [inv_folded_protein.sequence]
 
-            output_fasta_path = os.path.join(output_dir, os.path.basename(pdb_file).replace(".pdb", ".fasta"))
-            write_fasta(output_fasta_path, [inv_folded_protein.sequence])
-
-def processing_pdb(client: ESM3InferenceClient, pdb_file: str, output_dir: str, args):
+def processing_pdb(client: ESM3InferenceClient, pdb_file: str, args,output_dir: str = None):
     """Runs protein folding and saves the output as a PDB file in the specified directory."""
     print(f"Processing {pdb_file}...")
 
     if args.protein_complex:
         protein = ProteinComplex.from_pdb(pdb_file)
         protein = ESMProtein.from_protein_complex(protein)
-        inversefold_protein(client,protein,pdb_file,output_dir,args)
+        result = inversefold_protein(client,protein,pdb_file,args,output_dir)
     else:
         protein = ESMProtein.from_pdb(pdb_file)
-        inversefold_protein(client,protein,pdb_file,output_dir,args)
+        result= inversefold_protein(client,protein,pdb_file,args,output_dir)
+    return result
 
 def main(args):
     """Processes a single PDB file."""
@@ -101,7 +104,7 @@ def main(args):
     )
 
     inter_time = time.time()
-    processing_pdb(client, args.pdb_file, args.output_dir, args)
+    processing_pdb(client, args.pdb_file, args,args.output_dir)
     if args.timing:
         print(f"Inference time = {time.time() - inter_time} seconds")
 
@@ -120,7 +123,7 @@ if __name__ == "__main__":
     parser.add_argument("--top_p", type=float, default=1.0, help="Top-p sampling value.")
     parser.add_argument("--condition_on_coordinates_only", action="store_true", help="Condition only on coordinates.")
     parser.add_argument("--num_sequences", type=int, default=8, help="Number of sequences to generate in batch mode.")
-    parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes (multi-chain structure) using a multi-chain FASTA file input.")   
+    parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes (multi-chain structure) using a multi-chain FASTA file input.")
 
     args = parser.parse_args()
 

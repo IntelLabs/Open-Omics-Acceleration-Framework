@@ -3,10 +3,11 @@
 Open-Omics-ESM3 is an optimized version of the Evolutionary Scale Modeling [ESM3](https://github.com/evolutionaryscale/esm) toolkit, designed for modern CPUs. It enhances the performance of various ESM3 modules by enabling lower-precision computations (bf16) for improved efficiency.
 
 ## 🛠️ Building the Docker Image
-Run the following command to build the Docker image:
 
+Run the following command to build the Docker image:
 ```bash
-docker build -t esm3_image .
+cp -r ../common .   #this only for Tranomics Repository
+docker build -t esm3_image -f docker_setup/Dockerfile .
 ```
 ### 🌐 Building Behind a Proxy
 If you're working in a corporate or institutional environment, your internet access may be routed through a proxy server. In such cases, Docker may not be able to download dependencies during the build process unless you explicitly configure proxy settings.
@@ -14,7 +15,7 @@ If you're working in a corporate or institutional environment, your internet acc
 To build the Docker image with proxy settings, you can use the --build-arg option to pass your proxy configuration:
 
 ```bash
-docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy=$no_proxy -t esm3_image .
+docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy=$no_proxy -t esm3_image -f docker_setup/Dockerfile .
 ```
 🔒 Note: Make sure the environment variables http_proxy, https_proxy, and no_proxy are correctly set in your shell before running this command.
 
@@ -24,7 +25,7 @@ For more details, refer to the official Docker documentation:
 
 ## Setting Up Environment Variables and Directories
 To ensure the application runs smoothly, set up the necessary directories and environment variables. Follow these steps:
-### Step 1: Export Environment Variables  
+### Step 1: Export Environment Variables
 Define environment variables for your folder paths. Replace `<your input folder>` ,`<your output folder>`,  and `<your Model folder>` with the desired paths:
 ```bash
 export INPUT=$PWD/<your input folder>
@@ -36,16 +37,16 @@ Here’s an example using standardized folder names. These commands will create 
 
 ```bash
 mkdir -p input output models
-export INPUT=$PWD/input   
-export OUTPUT=$PWD/output     
-export MODELS=$PWD/models 
+export INPUT=$PWD/input
+export OUTPUT=$PWD/output
+export MODELS=$PWD/models
 chmod a+w $MODELS $OUTPUT
 ```
 ### Step 3: 🔑 Hugging Face Token Setup
 
 To access models from the Hugging Face Hub, you’ll need an API token with **"Read"** permissions. Follow the steps below to create one:
 
-1. Go to the Hugging Face token management page:  
+1. Go to the Hugging Face token management page:
    👉 [https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
 
 2. Click **"New token"**.
@@ -66,7 +67,7 @@ To access models from the Hugging Face Hub, you’ll need an API token with **"R
 ## Running
 ### Information on flags
 
- `--protein_complex` flag enables prediction for multi-chain protein complexes using multi-chain FASTA and PDB inputs. When this flag is enabled, FASTA files containing multiple sequences are interpreted as representing different chains within the protein complex.  
+ `--protein_complex` flag enables prediction for multi-chain protein complexes using multi-chain FASTA and PDB inputs. When this flag is enabled, FASTA files containing multiple sequences are interpreted as representing different chains within the protein complex.
 
   `--bf16` flag accelerates inference performance by utilizing bfloat16 precision.
 
@@ -157,6 +158,31 @@ docker run -it \
     -v $OUTPUT:/output \
     esm3_image:latest \
     python scripts/ESM3_chain_of_thought.py /input/1utn.csv /output/ --bf16
+```
+
+## Additional Ways to Run ESM3
+
+OpenOmics supports multiple ways to run ESM3 depending on your workflow and scale. Choose the mode that best fits your use case:
+
+### 1. Run as a Microservice
+If you want to expose ESM3 as a service that can be queried over an API, you can deploy it as a microservice.
+Refer to [here](microservice/README.md) for setup instructions and API usage details.
+
+### 2. Run Multiple Processes (Parallel Local Execution)
+To run many ESM3 tasks on a single machine, you can use the multiprocess tool, which batches your tasks and executes them in parallel using all the available cores.
+It automatically determines and configures the optimal level of parallelism.
+Read more about the multiprocess tool [here](../common/multiprocess/README.md).
+
+We have included an example demonstrating how to use it:
+
+Step 1: Start ESM3 container in interactive mode.
+```bash
+docker run -it -e HF_TOKEN="<your_huggingface_token>" -v $MODELS:/models -v $INPUT:/input -v $OUTPUT:/output esm3_image:latest
+```
+
+Step 2: Use the multiprocess script.
+```bash
+(esm3) esm3-base-service@23e9f24a5140:/app$ python common/multiprocess/multiprocess.py --json_file multiprocess/config_esm3json --case 1
 ```
 ---
 The original README content of ESM3 follows.

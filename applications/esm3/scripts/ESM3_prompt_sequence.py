@@ -99,10 +99,10 @@ def prompt_protein(client: ESM3InferenceClient, protein, args, output_dir, fasta
     return prompt_protein
 
 
-def processing_fasta(client: ESM3InferenceClient, fasta_file: str, output_dir: str, args):
+def processing_fasta(client: ESM3InferenceClient, fasta_file: str,args,output_dir: str = None):
     """Runs protein folding and saves the output as a PDB file in the specified directory."""
     print(f"Processing {fasta_file}...")
-
+    prompt_result=[]
     if args.protein_complex:
         protein_chains = []
         for record in SeqIO.parse(fasta_file, "fasta"):
@@ -112,18 +112,23 @@ def processing_fasta(client: ESM3InferenceClient, fasta_file: str, output_dir: s
         protein = ProteinComplex.from_chains(protein_chains)
         protein = ESMProtein.from_protein_complex(protein)
         prompt_outuput = prompt_protein(client, protein, args, output_dir, fasta_file)
-        fasta_name = os.path.splitext(os.path.basename(fasta_file))[0]
-        output_fasta_path = os.path.join(output_dir, f"{fasta_name}.fasta")
-        write_fasta(output_fasta_path, [prompt_outuput.sequence])
+        prompt_result.append({"protien_complex":[prompt_outuput.sequence]})
+        if output_dir:
+            fasta_name = os.path.splitext(os.path.basename(fasta_file))[0]
+            output_fasta_path = os.path.join(output_dir, f"{fasta_name}.fasta")
+            write_fasta(output_fasta_path, [prompt_outuput.sequence])
     else:
         fasta_entries = sorted(read_fasta(fasta_file), key=lambda header_seq: len(header_seq[1]))
-        
+
         for entry in fasta_entries:
             header, sequence = entry
             protein = ESMProtein(sequence=sequence)
             prompt_outuput = prompt_protein(client, protein, args, output_dir, fasta_file)
+            prompt_result.append({header:prompt_outuput.sequence})
+        if output_dir:
             output_fasta_path = os.path.join(output_dir, f"{header}.fasta")
             write_fasta(output_fasta_path, [prompt_outuput.sequence])
+    return prompt_result
 
 def main(args):
     """Main execution function."""
@@ -131,7 +136,7 @@ def main(args):
         print(f"Invalid Fasta file: {args.fasta_file}")
         return
     os.makedirs(args.output_dir, exist_ok=True)
-    
+
     # Load ESM model
     if os.environ.get("ESM_API_KEY"):
         print("Using ESM API Client...")
@@ -143,7 +148,7 @@ def main(args):
     # Run inference
     if args.timing:
         infer_time = time.time()
-    processing_fasta(client, args.fasta_file, args.output_dir, args)
+    processing_fasta(client, args.fasta_file,args, args.output_dir)
     if args.timing:
         print(f"Inference time: {time.time() - infer_time:.2f} seconds")
 
@@ -160,7 +165,7 @@ if __name__ == "__main__":
     parser.add_argument("--temperature", type=float, default=1.0, help="Sampling temperature.")
     parser.add_argument("--top_p", type=float, default=1.0, help="Top-p sampling value.")
     parser.add_argument("--condition_on_coordinates_only", action="store_true", help="Condition only on coordinates.")
-    parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes (multi-chain structure) using a multi-chain FASTA file input.")   
+    parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes (multi-chain structure) using a multi-chain FASTA file input.")
 
     args = parser.parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
