@@ -24,18 +24,29 @@ USER $SERVICE_NAME
 RUN wget --no-check-certificate "https://github.com/conda-forge/miniforge/releases/download/24.3.0-0/Miniforge3-$(uname)-$(uname -m).sh"
 RUN bash Miniforge3-$(uname)-$(uname -m).sh -b -p "${HOME}/conda"
 
-WORKDIR /app
-COPY microservice/ /app/microservice
-COPY common/ /app/common
-COPY multiprocess/ /app/multiprocess
-
-COPY docker_setup/ /app
-COPY common/ /app/common
 RUN git clone https://github.com/evolutionaryscale/esm.git
 WORKDIR /app/esm
 RUN git checkout -b esm d40007ea16850da4fbf60244a9d50c2a94cbef3d
-RUN cp /app/esm3_changes.patch /app/esm/esm_changes.patch
-RUN git apply /app/esm/esm_changes.patch
+
+RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+WORKDIR /app/esm/Open-Omics-Acceleration-Framework/
+RUN git checkout esm3_v4
+
+# RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz
+# RUN tar -xzf Source_code_with_submodules.tar.gz
+# WORKDIR /app/esm/Open-Omics-Acceleration-Framework/
+
+WORKDIR /app/esm
+USER root
+RUN mv /app/esm/Open-Omics-Acceleration-Framework/applications/esm3 /app/esm/omics_setup && \
+    mv /app/esm/Open-Omics-Acceleration-Framework/applications/common /app/esm/common && \
+    mv /app/esm/omics_setup/microservice /app/esm/microservice && \
+    mv /app/esm/omics_setup/multiprocess /app/esm/multiprocess && \
+    git apply /app/esm/omics_setup/docker_setup/esm3_changes.patch && \
+    rm -rf /app/esm/Open-Omics-Acceleration-Framework && \
+    rm -rf /app/esm/Source_code_with_submodules.tar.gz
+
+USER $SERVICE_NAME
 
 WORKDIR /app/esm/
 RUN ${HOME}/conda/bin/conda update -y --all

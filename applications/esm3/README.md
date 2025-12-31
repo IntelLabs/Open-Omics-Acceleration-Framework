@@ -6,7 +6,6 @@ Open-Omics-ESM3 is an optimized version of the Evolutionary Scale Modeling [ESM3
 
 Run the following command to build the Docker image:
 ```bash
-cp -r ../common .   #this only for Tranomics Repository
 docker build -t esm3_image -f docker_setup/Dockerfile .
 ```
 ### 🌐 Building Behind a Proxy

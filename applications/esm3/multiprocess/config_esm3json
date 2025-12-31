@@ -1,0 +1,7 @@
+{
+    "script_command":"python ./scripts/ESM3_logits_embedding_task.py",
+    "input_dir": "input/fasta_input",
+    "output_log_dir": "output_log/",
+    "shared_args":  "--output_dir results --bf16",
+    "input_file_arg": "--fasta_file="
+}
