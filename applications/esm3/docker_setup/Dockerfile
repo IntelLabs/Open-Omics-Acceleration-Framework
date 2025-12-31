@@ -7,6 +7,16 @@ FROM ${FROM_IMAGE} AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+ARG http_proxy
+ENV http_proxy=${http_proxy}
+
+ARG https_proxy
+ENV https_proxy=${https_proxy}
+
+ARG no_proxy
+ENV no_proxy=${no_proxy}
+
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git build-essential wget vim ca-certificates autoconf automake make numactl iproute2&& \
     rm -rf /var/lib/apt/lists/* && \
@@ -43,6 +53,7 @@ RUN mv /app/esm/Open-Omics-Acceleration-Framework/applications/esm3 /app/esm/omi
     mv /app/esm/omics_setup/microservice /app/esm/microservice && \
     mv /app/esm/omics_setup/multiprocess /app/esm/multiprocess && \
     mv /app/esm/omics_setup/docker_setup/env.yml /app/env.yml && \
+    mv /app/esm/omics_setup/docker_setup/scripts /app/scripts && \
     git apply /app/esm/omics_setup/docker_setup/esm3_changes.patch && \
     rm -rf /app/esm/Open-Omics-Acceleration-Framework && \
     rm -rf /app/esm/Source_code_with_submodules.tar.gz

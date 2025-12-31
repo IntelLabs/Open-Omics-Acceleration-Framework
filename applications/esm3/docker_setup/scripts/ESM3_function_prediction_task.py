@@ -41,8 +41,9 @@ def function_protein(client: ESM3InferenceClient, protein,pdb_file: str,args,out
             with open(output_csv, "w", newline="") as f:
                 writer = csv.writer(f, delimiter="\t")
                 writer.writerow(["Label", "Start", "End"])
-                for annotation in protein_with_function.function_annotations:
-                    writer.writerow([annotation.label, annotation.start, annotation.end])
+                if protein_with_function.function_annotations:
+                    for annotation in protein_with_function.function_annotations:
+                        writer.writerow([annotation.label, annotation.start, annotation.end])
 
             print(f"Function annotations saved as {output_csv}")
     return protein_with_function.function_annotations

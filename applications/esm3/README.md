@@ -76,8 +76,8 @@ To access models from the Hugging Face Hub, you’ll need an API token with **"R
 
 ```bash
 #example
-docker run -it \
-    -e HF_TOKEN="<your_huggingface_token>" \
+docker run -it --rm \
+    -e HF_TOKEN=$HUGGING_FACE_HUB_TOKEN \
     -v $MODELS:/models \
     -v $INPUT:/input \
     -v $OUTPUT:/output \
@@ -88,8 +88,8 @@ docker run -it \
 #### ESM3 - Logits Embeddings: Generates embeddings with ESM3 for sequence representation and analysis
 ```bash
 #example
-docker run -it \
-    -e HF_TOKEN="<your_huggingface_token>" \
+docker run -it --rm \
+    -e HF_TOKEN=$HUGGING_FACE_HUB_TOKEN \
     -v $MODELS:/models \
     -v $INPUT:/input \
     -v $OUTPUT:/output \
@@ -100,8 +100,8 @@ docker run -it \
 #### ESM3 - Folding: Predicts the 3D structure of proteins from amino acid sequences using ESM3
 ```bash
 #example
-docker run -it \
-    -e HF_TOKEN="<your_huggingface_token>" \
+docker run -it --rm \
+    -e HF_TOKEN=$HUGGING_FACE_HUB_TOKEN \
     -v $MODELS:/models \
     -v $INPUT:/input \
     -v $OUTPUT:/output \
@@ -113,8 +113,8 @@ docker run -it \
 
 ```bash
 #example
-docker run -it \
-    -e HF_TOKEN="<your_huggingface_token>" \
+docker run -it --rm \
+    -e HF_TOKEN=$HUGGING_FACE_HUB_TOKEN \
     -v $MODELS:/models \
     -v $INPUT:/input \
     -v $OUTPUT:/output \
@@ -125,8 +125,8 @@ docker run -it \
 
 ```bash
 #example
-docker run -it \
-    -e HF_TOKEN="<your_huggingface_token>" \
+docker run -it --rm \
+    -e HF_TOKEN=$HUGGING_FACE_HUB_TOKEN \
     -v $MODELS:/models \
     -v $INPUT:/input \
     -v $OUTPUT:/output \
@@ -138,8 +138,8 @@ docker run -it \
 
 ```bash
 #example
-docker run -it \
-    -e HF_TOKEN="<your_huggingface_token>" \
+docker run -it --rm \
+    -e HF_TOKEN=$HUGGING_FACE_HUB_TOKEN \
     -v $MODELS:/models \
     -v $INPUT:/input \
     -v $OUTPUT:/output \
@@ -150,8 +150,8 @@ docker run -it \
 
 ```bash
 #example
-docker run -it \
-    -e HF_TOKEN="<your_huggingface_token>" \
+docker run -it --rm \
+    -e HF_TOKEN=$HUGGING_FACE_HUB_TOKEN \
     -v $MODELS:/models \
     -v $INPUT:/input \
     -v $OUTPUT:/output \
