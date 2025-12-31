@@ -38,13 +38,9 @@ RUN git clone https://github.com/evolutionaryscale/esm.git
 WORKDIR /app/esm
 RUN git checkout -b esm d40007ea16850da4fbf60244a9d50c2a94cbef3d
 
-RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz
+RUN tar -xzf Source_code_with_submodules.tar.gz
 WORKDIR /app/esm/Open-Omics-Acceleration-Framework/
-RUN git checkout esm3_v4
-
-# RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz
-# RUN tar -xzf Source_code_with_submodules.tar.gz
-# WORKDIR /app/esm/Open-Omics-Acceleration-Framework/
 
 WORKDIR /app/esm
 USER root
