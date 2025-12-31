@@ -82,7 +82,7 @@ docker run -it --rm \
     -v $INPUT:/input \
     -v $OUTPUT:/output \
     esm3_image:latest \
-    python scripts/ESMC_logits_embedding_task.py /input/some_proteins.fasta /output/ --bf16
+    python scripts/ESMC_logits_embedding_task.py --fasta_file /input/some_proteins.fasta --output_dir /output/ --bf16
 ```
 
 #### ESM3 - Logits Embeddings: Generates embeddings with ESM3 for sequence representation and analysis
@@ -94,7 +94,7 @@ docker run -it --rm \
     -v $INPUT:/input \
     -v $OUTPUT:/output \
     esm3_image:latest \
-    python scripts/ESM3_logits_embedding_task.py /input/some_proteins.fasta /output/ --bf16
+    python scripts/ESM3_logits_embedding_task.py --fasta_file /input/some_proteins.fasta --output_dir /output/ --bf16
 ```
 
 #### ESM3 - Folding: Predicts the 3D structure of proteins from amino acid sequences using ESM3
@@ -106,7 +106,7 @@ docker run -it --rm \
     -v $INPUT:/input \
     -v $OUTPUT:/output \
     esm3_image:latest \
-    python scripts/ESM3_folding_task.py /input/sample_sequence.fasta /output/ --bf16
+    python scripts/ESM3_folding_task.py --fasta_file /input/sample_sequence.fasta --output_dir /output/ --bf16
 ```
 
 #### ESM3 - Inverse Folding: Designs protein sequences that fold into a given 3D structure
@@ -119,7 +119,7 @@ docker run -it --rm \
     -v $INPUT:/input \
     -v $OUTPUT:/output \
     esm3_image:latest \
-    python scripts/ESM3_inversefold_task.py /input/5YH2.pdb /output/ --bf16
+    python scripts/ESM3_inversefold_task.py --pdb_file /input/5YH2.pdb --output_dir /output/ --bf16
 ```
 #### ESM3 - Function Prediction: Predicts protein function from structural and sequence data
 
@@ -131,7 +131,7 @@ docker run -it --rm \
     -v $INPUT:/input \
     -v $OUTPUT:/output \
     esm3_image:latest \
-    python scripts/ESM3_function_prediction_task.py /input/1utn.pdb /output/ --bf16
+    python scripts/ESM3_function_prediction_task.py --pdb_file /input/1utn.pdb --output_dir /output/ --bf16
 ```
 
 #### ESM3 - Prompt Sequence: Generates protein sequences based on user-provided prompts for design tasks
@@ -144,7 +144,7 @@ docker run -it --rm \
     -v $INPUT:/input \
     -v $OUTPUT:/output \
     esm3_image:latest \
-    python scripts/ESM3_prompt_sequence.py /input/prompt.fasta /output/ --bf16
+    python scripts/ESM3_prompt_sequence.py --fasta_file /input/prompt.fasta --output_dir /output/ --bf16
 ```
 #### ESM3 - Chain of Thought: Uses reasoning-based approaches to analyze and interpret protein data
 
@@ -156,7 +156,7 @@ docker run -it --rm \
     -v $INPUT:/input \
     -v $OUTPUT:/output \
     esm3_image:latest \
-    python scripts/ESM3_chain_of_thought.py /input/1utn.csv /output/ --bf16
+    python scripts/ESM3_chain_of_thought.py --csv_file /input/1utn.csv --output_dir /output/ --bf16
 ```
 
 ## Additional Ways to Run ESM3
@@ -182,7 +182,7 @@ docker run -it --rm --privileged -e HF_TOKEN=$HUGGING_FACE_HUB_TOKEN -v $MODELS:
 Step 2: Use the multiprocess script.
 ```bash
 
-(esm3) esm3-base-service@23e9f24a5140:/app$ cd esm/ && python common/multiprocess/multiprocess.py --json_file multiprocess/config_esm3json --case 1
+(esm3) esm3-base-service@23e9f24a5140:/app$ cd /app/esm/ && python common/multiprocess/multiprocess.py --json_file multiprocess/config_esm3.json --case 1
 ```
 ---
 The original README content of ESM3 follows.

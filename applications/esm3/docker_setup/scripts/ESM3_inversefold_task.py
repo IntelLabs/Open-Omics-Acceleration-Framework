@@ -110,8 +110,8 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run ESM3 protein inverse folding on a PDB file.")
-    parser.add_argument("pdb_file", type=str, help="Path to the input PDB file.")
-    parser.add_argument("output_dir", type=str, help="Directory to save the output FASTA file.")
+    parser.add_argument("--pdb_file", type=str, help="Path to the input PDB file.")
+    parser.add_argument("--output_dir", type=str, help="Directory to save the output FASTA file.")
     parser.add_argument("--bf16", action="store_true", help="Enable bf16 inference.")
     parser.add_argument("--timing", action="store_true", help="Enable timing for inference.")
     parser.add_argument("--batch_run", action="store_true", help="Run in batch mode.")

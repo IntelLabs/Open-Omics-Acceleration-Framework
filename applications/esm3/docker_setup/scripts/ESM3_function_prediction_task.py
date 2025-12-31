@@ -76,8 +76,8 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run ESM3 protein function annotation on a single PDB file.")
-    parser.add_argument("pdb_file", type=str, help="Path to the input PDB file.")
-    parser.add_argument("output_dir", type=str, help="Directory to save the output CSV file.")
+    parser.add_argument("--pdb_file", type=str, help="Path to the input PDB file.")
+    parser.add_argument("--output_dir", type=str, help="Directory to save the output CSV file.")
     parser.add_argument("--bf16", action="store_true", help="Enable bf16 inference.")
     parser.add_argument("--timing", action="store_true", help="Enable timing for inference.")
     parser.add_argument("--schedule", type=str, choices=["cosine", "linear"], default="cosine", help="Schedule type (cosine or linear).")

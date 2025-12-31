@@ -188,8 +188,8 @@ def main(fasta_file: str, output_dir: str, model_name: str, args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run ESM3 protein folding for a single FASTA file.")
-    parser.add_argument("fasta_file", type=str, help="Path to the FASTA file.")
-    parser.add_argument("output_dir", type=str, help="Directory to save the output PDB files.")
+    parser.add_argument("--fasta_file", type=str, help="Path to the FASTA file.")
+    parser.add_argument("--output_dir", type=str, help="Directory to save the output PDB files.")
     parser.add_argument("--model_name", type=str, default="esmc_600m", help="Name of the model for ESMC.")
     parser.add_argument("--sequence", action="store_true", help="Enable sequence logits")
     parser.add_argument("--structure", action="store_true", help="Enable structure logits")
