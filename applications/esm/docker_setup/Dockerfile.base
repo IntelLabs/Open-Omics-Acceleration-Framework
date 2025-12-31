@@ -57,7 +57,7 @@ RUN mv /app/esm/Open-Omics-Acceleration-Framework/applications/esm /app/esm/omic
     mv /app/esm/Open-Omics-Acceleration-Framework/applications/common /app/esm/common && \
     mv /app/esm/omics_setup/microservice /app/esm/microservice && \
     mv /app/esm/omics_setup/multiprocess /app/esm/multiprocess && \
-    git apply /app/esm/omics_setup/esm_change_all.patch && \
+    git apply /app/esm/omics_setup/docker_setup/esm_change_all.patch && \
     rm -rf /app/esm/Open-Omics-Acceleration-Framework && \
     rm -rf /app/esm/Source_code_with_submodules.tar.gz
 

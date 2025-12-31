@@ -43,7 +43,7 @@ export MODELS=$PWD/<your output folder>
 
 The following is an example to do the same.
 ```bash
-mkdir -p input output models
+mkdir -p docker_setup/input output models
 export INPUT=$PWD/docker_setup/input
 export OUTPUT=$PWD/output
 export MODELS=$PWD/models
@@ -63,12 +63,12 @@ Compute embeddings for multiple protein sequences from a FASTA file in a single 
 
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
   -v $MODELS:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
   esm_image:latest \
-  python scripts/extract.py esm2_t33_650M_UR50D /input/some_proteins.fasta /output --repr_layers 0 32 33 --include mean per_tok --bf16
+  python scripts/extract.py --model_location esm2_t33_650M_UR50D --fasta_file /input/some_proteins.fasta --output_dir /output --repr_layers 0 32 33 --include mean per_tok --bf16
 ```
 <br />
 
@@ -78,7 +78,7 @@ LM-Design supports fixed backbone sequence generation for known structures and r
 
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
   -v $MODELS:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
@@ -90,7 +90,7 @@ docker run -it \
 
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
   -v $MODELS:/checkpoints \
   -v $PWD/output:/output \
 	esm_image:latest  bash -c \
@@ -105,7 +105,7 @@ Inverse Folding involves generating sample protein sequences that are designed t
 
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
   -v $MODELS:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
@@ -117,7 +117,7 @@ docker run -it \
 
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
   -v $MODELS:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
@@ -129,7 +129,7 @@ docker run -it \
 
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
   -v $MODELS:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
@@ -141,7 +141,7 @@ docker run -it \
 
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
   -v $MODELS:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
@@ -155,7 +155,7 @@ ESMFold predicts protein structures from amino acid sequences using advanced mac
 
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
   -v $MODELS:/checkpoints \
   -v $INPUT:/input \
   -v $OUTPUT:/output \
@@ -180,12 +180,19 @@ We have included an example demonstrating how to use it:
 
 Step 1: Start ESM container in interactive mode.
 ```bash
-docker run -it --privileged -v $MODELS:/checkpoints -v $INPUT:/input -v $OUTPUT:/output esm_image:latest
+docker run -it --rm --privileged -v $MODELS:/checkpoints -v $INPUT:/input -v $OUTPUT:/output esm_image:latest
 ```
 
-Step 2: Use the multiprocess script.
+Step 2: Copy sample input fasta data in seperate directory
+
 ```bash
-(esm_py11) esm-base-service@08e3dd8275ed:/app/esm$ python omics_setup/common/multiprocess/multiprocess.py --json_file omics_setup/multiprocess/config_esm2_embedding.json --case 1
+mkdir -p examples/data/fasta_input
+cp examples/data/*_proteins.fasta examples/data/fasta_input/
+```
+
+Step 3: Use the multiprocess script.
+```bash
+(esm_py11) esm-base-service@08e3dd8275ed:/app/esm$ python common/multiprocess/multiprocess.py --json_file multiprocess/config_esm2_embedding.json --case 1
 ```
 
 ---
