@@ -8,8 +8,8 @@ Open-Omics-ESM is an optimized version of the Evolutionary Scale Modeling (ESM) 
 Execute the script using the following command:
 
 ```bash
-
- ./docker_setup/build_docker_images.sh
+cd applications/esm
+./docker_setup/build_docker_images.sh
 ```
 
 ### Step 2: Choose the ESM image to install
