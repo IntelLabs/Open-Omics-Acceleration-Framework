@@ -54,6 +54,7 @@ RUN mv /app/esm/Open-Omics-Acceleration-Framework/applications/esm3 /app/esm/omi
     mv /app/esm/omics_setup/multiprocess /app/esm/multiprocess && \
     mv /app/esm/omics_setup/docker_setup/env.yml /app/env.yml && \
     mv /app/esm/omics_setup/docker_setup/scripts /app/scripts && \
+    cp -r /app/scripts /app/esm/scripts && \
     git apply /app/esm/omics_setup/docker_setup/esm3_changes.patch && \
     rm -rf /app/esm/Open-Omics-Acceleration-Framework && \
     rm -rf /app/esm/Source_code_with_submodules.tar.gz

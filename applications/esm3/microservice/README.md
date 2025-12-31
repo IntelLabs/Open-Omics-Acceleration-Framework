@@ -23,13 +23,13 @@ Before proceeding, ensure that you have already built the ESM3 Docker image foll
 Start the ESMC microservice container:
 
 ```bash
-docker run -it
-    -e HF_TOKEN="<your_huggingface_token>" \
+docker run -it --rm \
+    -e HF_TOKEN=$HUGGING_FACE_HUB_TOKEN \
     -v $MODELS:/models \
     -v $INPUT:/input \
     -v $OUTPUT:/output \
     esm3_image:latest \
-    python microservice/esmc_tasks/esmc_embeding_microservice.py
+    python esm/microservice/esmc_tasks/esmc_embeding_microservice.py
 ```
 
 * This will launch the server on port 9009 and expose the inference API at `http://<host>:9009/v1/esmcembedding`.
@@ -43,7 +43,7 @@ docker run -it
 The server is ready to accept requests when you see logs similar to the following:
 
 ```bash
-$ docker run -it     -e HF_TOKEN="<your_huggingface_token>"     -v $MODELS:/models     -v $INPUT:/input     -v $OUTPUT:/output     esm3_image:latest     python microservice/esmc_tasks/esmc_embeding_microservice.py
+$ docker run -it --rm \     -e HF_TOKEN=$HUGGING_FACE_HUB_TOKEN     -v $MODELS:/models     -v $INPUT:/input     -v $OUTPUT:/output     esm3_image:latest     python esm/microservice/esmc_tasks/esmc_embeding_microservice.py
 WARNING: The MAMBA_ROOT_PREFIX environment variable is not set.
 WARNING: This is required for mamba to work correctly as of 2.0.
 WARNING:
@@ -104,7 +104,8 @@ Below are examples of how to invoke the client for different esmc use-cases.
 ```bash
 #example
 export INPUT_FILE="some_proteins.fasta"
-python esmc_tasks/esmc_embeding_client.py.py \
+cd microservice
+python esmc_tasks/esmc_embeding_client.py \
     --host $HOST \
     --port $PORT \
     --fasta_file  $INPUT_FILE
@@ -117,13 +118,13 @@ python esmc_tasks/esmc_embeding_client.py.py \
 Start the ESM3 microservice container:
 
 ```bash
-docker run -it     
-  -e HF_TOKEN="<your_huggingface_token>"     
-  -v $MODELS:/models     
-  -v $INPUT:/input     
-  -v $OUTPUT:/output     
-  esm3_image:latest     
-  python microservice/esm3_tasks/esm3_task_microservice.py --port 9008
+docker run -it --rm \
+  -e HF_TOKEN=$HUGGING_FACE_HUB_TOKEN \
+  -v $MODELS:/models \
+  -v $INPUT:/input \
+  -v $OUTPUT:/output \
+  esm3_image:latest \
+  python esm/microservice/esm3_tasks/esm3_task_microservice.py --port 9008
 ```
 
 * This will launch the server on port 9008 and expose the inference API at `http://<host>:9008/v1/esm3task`.
@@ -136,7 +137,7 @@ docker run -it
 The server is ready to accept requests when you see logs similar to the following:
 
 ```bash
-$ docker run -it     -e HF_TOKEN="<your_huggingface_token>"     -v $MODELS:/models     -v $INPUT:/input     -v $OUTPUT:/output     esm3_image:latest     python microservice/esm3_tasks/esm3_task_microservice.py --port 9008
+$ docker run -it --rm \     -e HF_TOKEN=$HUGGING_FACE_HUB_TOKEN     -v $MODELS:/models     -v $INPUT:/input     -v $OUTPUT:/output     esm3_image:latest     python esm/microservice/esm3_tasks/esm3_task_microservice.py --port 9008
 WARNING: The MAMBA_ROOT_PREFIX environment variable is not set.
 WARNING: This is required for mamba to work correctly as of 2.0.
 WARNING:
@@ -200,11 +201,11 @@ Below are examples of how to invoke the client for different ESM3 use-cases.
 ```bash
 #example
 export INPUT_FILE="some_proteins.fasta"
-python esmc_tasks/esm3_task_client.py.py \
+python esm3_tasks/esm3_task_client.py \
     --host $HOST \
     --port $PORT \
-    --fasta_file  $INPUT_FILE
-    --task logits_embedding
+    logits_embedding \
+    --fasta_file $INPUT_FILE
 ```
 
 ##### ESM3 - Folding: Predicts the 3D structure of proteins from amino acid sequences using ESM3
@@ -212,53 +213,53 @@ python esmc_tasks/esm3_task_client.py.py \
 ```bash
 #example
 export INPUT_FILE="some_proteins.fasta"
-python esmc_tasks/esm3_task_client.py.py \
+python esm3_tasks/esm3_task_client.py \
     --host $HOST \
     --port $PORT \
+    fold \
     --fasta_file  $INPUT_FILE
-    --task fold
 ```
 
 ##### ESM3 - Inverse Folding: Designs protein sequences that fold into a given 3D structure
 ```bash
 #example
 export INPUT_FILE="5YH2.pdb"
-python esmc_tasks/esm3_task_client.py.py \
+python esm3_tasks/esm3_task_client.py \
     --host $HOST \
     --port $PORT \
+    inversefold \
     --pdb_file  $INPUT_FILE
-    --task inversefold
 ```
 
 ##### ESM3 - Function Prediction: Predicts protein function from structural and sequence data
 ```bash
 #example
 export INPUT_FILE="5YH2.pdb"
-python esmc_tasks/esm3_task_client.py.py \
+python esm3_tasks/esm3_task_client.py \
     --host $HOST \
     --port $PORT \
+    function_prediction \
     --pdb_file  $INPUT_FILE
-    --task function_prediction
 ```
 
 ##### ESM3 - Prompt Sequence: Generates protein sequences based on user-provided prompts for design tasks
 ```bash
 #example
 export INPUT_FILE="prompt.fasta"
-python esmc_tasks/esm3_task_client.py.py \
+python esm3_tasks/esm3_task_client.py \
     --host $HOST \
     --port $PORT \
+    prompt_task \
     --fasta_file  $INPUT_FILE
-    --task prompt_task
 ```
 
 ##### ESM3 - Chain of Thought: Uses reasoning-based approaches to analyze and interpret protein data
 ```bash
 #example
 export INPUT_FILE="1utn.csv"
-python esmc_tasks/esm3_task_client.py.py \
+python esm3_tasks/esm3_task_client.py \
     --host $HOST \
     --port $PORT \
+    chain_of_thought \
     --csv_file  $INPUT_FILE
-    --task chain_of_thought
 ```

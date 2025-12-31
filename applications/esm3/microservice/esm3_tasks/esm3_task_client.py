@@ -1,4 +1,5 @@
 import argparse
+from email.mime import base
 import requests
 import json
 import torch
@@ -14,38 +15,92 @@ def write_fasta(filename, sequences):
 
 def main():
     # Root parser without auto help to avoid conflicts
-    parser = argparse.ArgumentParser(description="Client for ESM Microservice", add_help=False)
+    parser = argparse.ArgumentParser(description="Client for ESM Microservice",add_help=False)
     parser.add_argument("--host", default="0.0.0.0", help="Microservice host")
     parser.add_argument("--port", default="9008", help="Microservice port")
-    parser.add_argument(
-        "--task",
-        required=True,
-        choices=["logits_embedding", "fold", "inversefold", "chain_of_thought", "function_prediction", "prompt_task"],
-        help="Choose which task to run",
-    )
 
-    # Handle help for root parser only
-    if "--help" in sys.argv or "-h" in sys.argv:
-        if not any(task in sys.argv for task in ["logits_embedding","fold","inversefold","chain_of_thought","function_prediction","prompt_task"]):
-            parser.print_help()
-            sys.exit(0)
+    sub = parser.add_subparsers(dest="task", required=True, help="Task to run")
 
-    args, remaining_argv = parser.parse_known_args()
+    # === Logits Embedding Parser ===
+    logits_embedding_parser = sub.add_parser("logits_embedding")
+    logits_embedding_parser.add_argument("--fasta_file", type=str, required=True, help="Path to the input FASTA file.")
+    logits_embedding_parser.add_argument("--structure", action="store_true", help="Enable structure logits")
+    logits_embedding_parser.add_argument("--secondary_structure", action="store_true", help="Enable secondary structure logits")
+    logits_embedding_parser.add_argument("--sasa", action="store_true", help="Enable SASA logits")
+    logits_embedding_parser.add_argument("--function", action="store_true", help="Enable function logits")
+    logits_embedding_parser.add_argument("--residue_annotations", action="store_true", help="Enable residue annotations")
+    logits_embedding_parser.add_argument("--return_hidden_states", action="store_true", help="Return hidden states")
+    logits_embedding_parser.add_argument("--ith_hidden_layer", type=int, default=-1, help="Specify which hidden layer to return")
+    logits_embedding_parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes")
+
+    # === Fold Parser ===
+    fold_parser = sub.add_parser("fold")
+    fold_parser.add_argument("--fasta_file", type=str, required=True, help="Path to the input FASTA file.")
+    fold_parser.add_argument("--schedule", type=str, choices=["cosine", "linear"], default="cosine", help="Schedule type (cosine or linear).")
+    fold_parser.add_argument("--strategy", type=str, choices=["random", "entropy"], default="entropy", help="Unmasking strategy (random or entropy).")
+    fold_parser.add_argument("--num_steps", type=int, default=1, help="Number of steps for generation.")
+    fold_parser.add_argument("--temperature", type=float, default=1.0, help="Sampling temperature.")
+    fold_parser.add_argument("--temperature_annealing", action="store_true", help="Enable temperature annealing.")
+    fold_parser.add_argument("--top_p", type=float, default=1.0, help="Top-p sampling value.")
+    fold_parser.add_argument("--condition_on_coordinates_only", action="store_true", help="Condition only on coordinates.")
+    fold_parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes.")
+
+    # === InverseFold Parser ===
+    inversefold_parser = sub.add_parser("inversefold")
+    inversefold_parser.add_argument("--pdb_file", type=str, required=True, help="Path to the input PDB file.")
+    inversefold_parser.add_argument("--schedule", type=str, choices=["cosine", "linear"], default="cosine", help="Schedule type (cosine or linear).")
+    inversefold_parser.add_argument("--strategy", type=str, choices=["random", "entropy"], default="entropy", help="Unmasking strategy (random or entropy).")
+    inversefold_parser.add_argument("--num_steps", type=int, default=1, help="Number of steps for generation.")
+    inversefold_parser.add_argument("--temperature", type=float, default=1.0, help="Sampling temperature.")
+    inversefold_parser.add_argument("--temperature_annealing", action="store_true", help="Enable temperature annealing.")
+    inversefold_parser.add_argument("--top_p", type=float, default=1.0, help="Top-p sampling value.")
+    inversefold_parser.add_argument("--condition_on_coordinates_only", action="store_true", help="Condition only on coordinates.")
+    inversefold_parser.add_argument("--num_sequences", type=int, default=8, help="Number of sequences to generate in batch mode.")
+    inversefold_parser.add_argument("--batch_run", action="store_true", help="Run in batch mode.")
+    inversefold_parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes.")
+
+    # === Chain of Thought Parser ===
+    chain_of_thought_parser = sub.add_parser("chain_of_thought")
+    chain_of_thought_parser.add_argument("--csv_file", type=str, required=True, help="Path to input CSV file.")
+    chain_of_thought_parser.add_argument("--schedule", type=str, choices=["cosine", "linear"], default="cosine")
+    chain_of_thought_parser.add_argument("--strategy", type=str, choices=["random", "entropy"], default="entropy")
+    chain_of_thought_parser.add_argument("--num_steps", type=int, default=1)
+    chain_of_thought_parser.add_argument("--temperature", type=float, default=1.0)
+    chain_of_thought_parser.add_argument("--temperature_annealing", action="store_true")
+    chain_of_thought_parser.add_argument("--top_p", type=float, default=1.0)
+    chain_of_thought_parser.add_argument("--condition_on_coordinates_only", action="store_true")
+    chain_of_thought_parser.add_argument("--sequence_length", type=int)
+    chain_of_thought_parser.add_argument("--protein_complex", action="store_true")
+
+    # === Function Prediction Parser ===
+    function_prediction_parser = sub.add_parser("function_prediction")
+    function_prediction_parser.add_argument("--pdb_file", type=str, required=True)
+    function_prediction_parser.add_argument("--schedule", type=str, choices=["cosine", "linear"], default="cosine")
+    function_prediction_parser.add_argument("--strategy", type=str, choices=["random", "entropy"], default="entropy")
+    function_prediction_parser.add_argument("--num_steps", type=int, default=1)
+    function_prediction_parser.add_argument("--temperature", type=float, default=1.0)
+    function_prediction_parser.add_argument("--temperature_annealing", action="store_true")
+    function_prediction_parser.add_argument("--top_p", type=float, default=1.0)
+    function_prediction_parser.add_argument("--condition_on_coordinates_only", action="store_true")
+    function_prediction_parser.add_argument("--protein_complex", action="store_true")
+
+    # === Prompt Task Parser ===
+    prompt_task_parser = sub.add_parser("prompt_task")
+    prompt_task_parser.add_argument("--fasta_file", type=str, required=True)
+    prompt_task_parser.add_argument("--schedule", type=str, choices=["cosine", "linear"], default="cosine")
+    prompt_task_parser.add_argument("--strategy", type=str, choices=["random", "entropy"], default="entropy")
+    prompt_task_parser.add_argument("--num_steps", type=int, default=1)
+    prompt_task_parser.add_argument("--temperature", type=float, default=1.0)
+    prompt_task_parser.add_argument("--temperature_annealing", action="store_true")
+    prompt_task_parser.add_argument("--top_p", type=float, default=1.0)
+    prompt_task_parser.add_argument("--condition_on_coordinates_only", action="store_true")
+    prompt_task_parser.add_argument("--protein_complex", action="store_true")
+
+    # ---------- Parse ----------
+    args = parser.parse_args()
 
     # --- Task-specific parsers ---
     if args.task == "logits_embedding":
-        task_parser = argparse.ArgumentParser(parents=[parser], add_help=True)
-        task_parser.add_argument("--fasta_file", type=str, required=True, help="Path to FASTA file.")
-        task_parser.add_argument("--structure", action="store_true", help="Enable structure logits")
-        task_parser.add_argument("--secondary_structure", action="store_true", help="Enable secondary structure logits")
-        task_parser.add_argument("--sasa", action="store_true", help="Enable SASA logits")
-        task_parser.add_argument("--function", action="store_true", help="Enable function logits")
-        task_parser.add_argument("--residue_annotations", action="store_true", help="Enable residue annotations")
-        task_parser.add_argument("--return_hidden_states", action="store_true", help="Return hidden states")
-        task_parser.add_argument("--ith_hidden_layer", type=int, default=-1, help="Specify which hidden layer to return")
-        task_parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes")
-
-        args = task_parser.parse_args(remaining_argv)
 
         with open(args.fasta_file, "rb") as f:
             fasta_b64 = base64.b64encode(f.read()).decode("utf-8")
@@ -66,18 +121,6 @@ def main():
 
     # --- Fold task ---
     elif args.task == "fold":
-        task_parser = argparse.ArgumentParser(parents=[parser], add_help=True)
-        task_parser.add_argument("--fasta_file", type=str, required=True, help="Path to the input FASTA file.")
-        task_parser.add_argument("--schedule", type=str, choices=["cosine", "linear"], default="cosine", help="Schedule type (cosine or linear).")
-        task_parser.add_argument("--strategy", type=str, choices=["random", "entropy"], default="entropy", help="Unmasking strategy (random or entropy).")
-        task_parser.add_argument("--num_steps", type=int, default=1, help="Number of steps for generation.")
-        task_parser.add_argument("--temperature", type=float, default=1.0, help="Sampling temperature.")
-        task_parser.add_argument("--temperature_annealing", action="store_true", help="Enable temperature annealing.")
-        task_parser.add_argument("--top_p", type=float, default=1.0, help="Top-p sampling value.")
-        task_parser.add_argument("--condition_on_coordinates_only", action="store_true", help="Condition only on coordinates.")
-        task_parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes.")
-
-        args = task_parser.parse_args(remaining_argv)
 
         with open(args.fasta_file, "rb") as f:
             fasta_b64 = base64.b64encode(f.read()).decode("utf-8")
@@ -98,20 +141,6 @@ def main():
 
     # --- InverseFold task ---
     elif args.task == "inversefold":
-        task_parser = argparse.ArgumentParser(parents=[parser], add_help=True)
-        task_parser.add_argument("--pdb_file", type=str, required=True, help="Path to the input PDB file.")
-        task_parser.add_argument("--schedule", type=str, choices=["cosine", "linear"], default="cosine", help="Schedule type (cosine or linear).")
-        task_parser.add_argument("--strategy", type=str, choices=["random", "entropy"], default="entropy", help="Unmasking strategy (random or entropy).")
-        task_parser.add_argument("--num_steps", type=int, default=1, help="Number of steps for generation.")
-        task_parser.add_argument("--temperature", type=float, default=1.0, help="Sampling temperature.")
-        task_parser.add_argument("--temperature_annealing", action="store_true", help="Enable temperature annealing.")
-        task_parser.add_argument("--top_p", type=float, default=1.0, help="Top-p sampling value.")
-        task_parser.add_argument("--condition_on_coordinates_only", action="store_true", help="Condition only on coordinates.")
-        task_parser.add_argument("--num_sequences", type=int, default=8, help="Number of sequences to generate in batch mode.")
-        task_parser.add_argument("--batch_run", action="store_true", help="Run in batch mode.")
-        task_parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes.")
-
-        args = task_parser.parse_args(remaining_argv)
 
         with open(args.pdb_file, "rb") as f:
             pdb_b64 = base64.b64encode(f.read()).decode("utf-8")
@@ -134,19 +163,6 @@ def main():
 
     # --- Chain of Thought ---
     elif args.task == "chain_of_thought":
-        task_parser = argparse.ArgumentParser(parents=[parser], add_help=True)
-        task_parser.add_argument("--csv_file", type=str, required=True, help="Path to input CSV file.")
-        task_parser.add_argument("--schedule", type=str, choices=["cosine", "linear"], default="cosine")
-        task_parser.add_argument("--strategy", type=str, choices=["random", "entropy"], default="entropy")
-        task_parser.add_argument("--num_steps", type=int, default=1)
-        task_parser.add_argument("--temperature", type=float, default=1.0)
-        task_parser.add_argument("--temperature_annealing", action="store_true")
-        task_parser.add_argument("--top_p", type=float, default=1.0)
-        task_parser.add_argument("--condition_on_coordinates_only", action="store_true")
-        task_parser.add_argument("--sequence_length", type=int)
-        task_parser.add_argument("--protein_complex", action="store_true")
-
-        args = task_parser.parse_args(remaining_argv)
 
         with open(args.csv_file, "rb") as f:
             csv_b64 = base64.b64encode(f.read()).decode("utf-8")
@@ -167,18 +183,6 @@ def main():
 
     # --- Function Prediction ---
     elif args.task == "function_prediction":
-        task_parser = argparse.ArgumentParser(parents=[parser], add_help=True)
-        task_parser.add_argument("--pdb_file", type=str, required=True)
-        task_parser.add_argument("--schedule", type=str, choices=["cosine", "linear"], default="cosine")
-        task_parser.add_argument("--strategy", type=str, choices=["random", "entropy"], default="entropy")
-        task_parser.add_argument("--num_steps", type=int, default=1)
-        task_parser.add_argument("--temperature", type=float, default=1.0)
-        task_parser.add_argument("--temperature_annealing", action="store_true")
-        task_parser.add_argument("--top_p", type=float, default=1.0)
-        task_parser.add_argument("--condition_on_coordinates_only", action="store_true")
-        task_parser.add_argument("--protein_complex", action="store_true")
-
-        args = task_parser.parse_args(remaining_argv)
 
         with open(args.pdb_file, "rb") as f:
             pdb_b64 = base64.b64encode(f.read()).decode("utf-8")
@@ -199,18 +203,6 @@ def main():
 
     # --- Prompt Task ---
     elif args.task == "prompt_task":
-        task_parser = argparse.ArgumentParser(parents=[parser], add_help=True)
-        task_parser.add_argument("--fasta_file", type=str, required=True)
-        task_parser.add_argument("--schedule", type=str, choices=["cosine", "linear"], default="cosine")
-        task_parser.add_argument("--strategy", type=str, choices=["random", "entropy"], default="entropy")
-        task_parser.add_argument("--num_steps", type=int, default=1)
-        task_parser.add_argument("--temperature", type=float, default=1.0)
-        task_parser.add_argument("--temperature_annealing", action="store_true")
-        task_parser.add_argument("--top_p", type=float, default=1.0)
-        task_parser.add_argument("--condition_on_coordinates_only", action="store_true")
-        task_parser.add_argument("--protein_complex", action="store_true")
-
-        args = task_parser.parse_args(remaining_argv)
 
         with open(args.fasta_file, "rb") as f:
             fasta_b64 = base64.b64encode(f.read()).decode("utf-8")
