@@ -42,7 +42,7 @@ def replace_pdb_path_with_string(cfg: DictConfig, key: str) -> None:
     except Exception as e:
         print(f"Failed to process PDB at {key}: {e}")
 
-@hydra.main(version_base=None, config_path="../config/inference", config_name="base")
+@hydra.main(version_base=None, config_path="./config/", config_name="base")
 def main(cfg: DictConfig) -> None:
     # Prepare the request URL
     url = f"http://{args.host}:{args.port}/v1/rfdiffusion"
@@ -63,7 +63,7 @@ def main(cfg: DictConfig) -> None:
             data = response.json()
             # print("data",data["out_dict"]["write_pdb_string"])
             # Final design PDB
-            
+
             if data["out_dict"].get("write_pdb_string"):
                 Path("output_design.pdb").write_text(data["out_dict"]["write_pdb_string"])
                 print("Design PDB written to output_design.pdb")

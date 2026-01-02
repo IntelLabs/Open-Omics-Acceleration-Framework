@@ -40,9 +40,9 @@ RUN git checkout RFdiffusion_v4
 
 # RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz
 # RUN tar -xzf Source_code_with_submodules.tar.gz
-# WORKDIR /app/RFdiffusion/Open-Omics-Acceleration-Framework/
 
-RUN mv /app/RFdiffusion/Open-Omics-Acceleration-Framework/applications/RFdiffusion /app/RFdiffusion/ && \
+WORKDIR /app/RFdiffusion
+RUN mv /app/RFdiffusion/Open-Omics-Acceleration-Framework/applications/RFdiffusion/* /app/RFdiffusion/ && \
     mv /app/RFdiffusion/Open-Omics-Acceleration-Framework/applications/common /app/RFdiffusion/common && \
     git apply /app/RFdiffusion/RFdiffusion.patch && \
     rm -rf /app/RFdiffusion/Open-Omics-Acceleration-Framework && \

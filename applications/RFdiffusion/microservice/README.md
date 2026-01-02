@@ -65,7 +65,7 @@ The client can be run:
 
 * On a different machine within the same network.
 
-Note: Before running the client program, make sure the default config file is set up at [here](../config/inference).
+Note: Before running the client program, make sure the default config file is set up at [here](./config/).
 
 If you modify the config file, you must provide the correct path when running opea_rfdiffusion_client.py.
 #### Step 1: Set the Server Address

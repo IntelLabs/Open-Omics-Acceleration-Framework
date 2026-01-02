@@ -43,11 +43,11 @@ Example, Motif Scaffolding:
 ```bash
 mkdir -p ./output
 export OUTPUT_DIR=./output/ 
-export INPUT_FILE=./examples/input_pdbs/5TPN.pdb
+export INPUT_FILE=./examples/input_pdbs/5TPN.pdb # Available in RFDiffusion repository
 chmod a+w $OUTPUT_DIR
 ```
 ```bash
-docker run -v $INPUT_FILE:/infile.pdb -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/design_motifscaffolding inference.input_pdb=/infile.pdb 'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=4 inference.precision=float32
+docker run --rm -v $INPUT_FILE:/infile.pdb -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/design_motifscaffolding inference.input_pdb=/infile.pdb 'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=4 inference.precision=float32
 ```
 
 Example, Partial Diffusion:  
@@ -58,7 +58,7 @@ export INPUT_FILE=./examples/input_pdbs/2KL8.pdb
 ```
 
 ```bash
-docker run -v $INPUT_FILE:/infile.pdb -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py  inference.output_prefix=/output/design_partialdiffusion inference.input_pdb=/infile.pdb 'contigmap.contigs=[79-79]' inference.num_designs=1 diffuser.partial_T=10 inference.precision=bfloat16
+docker run --rm -v $INPUT_FILE:/infile.pdb -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py  inference.output_prefix=/output/design_partialdiffusion inference.input_pdb=/infile.pdb 'contigmap.contigs=[79-79]' inference.num_designs=1 diffuser.partial_T=10 inference.precision=bfloat16
 ```
 
 Note: 
