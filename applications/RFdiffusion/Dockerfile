@@ -34,12 +34,9 @@ WORKDIR /app/RFdiffusion
 # adding the git commit id
 RUN git checkout 820bfdfaded8c260b962dc40a3171eae316b6ce0
 
-RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-WORKDIR /app/RFdiffusion/Open-Omics-Acceleration-Framework/
-RUN git checkout RFdiffusion_v4
 
-# RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz
-# RUN tar -xzf Source_code_with_submodules.tar.gz
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz
+RUN tar -xzf Source_code_with_submodules.tar.gz
 
 WORKDIR /app/RFdiffusion
 RUN mv /app/RFdiffusion/Open-Omics-Acceleration-Framework/applications/RFdiffusion/* /app/RFdiffusion/ && \
