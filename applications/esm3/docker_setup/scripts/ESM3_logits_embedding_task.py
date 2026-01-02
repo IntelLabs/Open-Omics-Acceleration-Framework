@@ -5,14 +5,15 @@ import os
 import re
 import torch
 import argparse
-import time
 from esm.models.esm3 import ESM3
-from esm.sdk.api import ESM3InferenceClient, ESMProtein, GenerationConfig
+from esm.sdk.api import ESM3InferenceClient, ESMProtein
 from esm.utils.structure.protein_chain import ProteinChain
 from esm.utils.structure.protein_complex import ProteinComplex
 from Bio import SeqIO
 import numpy as np
+from esm.sdk.api import LogitsConfig, LogitsOutput
 import time
+
 
 def make_protein_chain(record):
     """Create a ProteinChain object from a FASTA record."""
@@ -43,7 +44,6 @@ def make_protein_chain(record):
         confidence=np.zeros((L,), dtype=np.float32)  # Dummy confidence values
     )
     return protein_chain
-
 def read_fasta(path, keep_gaps=True, keep_insertions=True, to_upper=False):
     """Reads a FASTA file and returns a generator of (header, sequence) tuples."""
     with open(path, "r") as f:
@@ -75,34 +75,33 @@ def read_alignment_lines(lines, keep_gaps=True, keep_insertions=True, to_upper=F
     assert isinstance(seq, str) and isinstance(desc, str)
     yield desc, parse(seq)
 
-def write_fasta(filename, sequences):
-    """Writes sequences to a FASTA file."""
-    print(f"Writing output to: {filename}")
-    with open(filename, "w") as f:
-        for i, seq in enumerate(sequences, 1):
-            f.write(f">generated_seq_{i}\n{seq}\n")
-
-
-def prompt_protein(client: ESM3InferenceClient, protein, args, output_dir, fasta_file):
+def logits_embedding(client: ESM3InferenceClient, protein, args):
     """Performs protein folding using the ESM3 model and saves the result as a PDB file."""
 
     with torch.amp.autocast(device_type="cpu", enabled=args.bf16):
-        prompt_protein = client.generate(protein, GenerationConfig(
-            track="sequence",
-            schedule=args.schedule,
-            num_steps=args.num_steps,
-            strategy=args.strategy,
-            temperature=args.temperature,
-            top_p=args.top_p,
-            condition_on_coordinates_only=args.condition_on_coordinates_only))
-        assert isinstance(protein, ESMProtein), "Expected ESMProtein output"
-    return prompt_protein
 
+        protein_tensor = client.encode(protein)
+        logits_output = client.logits(protein_tensor,
+                                        LogitsConfig(
+                                                sequence=True,
+                                                structure=args.structure,
+                                                secondary_structure=args.secondary_structure,
+                                                sasa=args.sasa,
+                                                function=args.function,
+                                                residue_annotations=args.residue_annotations,
+                                                return_embeddings=True,
+                                                return_hidden_states=args.return_hidden_states,
+                                                ith_hidden_layer=args.ith_hidden_layer))
 
-def processing_fasta(client: ESM3InferenceClient, fasta_file: str, output_dir: str, args):
+        assert isinstance(logits_output, LogitsOutput), f"Expected LogitsOutput but got {logits_output}"
+
+    return logits_output
+
+def processing_fasta(client: ESM3InferenceClient, fasta_file: str, args, output_dir: str = None):
     """Runs protein folding and saves the output as a PDB file in the specified directory."""
     print(f"Processing {fasta_file}...")
 
+    logits_result=[]
     if args.protein_complex:
         protein_chains = []
         for record in SeqIO.parse(fasta_file, "fasta"):
@@ -111,61 +110,63 @@ def processing_fasta(client: ESM3InferenceClient, fasta_file: str, output_dir: s
 
         protein = ProteinComplex.from_chains(protein_chains)
         protein = ESMProtein.from_protein_complex(protein)
-        prompt_outuput = prompt_protein(client, protein, args, output_dir, fasta_file)
-        fasta_name = os.path.splitext(os.path.basename(fasta_file))[0]
-        output_fasta_path = os.path.join(output_dir, f"{fasta_name}.fasta")
-        write_fasta(output_fasta_path, [prompt_outuput.sequence])
+        logits_output = logits_embedding(client, protein, args)
+        logits_result.append({"protien_complex":logits_output})
+        if output_dir:
+            fasta_name = os.path.splitext(os.path.basename(fasta_file))[0]
+            torch.save(logits_output, os.path.join(output_dir, f"{fasta_name}.pt"))
     else:
         fasta_entries = sorted(read_fasta(fasta_file), key=lambda header_seq: len(header_seq[1]))
-        
         for entry in fasta_entries:
             header, sequence = entry
             protein = ESMProtein(sequence=sequence)
-            prompt_outuput = prompt_protein(client, protein, args, output_dir, fasta_file)
-            output_fasta_path = os.path.join(output_dir, f"{header}.fasta")
-            write_fasta(output_fasta_path, [prompt_outuput.sequence])
+            logits_output = logits_embedding(client, protein, args)
+            logits_result.append({header:logits_output})
+            if output_dir:
+                fasta_name = os.path.splitext(os.path.basename(header))[0]
+                torch.save(logits_output, os.path.join(output_dir, f"{fasta_name}.pt"))
+    return logits_result
 
 def main(args):
-    """Main execution function."""
+    """Processes a single FASTA file."""
     if not os.path.exists(args.fasta_file) or not args.fasta_file.endswith(".fasta"):
         print(f"Invalid Fasta file: {args.fasta_file}")
         return
-    os.makedirs(args.output_dir, exist_ok=True)
-    
-    # Load ESM model
-    if os.environ.get("ESM_API_KEY"):
-        print("Using ESM API Client...")
+
+    if os.environ.get("ESM_API_KEY", ""):
+        print("ESM_API_KEY found. Using model from Forge API...")
         client = ESM3InferenceClient()
     else:
-        print("Loading ESM3 model locally...")
+        print("No ESM_API_KEY found. Loading model locally...")
         client = ESM3.from_pretrained("esm3_sm_open_v1", bf16=args.bf16)
 
-    # Run inference
     if args.timing:
         infer_time = time.time()
-    processing_fasta(client, args.fasta_file, args.output_dir, args)
+    processing_fasta(client, args.fasta_file,args, args.output_dir)
     if args.timing:
-        print(f"Inference time: {time.time() - infer_time:.2f} seconds")
-
+        print(f"inference time = {time.time() - infer_time} seconds")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run ESM3 protein folding on a single FASTA file.")
-    parser.add_argument("fasta_file", type=str, help="Path to the input FASTA file.")
-    parser.add_argument("output_dir", type=str, help="Directory to save the output FASTA file.")
+    parser = argparse.ArgumentParser(description="Run ESM3 protein inference for a single FASTA file.")
+    parser.add_argument("--fasta_file", type=str, help="Path to the input FASTA file.")
+    parser.add_argument("--output_dir", type=str, help="Directory to save the output.")
     parser.add_argument("--bf16", action="store_true", help="Enable bf16 inference.")
-    parser.add_argument("--timing", action="store_true", help="Measure inference time.")
-    parser.add_argument("--schedule", type=str, choices=["cosine", "linear"], default="cosine", help="Schedule type.")
-    parser.add_argument("--strategy", type=str, choices=["random", "entropy"], default="entropy", help="Unmasking strategy.")
-    parser.add_argument("--num_steps", type=int, default=1, help="Number of inference steps.")
-    parser.add_argument("--temperature", type=float, default=1.0, help="Sampling temperature.")
-    parser.add_argument("--top_p", type=float, default=1.0, help="Top-p sampling value.")
-    parser.add_argument("--condition_on_coordinates_only", action="store_true", help="Condition only on coordinates.")
-    parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes (multi-chain structure) using a multi-chain FASTA file input.")   
+    parser.add_argument("--timing", action="store_true", help="Enable timing for inference.")
+    parser.add_argument("--structure", action="store_true", help="Enable structure logits.")
+    parser.add_argument("--secondary_structure", action="store_true", help="Enable secondary structure logits.")
+    parser.add_argument("--sasa", action="store_true", help="Enable SASA logits.")
+    parser.add_argument("--function", action="store_true", help="Enable function logits.")
+    parser.add_argument("--residue_annotations", action="store_true", help="Enable residue annotation logits.")
+    parser.add_argument("--return_hidden_states", action="store_true", help="Enable hidden state output.")
+    parser.add_argument("--ith_hidden_layer", type=int, default=-1, help="Specify which hidden layer to return.")
+    parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes (multi-chain structure) using a multi-chain FASTA file input.")
+
 
     args = parser.parse_args()
+
     os.makedirs(args.output_dir, exist_ok=True)
     if args.timing:
         start_time = time.time()
     main(args)
     if args.timing:
-        print(f"Complete run time = {time.time() - start_time} seconds")
+        print(f"complete run time = {time.time() - start_time} seconds")

@@ -7,8 +7,18 @@ FROM ${FROM_IMAGE} AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+ARG http_proxy
+ENV http_proxy=${http_proxy}
+
+ARG https_proxy
+ENV https_proxy=${https_proxy}
+
+ARG no_proxy
+ENV no_proxy=${no_proxy}
+
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git build-essential wget vim ca-certificates autoconf automake make numactl && \
+    git build-essential wget vim ca-certificates autoconf automake make numactl iproute2 time && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get autoremove -y && \
     apt-get clean
@@ -24,13 +34,28 @@ USER $SERVICE_NAME
 RUN wget --no-check-certificate "https://github.com/conda-forge/miniforge/releases/download/24.3.0-0/Miniforge3-$(uname)-$(uname -m).sh"
 RUN bash Miniforge3-$(uname)-$(uname -m).sh -b -p "${HOME}/conda"
 
-WORKDIR /app
-COPY . /app
 RUN git clone https://github.com/evolutionaryscale/esm.git
 WORKDIR /app/esm
 RUN git checkout -b esm d40007ea16850da4fbf60244a9d50c2a94cbef3d
-RUN cp /app/esm3_changes.patch /app/esm/esm_changes.patch
-RUN git apply /app/esm/esm_changes.patch
+
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz
+RUN tar -xzf Source_code_with_submodules.tar.gz
+WORKDIR /app/esm/Open-Omics-Acceleration-Framework/
+
+WORKDIR /app/esm
+USER root
+RUN mv /app/esm/Open-Omics-Acceleration-Framework/applications/esm3 /app/esm/omics_setup && \
+    mv /app/esm/Open-Omics-Acceleration-Framework/applications/common /app/esm/common && \
+    mv /app/esm/omics_setup/microservice /app/esm/microservice && \
+    mv /app/esm/omics_setup/multiprocess /app/esm/multiprocess && \
+    mv /app/esm/omics_setup/docker_setup/env.yml /app/env.yml && \
+    mv /app/esm/omics_setup/docker_setup/scripts /app/scripts && \
+    cp -r /app/scripts /app/esm/scripts && \
+    git apply /app/esm/omics_setup/docker_setup/esm3_changes.patch && \
+    rm -rf /app/esm/Open-Omics-Acceleration-Framework && \
+    rm -rf /app/esm/Source_code_with_submodules.tar.gz
+
+USER $SERVICE_NAME
 
 WORKDIR /app/esm/
 RUN ${HOME}/conda/bin/conda update -y --all
@@ -42,8 +67,13 @@ WORKDIR /app/esm
 RUN bash -c "source ${HOME}/conda/etc/profile.d/conda.sh && \
     source ${HOME}/conda/etc/profile.d/mamba.sh && \
     mamba activate esm3 && \
-    pip install --upgrade pip setuptools wheel && \
-    pip install ."
+    pip install --upgrade pip setuptools wheel \
+ && pip install . \
+ && pip install \
+    opea-comps==1.3 \
+    netifaces==0.11.0 \
+    absl-py \
+    psutil"
 
 
 RUN echo "#!/bin/bash" > /app/init.sh && \
@@ -52,7 +82,7 @@ RUN echo "#!/bin/bash" > /app/init.sh && \
     echo "mamba activate esm3" >> /app/init.sh && \
     chmod +x /app/init.sh && \
     echo "source /app/init.sh" >> ~/.bashrc
-    
+
 WORKDIR /app/esm
 
 RUN echo '#!/bin/bash' > /app/entrypoint.sh && \

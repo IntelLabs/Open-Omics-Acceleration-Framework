@@ -11,14 +11,14 @@ import time
 import csv
 from esm.utils.structure.protein_complex import ProteinComplex
 
-def function_protein(client: ESM3InferenceClient, protein,pdb_file: str, output_dir: str, args):
+def function_protein(client: ESM3InferenceClient, protein,pdb_file: str,args,output_dir: str = None):
     """Runs protein function prediction and saves the output as a CSV file."""
     print(f"Processing {pdb_file}...")
 
 
     with torch.amp.autocast(device_type="cpu", enabled=args.bf16):
         protein.function_annotations = None
-        
+
         # Inline GenerationConfig inside client.generate()
         protein_with_function = client.generate(
             protein,
@@ -35,26 +35,31 @@ def function_protein(client: ESM3InferenceClient, protein,pdb_file: str, output_
         )
 
         assert isinstance(protein_with_function, ESMProtein), f"Unexpected output: {protein_with_function}"
-        output_csv = os.path.join(output_dir, f"{os.path.basename(pdb_file).replace('.pdb', '')}.csv")
+        if output_dir:
+            output_csv = os.path.join(output_dir, f"{os.path.basename(pdb_file).replace('.pdb', '')}.csv")
 
-        with open(output_csv, "w", newline="") as f:
-            writer = csv.writer(f, delimiter="\t")  
-            writer.writerow(["Label", "Start", "End"])
-            for annotation in protein_with_function.function_annotations:
-                writer.writerow([annotation.label, annotation.start, annotation.end])
+            with open(output_csv, "w", newline="") as f:
+                writer = csv.writer(f, delimiter="\t")
+                writer.writerow(["Label", "Start", "End"])
+                if protein_with_function.function_annotations:
+                    for annotation in protein_with_function.function_annotations:
+                        writer.writerow([annotation.label, annotation.start, annotation.end])
 
-        print(f"Function annotations saved as {output_csv}")
-def processing_pdb(client: ESM3InferenceClient, pdb_file: str, output_dir: str, args):
+            print(f"Function annotations saved as {output_csv}")
+    return protein_with_function.function_annotations
+
+def processing_pdb(client: ESM3InferenceClient, pdb_file: str, args,output_dir: str = None ):
     """Runs protein folding and saves the output as a PDB file in the specified directory."""
     print(f"Processing {pdb_file}...")
 
     if args.protein_complex:
         protein = ProteinComplex.from_pdb(pdb_file)
         protein = ESMProtein.from_protein_complex(protein)
-        function_protein(client,protein,pdb_file,output_dir,args)
+        result=function_protein(client,protein,pdb_file,args,output_dir)
     else:
         protein = ESMProtein.from_pdb(pdb_file)
-        function_protein(client,protein,pdb_file,output_dir,args)
+        result=function_protein(client,protein,pdb_file,args,output_dir)
+    return result
 
 def main(args):
     if not os.path.exists(args.pdb_file) or not args.pdb_file.endswith(".pdb"):
@@ -65,14 +70,14 @@ def main(args):
     client = ESM3InferenceClient() if os.getenv("ESM_API_KEY") else ESM3.from_pretrained("esm3_sm_open_v1", bf16=args.bf16)
 
     infer_time = time.time()
-    processing_pdb(client, args.pdb_file, args.output_dir, args)
+    processing_pdb(client, args.pdb_file, args,args.output_dir)
     if args.timing:
         print(f"Inference time = {time.time() - infer_time} seconds")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run ESM3 protein function annotation on a single PDB file.")
-    parser.add_argument("pdb_file", type=str, help="Path to the input PDB file.")
-    parser.add_argument("output_dir", type=str, help="Directory to save the output CSV file.")
+    parser.add_argument("--pdb_file", type=str, help="Path to the input PDB file.")
+    parser.add_argument("--output_dir", type=str, help="Directory to save the output CSV file.")
     parser.add_argument("--bf16", action="store_true", help="Enable bf16 inference.")
     parser.add_argument("--timing", action="store_true", help="Enable timing for inference.")
     parser.add_argument("--schedule", type=str, choices=["cosine", "linear"], default="cosine", help="Schedule type (cosine or linear).")
@@ -82,7 +87,7 @@ if __name__ == "__main__":
     parser.add_argument("--temperature_annealing", action="store_true", help="Enable temperature annealing.")
     parser.add_argument("--top_p", type=float, default=1.0, help="Top-p sampling value.")
     parser.add_argument("--condition_on_coordinates_only", action="store_true", help="Condition only on coordinates.")
-    parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes (multi-chain structure) using a multi-chain FASTA file input.")   
+    parser.add_argument("--protein_complex", action="store_true", help="Enable prediction for protein complexes (multi-chain structure) using a multi-chain FASTA file input.")
 
     args = parser.parse_args()
 
