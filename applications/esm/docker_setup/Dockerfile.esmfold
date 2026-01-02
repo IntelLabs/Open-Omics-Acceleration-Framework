@@ -1,3 +1,6 @@
+# Copyright 2025 Intel Corporation
+# SPDX-License-Identifier: MIT License
+
 # Accept the base image name as an argument
 ARG BASE_IMAGE
 
@@ -10,14 +13,17 @@ WORKDIR /app/esm
 RUN git clone https://github.com/aqlaboratory/openfold.git
 WORKDIR /app/esm/openfold
 RUN git checkout -b esm_openfold 4b41059694619831a7db195b7e0988fc4ff3a307 && \
-    git apply /app/esm/omics_setup/esm_openfold_change_py37.patch 
+    git apply /app/esm/omics_setup/docker_setup/esm_openfold_change_py37.patch
 
 WORKDIR /app/esm
+ENV PIP_EXTRA_INDEX_URL=https://download.pytorch.org/whl/cpu
 RUN ${HOME}/conda/bin/mamba env create -f environment.yml
 RUN bash -c "source ${HOME}/conda/etc/profile.d/conda.sh && \
 source ${HOME}/conda/etc/profile.d/mamba.sh && \
 mamba activate esmfold && \
-pip install . "
+pip install .  && \
+pip install opea-comps==1.3 . &&\
+pip install protobuf==3.20.3"
 
 WORKDIR /app/esm/openfold
 RUN bash -c "source ${HOME}/conda/etc/profile.d/conda.sh && \
@@ -30,7 +36,7 @@ RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
 WORKDIR /app/esm/jemalloc
 RUN bash autogen.sh --prefix=${HOME}/conda/envs/esmfold/ && make install && \
     rm -rf /app/esm/jemalloc
-    
+
 RUN echo "#!/bin/bash" >> /app/init.sh && \
 echo "source ${HOME}/conda/etc/profile.d/conda.sh" >> /app/init.sh && \
 echo "source ${HOME}/conda/etc/profile.d/mamba.sh" >> /app/init.sh && \
@@ -53,7 +59,7 @@ RUN echo '#!/bin/bash' > /app/entrypoint.sh && \
     echo 'fi' >> /app/entrypoint.sh && \
     chmod +x /app/entrypoint.sh
 
-    
+
 ENTRYPOINT ["/app/entrypoint.sh"]
 CMD []
 
