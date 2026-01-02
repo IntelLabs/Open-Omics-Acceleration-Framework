@@ -42,13 +42,9 @@ RUN git clone --recursive https://github.com/calvin-zcx/moflow.git moflow
 WORKDIR /app/moflow
 RUN git checkout 3611c637260272b3d34a298f221623cb59e01091
 
-RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz
+RUN tar -xzf Source_code_with_submodules.tar.gz
 WORKDIR /app/moflow/Open-Omics-Acceleration-Framework/
-RUN git checkout moflow_v4
-
-#RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz
-#RUN tar -xzf Source_code_with_submodules.tar.gz
-#WORKDIR /app/moflow/Open-Omics-Acceleration-Framework/
 
 USER root
 WORKDIR /app/moflow/
