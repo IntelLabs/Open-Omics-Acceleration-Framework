@@ -43,7 +43,7 @@ docker run -it --rm \
 The server is ready to accept requests when you see logs similar to the following:
 
 ```bash
-$ docker run -it   -v $MODELS:/results   -v $DATA_PREPROCESSING:/data_preprocessing   -v $OUTPUT:/output   moflow:latest bash -c   "cd .. && python microservice/generate/opea_moflow_microservice.py --model_dir /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask -snapshot model_snapshot_epoch_200 --data_name zinc250k --data_dir /data_preprocessing  --hyperparams_path moflow-params.json"
+$ docker run -it -v $MODELS:/results -v $DATA_PREPROCESSING:/data_preprocessing -v $OUTPUT:/output moflow:latest bash -c "python microservice/generate/opea_moflow_microservice.py --model_dir /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask -snapshot model_snapshot_epoch_200 --data_name zinc250k --data_dir /data_preprocessing --hyperparams_path moflow-params.json"
 [2025-09-17 12:31:45,684] [    INFO] - esm_fold_microservice - Loading model
 loading hyperparamaters from /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask/moflow-params.json
 loading snapshot: /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask/model_snapshot_epoch_200
@@ -117,6 +117,10 @@ You only need to do this once per session.
 
 Below are examples of how to invoke the client for different moflow use-cases.
 
+```bash
+cd applications/moflow/microservice/
+```
+
 ###### 1. Experiment: reconstruction
 
 ```bash
@@ -170,7 +174,7 @@ docker run -it --rm \
   -v $DATA_PREPROCESSING:/data_preprocessing \
   -v $OUTPUT:/output \
   moflow:latest bash -c \
-  "cd .. && python microservice/optimize/opea_moflow_optimize_microservice.py -snapshot model_snapshot_epoch_200  --hyperparams_path moflow-params.json --batch_size 256 --model_dir /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask  --data_name zinc250k   --property_name qed --property_model_path qed_model.pt --debug false --data_dir /data_preprocessing"
+  "python microservice/optimize/opea_moflow_optimize_microservice.py -snapshot model_snapshot_epoch_200  --hyperparams_path moflow-params.json --batch_size 256 --model_dir /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask  --data_name zinc250k   --property_name qed --property_model_path qed_model.pt --debug false --data_dir /data_preprocessing"
 ```
 
 🔒 Note: If you use `--data_name` qm9, you must also update the model directory in the `--model_dir` argument to `/results/qm9_64gnn_128-64lin_1-1mask_0d6noise_convlu1`.
