@@ -36,7 +36,6 @@ USER $SERVICE_NAME
 # Install Miniforge (Conda)
 RUN wget --no-check-certificate -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/download/24.3.0-0/Miniforge3-$(uname)-$(uname -m).sh"
 RUN bash Miniforge3.sh -b -p "${HOME}/conda" && rm Miniforge3.sh
-COPY . /app
 
 # Clone MoFlow repository and apply patch
 RUN git clone --recursive https://github.com/calvin-zcx/moflow.git moflow

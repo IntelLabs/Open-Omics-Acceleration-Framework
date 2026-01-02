@@ -16,7 +16,7 @@ Before proceeding, ensure that you have already built the Moflow Docker image fo
 
 ## Running the Microservice Experiments
 
-### Workflow 1: Experiments 1, 2, and 3 
+### Workflow 1: Experiments 1, 2, and 3
 
 #### 1. Start the Server
 
@@ -24,12 +24,12 @@ Start the moflow microservice container:
 ##### Generate zinc250k
 
 ```bash
-docker run -it \
+docker run -it --rm \
   -v $MODELS:/results \
   -v $DATA_PREPROCESSING:/data_preprocessing \
   -v $OUTPUT:/output \
   moflow:latest bash -c \
-  "cd .. && python microservice/generate/opea_moflow_microservice.py --model_dir /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask -snapshot model_snapshot_epoch_200 --data_name zinc250k --data_dir /data_preprocessing  --hyperparams_path moflow-params.json"
+  "python microservice/generate/opea_moflow_microservice.py --model_dir /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask -snapshot model_snapshot_epoch_200 --data_name zinc250k --data_dir /data_preprocessing  --hyperparams_path moflow-params.json"
 ```
 🔒 Note: If you use `--data_name` qm9, you must also update the model directory in the `--model_dir` argument to `/results/qm9_64gnn_128-64lin_1-1mask_0d6noise_convlu1`.
 * This will launch the server on port 9006 and expose the inference API at `http://<host>:9006/v1/moflow`.
@@ -157,7 +157,7 @@ python generate/opea_moflow_client.py \
 ```
 
 
-### Workflow 2: Experiment 4 
+### Workflow 2: Experiment 4
 
 #### 1. Start the Server
 
@@ -165,7 +165,7 @@ Start the moflow microservice container:
 ##### Optimize zinc250k
 
 ```bash
-docker run -it \
+docker run -it --rm \
   -v $MODELS:/results \
   -v $DATA_PREPROCESSING:/data_preprocessing \
   -v $OUTPUT:/output \
@@ -275,7 +275,7 @@ python optimize/opea_moflow_optimize_client.py \
   --port $PORT \
   --topk 5 --topscore
 ```
-###### To optimize existing molecules to get novel molecules with optimized plogp scores and constrained similarity 
+###### To optimize existing molecules to get novel molecules with optimized plogp scores and constrained similarity
 
 ```bash
 #example
