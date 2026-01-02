@@ -736,7 +736,7 @@ index 7c7473a..385885e 100644
 +                print(f"random generation - Total Inference Time = {time.time() - start_time} seconds")
 \ No newline at end of file
 diff --git a/mflow/optimize_property.py b/mflow/optimize_property.py
-index 9195d2c..985c182 100644
+index 9195d2c..fab21de 100644
 --- a/mflow/optimize_property.py
 +++ b/mflow/optimize_property.py
 @@ -31,7 +31,13 @@ from sklearn.linear_model import LinearRegression
@@ -749,7 +749,7 @@ index 9195d2c..985c182 100644
 +noipex=True
 +bf16=False
 +enable_autocast = bf16
-+device_type ="cpu" if gpu >=0 else "cuda"
++device_type ="cuda" if gpu >=0 else "cpu"
  
  class MoFlowProp(nn.Module):
      def __init__(self, model:MoFlow, hidden_size):
@@ -767,11 +767,11 @@ index 9195d2c..985c182 100644
      if data_name == 'qm9':
          # Total: 133885	 Invalid: 0	 bad_plogp: 0 	 bad_qed: 0
 -        filename = '../data/qm9_property.csv'
-+        filename = csv_path+'data/qm9_property.csv'
++        filename = os.path.join(csv_path,'data/qm9_property.csv')
      elif data_name == 'zinc250k':
          # Total: 249455	 Invalid: 0	 bad_plogp: 0 	 bad_qed: 0
 -        filename = '../data/zinc250k_property.csv'
-+        filename = csv_path+'data/zinc250k_property.csv'
++        filename = os.path.join(csv_path,'data/zinc250k_property.csv')
  
      df = pd.read_csv(filename)  # qed, plogp, smile
      if normalize:
@@ -784,11 +784,10 @@ index 9195d2c..985c182 100644
      start_time = time.time()
      if property_name == 'qed':
          col = 0
-@@ -524,9 +530,21 @@ def find_top_score_smiles(model, device, data_name, property_name, train_prop, t
-         f.flush()
+@@ -525,8 +531,20 @@ def find_top_score_smiles(model, device, data_name, property_name, train_prop, t
      f.close()
      print('Dump done!')
-+    
+ 
 +    results = []
 +    for r in result_list_novel:
 +        smile, score, sim, smile_original = r
@@ -801,18 +800,16 @@ index 9195d2c..985c182 100644
 +
 +    return results
  
- 
 -def constrain_optimization_smiles(model, device, data_name, property_name, train_prop, topk,
++
 +def constrain_optimization_smiles(model, property_model,device, data_name, property_name, train_prop, topk,
                                    atomic_num_list, debug, sim_cutoff=0.0):
      start_time = time.time()
      if property_name == 'qed':
-@@ -567,7 +585,11 @@ def constrain_optimization_smiles(model, device, data_name, property_name, train
-     print('Dump done!')
+@@ -568,6 +586,10 @@ def constrain_optimization_smiles(model, device, data_name, property_name, train
      print('nfail:{} in total:{}'.format(nfail, topk))
      print('success rate: {}'.format((topk-nfail)*1.0/topk))
--
-+        
+ 
 +    stats = df.describe().to_dict()
 +    summary = {"nfail": nfail,"total": topk,"success_rate": (topk - nfail) * 1.0 / topk}
 +    results = {"summary": summary,"stats": stats,"results": df.to_dict(orient="records")}
@@ -893,6 +890,15 @@ index 9195d2c..985c182 100644
      # dataset = NumpyTupleDataset(os.path.join(args.data_dir, molecule_file), transform=transform_fn)  # 133885
      dataset = NumpyTupleDataset.load(os.path.join(args.data_dir, molecule_file), transform=transform_fn)
  
+@@ -759,7 +797,7 @@ if __name__ == '__main__':
+ 
+     if args.property_model_path is None:
+         print("Training regression model over molecular embedding:")
+-        prop_list = load_property_csv(args.data_name, normalize=True)
++        prop_list = load_property_csv("../",args.data_name, normalize=True)
+         train_prop = [prop_list[i] for i in train_idx]
+         test_prop = [prop_list[i] for i in valid_idx]
+         print('Prepare data done! Time {:.2f} seconds'.format(time.time() - start))
 @@ -772,7 +810,7 @@ if __name__ == '__main__':
          print('Train and save model done! Time {:.2f} seconds'.format(time.time() - start))
      else:
@@ -928,8 +934,6 @@ index 9195d2c..985c182 100644
 -            constrain_optimization_smiles(model, device, args.data_name, property_name, train_prop, args.topk,   # train_prop
 -                                      atomic_num_list, args.debug, sim_cutoff=args.sim_cutoff)
 -
--        print('Total Time {:.2f} seconds'.format(time.time() - start))
--
 +        with torch.amp.autocast(device_type=device_type , enabled=enable_autocast):
 +            if args.topscore:
 +                if args.timing:
@@ -948,5 +952,5 @@ index 9195d2c..985c182 100644
 +                                        atomic_num_list, args.debug, sim_cutoff=args.sim_cutoff)
 +                if args.timing:
 +                    print(f"Constrained optimization - Total Inference Time = {time.time() - start_time} seconds")
-+        print('Total Time {:.2f} seconds'.format(time.time() - start))
-\ No newline at end of file
+         print('Total Time {:.2f} seconds'.format(time.time() - start))
+-
