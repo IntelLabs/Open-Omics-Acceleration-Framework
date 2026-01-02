@@ -49,7 +49,7 @@ To generate molecular graphs from SMILES strings
 qm9
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
   -v $MODELS:/results \
   -v $DATA_PREPROCESSING:/data_preprocessing \
   moflow:latest bash -c \
@@ -57,7 +57,7 @@ docker run -it \
 ```
 zinc250k
 ```bash
-docker run -it \
+docker run -it --rm \
   -v $MODELS:/results \
   -v $DATA_PREPROCESSING:/data_preprocessing \
   moflow:latest bash -c \
@@ -85,7 +85,7 @@ mv <downloaded_model_file> $MODELS/
 
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -96,7 +96,7 @@ moflow:latest bash -c \
 ##### To reconstruct zinc250k dataset:
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -110,7 +110,7 @@ moflow:latest bash -c \
 10000 samples * 5 times:
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -123,7 +123,7 @@ moflow:latest bash -c \
 10000 samples * 5 times:
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -138,7 +138,7 @@ moflow:latest bash -c \
 interpolation between 2 molecules (molecular graphs)
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -148,7 +148,7 @@ moflow:latest bash -c \
 interpolation in a grid of molecules (molecular graphs)
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -160,7 +160,7 @@ moflow:latest bash -c \
 interpolation between 2 molecules (molecular graphs)
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -170,7 +170,7 @@ moflow:latest bash -c \
 interpolation in a grid of molecules (molecular graphs)
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -184,7 +184,7 @@ moflow:latest bash -c \
 ##### To optimize existing molecules to get novel molecules with optimized QED scores - qm9
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -195,7 +195,7 @@ moflow:latest bash -c \
 ##### To optimize existing molecules to get novel molecules with optimized QED scores - zinc250k
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -208,7 +208,7 @@ moflow:latest bash -c \
 ##### To optimize existing molecules to get novel molecules with optimized plogp scores and constrained similarity - qm9
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -218,7 +218,7 @@ moflow:latest bash -c \
 ##### To optimize existing molecules to get novel molecules with optimized plogp scores and constrained similarity - zinc250k
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -244,12 +244,12 @@ We have included an example demonstrating how to use it:
 
 Step 1: Start Molflow container in interactive mode.
 ```bash
-docker run -it   --privileged -v $MO
-DELS:/results   -v $DATA_PREPROCESSING:/data_preprocessing   moflow:latest bash
+docker run -it --rm --privileged -v $MODELS:/results -v $DATA_PREPROCESSING:/data_preprocessing moflow:latest bash
 ```
 
 Step 2: Use the multiprocess script.
 ```bash
+(moflow) moflow-base-service@116f0faae91f:/app/moflow$ cd mflow
 (moflow) moflow-base-service@116f0faae91f:/app/moflow$ python ../common/multiprocess/multiprocess.py --json_file ../multiprocess/config_moflow_update.json --case 2
 ```
 ---

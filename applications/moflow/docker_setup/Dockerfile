@@ -52,7 +52,8 @@ RUN git checkout moflow_v4
 #WORKDIR /app/moflow/Open-Omics-Acceleration-Framework/
 
 USER root
-RUN mv /app/moflow/Open-Omics-Acceleration-Framework/applications/moflow /app/moflow && \
+WORKDIR /app/moflow/
+RUN mv /app/moflow/Open-Omics-Acceleration-Framework/applications/moflow/* /app/moflow/ && \
     mv /app/moflow/Open-Omics-Acceleration-Framework/applications/common /app/moflow/ && \
     rm -rf /app/moflow/Open-Omics-Acceleration-Framework
 
