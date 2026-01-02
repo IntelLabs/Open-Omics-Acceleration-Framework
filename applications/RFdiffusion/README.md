@@ -3,22 +3,38 @@ RFdiffusion is a deep learning based computational tool for designing novel prot
 
 Here, we present OpenOmics RFdiffusion, a highly optimized version of RFdiffusion (inference) for modern CPUs, while keeping the exact same functionality (including command line parameters) and accuracy as the original. OpenOmics RFdiffusion also supports lower precision inference for faster execution w/o compromizing the accuracy. 
 
-## Using Docker
-### Build
+
+## 🛠️ Using Docker
+Run the following command to build the Docker image:
+
 ```bash
-git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-cd Open-Omics-Acceleration-Framework/applications/RFdiffusion
-```
-```bash
-docker build --build-arg http_proxy=<http_proxy> --build-arg https_proxy=<https_proxy> --build-arg no_proxy=<no_proxy_ip> -t rfdiffusion .
+git clone https://github.com/intel-sandbox/TransOmics.OpenOmicsInternal.git
+cd TransOmics.OpenOmicsInternal/applications/RFdiffusion
 ```
 
-### Run
-Motif Scaffolding:
+
+```bash
+docker build -t rfdiffusion .
+```
+### 🌐 Building Behind a Proxy
+If you're working in a corporate or institutional environment, your internet access may be routed through a proxy server. In such cases, Docker may not be able to download dependencies during the build process unless you explicitly configure proxy settings.
+
+To build the Docker image with proxy settings, you can use the --build-arg option to pass your proxy configuration:
+
+```bash
+docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy=$no_proxy -t rfdiffusion .
+```
+🔒 Note: Make sure the environment variables http_proxy, https_proxy, and no_proxy are correctly set in your shell before running this command.
+
+For more details, refer to the official Docker documentation:
+[Docker behind proxy](https://docs.docker.com/engine/cli/proxy/)
+
+### Docker Run
 ```bash
 export OUTPUT_DIR=<path_to_output_dir>  
 export INPUT_FILE=<path_to_input_file>  
-```  
+```
+Motif Scaffolding:  
 ```bash
 docker run -v $INPUT_FILE:/infile.pdb -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/<output_file_prefix> inference.input_pdb=/infile.pdb 'contigmap.contigs=<contigs>' inference.num_designs=<num_designs> inference.precision=<float32/bfloat16>
 ```
@@ -27,25 +43,27 @@ Example, Motif Scaffolding:
 ```bash
 mkdir -p ./output
 export OUTPUT_DIR=./output/ 
+export INPUT_FILE=./examples/input_pdbs/5TPN.pdb
 chmod a+w $OUTPUT_DIR
 ```
 ```bash
-docker run -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/design_motifscaffolding inference.input_pdb=../examples/input_pdbs/5TPN.pdb 'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=4 inference.precision=float32
+docker run -v $INPUT_FILE:/infile.pdb -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py inference.output_prefix=/output/design_motifscaffolding inference.input_pdb=/infile.pdb 'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=4 inference.precision=float32
 ```
 
 Example, Partial Diffusion:  
 ```bash
 mkdir -p ./output
 export OUTPUT_DIR=./output/
+export INPUT_FILE=./examples/input_pdbs/2KL8.pdb
 ```
+
 ```bash
-docker run -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py
-inference.output_prefix=/output/design_partialdiffusion inference.input_pdb=../examples/input_pdbs/2KL8.pdb 'contigmap.contigs=[79-79]' inference.num_designs=1 diffuser.partial_T=10 inference.precision=bfloat16
+docker run -v $INPUT_FILE:/infile.pdb -v $OUTPUT_DIR:/output rfdiffusion:latest python run_inference.py  inference.output_prefix=/output/design_partialdiffusion inference.input_pdb=/infile.pdb 'contigmap.contigs=[79-79]' inference.num_designs=1 diffuser.partial_T=10 inference.precision=bfloat16
 ```
 
 Note: 
 - Please refer to the original readme below for various modes like unconditional monomer, binder design, etc supported by RFdiffusion and its input/output parameters
-- Also, users can refer to the example run scripts (non docker) for all the modes in [example](https://github.com/RosettaCommons/RFdiffusion/tree/820bfdfaded8c260b962dc40a3171eae316b6ce0/examples) folder
+- Also, users can refer to the example run scripts (non docker) for all the modes in ./example folder
 
 ## Using source code
 ### Install
@@ -70,9 +88,38 @@ Note:
 - Please refer to the original RFdiffusion README below for information on the input/output parameters
 - Also, original RFdiffusion provides example run scripts for all the modes (binder design, motif scaffolding, etc) in ./example folder   
 
-  
-## OpenOmics RFdiffusion README ends here  
+## Additional Ways to Run RFdiffusion
 
+OpenOmics supports multiple ways to run RFdiffusion depending on your workflow and scale. Choose the mode that best fits your use case:
+
+### 1. Run as a Microservice
+If you want to expose RFdiffusion as a service that can be queried over an API, you can deploy it as a microservice.
+Refer to [here](microservice/README.md) for setup instructions and API usage details.
+
+### 2. Run Multiple Processes (Parallel Local Execution)
+To run many RFdiffusion tasks on a single machine, you can use the multiprocess tool, which batches your tasks and executes them in parallel using all the available cores.
+It automatically determines and configures the optimal level of parallelism.
+Read more about the multiprocess tool [here](../common/multiprocess/README.md).
+
+We have included an example demonstrating how to use it:
+
+Step 1: Start RFdiffusion container in interactive mode.
+
+```bash
+mkdir -p ./output
+chmod a+w ./output
+export OUTPUT_DIR=./output/
+docker run -it --rm --privileged -v $OUTPUT_DIR:/output rfdiffusion:latest bash
+```
+
+Step 2: Use the multiprocess script.
+
+```bash
+cd ../
+python common/multiprocess/multiprocess.py --json_file=multiprocess/config_rfdiffusion.json --case=3
+```
+
+## OpenOmics RFdiffusion README ends here  
 ## Original RFdiffusion README follows:
 # Original RF*diffusion*
 

@@ -1,0 +1,25 @@
+{
+    "script_command": "python ./scripts/run_inference.py",
+    "input_dir": "./examples/input_pdbs/",
+    "output_log_dir": "output_log/",
+    "shared_args": "",
+    "input_file_arg": "inference.input_pdb=",
+    "tasks": [
+        {
+            "input_file": "5TPN.pdb",
+            "unique_args": "inference.output_prefix=example_motif/design_motifscaffolding 'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=1 inference.precision=bfloat16"
+        },
+        {
+            "input_file": "2KL8.pdb",
+            "unique_args": "inference.output_prefix=/output/design_partialdiffusion  'contigmap.contigs=[79-79]' inference.num_designs=1 diffuser.partial_T=10 inference.precision=bfloat16"
+        },
+        {
+            "input_file": "5TPN.pdb",
+            "unique_args": "inference.output_prefix=/output/design_motifscaffolding 'contigmap.contigs=[10-40/A163-181/10-40]' inference.num_designs=1 inference.precision=bfloat16"
+        },
+        {
+            "input_file": "2KL8.pdb",
+            "unique_args": "inference.output_prefix=/output/design_partialdiffusion  'contigmap.contigs=[79-79]' inference.num_designs=1 diffuser.partial_T=10 inference.precision=float32"
+        }
+    ]
+}

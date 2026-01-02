@@ -1,3 +1,6 @@
+# Copyright 2025 Intel Corporation
+# SPDX-License-Identifier: MIT License
+
 # Use the official Ubuntu image as a base
 ARG FROM_IMAGE=ubuntu:24.04
 
@@ -12,7 +15,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install necessary build tools and clean up
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git build-essential wget vim ca-certificates numactl autoconf automake make && \
+    git build-essential wget vim ca-certificates numactl autoconf automake make iproute2 time && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get autoremove -y && \
     apt-get clean
@@ -20,24 +23,30 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Non-root user setup
 ENV SERVICE_NAME="rfdiffusion-service"
 RUN groupadd --gid 1001 $SERVICE_NAME && \
-    useradd -m -g $SERVICE_NAME --shell /bin/false --uid 1001 $SERVICE_NAME 
+    useradd -m -g $SERVICE_NAME --shell /bin/false --uid 1001 $SERVICE_NAME
 
 # Copy Conda installation from the conda_setup stage
 COPY --from=conda_setup /opt/conda /opt/conda
 
 WORKDIR /app
-RUN git clone https://github.com/RosettaCommons/RFdiffusion.git 
-
+RUN git clone https://github.com/RosettaCommons/RFdiffusion.git
 WORKDIR /app/RFdiffusion
 # adding the git commit id
 RUN git checkout 820bfdfaded8c260b962dc40a3171eae316b6ce0
 
-RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
-RUN tar -xzf Source_code_with_submodules.tar.gz
-RUN cp /app/RFdiffusion/Open-Omics-Acceleration-Framework/applications/RFdiffusion/RFdiffusion.patch .
-RUN git apply RFdiffusion.patch
-RUN rm -rf Open-Omics-Acceleration-Framework
-RUN rm -rf Source_code_with_submodules.tar.gz
+RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+WORKDIR /app/RFdiffusion/Open-Omics-Acceleration-Framework/
+RUN git checkout RFdiffusion_v4
+
+# RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz
+# RUN tar -xzf Source_code_with_submodules.tar.gz
+# WORKDIR /app/RFdiffusion/Open-Omics-Acceleration-Framework/
+
+RUN mv /app/RFdiffusion/Open-Omics-Acceleration-Framework/applications/RFdiffusion /app/RFdiffusion/ && \
+    mv /app/RFdiffusion/Open-Omics-Acceleration-Framework/applications/common /app/RFdiffusion/common && \
+    git apply /app/RFdiffusion/RFdiffusion.patch && \
+    rm -rf /app/RFdiffusion/Open-Omics-Acceleration-Framework && \
+    rm -rf /app/RFdiffusion/Source_code_with_submodules.tar.gz
 
 WORKDIR /app/RFdiffusion/models
 RUN  wget https://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063dc4/Base_ckpt.pt && \
@@ -62,7 +71,7 @@ RUN rm -rf jemalloc
 
 # Set up environment activation and PATH
 ENV PATH="/opt/conda/envs/SE3nv/bin:/opt/conda/bin:$PATH"
-	
+
 # Install dependencies
 WORKDIR /app/RFdiffusion/env/SE3Transformer
 RUN pip install --no-cache-dir -r requirements.txt
@@ -70,6 +79,8 @@ RUN python setup.py install
 
 WORKDIR /app/RFdiffusion
 RUN pip install -e .
+RUN pip install opea-comps==1.3 && \
+    pip install numpy==1.26.4 absl-py psutil
 
 RUN tar -xvf examples/ppi_scaffolds_subset.tar.gz -C examples/
 
@@ -81,5 +92,5 @@ USER $SERVICE_NAME
 HEALTHCHECK NONE
 
 ENV LD_PRELOAD "/opt/conda/envs/SE3nv/lib/libjemalloc.so:$LD_PRELOAD"
-ENV MALLOC_CONF "oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms:-1,muzzy_decay_ms:-1" 
-CMD python 
+ENV MALLOC_CONF "oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms:-1,muzzy_decay_ms:-1"
+CMD python
