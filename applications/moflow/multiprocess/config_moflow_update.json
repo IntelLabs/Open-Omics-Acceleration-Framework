@@ -1,0 +1,9 @@
+{
+    "script_command": "python generate.py",
+    "output_log_dir": "output_log_multiprocess/",
+    "shared_args":  "--model_dir /results/qm9_64gnn_128-64lin_1-1mask_0d6noise_convlu1 --snapshot model_snapshot_epoch_200 --data_name qm9 --hyperparams-path moflow-params.json --save_fig false --correct_validity true --delta 0.05 --batch-size 10000 --n_experiments 5",
+    "unique_args": [" --temperature 0.6 ",
+                    " --temperature 0.7 ",
+                    " --temperature 0.8 ",
+                    " --temperature 0.9 "]
+}
