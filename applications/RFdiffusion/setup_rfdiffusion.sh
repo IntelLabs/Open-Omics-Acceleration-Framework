@@ -1,3 +1,6 @@
+# Copyright 2025 Intel Corporation
+# SPDX-License-Identifier: MIT License
+
 #!/bin/bash
 
 set -e
@@ -97,7 +100,9 @@ python setup.py install
 # Install the rfdiffusion module
 cd ../.. # Change into the root directory of the repository
 pip install -e .
-
+echo "Installing opea-compus (microservice mode)..."
+pip install opea-comps==1.3
+pip install numpy==1.26.4
 echo ""
 echo "Note:"
 echo "Conda (Miniforge3) is installed at $CONDA_INSTALL_DIR"

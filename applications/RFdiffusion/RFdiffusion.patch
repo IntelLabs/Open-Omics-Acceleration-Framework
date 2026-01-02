@@ -10,126 +10,6 @@ index fac858e..80ff699 100644
  
  contigmap:
    contigs: null
-diff --git a/docker/Dockerfile b/docker/Dockerfile
-deleted file mode 100644
-index 8364cb1..0000000
---- a/docker/Dockerfile
-+++ /dev/null
-@@ -1,50 +0,0 @@
--# Usage: 
--# git clone https://github.com/RosettaCommons/RFdiffusion.git
--# cd RFdiffusion
--# docker build -f docker/Dockerfile -t rfdiffusion .
--# mkdir $HOME/inputs $HOME/outputs $HOME/models
--# bash scripts/download_models.sh $HOME/models
--# wget -P $HOME/inputs https://files.rcsb.org/view/5TPN.pdb
--
--# docker run -it --rm --gpus all \
--#   -v $HOME/models:$HOME/models \
--#   -v $HOME/inputs:$HOME/inputs \
--#   -v $HOME/outputs:$HOME/outputs \
--#   rfdiffusion \
--#   inference.output_prefix=$HOME/outputs/motifscaffolding \
--#   inference.model_directory_path=$HOME/models \
--#   inference.input_pdb=$HOME/inputs/5TPN.pdb \
--#   inference.num_designs=3 \
--#   'contigmap.contigs=[10-40/A163-181/10-40]'
--
--FROM nvcr.io/nvidia/cuda:11.6.2-cudnn8-runtime-ubuntu20.04
--
--COPY . /app/RFdiffusion/
--
--RUN apt-get -q update \ 
--  && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
--  git \
--  python3.9 \
--  python3-pip \
--  && python3.9 -m pip install -q -U --no-cache-dir pip \
--  && rm -rf /var/lib/apt/lists/* \
--  && apt-get autoremove -y \
--  && apt-get clean \
--  && pip install -q --no-cache-dir \
--  dgl==1.0.2+cu116 -f https://data.dgl.ai/wheels/cu116/repo.html \
--  torch==1.12.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116 \
--  e3nn==0.3.3 \
--  wandb==0.12.0 \
--  pynvml==11.0.0 \
--  git+https://github.com/NVIDIA/dllogger#egg=dllogger \
--  decorator==5.1.0 \
--  hydra-core==1.3.2 \
--  pyrsistent==0.19.3 \
--  /app/RFdiffusion/env/SE3Transformer \
--  && pip install --no-cache-dir /app/RFdiffusion --no-deps
--  
--WORKDIR /app/RFdiffusion
--
--ENV DGLBACKEND="pytorch"
--
--ENTRYPOINT ["python3.9", "scripts/run_inference.py"]
-diff --git a/env/SE3Transformer/Dockerfile b/env/SE3Transformer/Dockerfile
-deleted file mode 100644
-index fcc163b..0000000
---- a/env/SE3Transformer/Dockerfile
-+++ /dev/null
-@@ -1,58 +0,0 @@
--# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
--#
--# Permission is hereby granted, free of charge, to any person obtaining a
--# copy of this software and associated documentation files (the "Software"),
--# to deal in the Software without restriction, including without limitation
--# the rights to use, copy, modify, merge, publish, distribute, sublicense,
--# and/or sell copies of the Software, and to permit persons to whom the
--# Software is furnished to do so, subject to the following conditions:
--#
--# The above copyright notice and this permission notice shall be included in
--# all copies or substantial portions of the Software.
--#
--# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
--# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
--# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
--# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
--# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
--# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
--# DEALINGS IN THE SOFTWARE.
--#
--# SPDX-FileCopyrightText: Copyright (c) 2021 NVIDIA CORPORATION & AFFILIATES
--# SPDX-License-Identifier: MIT
--
--# run docker daemon with --default-runtime=nvidia for GPU detection during build
--# multistage build for DGL with CUDA and FP16
--
--ARG FROM_IMAGE_NAME=nvcr.io/nvidia/pytorch:21.07-py3
--
--FROM ${FROM_IMAGE_NAME} AS dgl_builder
--
--ENV DEBIAN_FRONTEND=noninteractive
--RUN apt-get update \
--    && apt-get install -y git build-essential python3-dev make cmake \
--    && rm -rf /var/lib/apt/lists/*
--WORKDIR /dgl
--RUN git clone --branch v0.7.0 --recurse-submodules --depth 1 https://github.com/dmlc/dgl.git .
--RUN sed -i 's/"35 50 60 70"/"60 70 80"/g' cmake/modules/CUDA.cmake
--WORKDIR build
--RUN cmake -DUSE_CUDA=ON -DUSE_FP16=ON ..
--RUN make -j8
--
--
--FROM ${FROM_IMAGE_NAME}
--
--RUN rm -rf /workspace/*
--WORKDIR /workspace/se3-transformer
--
--# copy built DGL and install it
--COPY --from=dgl_builder /dgl ./dgl
--RUN cd dgl/python && python setup.py install && cd ../.. && rm -rf dgl
--
--ADD requirements.txt .
--RUN pip install --no-cache-dir --upgrade --pre pip
--RUN pip install --no-cache-dir -r requirements.txt
--ADD . .
--
--ENV DGLBACKEND=pytorch
--ENV OMP_NUM_THREADS=1
 diff --git a/env/SE3nv.yml b/env/SE3nv.yml
 index a51bcce..ab28e9c 100644
 --- a/env/SE3nv.yml
@@ -165,7 +45,7 @@ index a51bcce..ab28e9c 100644
 +    - dgl==2.1.0
 +    - numpy==1.26.0
 diff --git a/rfdiffusion/inference/model_runners.py b/rfdiffusion/inference/model_runners.py
-index 9a33d98..a6b27d1 100644
+index 9a33d98..8fe54e7 100644
 --- a/rfdiffusion/inference/model_runners.py
 +++ b/rfdiffusion/inference/model_runners.py
 @@ -14,6 +14,7 @@ import torch.nn.functional as nn
@@ -192,6 +72,15 @@ index 9a33d98..a6b27d1 100644
          - Selects appropriate model from input
          - Assembles Config from model checkpoint and command line overrides
  
+@@ -55,7 +56,7 @@ class Sampler:
+ 
+         # Assign config to Sampler
+         self._conf = conf
+-
++        
+         ################################
+         ### Select Appropriate Model ###
+         ################################
 @@ -104,6 +105,12 @@ class Sampler:
              self.assemble_config_from_chk()
              # Now actually load the model weights into RF
@@ -506,7 +395,41 @@ index 9a33d98..a6b27d1 100644
      Model Runner for Scaffold-Constrained diffusion
      """
      def __init__(self, conf: DictConfig):
-@@ -778,9 +798,9 @@ class ScaffoldedSampler(SelfConditioning):
+@@ -764,7 +784,33 @@ class ScaffoldedSampler(SelfConditioning):
+         else:
+             self.target = None
+             self.target_pdb=False
++    def initialize(self, conf: DictConfig):
++        super().initialize(conf)
++        # initialize BlockAdjacency sampling class
++        self.blockadjacency = iu.BlockAdjacency(conf, conf.inference.num_designs)
++
++
++        #################################################
++        ### Initialize target, if doing binder design ###
++        #################################################
+ 
++        if conf.scaffoldguided.target_pdb:
++            self.target = iu.Target(conf.scaffoldguided, conf.ppi.hotspot_res)
++            self.target_pdb = self.target.get_target()
++            if conf.scaffoldguided.target_ss is not None:
++                self.target_ss = torch.load(conf.scaffoldguided.target_ss).long()
++                self.target_ss = torch.nn.functional.one_hot(self.target_ss, num_classes=4)
++                if self._conf.scaffoldguided.contig_crop is not None:
++                    self.target_ss=self.target_ss[self.target_pdb['crop_mask']]
++            if conf.scaffoldguided.target_adj is not None:
++                self.target_adj = torch.load(conf.scaffoldguided.target_adj).long()
++                self.target_adj=torch.nn.functional.one_hot(self.target_adj, num_classes=3)
++                if self._conf.scaffoldguided.contig_crop is not None:
++                        self.target_adj=self.target_adj[self.target_pdb['crop_mask']]
++                        self.target_adj=self.target_adj[:,self.target_pdb['crop_mask']]
++        else:
++            self.target = None
++            self.target_pdb=False
+     def sample_init(self):
+         """
+         Wrapper method for taking secondary structure + adj, and outputting xt, seq_t
+@@ -778,9 +824,9 @@ class ScaffoldedSampler(SelfConditioning):
  
          ##############################
          ### Auto-contig generation ###
@@ -518,7 +441,7 @@ index 9a33d98..a6b27d1 100644
              # process target
              xT = torch.full((self.L, 27,3), np.nan)
              xT = get_init_xyz(xT[None,None]).squeeze()
-@@ -808,7 +828,7 @@ class ScaffoldedSampler(SelfConditioning):
+@@ -808,7 +854,7 @@ class ScaffoldedSampler(SelfConditioning):
                  contig = []
                  for idx,i in enumerate(self.target_pdb['pdb_idx'][:-1]):
                      if idx==0:
@@ -527,7 +450,7 @@ index 9a33d98..a6b27d1 100644
                      if i[1] + 1 != self.target_pdb['pdb_idx'][idx+1][1] or i[0] != self.target_pdb['pdb_idx'][idx+1][0]:
                          contig.append(f'{i[0]}{start}-{i[1]}/0 ')
                          start = self.target_pdb['pdb_idx'][idx+1][1]
-@@ -851,18 +871,18 @@ class ScaffoldedSampler(SelfConditioning):
+@@ -851,18 +897,18 @@ class ScaffoldedSampler(SelfConditioning):
              assert L_mapped==self.adj.shape[0]
              diffusion_mask = self.mask_str
              self.diffusion_mask = diffusion_mask
@@ -549,7 +472,7 @@ index 9a33d98..a6b27d1 100644
          #########################
          ### Set up potentials ###
          #########################
-@@ -905,17 +925,17 @@ class ScaffoldedSampler(SelfConditioning):
+@@ -905,17 +951,17 @@ class ScaffoldedSampler(SelfConditioning):
  
          xT = torch.clone(fa_stack[-1].squeeze()[:,:14,:])
          return xT, seq_T
@@ -570,7 +493,7 @@ index 9a33d98..a6b27d1 100644
          #####################
          ### Handle Target ###
          #####################
-@@ -930,7 +950,7 @@ class ScaffoldedSampler(SelfConditioning):
+@@ -930,7 +976,7 @@ class ScaffoldedSampler(SelfConditioning):
          t1d=torch.cat((t1d, full_ss[None,None].to(self.device)), dim=-1)
  
          t1d = t1d.float()
@@ -633,6 +556,225 @@ index 864a5ab..463363b 100644
          if not np.isclose(((self.sym_rots[0]-np.eye(3))**2).sum(), 0):
  
              # Move identity to be the first rotation
+diff --git a/rfdiffusion/util.py b/rfdiffusion/util.py
+index 19c30f5..fb3b552 100644
+--- a/rfdiffusion/util.py
++++ b/rfdiffusion/util.py
+@@ -267,6 +267,152 @@ def cross_product_matrix(u):
+     matrix[:, :, 2, 1] = u[..., 0]
+     return matrix
+ 
++def writepdb_str(
++    atoms, seq, binderlen=None, idx_pdb=None, bfacts=None, chain_idx=None
++):
++    import io
++    f = io.StringIO()
++    ctr = 1
++    scpu = seq.cpu().squeeze()
++    atomscpu = atoms.cpu().squeeze()
++    if bfacts is None:
++        bfacts = torch.zeros(atomscpu.shape[0])
++    if idx_pdb is None:
++        idx_pdb = 1 + torch.arange(atomscpu.shape[0])
++
++    Bfacts = torch.clamp(bfacts.cpu(), 0, 1)
++    for i, s in enumerate(scpu):
++        if chain_idx is None:
++            if binderlen is not None:
++                if i < binderlen:
++                    chain = "A"
++                else:
++                    chain = "B"
++            elif binderlen is None:
++                chain = "A"
++        else:
++            chain = chain_idx[i]
++        if len(atomscpu.shape) == 2:
++            f.write(
++                "%-6s%5s %4s %3s %s%4d    %8.3f%8.3f%8.3f%6.2f%6.2f\n"
++                % (
++                    "ATOM",
++                    ctr,
++                    " CA ",
++                    num2aa[s],
++                    chain,
++                    idx_pdb[i],
++                    atomscpu[i, 0],
++                    atomscpu[i, 1],
++                    atomscpu[i, 2],
++                    1.0,
++                    Bfacts[i],
++                )
++            )
++            ctr += 1
++        elif atomscpu.shape[1] == 3:
++            for j, atm_j in enumerate([" N  ", " CA ", " C  "]):
++                f.write(
++                    "%-6s%5s %4s %3s %s%4d    %8.3f%8.3f%8.3f%6.2f%6.2f\n"
++                    % (
++                        "ATOM",
++                        ctr,
++                        atm_j,
++                        num2aa[s],
++                        chain,
++                        idx_pdb[i],
++                        atomscpu[i, j, 0],
++                        atomscpu[i, j, 1],
++                        atomscpu[i, j, 2],
++                        1.0,
++                        Bfacts[i],
++                    )
++                )
++                ctr += 1
++        elif atomscpu.shape[1] == 4:
++            for j, atm_j in enumerate([" N  ", " CA ", " C  ", " O  "]):
++                f.write(
++                    "%-6s%5s %4s %3s %s%4d    %8.3f%8.3f%8.3f%6.2f%6.2f\n"
++                    % (
++                        "ATOM",
++                        ctr,
++                        atm_j,
++                        num2aa[s],
++                        chain,
++                        idx_pdb[i],
++                        atomscpu[i, j, 0],
++                        atomscpu[i, j, 1],
++                        atomscpu[i, j, 2],
++                        1.0,
++                        Bfacts[i],
++                    )
++                )
++                ctr += 1
++
++        else:
++            natoms = atomscpu.shape[1]
++            if natoms != 14 and natoms != 27:
++                print("bad size!", atoms.shape)
++                assert False
++            atms = aa2long[s]
++            # his prot hack
++            if (
++                s == 8
++                and torch.linalg.norm(atomscpu[i, 9, :] - atomscpu[i, 5, :]) < 1.7
++            ):
++                atms = (
++                    " N  ",
++                    " CA ",
++                    " C  ",
++                    " O  ",
++                    " CB ",
++                    " CG ",
++                    " NE2",
++                    " CD2",
++                    " CE1",
++                    " ND1",
++                    None,
++                    None,
++                    None,
++                    None,
++                    " H  ",
++                    " HA ",
++                    "1HB ",
++                    "2HB ",
++                    " HD2",
++                    " HE1",
++                    " HD1",
++                    None,
++                    None,
++                    None,
++                    None,
++                    None,
++                    None,
++                )  # his_d
++
++            for j, atm_j in enumerate(atms):
++                if (
++                    j < natoms and atm_j is not None
++                ):  # and not torch.isnan(atomscpu[i,j,:]).any()):
++                    f.write(
++                        "%-6s%5s %4s %3s %s%4d    %8.3f%8.3f%8.3f%6.2f%6.2f\n"
++                        % (
++                            "ATOM",
++                            ctr,
++                            atm_j,
++                            num2aa[s],
++                            chain,
++                            idx_pdb[i],
++                            atomscpu[i, j, 0],
++                            atomscpu[i, j, 1],
++                            atomscpu[i, j, 2],
++                            1.0,
++                            Bfacts[i],
++                        )
++                    )
++                    ctr += 1
++
++    return f.getvalue()
+ 
+ # writepdb
+ def writepdb(
+@@ -713,6 +859,61 @@ def writepdb_multi(
+                 ctr += 1
+ 
+         f.write("ENDMDL\n")
++def writepdb_multi_str(
++    atoms_stack,
++    bfacts,
++    seq_stack,
++    backbone_only=False,
++    chain_ids=None,
++    use_hydrogens=True,
++):
++    """
++    Return a multi-model PDB string for structural states instead of writing to a file.
++    """
++    lines = []
++
++    if seq_stack.ndim != 2:
++        T = atoms_stack.shape[0]
++        seq_stack = torch.tile(seq_stack, (T, 1))
++    seq_stack = seq_stack.cpu()
++
++    for atoms, scpu in zip(atoms_stack, seq_stack):
++        ctr = 1
++        atomscpu = atoms.cpu()
++        Bfacts = torch.clamp(bfacts.cpu(), 0, 1)
++        for i, s in enumerate(scpu):
++            atms = aa2long[s.item()]
++            for j, atm_j in enumerate(atms):
++                if backbone_only and j >= N_BACKBONE_ATOMS:
++                    break
++                if not use_hydrogens and j >= N_HEAVY:
++                    break
++                if (atm_j is None) or (torch.all(torch.isnan(atomscpu[i, j]))):
++                    continue
++                chain_id = "A"
++                if chain_ids is not None:
++                    chain_id = chain_ids[i]
++                lines.append(
++                    "%-6s%5d %4s %3s %s%4d    %8.3f%8.3f%8.3f%6.2f%6.2f" % (
++                        "ATOM",
++                        ctr,
++                        atm_j,
++                        num2aa[s.item()],
++                        chain_id,
++                        i + 1,
++                        atomscpu[i, j, 0].item(),
++                        atomscpu[i, j, 1].item(),
++                        atomscpu[i, j, 2].item(),
++                        1.0,
++                        Bfacts[i].item(),
++                    )
++                )
++                ctr += 1
++
++        lines.append("ENDMDL")
++
++    return "\n".join(lines)
++
+ 
+ def calc_rmsd(xyz1, xyz2, eps=1e-6):
+     """
 diff --git a/scripts/run_inference.py b/scripts/run_inference.py
 index 2a3bf36..f58c0bd 100755
 --- a/scripts/run_inference.py
@@ -710,113 +852,3 @@ index 2a3bf36..f58c0bd 100755
              time=time.time() - start_time,
          )
          if hasattr(sampler, "contig_map"):
-diff --git a/setup_rfdiffusion.sh b/setup_rfdiffusion.sh
-new file mode 100644
-index 0000000..8b9df66
---- /dev/null
-+++ b/setup_rfdiffusion.sh
-@@ -0,0 +1,104 @@
-+#!/bin/bash
-+
-+set -e
-+SCRIPT_PATH="${BASH_SOURCE:-$0}"
-+ABS_SCRIPT_PATH="$(realpath "${SCRIPT_PATH}")"
-+#echo "Value of ABS_SCRIPT_PATH: ${ABS_SCRIPT_PATH}"
-+ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"
-+# Default Conda installation directory
-+CONDA_INSTALL_DIR=$(realpath ./miniforge3)
-+
-+# Parse command line arguments
-+while (( "$#" )); do
-+  case "$1" in
-+    -p)
-+      CONDA_INSTALL_DIR=$2
-+      CONDA_INSTALL_DIR=$(realpath "$CONDA_INSTALL_DIR")
-+      shift 2
-+      ;;
-+    -*|--*=) # Unsupported flags
-+      echo "Error: Unsupported flag $1" >&2
-+      exit 1
-+      ;;
-+    *) # Preserve positional arguments
-+      echo "Error: Unsupported argument $1" >&2
-+      exit 1
-+      ;;
-+  esac
-+done
-+# Check if Miniforge3 exists and install if not found
-+if [ ! -d "$CONDA_INSTALL_DIR" ]; then
-+  echo "Miniforge3 is not installed. Installing..."
-+  wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
-+  bash Miniforge3-Linux-x86_64.sh -b -p "$CONDA_INSTALL_DIR"
-+  echo "Miniforge3 installation complete."
-+else
-+  echo "Miniforge3 is already installed at: $CONDA_INSTALL_DIR"
-+fi
-+# Export Conda binary path
-+export PATH="$CONDA_INSTALL_DIR/bin:$PATH"
-+# Clone the RFdiffusion repository if it doesn't exist
-+if [ ! -d "RFdiffusion" ]; then
-+  git clone https://github.com/RosettaCommons/RFdiffusion.git
-+else
-+  echo "RFdiffusion repository already exists, skipping git clone."
-+fi
-+
-+echo "$CONDA_INSTALL_DIR"
-+# Apply patch (assuming patch file is RFdiffusion.patch and it should be applied in RFdiffusion directory)
-+cd RFdiffusion
-+git checkout 820bfdfaded8c260b962dc40a3171eae316b6ce0
-+git log -1
-+PATCH_FILE="$ABS_DIRECTORY/RFdiffusion.patch"
-+echo $PATCH_FILE
-+if [ -f "$PATCH_FILE" ]; then
-+  # Check if the patch is already applied
-+  if git apply --reverse --check "$PATCH_FILE" > /dev/null 2>&1; then
-+    echo "Patch has already been applied. Skipping patch step."
-+  else
-+    git apply "$PATCH_FILE"
-+    echo "Patch applied successfully."
-+  fi
-+else
-+  echo "Error: Patch file not found at $PATCH_FILE" >&2
-+  exit 1
-+fi
-+mkdir -p models
-+cd models/
-+wget https://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063dc4/Base_ckpt.pt
-+wget https://files.ipd.uw.edu/pub/RFdiffusion/e29311f6f1bf1af907f9ef9f44b8328b/Complex_base_ckpt.pt
-+wget https://files.ipd.uw.edu/pub/RFdiffusion/60f09a193fb5e5ccdc4980417708dbab/Complex_Fold_base_ckpt.pt
-+wget https://files.ipd.uw.edu/pub/RFdiffusion/74f51cfb8b440f50d70878e05361d8f0/InpaintSeq_ckpt.pt
-+wget https://files.ipd.uw.edu/pub/RFdiffusion/76d00716416567174cdb7ca96e208296/InpaintSeq_Fold_ckpt.pt
-+wget https://files.ipd.uw.edu/pub/RFdiffusion/5532d2e1f3a4738decd58b19d633b3c3/ActiveSite_ckpt.pt
-+wget https://files.ipd.uw.edu/pub/RFdiffusion/12fc204edeae5b57713c5ad7dcb97d39/Base_epoch8_ckpt.pt
-+# Optional:
-+wget https://files.ipd.uw.edu/pub/RFdiffusion/f572d396fae9206628714fb2ce00f72e/Complex_beta_ckpt.pt
-+# original structure prediction weights
-+wget https://files.ipd.uw.edu/pub/RFdiffusion/1befcb9b28e2f778f53d47f18b7597fa/RF_structure_prediction_weights.pt
-+cd ../
-+# Create and activate the Conda environment using the YAML file, disabling plugins to avoid errors
-+#CONDA_NO_PLUGINS=true 
-+if conda env list | grep -q "^SE3nv"; then
-+	echo "Environment exists. Moving ahead without create the env. If the setup crashes, please remove manually."
-+    else
-+	echo "Creating conda env SE3nv.."
-+	conda env create -f env/SE3nv.yml 
-+fi
-+source $CONDA_INSTALL_DIR/bin/activate SE3nv
-+#conda init
-+#conda activate SE3nv
-+
-+# Install SE3Transformer requirements
-+cd env/SE3Transformer
-+pip install --no-cache-dir -r requirements.txt
-+python setup.py install
-+
-+# Install the rfdiffusion module
-+cd ../.. # Change into the root directory of the repository
-+pip install -e .
-+
-+echo ""
-+echo "Note:"
-+echo "Conda (Miniforge3) is installed at $CONDA_INSTALL_DIR"
-+echo "To manually activate conda env, do: source $CONDA_INSTALL_DIR/bin/activate SE3nv"
