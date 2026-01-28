@@ -10,126 +10,6 @@ index fac858e..80ff699 100644
  
  contigmap:
    contigs: null
-diff --git a/docker/Dockerfile b/docker/Dockerfile
-deleted file mode 100644
-index 8364cb1..0000000
---- a/docker/Dockerfile
-+++ /dev/null
-@@ -1,50 +0,0 @@
--# Usage: 
--# git clone https://github.com/RosettaCommons/RFdiffusion.git
--# cd RFdiffusion
--# docker build -f docker/Dockerfile -t rfdiffusion .
--# mkdir $HOME/inputs $HOME/outputs $HOME/models
--# bash scripts/download_models.sh $HOME/models
--# wget -P $HOME/inputs https://files.rcsb.org/view/5TPN.pdb
--
--# docker run -it --rm --gpus all \
--#   -v $HOME/models:$HOME/models \
--#   -v $HOME/inputs:$HOME/inputs \
--#   -v $HOME/outputs:$HOME/outputs \
--#   rfdiffusion \
--#   inference.output_prefix=$HOME/outputs/motifscaffolding \
--#   inference.model_directory_path=$HOME/models \
--#   inference.input_pdb=$HOME/inputs/5TPN.pdb \
--#   inference.num_designs=3 \
--#   'contigmap.contigs=[10-40/A163-181/10-40]'
--
--FROM nvcr.io/nvidia/cuda:11.6.2-cudnn8-runtime-ubuntu20.04
--
--COPY . /app/RFdiffusion/
--
--RUN apt-get -q update \ 
--  && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
--  git \
--  python3.9 \
--  python3-pip \
--  && python3.9 -m pip install -q -U --no-cache-dir pip \
--  && rm -rf /var/lib/apt/lists/* \
--  && apt-get autoremove -y \
--  && apt-get clean \
--  && pip install -q --no-cache-dir \
--  dgl==1.0.2+cu116 -f https://data.dgl.ai/wheels/cu116/repo.html \
--  torch==1.12.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116 \
--  e3nn==0.3.3 \
--  wandb==0.12.0 \
--  pynvml==11.0.0 \
--  git+https://github.com/NVIDIA/dllogger#egg=dllogger \
--  decorator==5.1.0 \
--  hydra-core==1.3.2 \
--  pyrsistent==0.19.3 \
--  /app/RFdiffusion/env/SE3Transformer \
--  && pip install --no-cache-dir /app/RFdiffusion --no-deps
--  
--WORKDIR /app/RFdiffusion
--
--ENV DGLBACKEND="pytorch"
--
--ENTRYPOINT ["python3.9", "scripts/run_inference.py"]
-diff --git a/env/SE3Transformer/Dockerfile b/env/SE3Transformer/Dockerfile
-deleted file mode 100644
-index fcc163b..0000000
---- a/env/SE3Transformer/Dockerfile
-+++ /dev/null
-@@ -1,58 +0,0 @@
--# Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
--#
--# Permission is hereby granted, free of charge, to any person obtaining a
--# copy of this software and associated documentation files (the "Software"),
--# to deal in the Software without restriction, including without limitation
--# the rights to use, copy, modify, merge, publish, distribute, sublicense,
--# and/or sell copies of the Software, and to permit persons to whom the
--# Software is furnished to do so, subject to the following conditions:
--#
--# The above copyright notice and this permission notice shall be included in
--# all copies or substantial portions of the Software.
--#
--# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
--# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
--# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
--# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
--# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
--# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
--# DEALINGS IN THE SOFTWARE.
--#
--# SPDX-FileCopyrightText: Copyright (c) 2021 NVIDIA CORPORATION & AFFILIATES
--# SPDX-License-Identifier: MIT
--
--# run docker daemon with --default-runtime=nvidia for GPU detection during build
--# multistage build for DGL with CUDA and FP16
--
--ARG FROM_IMAGE_NAME=nvcr.io/nvidia/pytorch:21.07-py3
--
--FROM ${FROM_IMAGE_NAME} AS dgl_builder
--
--ENV DEBIAN_FRONTEND=noninteractive
--RUN apt-get update \
--    && apt-get install -y git build-essential python3-dev make cmake \
--    && rm -rf /var/lib/apt/lists/*
--WORKDIR /dgl
--RUN git clone --branch v0.7.0 --recurse-submodules --depth 1 https://github.com/dmlc/dgl.git .
--RUN sed -i 's/"35 50 60 70"/"60 70 80"/g' cmake/modules/CUDA.cmake
--WORKDIR build
--RUN cmake -DUSE_CUDA=ON -DUSE_FP16=ON ..
--RUN make -j8
--
--
--FROM ${FROM_IMAGE_NAME}
--
--RUN rm -rf /workspace/*
--WORKDIR /workspace/se3-transformer
--
--# copy built DGL and install it
--COPY --from=dgl_builder /dgl ./dgl
--RUN cd dgl/python && python setup.py install && cd ../.. && rm -rf dgl
--
--ADD requirements.txt .
--RUN pip install --no-cache-dir --upgrade --pre pip
--RUN pip install --no-cache-dir -r requirements.txt
--ADD . .
--
--ENV DGLBACKEND=pytorch
--ENV OMP_NUM_THREADS=1
 diff --git a/env/SE3nv.yml b/env/SE3nv.yml
 index a51bcce..ab28e9c 100644
 --- a/env/SE3nv.yml
@@ -583,7 +463,7 @@ index 0000000..ebaf048
 +if __name__ == "__main__":
 +    main()
 diff --git a/rfdiffusion/inference/model_runners.py b/rfdiffusion/inference/model_runners.py
-index 9a33d98..a6b27d1 100644
+index 9a33d98..8fe54e7 100644
 --- a/rfdiffusion/inference/model_runners.py
 +++ b/rfdiffusion/inference/model_runners.py
 @@ -14,6 +14,7 @@ import torch.nn.functional as nn
@@ -610,6 +490,15 @@ index 9a33d98..a6b27d1 100644
          - Selects appropriate model from input
          - Assembles Config from model checkpoint and command line overrides
  
+@@ -55,7 +56,7 @@ class Sampler:
+ 
+         # Assign config to Sampler
+         self._conf = conf
+-
++        
+         ################################
+         ### Select Appropriate Model ###
+         ################################
 @@ -104,6 +105,12 @@ class Sampler:
              self.assemble_config_from_chk()
              # Now actually load the model weights into RF
@@ -924,7 +813,41 @@ index 9a33d98..a6b27d1 100644
      Model Runner for Scaffold-Constrained diffusion
      """
      def __init__(self, conf: DictConfig):
-@@ -778,9 +798,9 @@ class ScaffoldedSampler(SelfConditioning):
+@@ -764,7 +784,33 @@ class ScaffoldedSampler(SelfConditioning):
+         else:
+             self.target = None
+             self.target_pdb=False
++    def initialize(self, conf: DictConfig):
++        super().initialize(conf)
++        # initialize BlockAdjacency sampling class
++        self.blockadjacency = iu.BlockAdjacency(conf, conf.inference.num_designs)
++
++
++        #################################################
++        ### Initialize target, if doing binder design ###
++        #################################################
+ 
++        if conf.scaffoldguided.target_pdb:
++            self.target = iu.Target(conf.scaffoldguided, conf.ppi.hotspot_res)
++            self.target_pdb = self.target.get_target()
++            if conf.scaffoldguided.target_ss is not None:
++                self.target_ss = torch.load(conf.scaffoldguided.target_ss).long()
++                self.target_ss = torch.nn.functional.one_hot(self.target_ss, num_classes=4)
++                if self._conf.scaffoldguided.contig_crop is not None:
++                    self.target_ss=self.target_ss[self.target_pdb['crop_mask']]
++            if conf.scaffoldguided.target_adj is not None:
++                self.target_adj = torch.load(conf.scaffoldguided.target_adj).long()
++                self.target_adj=torch.nn.functional.one_hot(self.target_adj, num_classes=3)
++                if self._conf.scaffoldguided.contig_crop is not None:
++                        self.target_adj=self.target_adj[self.target_pdb['crop_mask']]
++                        self.target_adj=self.target_adj[:,self.target_pdb['crop_mask']]
++        else:
++            self.target = None
++            self.target_pdb=False
+     def sample_init(self):
+         """
+         Wrapper method for taking secondary structure + adj, and outputting xt, seq_t
+@@ -778,9 +824,9 @@ class ScaffoldedSampler(SelfConditioning):
  
          ##############################
          ### Auto-contig generation ###
@@ -936,7 +859,7 @@ index 9a33d98..a6b27d1 100644
              # process target
              xT = torch.full((self.L, 27,3), np.nan)
              xT = get_init_xyz(xT[None,None]).squeeze()
-@@ -808,7 +828,7 @@ class ScaffoldedSampler(SelfConditioning):
+@@ -808,7 +854,7 @@ class ScaffoldedSampler(SelfConditioning):
                  contig = []
                  for idx,i in enumerate(self.target_pdb['pdb_idx'][:-1]):
                      if idx==0:
@@ -945,7 +868,7 @@ index 9a33d98..a6b27d1 100644
                      if i[1] + 1 != self.target_pdb['pdb_idx'][idx+1][1] or i[0] != self.target_pdb['pdb_idx'][idx+1][0]:
                          contig.append(f'{i[0]}{start}-{i[1]}/0 ')
                          start = self.target_pdb['pdb_idx'][idx+1][1]
-@@ -851,18 +871,18 @@ class ScaffoldedSampler(SelfConditioning):
+@@ -851,18 +897,18 @@ class ScaffoldedSampler(SelfConditioning):
              assert L_mapped==self.adj.shape[0]
              diffusion_mask = self.mask_str
              self.diffusion_mask = diffusion_mask
@@ -967,7 +890,7 @@ index 9a33d98..a6b27d1 100644
          #########################
          ### Set up potentials ###
          #########################
-@@ -905,17 +925,17 @@ class ScaffoldedSampler(SelfConditioning):
+@@ -905,17 +951,17 @@ class ScaffoldedSampler(SelfConditioning):
  
          xT = torch.clone(fa_stack[-1].squeeze()[:,:14,:])
          return xT, seq_T
@@ -988,7 +911,7 @@ index 9a33d98..a6b27d1 100644
          #####################
          ### Handle Target ###
          #####################
-@@ -930,7 +950,7 @@ class ScaffoldedSampler(SelfConditioning):
+@@ -930,7 +976,7 @@ class ScaffoldedSampler(SelfConditioning):
          t1d=torch.cat((t1d, full_ss[None,None].to(self.device)), dim=-1)
  
          t1d = t1d.float()

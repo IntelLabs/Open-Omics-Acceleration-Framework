@@ -2,20 +2,20 @@
 
 Open-Omics-MoFlow is a streamlined and optimized version of the MoFlow toolkit, designed to harness the full potential of modern CPUs. It enhances usability through Docker integration and boosts performance with the latest software packages.
 
-## Building the Docker Image
+
 ## 🛠️ Building the Docker Image
 Run the following command to build the Docker image:
 
 ```bash
-docker build -t moflow .
+docker build -t moflow -f docker_setup/Dockerfile .
 ```
 ### 🌐 Building Behind a Proxy
 If you're working in a corporate or institutional environment, your internet access may be routed through a proxy server. In such cases, Docker may not be able to download dependencies during the build process unless you explicitly configure proxy settings.
 
-To build the Docker image with proxy settings, you can use the --build-arg option to pass your proxy configuration:
+To build the Docker image with proxy settings, you can use the `--build-arg` option to pass your proxy configuration:
 
 ```bash
-docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy=$no_proxy -t moflow .
+docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy=$no_proxy -t moflow -f docker_setup/Dockerfile .
 ```
 🔒 Note: Make sure the environment variables http_proxy, https_proxy, and no_proxy are correctly set in your shell before running this command.
 
@@ -24,7 +24,7 @@ For more details, refer to the official Docker documentation:
 
 ## Setting Up Environment Variables and Directories
 To ensure the application runs smoothly, set up the necessary directories and environment variables. Follow these steps:
-### Step 1: Export Environment Variables  
+### Step 1: Export Environment Variables
 Define environment variables for your folder paths. Replace `<your output folder>`, `<your Model folder>`, and `<your Data Preprocessing folder>` with the desired paths:
 ```bash
 export OUTPUT=$PWD/<your output folder>
@@ -36,8 +36,8 @@ Here’s an example using standardized folder names. These commands will create 
 
 ```bash
 mkdir -p output models data_preprocessing
-export OUTPUT=$PWD/output     
-export MODELS=$PWD/models 
+export OUTPUT=$PWD/output
+export MODELS=$PWD/models
 export DATA_PREPROCESSING=$PWD/data_preprocessing
 chmod a+w $MODELS $OUTPUT $DATA_PREPROCESSING
 ```
@@ -49,7 +49,7 @@ To generate molecular graphs from SMILES strings
 qm9
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
   -v $MODELS:/results \
   -v $DATA_PREPROCESSING:/data_preprocessing \
   moflow:latest bash -c \
@@ -57,7 +57,7 @@ docker run -it \
 ```
 zinc250k
 ```bash
-docker run -it \
+docker run -it --rm \
   -v $MODELS:/results \
   -v $DATA_PREPROCESSING:/data_preprocessing \
   moflow:latest bash -c \
@@ -71,7 +71,7 @@ You can train the model by following the instructions provided in the original M
 Alternatively, you can skip training and use a pre-trained model. Download the pre-trained model from the following link:
 
 ```
-https://drive.google.com/drive/folders/1runxQnF3K_VzzJeWQZUH8VRazAGjZFNF 
+https://drive.google.com/drive/folders/1runxQnF3K_VzzJeWQZUH8VRazAGjZFNF
 ```
 After downloading, unzip the pre-trained model file and move it to the `$MODELS` directory.
 
@@ -80,12 +80,12 @@ mv <downloaded_model_file> $MODELS/
 ```
 ### 3. Experiments
 
-#### 3.1-Experiment: reconstruction  
+#### 3.1-Experiment: reconstruction
 ##### To reconstruct QM9 dataset:
 
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -96,7 +96,7 @@ moflow:latest bash -c \
 ##### To reconstruct zinc250k dataset:
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -104,13 +104,13 @@ moflow:latest bash -c \
 "cd mflow && python generate.py --model_dir /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask  -snapshot model_snapshot_epoch_200  --data_name zinc250k --data_dir /data_preprocessing --hyperparams-path moflow-params.json --batch-size 256  --reconstruct   2>&1 | tee /output/zinc250k_reconstruct_results.txt"
 ```
 
-#### 3.2-Experiment: Random generation  
+#### 3.2-Experiment: Random generation
 
 ##### Random Generation from sampling from latent space, QM9 model
 10000 samples * 5 times:
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -123,7 +123,7 @@ moflow:latest bash -c \
 10000 samples * 5 times:
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -138,7 +138,7 @@ moflow:latest bash -c \
 interpolation between 2 molecules (molecular graphs)
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -148,7 +148,7 @@ moflow:latest bash -c \
 interpolation in a grid of molecules (molecular graphs)
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -160,7 +160,7 @@ moflow:latest bash -c \
 interpolation between 2 molecules (molecular graphs)
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -170,7 +170,7 @@ moflow:latest bash -c \
 interpolation in a grid of molecules (molecular graphs)
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -184,7 +184,7 @@ moflow:latest bash -c \
 ##### To optimize existing molecules to get novel molecules with optimized QED scores - qm9
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -195,7 +195,7 @@ moflow:latest bash -c \
 ##### To optimize existing molecules to get novel molecules with optimized QED scores - zinc250k
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -208,7 +208,7 @@ moflow:latest bash -c \
 ##### To optimize existing molecules to get novel molecules with optimized plogp scores and constrained similarity - qm9
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -218,7 +218,7 @@ moflow:latest bash -c \
 ##### To optimize existing molecules to get novel molecules with optimized plogp scores and constrained similarity - zinc250k
 ```bash
 #example
-docker run -it \
+docker run -it --rm \
 -v $MODELS:/results \
 -v $DATA_PREPROCESSING:/data_preprocessing \
 -v $OUTPUT:/output \
@@ -226,6 +226,32 @@ moflow:latest bash -c \
 "cd mflow && python optimize_property.py -snapshot model_snapshot_epoch_200  --hyperparams_path moflow-params.json --batch_size 256 --model_dir /results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask --data_name zinc250k  --data_dir /data_preprocessing  --property_name plogp --topk 800 --property_model_path qed_model.pt   --consopt  --sim_cutoff 0 2>&1 | tee  /output/zinc250k_constrain_optimize_plogp.log"
 ```
 
+
+## Additional Ways to Run Molflow
+
+OpenOmics supports multiple ways to run Molflow depending on your workflow and scale. Choose the mode that best fits your use case:
+
+### 1. Run as a Microservice
+If you want to expose Molflow as a service that can be queried over an API, you can deploy it as a microservice.
+Refer to [here](microservice/README.md) for setup instructions and API usage details.
+
+### 2. Run Multiple Processes (Parallel Local Execution)
+To run many Molflow tasks on a single machine, you can use the multiprocess tool, which batches your tasks and executes them in parallel using all the available cores.
+It automatically determines and configures the optimal level of parallelism.
+Read more about the multiprocess tool [here](../common/multiprocess/README.md).
+
+We have included an example demonstrating how to use it:
+
+Step 1: Start Molflow container in interactive mode.
+```bash
+docker run -it --rm --privileged -v $MODELS:/results -v $DATA_PREPROCESSING:/data_preprocessing moflow:latest bash
+```
+
+Step 2: Use the multiprocess script.
+```bash
+(moflow) moflow-base-service@116f0faae91f:/app/moflow$ cd mflow
+(moflow) moflow-base-service@116f0faae91f:/app/moflow$ python ../common/multiprocess/multiprocess.py --json_file ../multiprocess/config_moflow_update.json --case 2
+```
 ---
 The original README content of Moflow follows.
 #
@@ -286,14 +312,14 @@ python train_model.py --data_name qm9  --batch_size 256  --max_epochs 200 --gpu 
 cd mflow
 python train_model.py  --data_name zinc250k  --batch_size  256  --max_epochs 200 --gpu 0  --debug True  --save_dir=results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask   --b_n_flow 10  --b_hidden_ch 512,512  --a_n_flow 38  --a_hidden_gnn 256  --a_hidden_lin  512,64   --mask_row_size_list 1 --mask_row_stride_list 1  --noise_scale 0.6  --b_conv_lu 2  2>&1 | tee zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask.log
 ```
-#### Or downloading and  using our trained models in 
+#### Or downloading and  using our trained models in
 ```
-https://drive.google.com/drive/folders/1runxQnF3K_VzzJeWQZUH8VRazAGjZFNF 
+https://drive.google.com/drive/folders/1runxQnF3K_VzzJeWQZUH8VRazAGjZFNF
 ```
 
 ## 3. Model Testing
 
-### 3.1-Experiment: reconstruction  
+### 3.1-Experiment: reconstruction
 #### To reconstruct QM9 dataset:
 ```
 cd mflow
@@ -329,7 +355,7 @@ reconstruction_rate for all the train data:1.0 in 224568
 Invertible model! 100% reconstruction!
 ```
 
-### 3.2-Experiment: Random generation  
+### 3.2-Experiment: Random generation
 
 #### Random Generation from sampling from latent space, QM9 model
 10000 samples * 5 times:
@@ -346,9 +372,9 @@ abs_uniqueness: mean=99.26%, sd=0.09%, vals=[99.33999999999999, 99.19, 99.26, 99
 Task random generation done! Time 185.09 seconds, Data: Tue Sep 29 11:20:15 2020
 # Above is just one random result. Tuning:
     --batch-size for the number of  mols to be generated
-    --temperature for different generation results, 
+    --temperature for different generation results,
     --correct_validity false for results without correction
-    --save_fig true for figures of generated mols, set batch-size a resoanble number for dump figures 
+    --save_fig true for figures of generated mols, set batch-size a resoanble number for dump figures
 # more details see parameter configuration in generate.py
 # Output details are in qm9_random_generation.log
 ```
@@ -368,9 +394,9 @@ abs_uniqueness: mean=99.99%, sd=0.01%, vals=[100.0, 99.98, 99.99, 99.99, 99.99]
 Task1 random generation done! Time 537.13 seconds, Data: Tue Sep 29 11:36:12 2020
 # Above is just one random result. Tuning:
     --batch-size for the number of  mols to be generated
-    --temperature for different generation results, 
+    --temperature for different generation results,
     --correct_validity false for results without correction
-    --save_fig true for figures of generated mols, set batch-size a resoanble number for dump figures 
+    --save_fig true for figures of generated mols, set batch-size a resoanble number for dump figures
 # more details see parameter configuration in generate.py
 # Output details are in qm9_random_generation.log
 ```
@@ -409,16 +435,16 @@ python generate.py --model_dir results/zinc250k_512t2cnn_256gnn_512-64lin_10flow
 python optimize_property.py -snapshot model_snapshot_epoch_200  --hyperparams_path moflow-params.json --batch_size 256 --model_dir results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask   --gpu 0 --max_epochs 3  --weight_decay 1e-3  --data_name zinc250k  --hidden 16,  --temperature 1.0  --property_name qed 2>&1 | tee  training_optimize_zinc250k_qed.log
 # Output: a molecular property prediction model for optimization, say named as qed_model.pt
 # e.g. saving qed regression model to: results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask/qed_model.pt
-# Train and save model done! Time 477.87 seconds 
+# Train and save model done! Time 477.87 seconds
 # Can tune:
-#         --max_epochs 3  
-#         --weight_decay 1e-3  
+#         --max_epochs 3
+#         --weight_decay 1e-3
 #         --hidden 16
 # etc.
 ```
-#### Or downloading and  using our trained models in 
+#### Or downloading and  using our trained models in
 ```
-https://drive.google.com/drive/folders/1runxQnF3K_VzzJeWQZUH8VRazAGjZFNF 
+https://drive.google.com/drive/folders/1runxQnF3K_VzzJeWQZUH8VRazAGjZFNF
 ```
 #### To optimize existing molecules to get novel molecules with optimized QED scores
 ```
@@ -437,8 +463,8 @@ python optimize_property.py -snapshot model_snapshot_epoch_200  --hyperparams_pa
 # e.g. saving plogp  regression model to: results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask/plogp_model.pt
 # Train and save model done! Time 473.74 seconds
 # Can tune:
-#         --max_epochs 3  
-#         --weight_decay 1e-2  
+#         --max_epochs 3
+#         --weight_decay 1e-2
 #        --hidden 16
 #etc.
 ```
@@ -448,27 +474,27 @@ python optimize_property.py -snapshot model_snapshot_epoch_200  --hyperparams_pa
 # Input: --property_model_path qed_model.pt or plogp_model.pt is the regression model
          --sim_cutoff 0 (or 0.2, 0.4 etc for similarity)
          --topk 800 (choose first 800 molecules with worset property values for improving)
-# Output: 
-# Using qed_model.pt for optimizing plogp with 
+# Output:
+# Using qed_model.pt for optimizing plogp with
 # Because qed and plogp have some correlations, here we use both qed/plogp model for 2 optimization tasks
 # --sim_cutoff 0:
-#   similarity: 0.300610 +/- 0.201674 
+#   similarity: 0.300610 +/- 0.201674
 #   Improvement:  8.612461 +/- 5.436995
 #   success rate: 0.98875
 # --sim_cutoff 0.2:
-#   similarity:  0.434700 +/-  0.196490 
+#   similarity:  0.434700 +/-  0.196490
 #   Improvement:  7.057115 +/-  5.041250
 #   success rate: 0.9675
 # --sim_cutoff 0.4:
-#   similarity:  0.608440 +/-   0.177670 
+#   similarity:  0.608440 +/-   0.177670
 #   Improvement:  4.712418 +/-   4.549682
 #   success rate: 0.8575
 # --sim_cutoff 0.6:
-#   similarity:   0.792550 +/- 0.144577   
-#   Improvement:   2.095266 +/-   2.858545  
+#   similarity:   0.792550 +/- 0.144577
+#   Improvement:   2.095266 +/-   2.858545
 #   success rate:  0.5825
 
-# Using plogp_model.pt for optimizing plogp with 
+# Using plogp_model.pt for optimizing plogp with
 # --sim_cutoff 0:
 #    similarity:  0.260503 +/- 0.195945
 #   Improvement:  9.238813 +/-  6.279859
