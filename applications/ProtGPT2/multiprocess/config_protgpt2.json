@@ -1,0 +1,6 @@
+{
+    "script_command": "python protgpt2.py",
+    "output_log_dir": "output_log/",
+    "shared_args": "",
+    "unique_args": ["--max_length 100 --do_sample True --top_k 950 --repetition_penalty 1.2 --num_return_sequences 10 --eos_token_id 0 "]
+}

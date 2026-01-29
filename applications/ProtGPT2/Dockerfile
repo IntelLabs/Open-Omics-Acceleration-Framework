@@ -23,7 +23,7 @@ ENV no_proxy=${no_proxy}
 
 # Install necessary build tools and clean up
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates git build-essential vim numactl autoconf automake make && \
+    ca-certificates git build-essential vim numactl wget iproute2 autoconf automake make && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -37,7 +37,7 @@ RUN groupadd --gid 1001 $SERVICE_NAME && \
 # Copy Conda installation from the conda_setup stage
 COPY --from=conda_setup /opt/conda /opt/conda
 
-RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz 
 RUN tar -xzf Source_code_with_submodules.tar.gz
 
 ENV PATH="/opt/conda/bin:$PATH"
@@ -58,6 +58,13 @@ RUN rm -rf jemalloc
 
 # Set up environment activation and PATH
 ENV PATH="/opt/conda/envs/protgpt2/bin:$PATH"
+
+RUN pip install opea-comps==1.3 && \
+    pip install numpy==1.26.4 && \
+    pip install netifaces==0.11.0
+
+RUN rm -rf Open-Omics-Acceleration-Framework
+RUN rm -rf Source_code_with_submodules.tar.gz
 
 # Swith to Non-root user
 RUN chown -R $SERVICE_NAME:$SERVICE_NAME /app
