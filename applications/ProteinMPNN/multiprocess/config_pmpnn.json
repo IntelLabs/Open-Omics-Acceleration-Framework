@@ -1,0 +1,14 @@
+{
+  "script_command": "python script_example_3.py standalone",
+  "input_dir": "../inputs/PDB_complexes/pdbs",
+  "output_log_dir": "output_log/",
+  "shared_args": "",
+  "input_file_arg": "--pdb_path=",
+  "tasks": [
+    {
+      "input_file": "3HTN.pdb",
+      "unique_args": "--output outputs/example_output_3 --num_seq_per_target 2 --sampling_temp 0.1 --seed 37 --batch_size 1"
+    }
+  ]
+}
+

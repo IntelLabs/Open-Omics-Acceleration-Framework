@@ -23,15 +23,12 @@ ENV PATH="/opt/conda/bin:$PATH"
 
 WORKDIR /
 
-RUN git clone https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-WORKDIR /Open-Omics-Acceleration-Framework
-RUN git switch protein_design
-
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz
+RUN tar -xzf Source_code_with_submodules.tar.gz
 
 # ---------------------------
 # Apply patch to ProteinMPNN
 # ---------------------------
-WORKDIR /
 RUN git clone https://github.com/dauparas/ProteinMPNN.git
 WORKDIR /ProteinMPNN
 RUN git checkout 8907e6671bfbfc92303b5f79c4b5e6ce47cdef57
@@ -61,6 +58,7 @@ RUN patch -p1 --force < ProteinMPNN_jax.patch || true
 # ---------------------------
 WORKDIR /
 RUN rm -rf /Open-Omics-Acceleration-Framework
+RUN rm -rf Source_code_with_submodules.tar.gz
 
 # Create shared conda env
 RUN conda create -n p_mpnn python=3.11 -y && \
