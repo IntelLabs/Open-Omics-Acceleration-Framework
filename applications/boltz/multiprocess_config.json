@@ -1,0 +1,9 @@
+{
+ "script_command": "boltz predict",
+ "output_log_dir": "/outputs",
+ "shared_args": "",
+ "unique_args": [
+    "/inputs/pocket.yaml --accelerator cpu --override --out_dir /outputs",
+    "/inputs/prot.fasta --accelerator cpu --override --out_dir /outputs"
+  ]
+}

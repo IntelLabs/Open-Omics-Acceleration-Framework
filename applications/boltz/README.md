@@ -1,83 +1,152 @@
-## 🔍 Running Inference with Boltz Docker
+<div align="center">  
 
-Follow the steps below to run inference using the Boltz Docker container:
+[Paper](https://doi.org/10.1101/2024.11.19.624167) |
+[Slack](https://join.slack.com/t/boltz-community/shared_invite/zt-2zj7e077b-D1R9S3JVOolhv_NaMELgjQ) <br> <br>
+</div>
 
----
+## Introduction
 
-### 🐳 1. Build the Docker Image
+Boltz-1 is the state-of-the-art open-source model to predict biomolecular structures containing combinations of proteins, RNA, DNA, and other molecules. It also supports modified residues, covalent ligands and glycans, as well as conditioning the prediction on specified interaction pockets or contacts. 
 
-From the root of the project directory, build the Docker image:
-
-```bash
-docker build -t boltz1 .
-```
+All the code and weights are provided under MIT license, making them freely available for both academic and commercial uses. For more information about the model, see our [technical report](https://doi.org/10.1101/2024.11.19.624167). To discuss updates, tools and applications join our [Slack channel](https://join.slack.com/t/boltz-community/shared_invite/zt-2zj7e077b-D1R9S3JVOolhv_NaMELgjQ).
 
 ---
 
-### 📁 2. Create and Set Output Directory Permissions
+## 🔍 Running Boltz with Docker (CPU Only)
 
-Create an output folder and give it proper write permissions:
+This repository provides a unified Docker image that can run in two modes:
+1.  **Batch/CLI Mode:** Process local folders containing FASTA/YAML files automatically.
+2.  **Microservice Mode:** Start an OPEA-compliant REST API server for on-demand predictions.
+
+---
+
+### 📁 1. Preparation (Important)
+
+Before running in either mode, create your directories and **ensure write permissions**. Since the container runs as a non-root user, it needs explicit permission to write to your host folders.
 
 ```bash
-mkdir -p <output_folder_location> <model_folder_location>
-chmod a+w <output_folder_location> <model_folder_location>
+# Create folders
+mkdir -p inputs outputs models
+
+# Grant write permissions (Required for Docker user)
+chmod 777 inputs outputs models
           
-export OUTPUT=$PWD/<output_folder_location>
-export MODELS=$PWD/<model_folder_location>
-export INPUT=$PWD/<input_folder_location>
+# Set convenience variables
+export INPUT=$PWD/inputs
+export OUTPUT=$PWD/outputs
+export MODELS=$PWD/models
 ```
 
-> ⚠️ Docker needs write permissions in the `<output_folder_location>` and `<model_folder_location>`  folder. `<input_folder_location>` is the folder contaning the input `.yaml` or `.fasta` file
+> ⚠️ **Note:** Place your `.fasta` or `.yaml` input files inside the `inputs` folder before running Batch Mode.
 
-Example
+---
+
+### 🐳 2. Build the Docker Image
+
+To build the boltz docker image go to `applications` folder. Copy `common` folder into `boltz` folder. Then go inside `boltz`. This will become our context path. Then run:
 
 ```bash
-mkdir -p ./output ./model
-chmod a+w ./output ./model
-          
-export OUTPUT=$PWD/output
-export MODELS=$PWD/model
-export INPUT=$PWD/examples/
+docker build -f boltz/Dockerfile --network=host -t boltz:latest .
 ```
 
 ---
 
-### 🚀 3. Run Inference
+### 🚀 Mode A: File Processing (CLI)
 
-In order to do inferencing few things needs to be done
-Mount the volumes for input folder and output folder. Pass the mounted volumes to boltz as arguments. So the docker run command looks like
+Use this mode to automatically process all files in your input directory.
+
+Run the container mounting the volumes
+
+```bash
+docker run --rm \
+  --ipc=host \
+  --shm-size=100g \
+  -v $INPUT:/inputs \
+  -v $OUTPUT:/outputs \
+  -v $MODELS:/app/.boltz_cache \
+  boltz:latest \
+  boltz predict /inputs/test.fasta \
+  --out_dir /outputs \
+  --accelerator cpu
+```
+
+**What happens:**
+1. The container scans `$INPUT` for `.fasta` or `.yaml` files.
+2. It runs Boltz inference on CPU.
+3. Results are saved to `$OUTPUT`.
+4. The container exits automatically when finished.
+
+### multiprocess
+In order to run using multiprocess
 
 ```bash
 docker run -it \
-  --shm-size=100g \
-  -v $INPUT:/app/boltz/input \
-  -v $MODELS:/home/boltz-service/.boltz/ \
-  -v $OUTPUT:/app/boltz/output \
-  boltz1
+   --user root \
+   --ipc=host \
+   --privileged \
+   --shm-size=100g \
+   -v $INPUT:/inputs \
+   -v $OUTPUT:/outputs \
+   -v $MODELS:/app/.boltz_cache \
+   -v $PWD/boltz/multiprocess_config.json:/app/boltz/multiprocess_config.json \
+   boltz:latest \
+   python common/multiprocess/multiprocess.py --json_file=multiprocess_config.json --case=2
 ```
 
-> 📝 The `--shm-size=100g` flag avoids shared memory issues during data loading with PyTorch.
+Sample config looks like this [multiprocess_config.json](multiprocess_config.json).
+For every file add `"/inputs/<file.name> --accelerator cpu --override --out_dir /outputs"` under `unique_args`
 
 ---
 
-### ✅ Output
+### 🌐 Mode B: Microservice (API Server)
 
-Results will be written to the <output_folder_location> folder.
+Use this mode to keep the server running and send requests programmatically (via Python/Curl).
 
-Boltz currently accepts three input formats:
+Start the container with the `microservice` argument:
 
-1. Fasta file, for most use cases
+```bash
+docker exec -it boltz-server python /app/microservice/boltz_microservice_server.py
+```
 
-2. A comprehensive YAML schema, for more complex use cases
+#### Checking Status
+*   **Logs:** `docker logs -f boltz-server`
+*   **API Docs:** Open `http://localhost:8000/docs` in your browser.
 
-3. A directory containing files of the above formats, for batched processing
+#### Sending a Request
+The server accepts a JSON payload and returns a Base64 encoded ZIP file containing the results.
 
-## For more information checkout [boltz](https://github.com/jwohlwend/boltz)
+**Python Client Example:**
+
+```python
+import requests
+import base64
+
+url = "http://localhost:8000/v1/boltz"
+
+# 1. Read your YAML input
+with open("my_input.yaml", "r") as f:
+    payload = {"yaml_content": f.read()}
+
+# 2. Send POST request
+response = requests.post(url, json=payload)
+data = response.json()
+
+if data.get("status") == "success":
+    # 3. Decode Base64 result to ZIP
+    zip_content = base64.b64decode(data["result"])
+    with open("results.zip", "wb") as f:
+        f.write(zip_content)
+    print("✅ Saved results.zip")
+else:
+    print(f"❌ Error: {data.get('message')}")
+```
+
+There is one complete python [Click here to see the Client Code](./microservice/boltz_microservice_client.py)
+---
 
 ## License
 
 Our model and code are released under MIT License, and can be freely used for both academic and commercial purposes.
-
 
 ## Cite
 

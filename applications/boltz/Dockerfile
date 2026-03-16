@@ -1,61 +1,73 @@
-# Use the official Ubuntu image as a base
+############################################
+# --- Stage 1: Conda Setup ---
+############################################
 ARG FROM_IMAGE=ubuntu:24.04
-
-# Stage 1: Set up Conda environment
 ARG BASE_IMAGE=condaforge/miniforge3:24.3.0-0
 FROM ${BASE_IMAGE} as conda_setup
-ENV DEBIAN_FRONTEND=noninteractive
 
-# Stage 2: Set up the main build environment
+############################################
+# --- Stage 2: Build environment ---
+############################################
 FROM ${FROM_IMAGE} as builder
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install necessary build tools and clean up
+# 1. Install system packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git build-essential wget vim ca-certificates numactl autoconf automake make && \
+    git build-essential wget vim ca-certificates numactl autoconf automake make time \
+    cron procps && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get autoremove -y && \
-    apt-get clean
+    apt-get clean 
 
-# Build arguments for host UID/GID
+# 2. Host UID/GID setup
 ARG USER_ID=2000
 ARG GROUP_ID=2000
-
 ENV SERVICE_NAME="boltz-service"
 
-# Create a user and group with same UID and GID as host
 RUN groupadd --gid ${GROUP_ID} $SERVICE_NAME && \
-    useradd -m -g $SERVICE_NAME --shell /bin/false --uid ${USER_ID} $SERVICE_NAME
+    useradd -m -g $SERVICE_NAME --shell /bin/bash --uid ${USER_ID} $SERVICE_NAME
 
-# Copy Conda installation from the conda_setup stage
+# 3. Copy Conda from previous layer
 COPY --from=conda_setup /opt/conda /opt/conda
 ENV PATH="/opt/conda/bin:$PATH"
 ENV LD_LIBRARY_PATH="/opt/conda/lib:${LD_LIBRARY_PATH:-}"
 RUN echo "source activate" >> ~/.bashrc
 
-RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
-WORKDIR /jemalloc
-RUN bash autogen.sh --prefix=/opt/conda/ && make install
-WORKDIR /
-RUN rm -rf jemalloc
-
+# 4. Install Boltz (FROM LOCAL COPY)
 WORKDIR /app
 RUN chown -R $SERVICE_NAME:$SERVICE_NAME /app
-RUN git clone --branch v0.4.1 https://github.com/jwohlwend/boltz.git
+
+# COPY the local 'boltz' folder (cloned by the script)
+RUN git clone --branch v2.2.1 https://github.com/jwohlwend/boltz.git
 
 WORKDIR /app/boltz
 RUN pip install -e .
 
-# Switch to non-root user
-RUN chown -R $SERVICE_NAME:$SERVICE_NAME /app/boltz
-COPY ./entrypoint.sh entrypoint.sh
-RUN chmod +x entrypoint.sh
+# 5. Install OPEA & Server Dependencies
+RUN pip install opea-comps==1.3 fastapi uvicorn anyio pydantic requests psutil absl-py
 
+# 6. Setup Microservice Files
+COPY ./boltz/ /app/boltz/
+WORKDIR /app/
+
+# 7. Create Directories and Fix Permissions
+ENV BOLTZ_OUTPUT_DIR="/app/boltz_all_outputs"
+ENV BOLTZ_CACHE="/app/.boltz_cache"
+
+RUN mkdir -p ${BOLTZ_OUTPUT_DIR} && \
+    mkdir -p ${BOLTZ_CACHE} && \
+    chown -R ${SERVICE_NAME}:${SERVICE_NAME} /app
+
+WORKDIR /app/boltz/
+
+# 8. Finalize
+EXPOSE 8000
 USER $SERVICE_NAME
 
-# bin bash
-# Clone Boltz 1 repository (replace with the actual repo URL)
-ENTRYPOINT ["/app/boltz/entrypoint.sh"]
+HEALTHCHECK NONE
 
-# Default command
-CMD ["default"]
+# ENV LD_PRELOAD "/opt/conda/lib/libjemalloc.so:$LD_PRELOAD"
+# ENV MALLOC_CONF "oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms:-1,muzzy_decay_ms:-1" 
+
+# Keep container alive forever
+CMD ["sleep", "infinity"]
