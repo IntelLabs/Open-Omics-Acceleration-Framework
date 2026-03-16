@@ -6,7 +6,7 @@ ABS_SCRIPT_PATH="$(realpath "${SCRIPT_PATH}")"
 ABS_DIRECTORY="$(dirname "${ABS_SCRIPT_PATH}")"
 #echo "Value of ABS_DIRECTORY: ${ABS_DIRECTORY}"
 
-echo $1 $2 $3
+echo $1 $2 $3 $4
 #path ranks bins
 total=$(( ($2 * $3) ))
 for (( j=0 ; j < $total ; j++ ))
@@ -18,6 +18,6 @@ do
 done
 vcf_list=`cat ${1}/a.txt`
 
-${ABS_DIRECTORY}/../../applications/bcftools/bcftools concat $vcf_list > ${1}/output.vcf.gz
+${ABS_DIRECTORY}/../../applications/bcftools/bcftools concat $vcf_list > ${1}/${4}.vcf.gz
 
 rm ${1}/a.txt

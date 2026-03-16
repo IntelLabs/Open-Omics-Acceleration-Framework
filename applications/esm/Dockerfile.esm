@@ -14,8 +14,7 @@ RUN bash -c "source ${HOME}/conda/etc/profile.d/conda.sh && \
 source ${HOME}/conda/etc/profile.d/mamba.sh && \
 mamba activate esm_py11 && \
 pip install . &&\
-pip install torch==2.4.0+cpu torchvision==0.19.0+cpu torchaudio==2.4.0+cpu --index-url https://download.pytorch.org/whl/cpu  && \
-pip install intel-extension-for-pytorch==2.4.0"
+pip install torch==2.4.0+cpu torchvision==0.19.0+cpu torchaudio==2.4.0+cpu --index-url https://download.pytorch.org/whl/cpu"
 
 RUN echo "#!/bin/bash" >> /app/init.sh && \
 echo "source ${HOME}/conda/etc/profile.d/conda.sh" >> /app/init.sh && \
