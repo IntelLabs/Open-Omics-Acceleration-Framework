@@ -46,14 +46,15 @@ export MODELS=$PWD/models
 To build the boltz docker image go to `applications` folder. Copy `common` folder into `boltz` folder. Then go inside `boltz`. This will become our context path. Then run:
 
 ```bash
-docker build -f boltz/Dockerfile --network=host -t boltz:latest .
+docker build -f Dockerfile --network=host -t boltz:latest .
 ```
 
 ---
 
 ### 🚀 Mode A: File Processing (CLI)
 
-Use this mode to automatically process all files in your input directory.
+Use this mode to automatically process all files in your input directory. 
+Please use boltz repo for instructions on how to format the input files. Addtionally, you can use --use_msa_server as the argument for MSA generation.
 
 Run the container mounting the volumes
 
@@ -80,7 +81,7 @@ docker run --rm \
 In order to run using multiprocess
 
 ```bash
-docker run -it \
+docker run -it --rm \
    --user root \
    --ipc=host \
    --privileged \
@@ -88,7 +89,7 @@ docker run -it \
    -v $INPUT:/inputs \
    -v $OUTPUT:/outputs \
    -v $MODELS:/app/.boltz_cache \
-   -v $PWD/boltz/multiprocess_config.json:/app/boltz/multiprocess_config.json \
+   -v $PWD/multiprocess_config.json:/app/boltz/multiprocess_config.json \
    boltz:latest \
    python common/multiprocess/multiprocess.py --json_file=multiprocess_config.json --case=2
 ```
@@ -105,7 +106,7 @@ Use this mode to keep the server running and send requests programmatically (via
 Start the container with the `microservice` argument:
 
 ```bash
-docker exec -it boltz-server python /app/microservice/boltz_microservice_server.py
+docker run -it --rm boltz:latest python /app/boltz/microservice/boltz_microservice_server.py
 ```
 
 #### Checking Status
