@@ -50,6 +50,7 @@ RUN pip install opea-comps==1.3 fastapi uvicorn anyio pydantic requests psutil a
 RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz
 RUN tar -xzf Source_code_with_submodules.tar.gz
 RUN mv /app/boltz/Open-Omics-Acceleration-Framework/applications/boltz/* /app/boltz/
+RUN mv /app/boltz/Open-Omics-Acceleration-Framework/applications/common/ /app/boltz/
 
 # 7. Create Directories and Fix Permissions
 ENV BOLTZ_OUTPUT_DIR="/app/boltz_all_outputs"
