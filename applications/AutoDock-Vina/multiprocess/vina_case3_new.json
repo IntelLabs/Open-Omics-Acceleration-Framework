@@ -1,0 +1,21 @@
+{
+  "script_command": "./new_script_case3.sh",
+  "input_dir": "data/1ac8/ligands",
+  "output_log_dir": "vina_logs",
+  "shared_args": "complex_dir=data/1ac8",
+  "input_file_arg": "input_file=",
+  "tasks": [
+    {
+      "input_file": "rand-0.pdbqt",
+      "unique_args": "exhaustiveness=8 seed=11"
+    },
+    {
+      "input_file": "rand-1.pdbqt",
+      "unique_args": "exhaustiveness=16 seed=22"
+    },
+    {
+      "input_file": "rand-2.pdbqt",
+      "unique_args": "exhaustiveness=32 seed=33"
+    }
+  ]
+}

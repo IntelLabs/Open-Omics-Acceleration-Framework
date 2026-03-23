@@ -1,0 +1,93 @@
+diff --git a/esm/models/esm3.py b/esm/models/esm3.py
+index cbe02dd..71b7080 100644
+--- a/esm/models/esm3.py
++++ b/esm/models/esm3.py
+@@ -227,7 +227,10 @@ class ESM3(nn.Module, ESM3InferenceClient):
+ 
+     @classmethod
+     def from_pretrained(
+-        cls, model_name: str = ESM3_OPEN_SMALL, device: torch.device | None = None
++        cls,
++        model_name: str = ESM3_OPEN_SMALL,
++        device: torch.device | None = None,
++        bf16: bool = False
+     ) -> ESM3:
+         from esm.pretrained import load_local_model
+ 
+@@ -236,7 +239,12 @@ class ESM3(nn.Module, ESM3InferenceClient):
+             raise ValueError(f"Model name {model_name} is not a valid ESM3 model name.")
+         if device is None:
+             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
++        if bf16:
++            dtype = torch.bfloat16
++        else:
++            dtype = torch.float32
+         model = load_local_model(model_name, device=device)
++        model = model.to(dtype)
+         if device.type != "cpu":
+             model = model.to(torch.bfloat16)
+         assert isinstance(model, ESM3)
+diff --git a/esm/models/esmc.py b/esm/models/esmc.py
+index 0807a21..d19f7c9 100644
+--- a/esm/models/esmc.py
++++ b/esm/models/esmc.py
+@@ -77,13 +77,19 @@ class ESMC(nn.Module, ESMCInferenceClient):
+ 
+     @classmethod
+     def from_pretrained(
+-        cls, model_name: str = ESMC_600M, device: torch.device | None = None
++        cls, model_name: str = ESMC_600M, device: torch.device | None = None, bf16: bool = False, 
+     ) -> ESMC:
+         from esm.pretrained import load_local_model
+ 
+         if device is None:
+             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
++        if bf16:
++            dtype = torch.bfloat16
++        else:
++            dtype = torch.float32
++
+         model = load_local_model(model_name, device=device)
++        model = model.to(dtype)
+         if device.type != "cpu":
+             model = model.to(torch.bfloat16)
+         assert isinstance(model, ESMC)
+diff --git a/esm/sdk/api.py b/esm/sdk/api.py
+index 759fd47..9c4b6f2 100644
+--- a/esm/sdk/api.py
++++ b/esm/sdk/api.py
+@@ -136,7 +136,7 @@ class ESMProtein(ProteinType):
+             insertion_code=None,
+             confidence=None
+             if self.plddt is None
+-            else self.plddt.detach().cpu().numpy(),
++            else self.plddt.detach().cpu().float().numpy(),
+         )
+         return protein_chain
+ 
+diff --git a/esm/utils/structure/affine3d.py b/esm/utils/structure/affine3d.py
+index 382abcd..db201d6 100644
+--- a/esm/utils/structure/affine3d.py
++++ b/esm/utils/structure/affine3d.py
+@@ -124,7 +124,7 @@ class RotationMatrix(Rotation):
+         with fp32_autocast_context(self.device.type):
+             if self._rots.shape[-3] == 1:
+                 # This is a slight speedup over einsum for batched rotations
+-                return p @ self._rots.transpose(-1, -2).squeeze(-3)
++                return p.float() @ self._rots.float().transpose(-1, -2).squeeze(-3)
+             else:
+                 # einsum way faster than bmm!
+                 return torch.einsum("...ij,...j", self._rots, p)
+diff --git a/pyproject.toml b/pyproject.toml
+index 0cc7bd9..a67c3b5 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -24,7 +24,7 @@ dependencies = [
+   "torch>=2.2.0",
+   "torchvision",
+   "torchtext",
+-  "transformers<4.48.2",
++  "transformers<4.52.2",
+   "ipython",
+   "einops",
+   "biotite==0.41.2",

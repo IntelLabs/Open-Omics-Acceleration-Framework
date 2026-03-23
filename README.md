@@ -32,6 +32,7 @@ With a goal of providing a one-stop platform, this framework brings our followin
 
 * [Trans-Omics Acceleration Library](https://github.com/IntelLabs/Trans-Omics-Acceleration-Library): As part of our building blocks layer (under 'lib' folder), this is a library containing architecture-efficient versions of key algorithms and data structures used for Omics analysis. 
 
+* [Multiprocess Task Runner](applications/common/multiprocess) (under applications/common/multiprocess): A utility for batching and executing many independent tasks in parallel on a single machine. It automatically detects available CPU cores and configures the optimal level of parallelism, enabling efficient high-throughput execution.
 In addition, we also use several existing AI libraries: oneDNN, oneDAL, oneCCL, Katana Graph, LIBXSMM.
 
 # Getting Started

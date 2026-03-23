@@ -90,6 +90,24 @@ ls $OUTPUT_GMX_CPU
 
 This directory contains all output data for the **md01** stage of the complete workflow simulation. For individual command runs, everything will be stored in the `grms_input` directory.
 
+
+## Additional Ways to Run Gromacs
+
+OpenOmics supports multiple ways to run Gromacs depending on your workflow and scale. Choose the mode that best fits your use case:
+
+### 1. Run as a Microservice
+If you want to expose Gromacs as a service that can be queried over an API, you can deploy it as a microservice.
+Refer to [here](https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/tree/main/applications/gromacs/microservice/README.md) for setup instructions and API usage details.
+
+### 2. Run on Cloud Instances (Nextflow)
+To run many Gromacs tasks over multiple cloud instances, we provide a Nextflow-based option.
+This allows you to scale Gromacs tasks easily across cloud infrastructure. Refer to [here](https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/tree/main/applications/gromacs/nextflow/README.md)
+
+### 3. Run Multiple Processes (Parallel Local Execution)
+To run many Gromacs tasks on a single machine, you can use the multiprocess tool, which batches your tasks and executes them in parallel using all the available cores.
+It automatically determines and configures the optimal level of parallelism.
+Read more about the multiprocess tool [here](https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/tree/main/applications/gromacs/multiprocess/README.md)
+
 ---
 
 **The Original README for Gromacs starts here:**

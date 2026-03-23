@@ -1,0 +1,8 @@
+{
+    "script_command":"python scripts/extract.py",
+    "input_dir": "examples/data/fasta_input",
+    "output_log_dir": "output_log/",
+    "shared_args":  "--output_dir results --repr_layers 0 32 33 --include mean per_tok --bf16  --model_location esm2_t33_650M_UR50D",
+    "input_file_arg": "--fasta_file="
+}
+

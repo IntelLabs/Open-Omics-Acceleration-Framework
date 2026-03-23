@@ -1,0 +1,10 @@
+{
+  "script_command": "/input/run_gromacs_multi_one.sh",
+  "output_log_dir": "gmx_logs",
+  "shared_args": "work_root=/tmp/work_gromacs",
+  "unique_args": [
+    "input_file=/input/proteins/1AKI.pdb",
+    "input_file=/input/proteins/2xzmW04.pdb",
+    "input_file=/input/proteins/3cp7A03.pdb"
+  ]
+}

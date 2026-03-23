@@ -1,0 +1,14 @@
+{
+  "script_command": "./run_vina_case2_out.sh",
+  "output_log_dir": "vina_logs",
+  "shared_args": "",
+  "unique_args": [
+    "complex_dir=/input/data/1ac8 input_file=/input/data/1ac8/ligands/rand-0.pdbqt",
+    "complex_dir=/input/data/1ac8 input_file=/input/data/1ac8/ligands/rand-1.pdbqt",
+
+    "complex_dir=/input/data/5wlo input_file=/input/data/5wlo/ligands/rand-0.pdbqt",
+    "complex_dir=/input/data/5wlo input_file=/input/data/5wlo/ligands/rand-1.pdbqt",
+
+    "complex_dir=/input/data/7cpa input_file=/input/data/7cpa/ligands/rand-2.pdbqt"
+  ]
+}

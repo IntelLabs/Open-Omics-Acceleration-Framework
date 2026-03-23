@@ -1,0 +1,7 @@
+{
+  "script_command": "./run_vina_case1_out.sh",
+  "input_dir": "data/1ac8/ligands",
+  "output_log_dir": "vina_logs",
+  "shared_args": "complex_dir=data/1ac8",
+  "input_file_arg": "input_file="
+}
