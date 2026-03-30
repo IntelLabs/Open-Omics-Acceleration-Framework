@@ -106,7 +106,7 @@ Use this mode to keep the server running and send requests programmatically (via
 Start the container with the `microservice` argument:
 
 ```bash
-docker run -it --rm boltz:latest python /app/boltz/microservice/boltz_microservice_server.py
+docker run -it --rm --ipc=host boltz:latest python /app/boltz/microservice/boltz_microservice_server.py
 ```
 
 #### Checking Status
