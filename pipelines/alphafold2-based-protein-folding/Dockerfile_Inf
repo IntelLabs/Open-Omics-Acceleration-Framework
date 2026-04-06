@@ -23,7 +23,7 @@ RUN python -m pip install absl-py==2.0.0 biopython==1.81 chex==0.1.84 dm-haiku==
 RUN python -m pip install jax==0.4.21 jaxlib==0.4.21
 RUN python -m pip install intel-extension-for-pytorch==2.1.0 intel-openmp==2024.2.0
 RUN conda install -y -c conda-forge autoconf==2.71
-RUN conda install -y -c conda-forge make==4.3
+RUN conda install -y -c conda-forge make==4.3 setuptools=75.3.0
 
 
 FROM ${FROM_IMAGE} as builder
@@ -42,9 +42,8 @@ RUN echo "source activate" >> ~/.bashrc
 CMD source ~/.bashrc
 
 WORKDIR /
-# RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz 
-# RUN tar -xzf Source_code_with_submodules.tar.gz
-RUN git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+RUN wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/4.0/Source_code_with_submodules.tar.gz
+RUN tar -xzf Source_code_with_submodules.tar.gz
 WORKDIR /Open-Omics-Acceleration-Framework/applications/
 
 RUN git clone --branch 5.3.0 https://github.com/jemalloc/jemalloc.git
