@@ -1,0 +1,59 @@
+# TEMPORARY test-only variant of Dockerfile_fq2vcf: builds only bwa-mem2 (skips
+# mm2-fast/STAR/bwa-meth) to smoke-test the --aligner bwa-mem2 path quickly.
+# Not committed to the repo; delete after testing.
+
+FROM condaforge/miniforge3 AS conda_setup
+WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
+COPY pipelines/deepvariant-based-germline-variant-calling-fq2vcf/environment.yml .
+RUN conda env create --name dv_env -f environment.yml
+
+FROM docker.io/google/deepvariant:1.9.0 AS dv_image
+
+FROM ubuntu:22.04 AS builder
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential git wget ca-certificates autoconf automake libtool numactl \
+        zlib1g-dev libncurses-dev libbz2-dev liblzma-dev \
+        python3 python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /Open-Omics-Acceleration-Framework
+COPY applications/ applications/
+
+WORKDIR /Open-Omics-Acceleration-Framework/applications/bwa-mem2
+RUN make multi
+
+WORKDIR /Open-Omics-Acceleration-Framework/applications/htslib
+RUN autoreconf -i && ./configure && make
+
+WORKDIR /Open-Omics-Acceleration-Framework/applications/samtools
+RUN autoheader && autoconf -Wno-syntax && chmod 775 configure && ./configure && make
+
+WORKDIR /Open-Omics-Acceleration-Framework/applications/bcftools
+RUN make
+
+WORKDIR /Open-Omics-Acceleration-Framework
+COPY pipelines/ pipelines/
+
+FROM ubuntu:22.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        zlib1g libncurses6 libtinfo6 libbz2-1.0 liblzma5 numactl python3 ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=conda_setup /opt/conda /opt/conda
+COPY --from=builder /Open-Omics-Acceleration-Framework /Open-Omics-Acceleration-Framework
+COPY --from=dv_image /opt/deepvariant /opt/deepvariant
+COPY --from=dv_image /usr/local/lib/python3.10/dist-packages /usr/local/lib/python3.10/dist-packages
+COPY --from=dv_image /usr/lib/python3/dist-packages /usr/lib/python3/dist-packages
+
+ENV PATH="/opt/conda/envs/dv_env/bin:/opt/conda/bin:/opt/deepvariant/bin:\
+/Open-Omics-Acceleration-Framework/applications/bwa-mem2:\
+/Open-Omics-Acceleration-Framework/applications/samtools:\
+/Open-Omics-Acceleration-Framework/applications/bcftools:$PATH"
+ENV LD_PRELOAD="/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0"
+RUN echo "source activate dv_env" >> ~/.bashrc
+
+RUN mkdir -p /input /output /refdir /tempdir
+WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
+CMD ["/bin/bash"]

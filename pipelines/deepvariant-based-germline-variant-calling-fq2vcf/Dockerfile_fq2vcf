@@ -25,18 +25,16 @@ FROM docker.io/google/deepvariant:1.9.0 AS dv_image
 ################################################################################
 # Stage 3: build bwa-mem2, mm2-fast, STAR, htslib, samtools, bcftools, bwa-meth
 ################################################################################
-FROM ubuntu:20.04 AS builder
+FROM ubuntu:22.04 AS builder
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        build-essential git wget ca-certificates autoconf numactl \
-        zlib1g-dev libncurses5-dev libbz2-dev liblzma-dev \
-        gcc-11 g++-11 python3 python3-pip \
-    && unlink /usr/bin/gcc && unlink /usr/bin/g++ \
-    && ln -s /usr/bin/gcc-11 /usr/bin/gcc && ln -s /usr/bin/g++-11 /usr/bin/g++ \
+        build-essential git wget ca-certificates autoconf automake libtool numactl \
+        zlib1g-dev libncurses-dev libbz2-dev liblzma-dev \
+        python3 python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /Open-Omics-Acceleration-Framework
-COPY . .
+COPY applications/ applications/
 
 # bwa-mem2
 WORKDIR /Open-Omics-Acceleration-Framework/applications/bwa-mem2
@@ -69,18 +67,23 @@ RUN wget -q https://pypi.python.org/packages/source/t/toolshed/toolshed-0.4.0.ta
     && (cd toolshed-0.4.0 && python3 setup.py install) \
     && python3 setup.py install
 
+WORKDIR /Open-Omics-Acceleration-Framework
+COPY pipelines/ pipelines/
+
 ################################################################################
 # Stage 4: final image -- assemble aligners + conda env + DeepVariant 1.9.0
 ################################################################################
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        zlib1g libncurses5 libbz2-1.0 liblzma5 numactl python3 ca-certificates \
+        zlib1g libncurses6 libtinfo6 libbz2-1.0 liblzma5 numactl python3 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=conda_setup /opt/conda /opt/conda
 COPY --from=builder /Open-Omics-Acceleration-Framework /Open-Omics-Acceleration-Framework
 COPY --from=dv_image /opt/deepvariant /opt/deepvariant
+COPY --from=dv_image /usr/local/lib/python3.10/dist-packages /usr/local/lib/python3.10/dist-packages
+COPY --from=dv_image /usr/lib/python3/dist-packages /usr/lib/python3/dist-packages
 
 ENV PATH="/opt/conda/envs/dv_env/bin:/opt/conda/bin:/opt/deepvariant/bin:\
 /Open-Omics-Acceleration-Framework/applications/bwa-mem2:\

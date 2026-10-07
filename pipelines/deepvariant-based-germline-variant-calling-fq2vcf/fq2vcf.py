@@ -236,7 +236,7 @@ def sw_thr( outpipe, comm, comm2 ):
             headerlen += len(l)
             l = l.split()
             if l[0] == '@SQ':   # @SQ lines describe sequences in reference genome
-                sn = l[1].split(':')[1]
+                sn = l[1].split(':', 1)[1]  # maxsplit=1: contig names (e.g. HLA alleles) can contain ':'
                 ln = int(l[2].split(':')[1])
                 if keep:
                     seq_start[sn] = cumlen
