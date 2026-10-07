@@ -7,6 +7,27 @@ The pipeline comprises of:
 3. An optimized version of DeepVariant tool for Variant Calling   
 The following figure illustrates the pipeline:
 
+## Unified single-container pipeline (Dockerfile_fq2vcf)
+`Dockerfile_fq2vcf` / `fq2vcf.py` / `run_fq2vcf.py` build and run the whole pipeline from a single image, instead of the two-stage `Dockerfile_fq2bams` + `Dockerfile_bams2vcf` design above. It supports 4 selectable aligners (mirroring `pipelines/fq2sortedbam`), and bakes in **DeepVariant 1.9.0** (binaries copied from `docker.io/google/deepvariant:1.9.0`):
+
+| `--aligner` | Produces | DeepVariant stage |
+|---|---|---|
+| `bwa-mem2` (default) | sorted BAM | runs, `--model_type=WGS` |
+| `mm2-fast` | sorted BAM | runs, `--model_type=PACBIO` |
+| `bwa-meth` | sorted BAM | skipped (methylation data, not natively supported by DeepVariant germline calling) |
+| `STAR` | sorted BAM | skipped (RNA data, not natively supported by DeepVariant germline calling) |
+
+Build (from the repository root):
+```bash
+docker build -f pipelines/deepvariant-based-germline-variant-calling-fq2vcf/Dockerfile_fq2vcf -t fq2vcf:dv1.9.0 .
+```
+
+Run:
+```bash
+docker run -v <readsdir>:/input -v <refdir>:/refdir -v <outdir>:/output fq2vcf:dv1.9.0 \
+  python run_fq2vcf.py --aligner bwa-mem2 --ref /refdir/<reference> --reads /input/<r1> /input/<r2> --output /output/<outprefix>
+```
+
 <p align="center">
 <img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/deepvariant-fq2vcf.jpg"/a></br>
 </p> 
