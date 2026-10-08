@@ -16,10 +16,17 @@ This avoids the fragility of copying DeepVariant's files into a different base i
 
 ### 1. Build both images (from the repository root)
 ```bash
-docker build -f pipelines/fq2sortedbam/Dockerfile -t fq2sortedbam:latest .
+# pipelines/fq2sortedbam/Dockerfile currently fails to build as-is: the `python:3.10`
+# Docker Hub tag now resolves to a Debian release without gcc-11. Use the local-test
+# variant instead, which builds from your checkout and uses the default gcc:
+docker build -f pipelines/fq2sortedbam/Dockerfile.localtest -t fq2sortedbam:latest .
 docker build -f pipelines/deepvariant-based-germline-variant-calling-fq2vcf/Dockerfile_dv2vcf -t dv2vcf:1.9.0 .
 ```
-Note: `pipelines/fq2sortedbam`'s bundled `bwa-mem2` submodule (`ext/safestringlib`) needs `<stdlib.h>`/`<ctype.h>` included for `abort()`/`toupper()` to compile under modern GCC -- if you hit `implicit declaration of function` errors there, add those two includes near the top of `applications/bwa-mem2/ext/safestringlib/safeclib/safeclib_private.h`.
+Note: `pipelines/fq2sortedbam`'s bundled `bwa-mem2` submodule (`ext/safestringlib`) needs `<stdlib.h>`/`<ctype.h>` included for `abort()`/`toupper()` to compile under modern GCC -- if you hit `implicit declaration of function` errors there, add those two includes near the top of `applications/bwa-mem2/ext/safestringlib/safeclib/safeclib_private.h` (this is a vendored third-party submodule, so the fix doesn't persist across a fresh `git submodule update`; re-apply it if needed):
+```bash
+sed -i '/#include <stdio.h>/a #include <stdlib.h>\n#include <ctype.h>' \
+  applications/bwa-mem2/ext/safestringlib/safeclib/safeclib_private.h
+```
 
 ### 2. Run both stages with the chain script
 ```bash
@@ -30,6 +37,45 @@ pipelines/deepvariant-based-germline-variant-calling-fq2vcf/run_fq2vcf_chain.sh 
   --outdir <outdir> --prefix <prefix> --model-type WGS
 ```
 This runs `fq2sortedbam` to produce `<outdir>/<prefix>.sorted.bam`, then `dv2vcf` to produce `<outdir>/<prefix>.vcf.gz` (+ `.tbi`). See `run_fq2vcf_chain.sh --help` for all options (custom image tags, `podman` support, `--model-type` for PacBio/ONT/hybrid, `--skip-align`/`--skip-dv` to run just one stage).
+
+### 3. Validate accuracy with hap.py (optional)
+Compare the output VCF against a GIAB truth set, e.g. for HG001/NA12878:
+```bash
+# Download the GIAB v4.2.1 truth set (once)
+mkdir -p truth && cd truth
+wget https://ftp.ncbi.nlm.nih.gov/giab/ftp/release/NA12878_HG001/NISTv4.2.1/GRCh38/HG001_GRCh38_1_22_v4.2.1_benchmark.vcf.gz
+wget https://ftp.ncbi.nlm.nih.gov/giab/ftp/release/NA12878_HG001/NISTv4.2.1/GRCh38/HG001_GRCh38_1_22_v4.2.1_benchmark.vcf.gz.tbi
+wget https://ftp.ncbi.nlm.nih.gov/giab/ftp/release/NA12878_HG001/NISTv4.2.1/GRCh38/HG001_GRCh38_1_22_v4.2.1_benchmark.bed
+cd ..
+
+docker pull jmcdani20/hap.py:v0.3.12
+mkdir -p happy_results
+docker run --rm \
+  -v $(pwd)/truth:/benchmark \
+  -v <outdir>:/output \
+  -v <refdir>:/reference \
+  -v $(pwd)/happy_results:/happy \
+  jmcdani20/hap.py:v0.3.12 /opt/hap.py/bin/hap.py \
+  /benchmark/HG001_GRCh38_1_22_v4.2.1_benchmark.vcf.gz \
+  /output/<prefix>.vcf.gz \
+  -f /benchmark/HG001_GRCh38_1_22_v4.2.1_benchmark.bed \
+  -r /reference/<reference.fasta> \
+  -o /happy/happy.output \
+  --engine=vcfeval --pass-only --threads $(nproc)
+```
+Swap in the matching GIAB directory/sample name (`HG001`/`HG002`/`HG003`/...) for other reference samples. Results (precision/recall/F1 per variant type) land in `happy_results/happy.output.*`.
+
+#### Verified results (HG001, full 30x NovaSeq WGS, GRCh38, on a 512-CPU / 6-NUMA node)
+| Stage | Time |
+|---|---|
+| Alignment (bwa-mem2, 16 ranks x 28 threads, auto-detected) | 1081s |
+| DeepVariant 1.9.0 (512 shards) | 1744s |
+| **Total FASTQ -> VCF** | **~47 min** |
+
+| hap.py vs GIAB v4.2.1 | Recall | Precision | F1 |
+|---|---|---|---|
+| SNP | 97.27% | 99.82% | 98.53% |
+| INDEL | 97.52% | 99.66% | 98.58% |
 
 ## Unified single-container pipeline (Dockerfile_fq2vcf)
 `Dockerfile_fq2vcf` / `fq2vcf.py` / `run_fq2vcf.py` build and run the whole pipeline from a single image, instead of the two-stage `Dockerfile_fq2bams` + `Dockerfile_bams2vcf` design above. It supports 4 selectable aligners (mirroring `pipelines/fq2sortedbam`), and bakes in **DeepVariant 1.9.0** (binaries copied from `docker.io/google/deepvariant:1.9.0`):
