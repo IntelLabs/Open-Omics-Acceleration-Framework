@@ -1,0 +1,42 @@
+# Standalone DeepVariant 1.9.0 image: takes a sorted BAM (e.g. produced by
+# pipelines/fq2sortedbam) and a reference FASTA, and calls variants.
+#
+# This is deliberately a SEPARATE image from the aligner stage (two-Dockerfile
+# design, mirroring the original Dockerfile_fq2bams + Dockerfile_bams2vcf split),
+# rather than one image trying to merge aligner builds with DeepVariant's own
+# runtime. DeepVariant 1.9.0's binaries are copied from the official
+# docker.io/google/deepvariant:1.9.0 image; the base here matches its own
+# ubuntu:22.04 / python3.10 environment to avoid glibc/ABI mismatches.
+#
+# Build (from the repository root):
+#   docker build -f pipelines/deepvariant-based-germline-variant-calling-fq2vcf/Dockerfile_dv2vcf \
+#                -t dv2vcf:1.9.0 .
+#
+# Run (against a BAM produced by pipelines/fq2sortedbam):
+#   docker run -v <refdir>:/refdir -v <bamdir>:/bamdir -v <outdir>:/output dv2vcf:1.9.0 \
+#     python run_dv2vcf.py --ref /refdir/<reference> --bam /bamdir/<sorted.bam> \
+#       --output /output/output.vcf.gz --model_type WGS --dindex
+
+FROM docker.io/google/deepvariant:1.9.0 AS dv_image
+
+FROM ubuntu:22.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        zlib1g libncurses6 libtinfo6 libbz2-1.0 liblzma5 numactl \
+        python3 ca-certificates parallel unzip samtools \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=dv_image /opt/deepvariant /opt/deepvariant
+COPY --from=dv_image /opt/models /opt/models
+COPY --from=dv_image /opt/smallmodels /opt/smallmodels
+COPY --from=dv_image /usr/local/lib/python3.10/dist-packages /usr/local/lib/python3.10/dist-packages
+COPY --from=dv_image /usr/lib/python3/dist-packages /usr/lib/python3/dist-packages
+
+ENV PATH="/opt/deepvariant/bin:$PATH"
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 0
+
+WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
+COPY pipelines/deepvariant-based-germline-variant-calling-fq2vcf/run_dv2vcf.py .
+
+RUN mkdir -p /refdir /bamdir /output
+CMD ["/bin/bash"]

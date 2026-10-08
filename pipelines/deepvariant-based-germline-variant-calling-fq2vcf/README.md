@@ -7,6 +7,30 @@ The pipeline comprises of:
 3. An optimized version of DeepVariant tool for Variant Calling   
 The following figure illustrates the pipeline:
 
+## Two-container chain (recommended, verified end-to-end): fq2sortedbam + dv2vcf
+This runs the pipeline as two independent, sequential containers instead of merging everything into one image:
+1. **`pipelines/fq2sortedbam`** (unchanged, existing pipeline) -- aligns reads with any of bwa-mem2/mm2-fast/STAR/bwa-meth and produces a sorted BAM.
+2. **`Dockerfile_dv2vcf`** -- a small image containing only **DeepVariant 1.9.0** (binaries + models copied from `docker.io/google/deepvariant:1.9.0`, on an `ubuntu:22.04` base matching its own environment) plus `samtools`. Takes any sorted BAM + reference and calls variants.
+
+This avoids the fragility of copying DeepVariant's files into a different base image alongside the aligner build -- the two images stay independent and each matches its own dependencies exactly.
+
+### 1. Build both images (from the repository root)
+```bash
+docker build -f pipelines/fq2sortedbam/Dockerfile -t fq2sortedbam:latest .
+docker build -f pipelines/deepvariant-based-germline-variant-calling-fq2vcf/Dockerfile_dv2vcf -t dv2vcf:1.9.0 .
+```
+Note: `pipelines/fq2sortedbam`'s bundled `bwa-mem2` submodule (`ext/safestringlib`) needs `<stdlib.h>`/`<ctype.h>` included for `abort()`/`toupper()` to compile under modern GCC -- if you hit `implicit declaration of function` errors there, add those two includes near the top of `applications/bwa-mem2/ext/safestringlib/safeclib/safeclib_private.h`.
+
+### 2. Run both stages with the chain script
+```bash
+pipelines/deepvariant-based-germline-variant-calling-fq2vcf/run_fq2vcf_chain.sh \
+  --container-tool docker \
+  --refdir <refdir> --ref <reference.fasta> \
+  --readsdir <readsdir> --read1 <r1.fastq.gz> --read2 <r2.fastq.gz> \
+  --outdir <outdir> --prefix <prefix> --model-type WGS
+```
+This runs `fq2sortedbam` to produce `<outdir>/<prefix>.sorted.bam`, then `dv2vcf` to produce `<outdir>/<prefix>.vcf.gz` (+ `.tbi`). See `run_fq2vcf_chain.sh --help` for all options (custom image tags, `podman` support, `--model-type` for PacBio/ONT/hybrid, `--skip-align`/`--skip-dv` to run just one stage).
+
 ## Unified single-container pipeline (Dockerfile_fq2vcf)
 `Dockerfile_fq2vcf` / `fq2vcf.py` / `run_fq2vcf.py` build and run the whole pipeline from a single image, instead of the two-stage `Dockerfile_fq2bams` + `Dockerfile_bams2vcf` design above. It supports 4 selectable aligners (mirroring `pipelines/fq2sortedbam`), and bakes in **DeepVariant 1.9.0** (binaries copied from `docker.io/google/deepvariant:1.9.0`):
 

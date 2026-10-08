@@ -38,12 +38,14 @@ COPY pipelines/ pipelines/
 FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        zlib1g libncurses6 libtinfo6 libbz2-1.0 liblzma5 numactl python3 ca-certificates \
+        zlib1g libncurses6 libtinfo6 libbz2-1.0 liblzma5 numactl python3 ca-certificates parallel unzip \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=conda_setup /opt/conda /opt/conda
 COPY --from=builder /Open-Omics-Acceleration-Framework /Open-Omics-Acceleration-Framework
 COPY --from=dv_image /opt/deepvariant /opt/deepvariant
+COPY --from=dv_image /opt/models /opt/models
+COPY --from=dv_image /opt/smallmodels /opt/smallmodels
 COPY --from=dv_image /usr/local/lib/python3.10/dist-packages /usr/local/lib/python3.10/dist-packages
 COPY --from=dv_image /usr/lib/python3/dist-packages /usr/lib/python3/dist-packages
 
