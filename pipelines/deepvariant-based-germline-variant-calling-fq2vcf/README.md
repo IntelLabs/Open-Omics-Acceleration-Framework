@@ -17,29 +17,26 @@ The following figure illustrates the pipeline:
 </p>
 
 ## Two-container chain (recommended, verified end-to-end): fq2sortedbam + dv2vcf
-This runs the pipeline as two independent, sequential containers instead of merging everything into one image:
-1. **`pipelines/fq2sortedbam`** (unchanged, existing pipeline) -- aligns reads with any of bwa-mem2/mm2-fast/STAR/bwa-meth and produces a sorted BAM.
-2. **`Dockerfile_dv2vcf`** -- a small image containing only **DeepVariant 1.9.0** (binaries + models copied from `docker.io/google/deepvariant:1.9.0`, on an `ubuntu:22.04` base matching its own environment) plus `samtools`/`bcftools`. Takes any sorted BAM + reference and calls variants.
-
-This avoids the fragility of copying DeepVariant's files into a different base image alongside the aligner build -- the two images stay independent and each matches its own dependencies exactly.
-
-Each bin's `run_deepvariant` subprocess is launched with `TF_NUM_INTRAOP_THREADS=16`, `TF_NUM_INTEROP_THREADS=1`, and `OPENBLAS_NUM_THREADS=1` (matching the bare-metal tuning for a 256-physical-core node: 16 bins x 16 threads = 256). These are configurable via `run_dv2vcf.py --intraop_threads`/`--interop_threads`/`--openblas_threads` if you need to tune for different hardware (e.g. increase `--intraop_threads` and decrease `--bins` on a smaller node, or vice versa on a larger one).
-
-### 1. Build both images (from the repository root)
+### 1. Download the code
 ```bash
-# pipelines/fq2sortedbam/Dockerfile currently fails to build as-is: the `python:3.10`
-# Docker Hub tag now resolves to a Debian release without gcc-11. Use the local-test
-# variant instead, which builds from your checkout and uses the default gcc:
+git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
+cd Open-Omics-Acceleration-Framework
+```
+
+### 2. Build both images (from the repository root)
+```bash
 docker build -f pipelines/fq2sortedbam/Dockerfile.localtest -t fq2sortedbam:latest .
 docker build -f pipelines/deepvariant-based-germline-variant-calling-fq2vcf/Dockerfile_dv2vcf -t dv2vcf:1.9.0 .
 ```
-Note: `pipelines/fq2sortedbam`'s bundled `bwa-mem2` submodule (`ext/safestringlib`) needs `<stdlib.h>`/`<ctype.h>` included for `abort()`/`toupper()` to compile under modern GCC -- if you hit `implicit declaration of function` errors there, add those two includes near the top of `applications/bwa-mem2/ext/safestringlib/safeclib/safeclib_private.h` (this is a vendored third-party submodule, so the fix doesn't persist across a fresh `git submodule update`; re-apply it if needed):
-```bash
-sed -i '/#include <stdio.h>/a #include <stdlib.h>\n#include <ctype.h>' \
-  applications/bwa-mem2/ext/safestringlib/safeclib/safeclib_private.h
-```
+Notes:
+- Use `Dockerfile.localtest` (not `Dockerfile`) for `fq2sortedbam` -- the `python:3.10` Docker Hub tag no longer ships `gcc-11`.
+- If the `bwa-mem2` submodule build fails with `implicit declaration of function` errors, patch its vendored `safestringlib` headers (re-apply after any fresh `git submodule update`):
+  ```bash
+  sed -i '/#include <stdio.h>/a #include <stdlib.h>\n#include <ctype.h>' \
+    applications/bwa-mem2/ext/safestringlib/safeclib/safeclib_private.h
+  ```
 
-### 2. Run both stages with the chain script
+### 3. Run both stages with the chain script
 ```bash
 pipelines/deepvariant-based-germline-variant-calling-fq2vcf/run_fq2vcf_chain.sh \
   --container-tool docker \
@@ -47,9 +44,12 @@ pipelines/deepvariant-based-germline-variant-calling-fq2vcf/run_fq2vcf_chain.sh 
   --readsdir <readsdir> --read1 <r1.fastq.gz> --read2 <r2.fastq.gz> \
   --outdir <outdir> --prefix <prefix> --model-type WGS
 ```
-This runs `fq2sortedbam` to produce `<outdir>/<prefix>.sorted.bam`, then `dv2vcf` to produce `<outdir>/<prefix>.vcf.gz` (+ `.tbi`). See `run_fq2vcf_chain.sh --help` for all options (custom image tags, `podman` support, `--model-type` for PacBio/ONT/hybrid, `--skip-align`/`--skip-dv` to run just one stage).
+Notes:
+- Produces `<outdir>/<prefix>.sorted.bam` (fq2sortedbam stage), then `<outdir>/<prefix>.vcf.gz` + `.tbi` (dv2vcf stage).
+- See `run_fq2vcf_chain.sh --help` for all options: custom image tags, `podman` support, `--model-type` for PacBio/ONT/hybrid, `--skip-align`/`--skip-dv` to run just one stage.
+- DeepVariant thread tuning defaults to `TF_NUM_INTRAOP_THREADS=16`/`TF_NUM_INTEROP_THREADS=1`/`OPENBLAS_NUM_THREADS=1` (tuned for a 256-core node); adjust via `run_dv2vcf.py --intraop_threads`/`--interop_threads`/`--openblas_threads`/`--bins` for other hardware.
 
-### 3. Validate accuracy with hap.py (optional)
+### 4. Validate accuracy with hap.py (optional)
 Compare the output VCF against a GIAB truth set, e.g. for HG001/NA12878:
 ```bash
 # Download the GIAB v4.2.1 truth set (once)
