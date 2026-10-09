@@ -1,11 +1,20 @@
 # fq2vcf: OpenOmics Deepvariant based Variant Calling Pipeline  
 ### Overview:  
-OpenOmics' fq2vcf is a highly optimized, distributed, deep learning-based short-read germline variant calling pipeline for x86 CPUs. 
-The pipeline comprises of:   
-1. bwa-mem2 (a highly optimized version of bwa-mem) for sequence mapping  
-2. SortSAM using samtools  
-3. An optimized version of DeepVariant tool for Variant Calling   
+OpenOmics' fq2vcf is a highly optimized, distributed, deep learning-based short-read germline variant calling pipeline for x86 CPUs. It is built as a chain of two independent stages:
+
+1. **`fq2sortedbam`** -- Sequence alignment and sorting stage. Takes raw FASTQ reads and a reference genome and produces a coordinate-sorted BAM file. Depending on the data type, it dispatches to one of the following aligners:
+   - **bwa-mem2 v2.2.1** -- highly optimized DNA short-read alignment
+   - **mm2-fast** (accelerated minimap2, based on minimap2 v2.24-r1122) -- long-read alignment (PacBio/ONT)
+   - **STAR v2.7.11b** -- RNA short-read alignment
+   - **bwa-meth v0.2.7** -- bisulfite/methylation-aware alignment
+   - **samtools v1.16.1** -- SAM/BAM sorting
+2. **`bams2vcf`** (containerized as `dv2vcf`) -- Variant calling stage. Takes the sorted BAM and reference genome and calls variants using an optimized build of **DeepVariant v1.9.0**, producing a compressed, indexed VCF file. This stage is only valid for short-read (bwa-mem2) and long-read (mm2-fast) BAMs -- it does not support BAMs produced by the STAR (RNA) or bwa-meth (methylation) aligners.
+
 The following figure illustrates the pipeline:
+
+<p align="center">
+<img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/deepvariant-fq2vcf.jpg"/a></br>
+</p>
 
 ## Two-container chain (recommended, verified end-to-end): fq2sortedbam + dv2vcf
 This runs the pipeline as two independent, sequential containers instead of merging everything into one image:
@@ -82,10 +91,6 @@ Running against NFS-backed storage instead of local disk adds significant I/O ov
 | INDEL | PASS | 467702 | 456097 | 11605 | 906287 | 1634 | 430822 | 1159 | 223 | 0.975187 | 0.996563 | 0.475370 | 0.985759 |
 | SNP | ALL | 3254386 | 3165552 | 88834 | 3683913 | 5805 | 511273 | 2429 | 330 | 0.972703 | 0.998170 | 0.138785 | 0.985272 |
 | SNP | PASS | 3254386 | 3165552 | 88834 | 3683913 | 5805 | 511273 | 2429 | 330 | 0.972703 | 0.998170 | 0.138785 | 0.985272 |
-
-<p align="center">
-<img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/deepvariant-fq2vcf.jpg"/a></br>
-</p> 
 
 # Using Dockerfile  (Single Node)  
 ### 1. Download the code :  
