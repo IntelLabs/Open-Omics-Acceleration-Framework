@@ -15,7 +15,9 @@ This runs the pipeline as two independent, sequential containers instead of merg
 This avoids the fragility of copying DeepVariant's files into a different base image alongside the aligner build -- the two images stay independent and each matches its own dependencies exactly.
 
 ### DeepVariant region-sharding (`run_dv2vcf.py`)
-DeepVariant's own `--num_shards` only parallelizes the `make_examples` stage; `call_variants` always runs as a single TensorFlow process over the whole input, which becomes the dominant bottleneck on a full 30x genome (measured: ~8 min for `make_examples` with 512 shards vs ~19 min for `call_variants` alone, single-process). To fix this, `run_dv2vcf.py` splits the genome into `--bins` regions (same cumulative-length binning algorithm as the bare-metal `test_pipeline_final.py`) and launches one independent `run_deepvariant` subprocess per region (each with `TF_NUM_INTRAOP_THREADS=16`/`TF_NUM_INTEROP_THREADS=1`/`OPENBLAS_NUM_THREADS=1`, matching the bare-metal tuning), all running concurrently inside the single `dv2vcf` container -- no nested/sibling containers needed since the DeepVariant binaries already live in that image. Per-bin VCFs are merged in genome order with `bcftools concat`. Region lists are written to a BED file per bin rather than inlined on the command line, since the decoy/HLA-heavy bin's region list can exceed the OS `argv` length limit. Default `--bins 16`; pass `--bins 1` to disable region-sharding and fall back to a single whole-genome invocation.
+`run_dv2vcf.py` splits the genome into `--bins` regions (same cumulative-length binning algorithm as the bare-metal `test_pipeline_final.py`) and launches one independent `run_deepvariant` subprocess per region, all running concurrently inside the single `dv2vcf` container -- no nested/sibling containers needed since the DeepVariant binaries already live in that image. Per-bin VCFs are merged in genome order with `bcftools concat`. Region lists are written to a BED file per bin rather than inlined on the command line, since the decoy/HLA-heavy bin's region list can exceed the OS `argv` length limit. Default `--bins 16`; pass `--bins 1` to disable region-sharding and fall back to a single whole-genome invocation.
+
+Each bin's `run_deepvariant` subprocess is launched with `TF_NUM_INTRAOP_THREADS=16`, `TF_NUM_INTEROP_THREADS=1`, and `OPENBLAS_NUM_THREADS=1` (matching the bare-metal tuning for a 256-physical-core node: 16 bins x 16 threads = 256). These are configurable via `run_dv2vcf.py --intraop_threads`/`--interop_threads`/`--openblas_threads` if you need to tune for different hardware (e.g. increase `--intraop_threads` and decrease `--bins` on a smaller node, or vice versa on a larger one).
 
 ### 1. Build both images (from the repository root)
 ```bash
@@ -71,18 +73,18 @@ Swap in the matching GIAB directory/sample name (`HG001`/`HG002`/`HG003`/...) fo
 #### Verified results (HG001, full 30x NovaSeq WGS, GRCh38, on a 512-CPU / 6-NUMA node, local NVMe storage)
 | Stage | Time |
 |---|---|
-| Alignment (bwa-mem2, 16 ranks x 28 threads, auto-detected) | 458s |
+| Alignment (bwa-mem2, 16 ranks x 28 threads, auto-detected) | 534s |
 | DeepVariant 1.9.0 (region-sharded, 16 bins x 32 shards) | 708s |
-| **Total FASTQ -> VCF** | **~19.4 min** |
+| **Total FASTQ -> VCF** | **~20.7 min** |
 
-Region-sharding DeepVariant (16 parallel bins) cut the DeepVariant stage from ~29 min (single whole-genome invocation, `call_variants` alone took ~19 min as a bottleneck single process) down to ~12 min -- within ~4% of a bare-metal (non-containerized) reference run (678.77s) on the same hardware. Running against NFS-backed storage instead of local disk adds significant I/O overhead to both the alignment (pragzip indexing) and DeepVariant stages; use local/NVMe scratch for input, output, and intermediate files where possible.
+Running against NFS-backed storage instead of local disk adds significant I/O overhead to both the alignment (pragzip indexing) and DeepVariant stages; use local/NVMe scratch for input, output, and intermediate files where possible.
 
-| hap.py vs GIAB v4.2.1 | Recall | Precision | F1 |
-|---|---|---|---|
-| SNP | 97.27% | 99.82% | 98.53% |
-| INDEL | 97.52% | 99.66% | 98.58% |
-
-Accuracy is identical between the single-invocation and region-sharded DeepVariant paths, as expected -- region-sharding only changes how the work is parallelized, not the underlying model or algorithm.
+| Type | Filter | TRUTH.TOTAL | TRUTH.TP | TRUTH.FN | QUERY.TOTAL | QUERY.FP | QUERY.UNK | FP.gt | FP.al | Recall | Precision | Frac_NA | F1_Score |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| INDEL | ALL | 467702 | 456097 | 11605 | 906287 | 1634 | 430822 | 1159 | 223 | 0.975187 | 0.996563 | 0.475370 | 0.985759 |
+| INDEL | PASS | 467702 | 456097 | 11605 | 906287 | 1634 | 430822 | 1159 | 223 | 0.975187 | 0.996563 | 0.475370 | 0.985759 |
+| SNP | ALL | 3254386 | 3165552 | 88834 | 3683913 | 5805 | 511273 | 2429 | 330 | 0.972703 | 0.998170 | 0.138785 | 0.985272 |
+| SNP | PASS | 3254386 | 3165552 | 88834 | 3683913 | 5805 | 511273 | 2429 | 330 | 0.972703 | 0.998170 | 0.138785 | 0.985272 |
 
 <p align="center">
 <img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/deepvariant-fq2vcf.jpg"/a></br>
