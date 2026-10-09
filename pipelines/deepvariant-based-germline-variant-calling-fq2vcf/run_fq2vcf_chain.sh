@@ -46,7 +46,8 @@
 #   --dv-image NAME         dv2vcf image tag (default: dv2vcf:1.9.0).
 #   --container-tool TOOL   docker or podman (default: docker).
 #   --model-type TYPE       DeepVariant --model_type: WGS/WES/PACBIO/ONT_R104/HYBRID_PACBIO_ILLUMINA (default: WGS).
-#   --num-shards N          DeepVariant --num_shards (default: nproc).
+#   --num-shards N          Total DeepVariant make_examples shards, split across --bins (default: nproc).
+#   --bins N                Number of parallel region-sharded DeepVariant invocations (default: 16; use 1 to disable).
 #   --skip-align            Skip stage 1 and go straight to DeepVariant on an existing
 #                            <outdir>/<prefix>.sorted.bam.
 #   --skip-dv                Run only stage 1 (alignment), skip DeepVariant.
@@ -65,6 +66,7 @@ DV_IMAGE="dv2vcf:1.9.0"
 PREFIX="fq2vcf_out"
 MODEL_TYPE="WGS"
 NUM_SHARDS="$(nproc 2>/dev/null || echo 16)"
+BINS=16
 READ2=""
 SKIP_ALIGN=0
 SKIP_DV=0
@@ -83,6 +85,7 @@ while [[ $# -gt 0 ]]; do
         --container-tool) CONTAINER_TOOL="$2"; shift 2 ;;
         --model-type) MODEL_TYPE="$2"; shift 2 ;;
         --num-shards) NUM_SHARDS="$2"; shift 2 ;;
+        --bins) BINS="$2"; shift 2 ;;
         --skip-align) SKIP_ALIGN=1; shift ;;
         --skip-dv) SKIP_DV=1; shift ;;
         -h|--help) grep '^#' "$0" | sed 's/^#//'; exit 0 ;;
@@ -124,7 +127,7 @@ if [[ "$SKIP_DV" -eq 0 ]]; then
         -v "${OUTDIR}:/output" \
         "$DV_IMAGE" \
         python run_dv2vcf.py --ref "/refdir/${REF}" --bam "/bamdir/${PREFIX}.sorted.bam" \
-            --output "/output/${PREFIX}.vcf.gz" --model_type "$MODEL_TYPE" --num_shards "$NUM_SHARDS" --dindex
+            --output "/output/${PREFIX}.vcf.gz" --model_type "$MODEL_TYPE" --num_shards "$NUM_SHARDS" --bins "$BINS" --dindex
 else
     echo "[Info] Stage 2/2: skipped (--skip-dv)"
 fi
