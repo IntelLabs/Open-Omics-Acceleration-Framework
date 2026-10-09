@@ -642,7 +642,7 @@ def main(args):
     
     # Preindex refernce genome if requested
     flg = 0
-    if rank==0 and rindex == 'True':
+    if rank==0 and rindex == True:
         print("[Info] Indexing Starts", flush=True)
         begin = time.time()
         if read_type == 'meth':

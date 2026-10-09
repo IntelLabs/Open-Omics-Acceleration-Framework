@@ -51,6 +51,9 @@
 #   --skip-align            Skip stage 1 and go straight to DeepVariant on an existing
 #                            <outdir>/<prefix>.sorted.bam.
 #   --skip-dv                Run only stage 1 (alignment), skip DeepVariant.
+#   --rindex                Build the bwa-mem2 index for --ref on the fly if it's not
+#                            already present in --refdir (passed through to
+#                            run_fq2sortedbam.py's --rindex).
 #
 # Example:
 #   ./run_fq2vcf_chain.sh --container-tool podman \
@@ -70,6 +73,7 @@ BINS=16
 READ2=""
 SKIP_ALIGN=0
 SKIP_DV=0
+RINDEX=0
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -88,6 +92,7 @@ while [[ $# -gt 0 ]]; do
         --bins) BINS="$2"; shift 2 ;;
         --skip-align) SKIP_ALIGN=1; shift ;;
         --skip-dv) SKIP_DV=1; shift ;;
+        --rindex) RINDEX=1; shift ;;
         -h|--help) grep '^#' "$0" | sed 's/^#//'; exit 0 ;;
         *) echo "[Error] Unknown argument: $1"; exit 1 ;;
     esac
@@ -109,19 +114,27 @@ if [[ "$SKIP_ALIGN" -eq 0 ]]; then
     if [[ -n "$READ2" ]]; then
         READS_ARGS=(--reads "/input/${READ1}" "/input/${READ2}")
     fi
+    RINDEX_ARGS=()
+    if [[ "$RINDEX" -eq 1 ]]; then
+        RINDEX_ARGS=(--rindex)
+    fi
     "$CONTAINER_TOOL" run --rm \
         -v "${REFDIR}:/refdir" \
         -v "${READSDIR}:/input" \
         -v "${OUTDIR}:/out" \
         "$ALIGNER_IMAGE" \
-        python run_fq2sortedbam.py --ref "/refdir/${REF}" "${READS_ARGS[@]}" --output "/out/${PREFIX}"
+        python run_fq2sortedbam.py --ref "/refdir/${REF}" "${READS_ARGS[@]}" --output "/out/${PREFIX}" "${RINDEX_ARGS[@]}"
 else
     echo "[Info] Stage 1/2: skipped (--skip-align), using existing ${OUTDIR}/${PREFIX}.sorted.bam"
 fi
 
 if [[ "$SKIP_DV" -eq 0 ]]; then
     echo "[Info] Stage 2/2: dv2vcf ($DV_IMAGE, DeepVariant 1.9.0) -> ${OUTDIR}/${PREFIX}.vcf.gz"
+    # region-sharding fans out to --bins x --num_shards concurrent make_examples
+    # processes (each opening several TF .so/library fds), which can exceed the
+    # container's default nofile ulimit (independent of the host shell's ulimit).
     "$CONTAINER_TOOL" run --rm \
+        --ulimit nofile=131072:131072 \
         -v "${REFDIR}:/refdir" \
         -v "${OUTDIR}:/bamdir" \
         -v "${OUTDIR}:/output" \
