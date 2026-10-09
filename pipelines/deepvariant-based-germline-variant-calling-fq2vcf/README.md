@@ -14,9 +14,6 @@ This runs the pipeline as two independent, sequential containers instead of merg
 
 This avoids the fragility of copying DeepVariant's files into a different base image alongside the aligner build -- the two images stay independent and each matches its own dependencies exactly.
 
-### DeepVariant region-sharding (`run_dv2vcf.py`)
-`run_dv2vcf.py` splits the genome into `--bins` regions (same cumulative-length binning algorithm as the bare-metal `test_pipeline_final.py`) and launches one independent `run_deepvariant` subprocess per region, all running concurrently inside the single `dv2vcf` container -- no nested/sibling containers needed since the DeepVariant binaries already live in that image. Per-bin VCFs are merged in genome order with `bcftools concat`. Region lists are written to a BED file per bin rather than inlined on the command line, since the decoy/HLA-heavy bin's region list can exceed the OS `argv` length limit. Default `--bins 16`; pass `--bins 1` to disable region-sharding and fall back to a single whole-genome invocation.
-
 Each bin's `run_deepvariant` subprocess is launched with `TF_NUM_INTRAOP_THREADS=16`, `TF_NUM_INTEROP_THREADS=1`, and `OPENBLAS_NUM_THREADS=1` (matching the bare-metal tuning for a 256-physical-core node: 16 bins x 16 threads = 256). These are configurable via `run_dv2vcf.py --intraop_threads`/`--interop_threads`/`--openblas_threads` if you need to tune for different hardware (e.g. increase `--intraop_threads` and decrease `--bins` on a smaller node, or vice versa on a larger one).
 
 ### 1. Build both images (from the repository root)
