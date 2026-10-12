@@ -54,6 +54,9 @@
 #   --rindex                Build the bwa-mem2 index for --ref on the fly if it's not
 #                            already present in --refdir (passed through to
 #                            run_fq2sortedbam.py's --rindex).
+#   --intraop-threads N      TF_NUM_INTRAOP_THREADS per bin (default: 16).
+#   --interop-threads N      TF_NUM_INTEROP_THREADS per bin (default: 1).
+#   --openblas-threads N     OPENBLAS_NUM_THREADS per bin (default: 1).
 #
 # Example:
 #   ./run_fq2vcf_chain.sh --container-tool podman \
@@ -70,6 +73,9 @@ PREFIX="fq2vcf_out"
 MODEL_TYPE="WGS"
 NUM_SHARDS="$(nproc 2>/dev/null || echo 16)"
 BINS=16
+INTRAOP_THREADS="16"
+INTEROP_THREADS="1"
+OPENBLAS_THREADS="1"
 READ2=""
 SKIP_ALIGN=0
 SKIP_DV=0
@@ -90,6 +96,9 @@ while [[ $# -gt 0 ]]; do
         --model-type) MODEL_TYPE="$2"; shift 2 ;;
         --num-shards) NUM_SHARDS="$2"; shift 2 ;;
         --bins) BINS="$2"; shift 2 ;;
+        --intraop-threads) INTRAOP_THREADS="$2"; shift 2 ;;
+        --interop-threads) INTEROP_THREADS="$2"; shift 2 ;;
+        --openblas-threads) OPENBLAS_THREADS="$2"; shift 2 ;;
         --skip-align) SKIP_ALIGN=1; shift ;;
         --skip-dv) SKIP_DV=1; shift ;;
         --rindex) RINDEX=1; shift ;;
@@ -140,7 +149,8 @@ if [[ "$SKIP_DV" -eq 0 ]]; then
         -v "${OUTDIR}:/output" \
         "$DV_IMAGE" \
         python run_dv2vcf.py --ref "/refdir/${REF}" --bam "/bamdir/${PREFIX}.sorted.bam" \
-            --output "/output/${PREFIX}.vcf.gz" --model_type "$MODEL_TYPE" --num_shards "$NUM_SHARDS" --bins "$BINS" --dindex
+            --output "/output/${PREFIX}.vcf.gz" --model_type "$MODEL_TYPE" --num_shards "$NUM_SHARDS" --bins "$BINS" \
+            --intraop_threads "$INTRAOP_THREADS" --interop_threads "$INTEROP_THREADS" --openblas_threads "$OPENBLAS_THREADS" --dindex
 else
     echo "[Info] Stage 2/2: skipped (--skip-dv)"
 fi
