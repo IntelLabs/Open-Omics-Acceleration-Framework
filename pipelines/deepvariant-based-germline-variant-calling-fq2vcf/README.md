@@ -14,7 +14,7 @@ The following figure illustrates the pipeline:
 <img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/deepvariant-fq2vcf.jpg"/a></br>
 </p>
 
-## Two-container chain (recommended, verified end-to-end): fq2sortedbam + dv2vcf
+## Instructions to build and run the pipeline
 ### 1. Download the code
 ```bash
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
@@ -25,7 +25,7 @@ git submodule update --init --recursive
 
 ### 2. Build both images (from the repository root)
 ```bash
-docker build -f pipelines/deepvariant-based-germline-variant-calling-fq2vcf/Dockerfile_fq2sortedbam -t fq2sortedbam:latest .
+docker build -f pipelines/fq2sortedbam/Dockerfile -t fq2sortedbam:latest .
 docker build -f pipelines/deepvariant-based-germline-variant-calling-fq2vcf/Dockerfile_dv2vcf -t dv2vcf:1.9.0 .
 ```
 

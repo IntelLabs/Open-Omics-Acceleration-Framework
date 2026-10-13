@@ -163,9 +163,17 @@ def pragzip_reader_real( comm, cpus, fname, outpipe, outdir, last=False ):
         maxcpus = os.cpu_count()
         allcpus = {x for x in range(maxcpus)}
         os.sched_setaffinity(0,allcpus)
-        f = pz.open( fname, parallelization=maxcpus//2 )
-        f.export_index(idxname)
-        f.close()
+        try:
+            f = pz.open( fname, parallelization=maxcpus//2 )
+            f.export_index(idxname)
+            f.close()
+        except Exception as e:
+            # Raising here only kills this background thread -- the rest of the
+            # pipeline would carry on uselessly against a dead input pipe, so
+            # abort the whole process immediately instead.
+            print(f"[Error] Failed to build pragzip index for {fname}: {e}", flush=True)
+            print("[Error] Input FASTQ is likely corrupt/truncated or incompatible with pragzip. Aborting.", flush=True)
+            os._exit(1)
         os.sched_setaffinity(0,oldmask)
         t1 = time.time()
         print("[Info] Time for pragzip index: "+str(t1-t0))
@@ -489,7 +497,7 @@ def create_folder(fo):
         except:
             print("Error: Unable to create logs folder inside the ouptut folder")
             flg = 1
-    else: print('[Info] output logs folder exits, will override the log files')
+    else: print('[Info] output logs folder exists, will override the log files')
     return flg
 
 
