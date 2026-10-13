@@ -5,10 +5,8 @@ OpenOmics' fq2vcf is a highly optimized, distributed, deep learning-based short-
 1. **`fq2sortedbam`** -- Sequence alignment and sorting stage. Takes raw FASTQ reads and a reference genome and produces a coordinate-sorted BAM file. Depending on the data type, it dispatches to one of the following aligners:
    - **bwa-mem2 v2.2.1** -- highly optimized DNA short-read alignment
    - **mm2-fast** (accelerated minimap2, based on minimap2 v2.24-r1122) -- long-read alignment (PacBio/ONT)
-   - **STAR v2.7.11b** -- RNA short-read alignment
-   - **bwa-meth v0.2.7** -- bisulfite/methylation-aware alignment
    - **samtools v1.16.1** -- SAM/BAM sorting
-2. **`bams2vcf`** (containerized as `dv2vcf`) -- Variant calling stage. Takes the sorted BAM and reference genome and calls variants using an optimized build of **DeepVariant v1.9.0**, producing a compressed, indexed VCF file. This stage is only valid for short-read (bwa-mem2) and long-read (mm2-fast) BAMs -- it does not support BAMs produced by the STAR (RNA) or bwa-meth (methylation) aligners.
+2. **`bams2vcf`** (containerized as `dv2vcf`) -- Variant calling stage. Takes the sorted BAM and reference genome and calls variants using an optimized build of **DeepVariant v1.9.0**, producing a compressed, indexed VCF file.
 
 The following figure illustrates the pipeline:
 
