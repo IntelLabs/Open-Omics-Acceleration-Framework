@@ -9,12 +9,12 @@
 # ubuntu:22.04 / python3.10 environment to avoid glibc/ABI mismatches.
 #
 # Build (from the repository root):
-#   docker build -f pipelines/deepvariant-based-germline-variant-calling-fq2vcf/Dockerfile_dv2vcf \
-#                -t dv2vcf:1.9.0 .
+#   docker build -f pipelines/deepvariant-based-germline-variant-calling-fq2vcf/Dockerfile_bams2vcf \
+#                -t bams2vcf:1.9.0 .
 #
 # Run (against a BAM produced by pipelines/fq2sortedbam):
-#   docker run -v <refdir>:/refdir -v <bamdir>:/bamdir -v <outdir>:/output dv2vcf:1.9.0 \
-#     python run_dv2vcf.py --ref /refdir/<reference> --bam /bamdir/<sorted.bam> \
+#   docker run -v <refdir>:/refdir -v <bamdir>:/bamdir -v <outdir>:/output bams2vcf:1.9.0 \
+#     python run_bams2vcf.py --ref /refdir/<reference> --bam /bamdir/<sorted.bam> \
 #       --output /output/output.vcf.gz --model_type WGS --dindex
 
 FROM docker.io/google/deepvariant:1.9.0 AS dv_image
@@ -36,7 +36,7 @@ ENV PATH="/opt/deepvariant/bin:$PATH"
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 0
 
 WORKDIR /Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
-COPY pipelines/deepvariant-based-germline-variant-calling-fq2vcf/run_dv2vcf.py .
+COPY pipelines/deepvariant-based-germline-variant-calling-fq2vcf/run_bams2vcf.py .
 
 RUN mkdir -p /refdir /bamdir /output
 CMD ["/bin/bash"]

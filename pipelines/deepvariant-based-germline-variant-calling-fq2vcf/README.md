@@ -1,12 +1,11 @@
 # fq2vcf: OpenOmics Deepvariant based Variant Calling Pipeline  
 ### Overview:  
-OpenOmics' fq2vcf is a highly optimized, distributed, deep learning-based short-read germline variant calling pipeline for x86 CPUs. It is built as a chain of two independent stages:
+OpenOmics' fq2vcf is a highly optimized, distributed, deep learning-based short and long read variant calling pipeline for x86 CPUs. It is built as a chain of two independent stages:
 
 1. **`fq2sortedbam`** -- Sequence alignment and sorting stage. Takes raw FASTQ reads and a reference genome and produces a coordinate-sorted BAM file. Depending on the data type, it dispatches to one of the following aligners:
    - **bwa-mem2 v2.2.1** -- highly optimized DNA short-read alignment
    - **mm2-fast** (accelerated minimap2, based on minimap2 v2.24-r1122) -- long-read alignment (PacBio/ONT)
-   - **samtools v1.16.1** -- SAM/BAM sorting
-2. **`bams2vcf`** (containerized as `dv2vcf`) -- Variant calling stage. Takes the sorted BAM and reference genome and calls variants using an optimized build of **DeepVariant v1.9.0**, producing a compressed, indexed VCF file.
+2. **`bams2vcf`** (containerized as `bams2vcf`) -- Variant calling stage. Takes the sorted BAM and reference genome and calls variants using an optimized build of **DeepVariant v1.9.0**, producing a compressed, indexed VCF file.
 
 The following figure illustrates the pipeline:
 
@@ -26,7 +25,7 @@ git submodule update --init --recursive
 ### 2. Build both images (from the repository root)
 ```bash
 docker build -f pipelines/fq2sortedbam/Dockerfile -t fq2sortedbam:latest .
-docker build -f pipelines/deepvariant-based-germline-variant-calling-fq2vcf/Dockerfile_dv2vcf -t dv2vcf:1.9.0 .
+docker build -f pipelines/deepvariant-based-germline-variant-calling-fq2vcf/Dockerfile_bams2vcf -t bams2vcf:1.9.0 .
 ```
 
 ### 3. Run both stages with the chain script
@@ -38,12 +37,13 @@ pipelines/deepvariant-based-germline-variant-calling-fq2vcf/run_fq2vcf_chain.sh 
   --outdir <outdir> --prefix <prefix> --model-type WGS
 ```
 Notes:
-- Produces `<outdir>/<prefix>.sorted.bam` (fq2sortedbam stage), then `<outdir>/<prefix>.vcf.gz` + `.tbi` (dv2vcf stage).
+- Produces `<outdir>/<prefix>.sorted.bam` (fq2sortedbam stage), then `<outdir>/<prefix>.vcf.gz` + `.tbi` (bams2vcf stage).
 - See `run_fq2vcf_chain.sh --help` for all options: `--model-type` for PacBio/ONT/hybrid, `--skip-align`/`--skip-dv` to run just one stage.
+- `--refdir`/`--readsdir`/`--outdir` must be absolute paths -- a bare relative name passed to `docker`/`podman -v` is treated as a named volume rather than a bind mount to that directory, which silently writes/reads the wrong location.
 - `--refdir` is expected to already contain the bwa-mem2 index; add `--rindex` to build it on the fly if it isn't present yet.
 - Favor local/fast disk (e.g. NVMe scratch) over networked/shared storage for input, output, and intermediate files -- both the alignment and DeepVariant stages are I/O-sensitive and slow down noticeably on network-backed filesystems.
 - The first run against a given FASTQ pair will be slower because `fq2sortedbam` builds a pragzip index over the compressed reads from cold disk; subsequent runs on the same machine are faster once the input file is cached in the memory.
-- `TF_NUM_INTRAOP_THREADS`/`TF_NUM_INTEROP_THREADS`/`OPENBLAS_NUM_THREADS` cap the thread pool so our concurrent MPI processes don't oversubscribe the node; for example, `MPI processes =  16` x `--intraop-threads 16` = 256 threads, matching a 256-core node. Tune these via `run_fq2vcf_chain.sh --intraop-threads`/`--interop-threads`/`--openblas-threads` (or the equivalent `run_dv2vcf.py --intraop_threads`/`--interop_threads`/`--openblas_threads` flags if invoking stage 2 directly).
+- `TF_NUM_INTRAOP_THREADS`/`TF_NUM_INTEROP_THREADS`/`OPENBLAS_NUM_THREADS` cap the thread pool so our concurrent MPI processes don't oversubscribe the node; for example, `MPI processes =  16` x `--intraop-threads 16` = 256 threads, matching a 256-core node. Tune these via `run_fq2vcf_chain.sh --intraop-threads`/`--interop-threads`/`--openblas-threads` (or the equivalent `run_bams2vcf.py --intraop_threads`/`--interop_threads`/`--openblas_threads` flags if invoking stage 2 directly). Pass `--no-thread-caps` to skip setting these env vars entirely and let TF/OpenBLAS use their own defaults.
 
 #### Verified results (HG001, full 30x NovaSeq WGS, GRCh38, on a 512-CPU / 6-NUMA node, local NVMe storage)
 | Stage | Time |

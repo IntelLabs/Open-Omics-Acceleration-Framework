@@ -1,7 +1,7 @@
 #*************************************************************************************
 #                           The MIT License
 #
-#   Intel OpenOmics - dv2vcf: standalone DeepVariant 1.9.0 variant-calling stage
+#   Intel OpenOmics - bams2vcf: standalone DeepVariant 1.9.0 variant-calling stage
 #   Copyright (C) 2023  Intel Corporation.
 #
 #   Permission is hereby granted, free of charge, to any person obtaining
@@ -122,6 +122,7 @@ def main():
     parser.add_argument("--intraop_threads", default="16", help="TF_NUM_INTRAOP_THREADS per bin (DeepVariant's call_variants thread count).")
     parser.add_argument("--interop_threads", default="1", help="TF_NUM_INTEROP_THREADS per bin.")
     parser.add_argument("--openblas_threads", default="1", help="OPENBLAS_NUM_THREADS per bin.")
+    parser.add_argument("--no_thread_caps", action="store_true", help="Don't set TF_NUM_INTRAOP_THREADS/TF_NUM_INTEROP_THREADS/OPENBLAS_NUM_THREADS at all (let TF/OpenBLAS use their own defaults); overrides --intraop_threads/--interop_threads/--openblas_threads.")
     parser.add_argument("--dindex", action="store_true", help="Create the reference .fai index if missing.")
     parser.add_argument("--intermediate_results_dir", default="", help="Optional dir for DeepVariant's intermediate results (defaults next to --output).")
     args = parser.parse_args()
@@ -143,9 +144,10 @@ def main():
     nbins = max(1, args.bins)
     shards_per_bin = max(1, int(args.num_shards) // nbins)
     env = dict(os.environ)
-    env["OPENBLAS_NUM_THREADS"] = args.openblas_threads
-    env["TF_NUM_INTRAOP_THREADS"] = args.intraop_threads
-    env["TF_NUM_INTEROP_THREADS"] = args.interop_threads
+    if not args.no_thread_caps:
+        env["OPENBLAS_NUM_THREADS"] = args.openblas_threads
+        env["TF_NUM_INTRAOP_THREADS"] = args.intraop_threads
+        env["TF_NUM_INTEROP_THREADS"] = args.interop_threads
 
     tic = time.time()
 
@@ -160,8 +162,9 @@ def main():
         print(f"[Info] DeepVariant runtime: {time.time() - tic:.2f} sec")
         return
 
+    thread_caps_desc = "no thread caps set (TF/OpenBLAS defaults)" if args.no_thread_caps else f"TF_NUM_INTRAOP_THREADS={args.intraop_threads}"
     print(f"[Info] Region-sharding DeepVariant into {nbins} bins ({shards_per_bin} make_examples shards/bin, "
-          f"TF_NUM_INTRAOP_THREADS={args.intraop_threads})", flush=True)
+          f"{thread_caps_desc})", flush=True)
     bin_regions = calculate_bin_regions(args.ref + ".fai", nbins)
 
     bin_vcfs = []
