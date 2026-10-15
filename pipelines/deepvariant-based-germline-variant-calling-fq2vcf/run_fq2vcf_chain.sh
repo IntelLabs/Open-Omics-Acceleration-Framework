@@ -44,7 +44,6 @@
 #   --prefix NAME           Output file prefix (default: fq2vcf_out).
 #   --aligner-image NAME    fq2sortedbam image tag (default: fq2sortedbam:latest).
 #   --bams2vcf-image NAME   bams2vcf image tag (default: bams2vcf:1.9.0).
-#   --container-tool TOOL   docker or podman (default: docker).
 #   --read-type TYPE        fq2sortedbam --read_type: short/long/rna/meth (default: short). short - bwa-mem2
 #                            for short reads; long - mm2-fast for PacBio/ONT long reads; rna - STAR; meth -
 #                            bwa-meth. Use long with --model-type PACBIO/ONT_R104 for long-read data.
@@ -60,21 +59,18 @@
 #   --rindex                Build the bwa-mem2 index for --ref on the fly if it's not
 #                            already present in --refdir (passed through to
 #                            run_fq2sortedbam.py's --rindex).
-#   --intraop-threads N      TF_NUM_INTRAOP_THREADS per bin (default: 16).
-#   --interop-threads N      TF_NUM_INTEROP_THREADS per bin (default: 1).
-#   --openblas-threads N     OPENBLAS_NUM_THREADS per bin (default: 1).
-#   --no-thread-caps         Don't set TF_NUM_INTRAOP_THREADS/TF_NUM_INTEROP_THREADS/OPENBLAS_NUM_THREADS
-#                            at all; let TF/OpenBLAS use their own defaults (overrides the three flags above).
+#
+# TF_NUM_INTRAOP_THREADS/TF_NUM_INTEROP_THREADS/OPENBLAS_NUM_THREADS are left unset (DeepVariant's
+# --no_thread_caps) so TF/OpenBLAS pick their own defaults; stage 2 is always invoked this way.
 #
 # Example:
-#   ./run_fq2vcf_chain.sh --container-tool podman \
+#   ./run_fq2vcf_chain.sh \
 #       --refdir /data/ref --ref Homo_sapiens_assembly38.fasta \
 #       --readsdir /data/reads --read1 R1.fastq.gz --read2 R2.fastq.gz \
 #       --outdir /data/out --prefix HG001 --model-type WGS
 
 set -euo pipefail
 
-CONTAINER_TOOL="docker"
 ALIGNER_IMAGE="fq2sortedbam:latest"
 BAMS2VCF_IMAGE="bams2vcf:1.9.0"
 PREFIX="fq2vcf_out"
@@ -82,14 +78,10 @@ READ_TYPE="short"
 MODEL_TYPE="WGS"
 NUM_SHARDS="$(nproc 2>/dev/null || echo 16)"
 BINS=""
-INTRAOP_THREADS="16"
-INTEROP_THREADS="1"
-OPENBLAS_THREADS="1"
 READ2=""
 SKIP_ALIGN=0
 SKIP_DV=0
 RINDEX=0
-NO_THREAD_CAPS=0
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -102,15 +94,10 @@ while [[ $# -gt 0 ]]; do
         --prefix) PREFIX="$2"; shift 2 ;;
         --aligner-image) ALIGNER_IMAGE="$2"; shift 2 ;;
         --bams2vcf-image) BAMS2VCF_IMAGE="$2"; shift 2 ;;
-        --container-tool) CONTAINER_TOOL="$2"; shift 2 ;;
         --read-type) READ_TYPE="$2"; shift 2 ;;
         --model-type) MODEL_TYPE="$2"; shift 2 ;;
         --num-shards) NUM_SHARDS="$2"; shift 2 ;;
         --bins) BINS="$2"; shift 2 ;;
-        --intraop-threads) INTRAOP_THREADS="$2"; shift 2 ;;
-        --interop-threads) INTEROP_THREADS="$2"; shift 2 ;;
-        --openblas-threads) OPENBLAS_THREADS="$2"; shift 2 ;;
-        --no-thread-caps) NO_THREAD_CAPS=1; shift ;;
         --skip-align) SKIP_ALIGN=1; shift ;;
         --skip-dv) SKIP_DV=1; shift ;;
         --rindex) RINDEX=1; shift ;;
@@ -139,7 +126,7 @@ if [[ "$SKIP_ALIGN" -eq 0 ]]; then
     if [[ "$RINDEX" -eq 1 ]]; then
         RINDEX_ARGS=(--rindex)
     fi
-    "$CONTAINER_TOOL" run --rm \
+    docker run --rm \
         -v "${REFDIR}:/refdir" \
         -v "${READSDIR}:/input" \
         -v "${OUTDIR}:/out" \
@@ -164,7 +151,7 @@ if [[ "$SKIP_DV" -eq 0 ]]; then
     # region-sharding fans out to --bins x --num_shards concurrent make_examples
     # processes (each opening several TF .so/library fds), which can exceed the
     # container's default nofile ulimit (independent of the host shell's ulimit).
-    "$CONTAINER_TOOL" run --rm \
+    docker run --rm \
         --ulimit nofile=131072:131072 \
         -v "${REFDIR}:/refdir" \
         -v "${OUTDIR}:/bamdir" \
@@ -172,8 +159,7 @@ if [[ "$SKIP_DV" -eq 0 ]]; then
         "$BAMS2VCF_IMAGE" \
         python run_bams2vcf.py --ref "/refdir/${REF}" --bam "/bamdir/${PREFIX}.sorted.bam" \
             --output "/output/${PREFIX}.vcf.gz" --model_type "$MODEL_TYPE" --num_shards "$NUM_SHARDS" --bins "$BINS" \
-            --intraop_threads "$INTRAOP_THREADS" --interop_threads "$INTEROP_THREADS" --openblas_threads "$OPENBLAS_THREADS" \
-            $([[ "$NO_THREAD_CAPS" -eq 1 ]] && echo --no_thread_caps) --dindex
+            --no_thread_caps --dindex
 else
     echo "[Info] Stage 2/2: skipped (--skip-dv)"
 fi

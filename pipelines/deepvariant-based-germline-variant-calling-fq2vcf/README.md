@@ -29,21 +29,22 @@ docker build -f pipelines/deepvariant-based-germline-variant-calling-fq2vcf/Dock
 ```
 
 ### 3. Run both stages with the chain script
+- `--refdir`/`--readsdir`/`--outdir` must be absolute paths.
+- When running the pipeline for the first time, add `--rindex` flag to build the index files for the reference file. You don't need to use the flag for subsequent runs. 
+- Favor local/fast disk (e.g. NVMe scratch) over networked/shared storage for input, output, and intermediate files -- both the alignment and DeepVariant stages are I/O-sensitive and slow down noticeably on network-backed filesystems.
+- The first run against a given FASTQ pair will be slower because `fq2sortedbam` builds a pragzip index over the compressed reads from cold disk; subsequent runs on the same machine are faster once the input file is cached in the memory.
+
 ```bash
 pipelines/deepvariant-based-germline-variant-calling-fq2vcf/run_fq2vcf_chain.sh \
-  --container-tool docker \
   --refdir <refdir> --ref <reference.fasta> \
   --readsdir <readsdir> --read1 <r1.fastq.gz> --read2 <r2.fastq.gz> \
   --outdir <outdir> --prefix <prefix> --model-type WGS
 ```
-Notes:
+
 - Produces `<outdir>/<prefix>.sorted.bam` (fq2sortedbam stage), then `<outdir>/<prefix>.vcf.gz` + `.tbi` (bams2vcf stage).
 - See `run_fq2vcf_chain.sh --help` for all options: `--model-type` for PacBio/ONT/hybrid, `--skip-align`/`--skip-dv` to run just one stage.
-- `--refdir`/`--readsdir`/`--outdir` must be absolute paths.
-- `--refdir` is expected to already contain the bwa-mem2 index; add `--rindex` to build it on the fly if it isn't present yet.
-- Favor local/fast disk (e.g. NVMe scratch) over networked/shared storage for input, output, and intermediate files -- both the alignment and DeepVariant stages are I/O-sensitive and slow down noticeably on network-backed filesystems.
-- The first run against a given FASTQ pair will be slower because `fq2sortedbam` builds a pragzip index over the compressed reads from cold disk; subsequent runs on the same machine are faster once the input file is cached in the memory.
-- `TF_NUM_INTRAOP_THREADS`/`TF_NUM_INTEROP_THREADS`/`OPENBLAS_NUM_THREADS` cap the thread pool so our concurrent MPI processes don't oversubscribe the node; for example, `MPI processes =  16` x `--intraop-threads 16` = 256 threads, matching a 256-core node. Tune these via `run_fq2vcf_chain.sh --intraop-threads`/`--interop-threads`/`--openblas-threads` (or the equivalent `run_bams2vcf.py --intraop_threads`/`--interop_threads`/`--openblas_threads` flags if invoking stage 2 directly). Pass `--no-thread-caps` to skip setting these env vars entirely and let TF/OpenBLAS use their own defaults.
+
+
 
 #### Verified results (HG001, full 30x NovaSeq WGS, GRCh38, on a Intel(R)  Xeon(R) 6980P containing 256 cores, local NVMe storage)
 | Stage | Time |
@@ -53,6 +54,8 @@ Notes:
 | **Total FASTQ -> VCF** | **~20.7 min** |
 
 ### 4. Validate accuracy with hap.py (optional)
+- `<outdir>`, `<refdir>`, `<prefix>`, `<reference.fasta>` need to be set to the same values as the command in Step 3 (run_fq2vcf_chain command).
+
 Compare the output VCF against a GIAB truth set, e.g. for HG003/NA24149:
 ```bash
 # Download the GIAB v4.2.1 truth set (once)
@@ -77,8 +80,7 @@ docker run --rm \
   -o /happy/happy.output \
   --engine=vcfeval --pass-only --threads $(nproc)
 ```
-Notes:
-- `<outdir>`, `<refdir>`, `<prefix>`, `<reference.fasta>` need to be set to the same values as the command in Step 3 (run_fq2vcf_chain command).
+
 - `$(nproc)` is a standard Linux utility that returns number of logical CPUs on your node. It's used for --threads $(nproc), so hap.py runs its comparison using all available CPU logical cores on the host.
 - Swap in the matching GIAB directory/sample name (`HG001`/`HG002`/`HG003`/...) for other reference samples. Results (precision/recall/F1 per variant type) land in `happy_results/happy.output.*`.
 
