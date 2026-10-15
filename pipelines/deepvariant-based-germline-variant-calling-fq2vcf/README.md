@@ -37,7 +37,6 @@ pipelines/deepvariant-based-germline-variant-calling-fq2vcf/run_fq2vcf_chain.sh 
   --outdir <outdir> --prefix <prefix> --model-type WGS
 ```
 Notes:
-- Provide absolute paths for <refdir>, <readsdir>, and <outdir>.
 - Produces `<outdir>/<prefix>.sorted.bam` (fq2sortedbam stage), then `<outdir>/<prefix>.vcf.gz` + `.tbi` (bams2vcf stage).
 - See `run_fq2vcf_chain.sh --help` for all options: `--model-type` for PacBio/ONT/hybrid, `--skip-align`/`--skip-dv` to run just one stage.
 - `--refdir`/`--readsdir`/`--outdir` must be absolute paths.
@@ -79,8 +78,8 @@ docker run --rm \
   --engine=vcfeval --pass-only --threads $(nproc)
 ```
 Notes:
-- <outdir>, <refdir>, <prefix>, <reference.fasta> need to be set to the same values as the command in Step 3 (run_fq2vcf_chain command).
-- $(nproc) is a standard Linux utility that returns number of logical CPUs on your node. it's used for --threads $(nproc), so hap.py runs its comparison using all available CPU logical cores on the host.
+- `<outdir>`, `<refdir>`, `<prefix>`, `<reference.fasta>` need to be set to the same values as the command in Step 3 (run_fq2vcf_chain command).
+- `$(nproc)` is a standard Linux utility that returns number of logical CPUs on your node. It's used for --threads $(nproc), so hap.py runs its comparison using all available CPU logical cores on the host.
 - Swap in the matching GIAB directory/sample name (`HG001`/`HG002`/`HG003`/...) for other reference samples. Results (precision/recall/F1 per variant type) land in `happy_results/happy.output.*`.
 
 #### Verified results (HG003, full 35x NovaSeq WGS, GRCh38 no-ALT reference, hap.py vs GIAB v4.2.1 truth)
