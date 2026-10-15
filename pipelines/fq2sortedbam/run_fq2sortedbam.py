@@ -177,6 +177,11 @@ if __name__ == '__main__':
     print("[Info] Running {} processes per compute node, each with {} threads".format(N, THREADS))
     args['cpus'], args['threads'] = str(CPUS), str(THREADS)
 
+    # Record the auto-detected (or manually overridden) MPI rank count so downstream
+    # stages (e.g. bams2vcf's --bins) can match their parallelism to this stage's.
+    with open(os.path.join(args["output"], "num_ranks.txt"), "w") as f:
+        f.write(str(N))
+
     cmd="hostname > hostfile"
     a = run(cmd, capture_output=True, shell=True)
     

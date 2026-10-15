@@ -118,7 +118,9 @@ def main():
     parser.add_argument("--output", required=True, help="Output VCF path.")
     parser.add_argument("--model_type", default="WGS", choices=MODEL_TYPES, help="DeepVariant --model_type.")
     parser.add_argument("--num_shards", default=str(os.cpu_count() or 1), help="Total make_examples shards, split evenly across --bins (defaults to all visible CPUs).")
-    parser.add_argument("--bins", type=int, default=16, help="Number of parallel region-sharded DeepVariant invocations (set to 1 to disable region-sharding).")
+    parser.add_argument("--bins", type=int, default=16, help="Number of parallel region-sharded DeepVariant invocations (set to 1 to disable region-sharding). "
+                         "For best throughput, match this to the MPI rank count used by the fq2sortedbam stage (run_fq2vcf_chain.sh does this "
+                         "automatically via <outdir>/num_ranks.txt).")
     parser.add_argument("--intraop_threads", default="16", help="TF_NUM_INTRAOP_THREADS per bin (DeepVariant's call_variants thread count).")
     parser.add_argument("--interop_threads", default="1", help="TF_NUM_INTEROP_THREADS per bin.")
     parser.add_argument("--openblas_threads", default="1", help="OPENBLAS_NUM_THREADS per bin.")

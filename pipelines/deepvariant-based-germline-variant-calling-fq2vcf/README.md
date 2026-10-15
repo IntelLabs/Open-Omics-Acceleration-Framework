@@ -37,18 +37,19 @@ pipelines/deepvariant-based-germline-variant-calling-fq2vcf/run_fq2vcf_chain.sh 
   --outdir <outdir> --prefix <prefix> --model-type WGS
 ```
 Notes:
+- Provide absolute paths for <refdir>, <readsdir>, and <outdir>.
 - Produces `<outdir>/<prefix>.sorted.bam` (fq2sortedbam stage), then `<outdir>/<prefix>.vcf.gz` + `.tbi` (bams2vcf stage).
 - See `run_fq2vcf_chain.sh --help` for all options: `--model-type` for PacBio/ONT/hybrid, `--skip-align`/`--skip-dv` to run just one stage.
-- `--refdir`/`--readsdir`/`--outdir` must be absolute paths -- a bare relative name passed to `docker`/`podman -v` is treated as a named volume rather than a bind mount to that directory, which silently writes/reads the wrong location.
+- `--refdir`/`--readsdir`/`--outdir` must be absolute paths.
 - `--refdir` is expected to already contain the bwa-mem2 index; add `--rindex` to build it on the fly if it isn't present yet.
 - Favor local/fast disk (e.g. NVMe scratch) over networked/shared storage for input, output, and intermediate files -- both the alignment and DeepVariant stages are I/O-sensitive and slow down noticeably on network-backed filesystems.
 - The first run against a given FASTQ pair will be slower because `fq2sortedbam` builds a pragzip index over the compressed reads from cold disk; subsequent runs on the same machine are faster once the input file is cached in the memory.
 - `TF_NUM_INTRAOP_THREADS`/`TF_NUM_INTEROP_THREADS`/`OPENBLAS_NUM_THREADS` cap the thread pool so our concurrent MPI processes don't oversubscribe the node; for example, `MPI processes =  16` x `--intraop-threads 16` = 256 threads, matching a 256-core node. Tune these via `run_fq2vcf_chain.sh --intraop-threads`/`--interop-threads`/`--openblas-threads` (or the equivalent `run_bams2vcf.py --intraop_threads`/`--interop_threads`/`--openblas_threads` flags if invoking stage 2 directly). Pass `--no-thread-caps` to skip setting these env vars entirely and let TF/OpenBLAS use their own defaults.
 
-#### Verified results (HG001, full 30x NovaSeq WGS, GRCh38, on a 512-CPU / 6-NUMA node, local NVMe storage)
+#### Verified results (HG001, full 30x NovaSeq WGS, GRCh38, on a Intel(R)  Xeon(R) 6980P containing 256 cores, local NVMe storage)
 | Stage | Time |
 |---|---|
-| Alignment (bwa-mem2, 16 ranks x 28 threads, auto-detected) | 534s |
+| Alignment (bwa-mem2, 16 ranks x 28 threads) | 534s |
 | DeepVariant 1.9.0 (region-sharded, 16 bins x 32 shards) | 708s |
 | **Total FASTQ -> VCF** | **~20.7 min** |
 
@@ -77,7 +78,10 @@ docker run --rm \
   -o /happy/happy.output \
   --engine=vcfeval --pass-only --threads $(nproc)
 ```
-Swap in the matching GIAB directory/sample name (`HG001`/`HG002`/`HG003`/...) for other reference samples. Results (precision/recall/F1 per variant type) land in `happy_results/happy.output.*`.
+Notes:
+- <outdir>, <refdir>, <prefix>, <reference.fasta> need to be set to the same values as the command in Step 3 (run_fq2vcf_chain command).
+- $(nproc) is a standard Linux utility that returns number of logical CPUs on your node. it's used for --threads $(nproc), so hap.py runs its comparison using all available CPU logical cores on the host.
+- Swap in the matching GIAB directory/sample name (`HG001`/`HG002`/`HG003`/...) for other reference samples. Results (precision/recall/F1 per variant type) land in `happy_results/happy.output.*`.
 
 #### Verified results (HG003, full 35x NovaSeq WGS, GRCh38 no-ALT reference, hap.py vs GIAB v4.2.1 truth)
 | Type | Filter | TRUTH.TOTAL | TRUTH.TP | TRUTH.FN | QUERY.TOTAL | QUERY.FP | QUERY.UNK | FP.gt | FP.al | Recall | Precision | Frac_NA | F1_Score |

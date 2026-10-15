@@ -45,9 +45,15 @@
 #   --aligner-image NAME    fq2sortedbam image tag (default: fq2sortedbam:latest).
 #   --bams2vcf-image NAME   bams2vcf image tag (default: bams2vcf:1.9.0).
 #   --container-tool TOOL   docker or podman (default: docker).
+#   --read-type TYPE        fq2sortedbam --read_type: short/long/rna/meth (default: short). short - bwa-mem2
+#                            for short reads; long - mm2-fast for PacBio/ONT long reads; rna - STAR; meth -
+#                            bwa-meth. Use long with --model-type PACBIO/ONT_R104 for long-read data.
 #   --model-type TYPE       DeepVariant --model_type: WGS/WES/PACBIO/ONT_R104/HYBRID_PACBIO_ILLUMINA (default: WGS).
 #   --num-shards N          Total DeepVariant make_examples shards, split across --bins (default: nproc).
-#   --bins N                Number of parallel region-sharded DeepVariant invocations (default: 16; use 1 to disable).
+#   --bins N                Number of parallel region-sharded DeepVariant invocations (default: the MPI rank
+#                            count auto-detected by the fq2sortedbam stage, read back from
+#                            <outdir>/num_ranks.txt; falls back to 16 if that file isn't present, e.g. with
+#                            --skip-align; use 1 to disable).
 #   --skip-align            Skip stage 1 and go straight to DeepVariant on an existing
 #                            <outdir>/<prefix>.sorted.bam.
 #   --skip-dv                Run only stage 1 (alignment), skip DeepVariant.
@@ -72,9 +78,10 @@ CONTAINER_TOOL="docker"
 ALIGNER_IMAGE="fq2sortedbam:latest"
 BAMS2VCF_IMAGE="bams2vcf:1.9.0"
 PREFIX="fq2vcf_out"
+READ_TYPE="short"
 MODEL_TYPE="WGS"
 NUM_SHARDS="$(nproc 2>/dev/null || echo 16)"
-BINS=16
+BINS=""
 INTRAOP_THREADS="16"
 INTEROP_THREADS="1"
 OPENBLAS_THREADS="1"
@@ -96,6 +103,7 @@ while [[ $# -gt 0 ]]; do
         --aligner-image) ALIGNER_IMAGE="$2"; shift 2 ;;
         --bams2vcf-image) BAMS2VCF_IMAGE="$2"; shift 2 ;;
         --container-tool) CONTAINER_TOOL="$2"; shift 2 ;;
+        --read-type) READ_TYPE="$2"; shift 2 ;;
         --model-type) MODEL_TYPE="$2"; shift 2 ;;
         --num-shards) NUM_SHARDS="$2"; shift 2 ;;
         --bins) BINS="$2"; shift 2 ;;
@@ -136,12 +144,22 @@ if [[ "$SKIP_ALIGN" -eq 0 ]]; then
         -v "${READSDIR}:/input" \
         -v "${OUTDIR}:/out" \
         "$ALIGNER_IMAGE" \
-        python run_fq2sortedbam.py --ref "/refdir/${REF}" "${READS_ARGS[@]}" --output "/out/${PREFIX}" "${RINDEX_ARGS[@]}"
+        python run_fq2sortedbam.py --ref "/refdir/${REF}" "${READS_ARGS[@]}" --output "/out/${PREFIX}" \
+            --read_type "$READ_TYPE" "${RINDEX_ARGS[@]}"
 else
     echo "[Info] Stage 1/2: skipped (--skip-align), using existing ${OUTDIR}/${PREFIX}.sorted.bam"
 fi
 
 if [[ "$SKIP_DV" -eq 0 ]]; then
+    if [[ -z "$BINS" ]]; then
+        if [[ -f "${OUTDIR}/num_ranks.txt" ]]; then
+            BINS="$(cat "${OUTDIR}/num_ranks.txt")"
+            echo "[Info] --bins not set; using ${BINS} (MPI ranks auto-detected by the fq2sortedbam stage)"
+        else
+            BINS=16
+            echo "[Info] --bins not set and ${OUTDIR}/num_ranks.txt not found (e.g. --skip-align); defaulting to ${BINS}"
+        fi
+    fi
     echo "[Info] Stage 2/2: bams2vcf ($BAMS2VCF_IMAGE, DeepVariant 1.9.0) -> ${OUTDIR}/${PREFIX}.vcf.gz"
     # region-sharding fans out to --bins x --num_shards concurrent make_examples
     # processes (each opening several TF .so/library fds), which can exceed the
