@@ -34,6 +34,7 @@ docker build -f pipelines/deepvariant-based-germline-variant-calling-fq2vcf/Dock
 - Favor local/fast disk (e.g. NVMe scratch) over networked/shared storage for input, output, and intermediate files -- both the alignment and DeepVariant stages are I/O-sensitive and slow down noticeably on network-backed filesystems.
 - The first run against a given FASTQ pair will be slower because `fq2sortedbam` builds a pragzip index over the compressed reads from cold disk; subsequent runs on the same machine are faster once the input file is cached in the memory.
 
+Command:
 ```bash
 pipelines/deepvariant-based-germline-variant-calling-fq2vcf/run_fq2vcf_chain.sh \
   --refdir <refdir> --ref <reference.fasta> \
