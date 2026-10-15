@@ -30,9 +30,9 @@ docker build -f pipelines/deepvariant-based-germline-variant-calling-fq2vcf/Dock
 
 ### 3. Run both stages with the chain script
 - `--refdir`/`--readsdir`/`--outdir` must be absolute paths.
-- When running the pipeline for the first time, add `--rindex` flag to build the index files for the reference file. You don't need to use the flag for subsequent runs. 
-- Favor local/fast disk (e.g. NVMe scratch) over networked/shared storage for input, output, and intermediate files -- both the alignment and DeepVariant stages are I/O-sensitive and slow down noticeably on network-backed filesystems.
-- The first run against a given FASTQ pair will be slower because `fq2sortedbam` builds a pragzip index over the compressed reads from cold disk; subsequent runs on the same machine are faster once the input file is cached in the memory.
+- When running the pipeline for the first time for a given reference sequence, add `--rindex` flag to build the index for the reference sequence. You don't need to use the flag for subsequent runs for the same reference sequence. 
+- Favor local/fast disk (e.g. SSD) over slow storage for input, output, and intermediate files -- both the alignment and DeepVariant stages are I/O-sensitive and slow down noticeably with slower disks.
+- The first run against a given FASTQ pair will be a bit slower because `fq2sortedbam` builds a pragzip index over the compressed reads from cold disk; subsequent runs on the same machine are faster once the input file is cached in the memory.
 
 Command:
 ```bash
