@@ -152,6 +152,37 @@ def fastq_reader_real( comm, cpus, fname, outpipe, outdir, last=False ):
     threading.Thread(target=pr_t2, args=(outpipe,bufs,sems)).start()
 
 
+def _find_fastq_record_start(f, approx_pos):
+    """Scan forward from approx_pos to the true start of the next FASTQ record.
+
+    A line starting with '@' alone isn't a reliable record marker -- FASTQ
+    quality lines can also start with '@' (e.g. Phred+33 quality value 31,
+    common in real Illumina data). Since each rank's R1 and R2 streams are
+    boundary-scanned independently, mistaking a quality line for a header
+    in just one of the two files silently offsets that rank's R1/R2
+    pairing for its entire shard. bwa-mem2 then logs a flood of
+    "paired reads have different names" and crashes, and because nothing
+    calls comm.Abort() on that failure path, the other ranks are left
+    spinning forever in the next MPI collective call waiting for the dead
+    rank. Confirm a candidate '@' line is really a header by checking that
+    the line two lines later starts with '+' (a FASTQ record's 3rd line),
+    which a quality line can never be mistaken for.
+    """
+    f.seek(approx_pos)
+    while True:
+        line_start = f.tell()
+        d = f.readline()
+        if not d:
+            return line_start  # hit EOF while scanning; nothing better to return
+        if d[0] == 64:  # candidate '@' header
+            after_header = f.tell()
+            seq_line = f.readline()
+            plus_line = f.readline()
+            f.seek(after_header)  # rewind -- the verification reads must not consume input
+            if seq_line and plus_line and plus_line[0] == 43:  # '+' == 43
+                return line_start
+
+
 def pragzip_reader_real( comm, cpus, fname, outpipe, outdir, last=False ):
     time.sleep(0.1)  # yield so bwamem can start, overlapping pragzip preindex with bwamem loading reference genome
     rank = comm.Get_rank()
@@ -185,13 +216,8 @@ def pragzip_reader_real( comm, cpus, fname, outpipe, outdir, last=False ):
     #f.seek(133430432859) # go to end
     #f.seek(133420000000) # go to end
     total_len = f.tell()
-    startpos = total_len*rank//nranks  # approx starting point for each rank
-    f.seek(startpos)
-    while 1:
-        d = f.readline()
-        if d[0] == 64:  # @ symbol, begin new record
-            break
-        startpos = f.tell()
+    approx_startpos = total_len*rank//nranks  # approx starting point for each rank
+    startpos = _find_fastq_record_start(f, approx_startpos)
 
     st_vec = comm.allgather(startpos)  # get all ranks start positions
     if rank==nranks-1:
@@ -499,6 +525,32 @@ def create_folder(fo):
             flg = 1
     else: print('[Info] output logs folder exists, will override the log files')
     return flg
+
+
+def _alignment_failure_reason(output, read_type, rank):
+    """Best-effort diagnosis of why this rank's aligner subprocess exited non-zero,
+    by checking its own stderr log for a known cause before falling back to a
+    generic message. Used so a crash aborts the whole MPI job immediately with a
+    clear reason, instead of the aligner's own assert propagating as a bare
+    AssertionError that leaves the other ranks hanging forever in the next
+    collective call (since nothing else notifies them this rank is gone)."""
+    logpath = {
+        'long': output + 'logs/mm2log' + str(rank) + '.txt',
+        'short': output + 'logs/bwalog' + str(rank) + '.txt',
+        'meth': output + 'logs/bwamethlog' + str(rank) + '.txt',
+    }.get(read_type)
+    if logpath and os.path.exists(logpath):
+        try:
+            with open(logpath, 'r', errors='replace') as lf:
+                logtext = lf.read()
+            if 'paired reads have different names' in logtext:
+                return ("bwa-mem2 detected mismatched/desynced R1 and R2 read pairs "
+                        "('paired reads have different names') -- the two input "
+                        f"streams for this rank's shard got out of sync. See {logpath}.")
+        except OSError:
+            pass
+    return (f"aligner subprocess (read_type={read_type}) exited non-zero. "
+            f"See {logpath or (output + 'logs/')} for details.")
 
 
 def alignment(p):
@@ -917,7 +969,12 @@ def main(args):
         begin1 = time.time()
         p = os.path.join(output,outfile), \
             read_type, params, refdir, ifile, fn1, fn2, fn3, output, cpus, rank
-        alignment(p)
+        try:
+            alignment(p)
+        except AssertionError:
+            reason = _alignment_failure_reason(output, read_type, rank)
+            print(f"[Error] rank {rank}: alignment failed -- {reason} Aborting all ranks.", flush=True)
+            comm.Abort(1)
         end1b = time.time()
         thr.join()
         comm.barrier()
@@ -937,18 +994,35 @@ def main(args):
 
     # Finish sort, merge, convert to bam depending on mode
     cmd=""
-    for i in range(bins_per_rank): 
-        binstr = '%05d'%(nranks*i+rank)
-        cmd+=f'{SAMTOOLS} sort --threads '+threads+' -T '+tempdir+ '/aln'+binstr+ \
-            '.sorted -o '+ output +'/aln'+binstr+'.bam '+ output+'/aln'+binstr+'.sam' + '  2> ' + output +'logs/samsortlog' + str(rank) + '.txt'
-        
-        if i%20==0:
+    try:
+        for i in range(bins_per_rank):
+            binstr = '%05d'%(nranks*i+rank)
+            cmd+=f'{SAMTOOLS} sort --threads '+threads+' -T '+tempdir+ '/aln'+binstr+ \
+                '.sorted -o '+ output +'/aln'+binstr+'.bam '+ output+'/aln'+binstr+'.sam' + '  2> ' + output +'logs/samsortlog' + str(rank) + '.txt'
+
+            if i%20==0:
+                a=run(cmd,capture_output=True,shell=True)
+                # This periodic flush's exit code used to go unchecked (only the
+                # final leftover flush below was) -- with bins_per_rank==1 (the
+                # common 1-bin-per-rank setup) that leftover branch never even
+                # runs, so a failed sort here (e.g. a truncated SAM from a bad
+                # alignment record) silently produced a missing .bam file,
+                # surfacing later as a confusing "No such file or directory"
+                # from the downstream samtools cat concat step instead of
+                # failing where it actually happened.
+                assert a.returncode==0, f"samtools sort failed for rank {rank} bin(s) up to index {i} (see {output}logs/samsortlog{rank}.txt)"
+                cmd=""
+
+        if not cmd=="":
             a=run(cmd,capture_output=True,shell=True)
-            cmd=""
-            
-    if not cmd=="":
-        a=run(cmd,capture_output=True,shell=True)
-        assert a.returncode==0,"samtools sort Failed"    
+            assert a.returncode==0, f"samtools sort failed for rank {rank} (see {output}logs/samsortlog{rank}.txt)"
+    except AssertionError as e:
+        # Every rank reaches a comm.barrier() right after this block -- letting
+        # this exception propagate bare would crash only this one rank while
+        # the other 15 wait at that barrier forever. Same hazard class as the
+        # alignment() failure path; same fix: abort the whole job immediately.
+        print(f"[Error] rank {rank}: {e}. Aborting all ranks.", flush=True)
+        comm.Abort(1)
     comm.barrier()
 
     if rank==0:
@@ -973,6 +1047,17 @@ def main(args):
         #print('outfile: ',outfile)
         cmd+=f'{SAMTOOLS} cat -o ' + os.path.join(output, outfile) + '.sorted.bam ' + infstr
         a=run(cmd,capture_output=True, shell=True)
+        if a.returncode != 0:
+            # Bare assert gave no clue why `samtools cat` failed -- print what it
+            # actually said instead of silently losing a.stdout/a.stderr.
+            stdout = a.stdout.decode(errors='replace') if a.stdout else ''
+            stderr = a.stderr.decode(errors='replace') if a.stderr else ''
+            print(f"[Error] BAM concatenation failed (samtools cat exited {a.returncode}).", flush=True)
+            print(f"[Error] cmd: {cmd}", flush=True)
+            if stdout:
+                print(f"[Error] stdout:\n{stdout}", flush=True)
+            if stderr:
+                print(f"[Error] stderr:\n{stderr}", flush=True)
         assert a.returncode == 0
         print("[Info] Concat done, time taken (s): {:.4f}".format(time.time() - tic))
         #tic2 = time.time()

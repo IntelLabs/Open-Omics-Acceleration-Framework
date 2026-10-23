@@ -215,7 +215,7 @@ if __name__ == '__main__':
         subprocess.run([f"{cmd} '{jstring}'"], shell=True, check=True, capture_output=False, text=True)
     except subprocess.CalledProcessError as e:
         print(f"Command failed with return code {e.returncode}")
-        print(f"Error output: {e.stderr}")
+        sys.exit(e.returncode)
 
     toc = time.time()
     print('[Info] fq2sortedbam runtime: {:.2f}'.format(toc - tic), " sec")
