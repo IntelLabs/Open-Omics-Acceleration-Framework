@@ -33,7 +33,7 @@ import subprocess
 import threading
 import tempfile
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-import pragzip as pz
+import rapidgzip as pz
 from mpi4py import MPI
 import bisect
 import heapq as hq

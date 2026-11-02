@@ -39,6 +39,6 @@ dependencies:
   - zlib=1.2.13=h5eee18b_0
   - pyyaml=5.4.1
   - pip:
-      - pragzip==0.5.0
+      - rapidgzip==0.16.0
       - yappi==1.4.0
 
