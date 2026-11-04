@@ -1,42 +1,99 @@
 # fq2vcf: OpenOmics Deepvariant based Variant Calling Pipeline  
 ### Overview:  
-OpenOmics' fq2vcf is a highly optimized, distributed, deep learning-based short-read germline variant calling pipeline for x86 CPUs. 
-The pipeline comprises of:   
-1. bwa-mem2 (a highly optimized version of bwa-mem) for sequence mapping  
-2. SortSAM using samtools  
-3. An optimized version of DeepVariant tool for Variant Calling   
+OpenOmics' fq2vcf is a highly optimized, distributed, deep learning-based short and long read variant calling pipeline for x86 CPUs. It is built as a chain of two independent stages:
+
+1. **`fq2sortedbam`** -- Sequence alignment and sorting stage. Takes raw FASTQ reads and a reference genome and produces a coordinate-sorted BAM file. Depending on the data type, it dispatches to one of the following aligners:
+   - **bwa-mem2 v2.2.1** -- highly optimized DNA short-read alignment
+   - **mm2-fast** (accelerated minimap2, based on minimap2 v2.24-r1122) -- long-read alignment (PacBio/ONT)
+2. **`bams2vcf`** (containerized as `bams2vcf`) -- Variant calling stage. Takes the sorted BAM and reference genome and calls variants using an optimized build of **DeepVariant v1.9.0**, producing a compressed, indexed VCF file.
+
 The following figure illustrates the pipeline:
 
 <p align="center">
 <img src="https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/blob/main/images/deepvariant-fq2vcf.jpg"/a></br>
-</p> 
+</p>
 
-# Using Dockerfile  (Single Node)  
-### 1. Download the code :  
-
+## Instructions to build and run the pipeline
+### 1. Download the code
 ```bash
 git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-cd Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
-```
-### 2. Build the Docker Images
-Part I: fq2bams
-```bash
-docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy -t fq2bams -f Dockerfile_fq2bams .  
-```
-Part II: bams2vcf
-```bash
-docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy -t bams2vcf -f Dockerfile_bams2vcf  .   
+cd Open-Omics-Acceleration-Framework
+git checkout fq2vcf-dv1.9.0
+git submodule update --init --recursive
 ```
 
-### 3. Run the Dockers  
-Notes:  
-<refdir> is expected to contain the bwa-mem2 index. You can index the reference during the run by enabling "--rindex" to fq2bams commandline.  
-
+### 2. Build both images (from the repository root)
 ```bash
-docker run  --volume <refdir>:/refdir <readsdir>:/readsdir <outdir_fq2bams>:/outdir fq2bams:latest python run_fq2bams.py --ref /refdir/<reference_file> --reads  /readsdir/<read1>  /readsdir/<read2>  --output /outdir/<outBAMfile>   
-
-docker run  --volume <refdir>:/refdir <outdir_fq2bams>:/indir <output>:/outdir  bams2vcf:latest python run_bams2vcf.py --ref /refdir/<reference_file> --input /indir/  --output /outdir/<outVCFfile>   
+docker build -f pipelines/fq2sortedbam/Dockerfile -t fq2sortedbam:latest .
+docker build -f pipelines/deepvariant-based-germline-variant-calling-fq2vcf/Dockerfile_bams2vcf -t bams2vcf:1.9.0 .
 ```
+
+### 3. Run both stages with the chain script
+- `--refdir`/`--readsdir`/`--outdir` must be absolute paths.
+- When running the pipeline for the first time for a given reference sequence, add `--rindex` flag to build the index for the reference sequence. You don't need to use the flag for subsequent runs for the same reference sequence. 
+- Favor local/fast disk (e.g. SSD) over slow storage for input, output, and intermediate files -- both the alignment and DeepVariant stages are I/O-sensitive and slow down noticeably with slower disks.
+- The first run against a given FASTQ pair will be a bit slower because `fq2sortedbam` builds a pragzip index over the compressed reads from cold disk; subsequent runs on the same machine are faster once the input file is cached in the memory.
+
+Command:
+```bash
+pipelines/deepvariant-based-germline-variant-calling-fq2vcf/run_fq2vcf_chain.sh \
+  --refdir <refdir> --ref <reference.fasta> \
+  --readsdir <readsdir> --read1 <r1.fastq.gz> --read2 <r2.fastq.gz> \
+  --outdir <outdir> --prefix <prefix> --model-type WGS
+```
+
+- Produces `<outdir>/<prefix>.sorted.bam` (fq2sortedbam stage), then `<outdir>/<prefix>.vcf.gz` + `.tbi` (bams2vcf stage).
+- See `run_fq2vcf_chain.sh --help` for all options: `--model-type` for PacBio/ONT/hybrid, `--skip-align`/`--skip-dv` to run just one stage.
+
+
+
+#### Verified results (HG001, full 30x NovaSeq WGS, GRCh38, on a Intel(R)  Xeon(R) 6980P containing 256 cores, local NVMe storage)
+| Stage | Time |
+|---|---|
+| Alignment (bwa-mem2, 16 ranks x 28 threads) | 534s |
+| DeepVariant 1.9.0 (region-sharded, 16 bins x 32 shards) | 708s |
+| **Total FASTQ -> VCF** | **~20.7 min** |
+
+### 4. Validate accuracy with hap.py (optional)
+- `<outdir>`, `<refdir>`, `<prefix>`, `<reference.fasta>` need to be set to the same values as the command in Step 3 (run_fq2vcf_chain command).
+
+Compare the output VCF against a GIAB truth set, e.g. for HG003/NA24149:
+```bash
+# Download the GIAB v4.2.1 truth set (once)
+mkdir -p truth && cd truth
+wget https://ftp.ncbi.nlm.nih.gov/giab/ftp/release/AshkenazimTrio/HG003_NA24149_father/NISTv4.2.1/GRCh38/HG003_GRCh38_1_22_v4.2.1_benchmark.vcf.gz
+wget https://ftp.ncbi.nlm.nih.gov/giab/ftp/release/AshkenazimTrio/HG003_NA24149_father/NISTv4.2.1/GRCh38/HG003_GRCh38_1_22_v4.2.1_benchmark.vcf.gz.tbi
+wget https://ftp.ncbi.nlm.nih.gov/giab/ftp/release/AshkenazimTrio/HG003_NA24149_father/NISTv4.2.1/GRCh38/HG003_GRCh38_1_22_v4.2.1_benchmark_noinconsistent.bed
+cd ..
+
+docker pull jmcdani20/hap.py:v0.3.12
+mkdir -p happy_results
+docker run --rm \
+  -v $(pwd)/truth:/benchmark \
+  -v <outdir>:/output \
+  -v <refdir>:/reference \
+  -v $(pwd)/happy_results:/happy \
+  jmcdani20/hap.py:v0.3.12 /opt/hap.py/bin/hap.py \
+  /benchmark/HG003_GRCh38_1_22_v4.2.1_benchmark.vcf.gz \
+  /output/<prefix>.vcf.gz \
+  -f /benchmark/HG003_GRCh38_1_22_v4.2.1_benchmark_noinconsistent.bed \
+  -r /reference/<reference.fasta> \
+  -o /happy/happy.output \
+  --engine=vcfeval --pass-only --threads $(nproc)
+```
+
+- `$(nproc)` is a standard Linux utility that returns number of logical CPUs on your node. It's used for --threads $(nproc), so hap.py runs its comparison using all available CPU logical cores on the host.
+- Swap in the matching GIAB directory/sample name (`HG001`/`HG002`/`HG003`/...) for other reference samples. Results (precision/recall/F1 per variant type) land in `happy_results/happy.output.*`.
+
+#### Verified results (HG003, full 35x NovaSeq WGS, GRCh38 no-ALT reference, hap.py vs GIAB v4.2.1 truth)
+| Type | Filter | TRUTH.TOTAL | TRUTH.TP | TRUTH.FN | QUERY.TOTAL | QUERY.FP | QUERY.UNK | FP.gt | FP.al | Recall | Precision | Frac_NA | F1_Score |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| INDEL | ALL | 504501 | 501529 | 2972 | 937912 | 1185 | 414081 | 788 | 217 | 0.994109 | 0.997738 | 0.441492 | 0.995920 |
+| INDEL | PASS | 504501 | 501529 | 2972 | 937912 | 1185 | 414081 | 788 | 217 | 0.994109 | 0.997738 | 0.441492 | 0.995920 |
+| SNP | ALL | 3327496 | 3305923 | 21573 | 3816076 | 4457 | 504028 | 1437 | 471 | 0.993517 | 0.998654 | 0.132080 | 0.996079 |
+| SNP | PASS | 3327496 | 3305923 | 21573 | 3816076 | 4457 | 504028 | 1437 | 471 | 0.993517 | 0.998654 | 0.132080 | 0.996079 |
+
+These numbers match DeepVariant 1.9.0's own officially published full-genome HG003 benchmark (INDEL F1 0.995845, SNP F1 0.996133 -- see [metrics.md](https://github.com/google/deepvariant/blob/r1.9/docs/metrics.md)) to within ~0.0002 across Recall/Precision/F1 for both variant types.
 
 # Results
 
@@ -44,80 +101,5 @@ Our latest results are published in this [blog](https://community.intel.com/t5/B
 
 
 # Instructions to run the pipeline on an AWS ec2 instance (Single Node)
-The following instructions run seamlessly on a standalone AWS ec2 instance. To run the following steps, create an ec2 instance with Ubuntu-22.04 having at least 60GB of memory and 500GB of disk. The input reference sequence and the paired-ended read datasets must be downloaded and stored on the disk.
+The above instructions run seamlessly on a standalone AWS ec2 instance. To run the steps, create an ec2 instance with Ubuntu-22.04 having at least 60GB of memory and 500GB of disk. The input reference sequence and the paired-ended read datasets must be downloaded and stored on the disk.
 
-### One-time setup
-This step takes around ~15 mins to execute. During the installation process, whenever prompted for user input, it is recommended that the user select all default options.
-```bash
-git clone --recursive https://github.com/IntelLabs/Open-Omics-Acceleration-Framework.git
-cd Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/
-```
-
-### Create the index files for the reference sequence
-```bash
-bash create_reference_index.sh
-```
-
-### Run the pipeline.
-```bash
-python run_fq2bams.py --ref refdir/<reference_file> --reads  readsdir/<read1>  readsdir/<read2>  --output outdir/<outBAMfile>     
-python run_bams2vcf.py --ref refdir/<reference_file> --input outdir/  --output outdir/<outVCFfile>     
-
-```
-
-
-# Instructions to run the pipeline on an AWS ParallelCluster (Multi-node)   
-
-The following instructions run seamlessly on AWS ParallelCluster. To run the following steps, first create an AWS parallelCluster as follows,
-- Cluster setup: follow these steps to setup an [AWS ParallelCluster](https://docs.aws.amazon.com/parallelcluster/v2/ug/what-is-aws-parallelcluster.html).  Please see example [config file](scripts/aws/pcluster_example_config) to setup pcluster (_config_ file resides at ~/.parallelcluster/config/ on local machine). Please note: for best performance use shared file system with Amazon EBS _volume\_type = io2_ and _volume\_iops = 64000_ in the config file.
-- Create pcluster: pcluster create <cluster_name>
-- Login: login to the pcluster host/head node using the IP address of the cluster created in the previous step  
-- Datasets: The input reference sequence and the paired-ended read datasets must be downloaded and stored in the _/sharedgp_ (pcluster shared directory defined in the config file) folder.
-
-
-### One-time setup
-This step takes around ~15 mins to execute. During the installation process, whenever prompted for user input, it is recommended that the user select all default options.
-```bash
-cd /sharedgp
-wget https://github.com/IntelLabs/Open-Omics-Acceleration-Framework/releases/download/3.0/Source_code_with_submodules.tar.gz
-tar -xzf Source_code_with_submodules.tar.gz
-cd Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/scripts/aws
-bash deepvariant_setup.sh
-```
-### Modify _config_ file
-We need a reference sequence and paired-ended read datasets. Open the "_config_" file and set the input and output directories as shown in config file.
-The sample config contains the following lines to be updated.
-```bash
-export LD_PRELOAD=<absolute_path>/Open-Omics-Acceleration-Framework/pipelines/deepvariant-based-germline-variant-calling-fq2vcf/libmimalloc.so.2.0:$LD_PRELOAD
-export INPUT_DIR=/path-to-read-datasets/
-export OUTPUT_DIR=/path-to-output-directory/
-export REF_DIR=/path-to-ref-directory/
-REF=ref.fasta
-R1=R1.fastq.gz
-R2=R2.fastq.gz
-```
-
-### Create the index files for the reference sequence
-```bash
-bash pcluster_reference_index.sh
-```
-
-### Allocate compute nodes and install the prerequisites into the compute nodes.
-```bash
-bash pcluster_compute_node_setup.sh <num_nodes> <allocation_time>
-# num_nodes: The number of compute nodes to be used for distributed multi-node execution.
-# allocation_time: The maximum allocation time for the compute nodes in "hh:mm:ss" format. The default value is 2 hours, i.e., 02:00:00.
-# Example command for allocating 4 nodes for 3 hours -
-bash pcluster_compute_node_setup.sh 4 "03:00:00"
-```
-
-### Run the pipeline.
-Note that the script uses default setting for creating multiple MPI ranks based on the system configuration.
-```bash
-bash run_pipeline_pcluster.sh
-```
-
-### Delete Cluster
-```bash
-pcluster delete <cluster_name>
-```
